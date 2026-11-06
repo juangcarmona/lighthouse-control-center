@@ -1,0 +1,47 @@
+name: Lighthouse CI App preflight
+run-name: "CI App preflight · ${{ github.actor }}"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    if: >-
+      github.actor == github.repository_owner &&
+      github.triggering_actor == github.repository_owner &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Load the pinned trusted harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: juangcarmona/lighthouse
+          ref: 9b165b590b415dcdb25de5a2f843c6fb30e9e445
+          path: harness
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - name: Verify installation, repository scope and revocation
+        env:
+          LIGHTHOUSE_CI_APP_CLIENT_ID: ${{ vars.LIGHTHOUSE_CI_APP_CLIENT_ID }}
+          LIGHTHOUSE_CI_APP_PRIVATE_KEY: ${{ secrets.LIGHTHOUSE_CI_APP_PRIVATE_KEY }}
+        run: |
+          node harness/src/packages/sdlc/src/github-app-ci.mjs check > "$RUNNER_TEMP/ci-app-preflight.json"
+      - name: Require confirmed revocation and retain safe evidence
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          import { strict as assert } from 'node:assert';
+          const receipt = JSON.parse(readFileSync(process.env.RUNNER_TEMP + '/ci-app-preflight.json', 'utf8'));
+          assert.equal(receipt.repository, process.env.GITHUB_REPOSITORY);
+          assert.equal(receipt.permissions.contents, 'write');
+          assert.equal(receipt.tokenRevoked, true, 'Token revocation was not confirmed; inspect the App installation before retrying.');
+          assert.equal(receipt.ref, undefined);
+          console.log(JSON.stringify(receipt));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY, 'App installation, repository-only contents:write token and revocation verified. No verification ref or delivery was created.\n\n```json\n' + JSON.stringify(receipt, null, 2) + '\n```\n');
+          JS

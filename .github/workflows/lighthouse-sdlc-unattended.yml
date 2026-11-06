@@ -1,0 +1,80 @@
+# Owned by lighthouse-sdlc. Both routes reuse canonical lifecycle stages.
+name: unattended
+run-name: "${{ inputs.route }} #${{ inputs.issue }} · ${{ github.actor }}"
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Owner-authorized issue
+        required: true
+        type: string
+      route:
+        description: Bounded delivery route
+        required: true
+        type: choice
+        options: [ff, hotfix]
+permissions: {}
+concurrency:
+  group: lighthouse-issue-${{ inputs.issue }}
+  cancel-in-progress: false
+  queue: max
+jobs:
+  deliver:
+    if: vars.LIGHTHOUSE_AUTOMATION_ENABLED == 'true' && github.actor == github.repository_owner
+    runs-on: [self-hosted, linux, lighthouse-workflow]
+    timeout-minutes: 125
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Load the pinned trusted harness
+        uses: actions/checkout@v5
+        with:
+          repository: juangcarmona/lighthouse
+          ref: 9b165b590b415dcdb25de5a2f843c6fb30e9e445
+          path: .lighthouse-harness
+          persist-credentials: false
+      - name: Load current product source
+        uses: actions/checkout@v5
+        with:
+          path: product
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Execute the authorized bounded composition
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_CI_APP_CLIENT_ID: ${{ vars.LIGHTHOUSE_CI_APP_CLIENT_ID }}
+          LIGHTHOUSE_CI_APP_PRIVATE_KEY: ${{ secrets.LIGHTHOUSE_CI_APP_PRIVATE_KEY }}
+        run: node .lighthouse-harness/src/packages/sdlc/src/unattended-actions.mjs
+      - name: Retain bounded delivery receipts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-unattended-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/report.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/candidate.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/implementation-evidence.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/ci-requests.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/request.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/envelope.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/checks.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/changes.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/runtime.json
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/engine-error.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Retain execution diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-unattended-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/*/tmp/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/evidence/**
+            ${{ runner.temp }}/lighthouse-unattended-${{ github.run_id }}/provider-commands/*
+          if-no-files-found: warn
+          retention-days: 14

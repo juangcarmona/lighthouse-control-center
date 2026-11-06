@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "defaultProfile": "build",
+  "workers": {
+    "triage": "build",
+    "refine": "build",
+    "propose": "build",
+    "implement": "build",
+    "apply-review": "build",
+    "integrate": "plan",
+    "review": "plan",
+    "independent-review": "plan"
+  },
+  "profiles": {
+    "build": {
+      "model": "openai/gpt-6.1-sol",
+      "reasoningEffort": "medium"
+    },
+    "plan": {
+      "model": "openai/gpt-6-luna",
+      "reasoningEffort": "high"
+    }
+  }
+}
