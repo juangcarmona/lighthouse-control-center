@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "routes": [
+    "ff"
+  ],
+  "paths": [
+    "src/observation/",
+    "src/web/"
+  ],
+  "reviewerProfile": "plan",
+  "allowFivePoint": false,
+  "merge": false,
+  "maxCorrections": 1,
+  "timeoutSeconds": 3600
+}

@@ -4,23 +4,23 @@
     "id": "labels",
     "provider": "github",
     "selection": "selected-by-default",
-    "version": "2"
+    "version": "4"
   },
   "catalogVersion": "0.5.0",
   "provider": {
     "provider": "github",
     "repo": "juangcarmona/sofa"
   },
-  "desiredHash": "108629bb928a12c842d346f996661da24ce58cd4eec4a3402e0b300e46ab9bb4",
-  "observedHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
-  "targetHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
+  "desiredHash": "cdf151b5d28fd123ac00d8dccdb632c1c8fdf648691196889c981564ed80b055",
+  "observedHash": "95cff28127f9ecadd11b1ceafba9b2cd95124a1710736a4e34d2f540889f50ba",
+  "targetHash": "95cff28127f9ecadd11b1ceafba9b2cd95124a1710736a4e34d2f540889f50ba",
   "operations": [
     {
       "type": "create-label",
       "kind": "create",
-      "name": "future",
-      "color": "8B949E",
-      "description": "Pause implementation; triage, refinement and proposal remain available."
+      "name": "execution-failed",
+      "color": "CF222E",
+      "description": "A worker attempt failed; inspect its latest outcome and recovery action."
     }
   ],
   "operationPolicy": {
@@ -36,6 +36,7 @@
     ]
   },
   "blockedOperations": [
+    "modify",
     "modify",
     "modify",
     "modify",

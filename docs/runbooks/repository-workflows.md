@@ -26,13 +26,13 @@ The current gh-aw gateway uses host port 8080. Only one gateway job may occupy t
 
 Enable `LIGHTHOUSE_AUTOMATION_ENABLED` after installing and checking the workflows. Keep default token permissions read-only. GitHub's setting allowing Actions to create and approve PRs is required for publication; the bot does not approve its own work.
 
-The workflows pin Lighthouse `806223d06302628d25791e42e35b609ca6e1d32c` and use gh-aw 0.93.2. Update them through the Lighthouse installer. The installed packages are CLI 0.12.0 and SDLC 0.16.0. This revision includes the engine receipt ownership cleanup fix from Lighthouse PR #200. Workflow and npm revisions are recorded independently.
+The workflows pin published Lighthouse commit `9b165b590b415dcdb25de5a2f843c6fb30e9e445` and use gh-aw 0.93.2. The installed packages are CLI 0.12.42 and SDLC 0.20.9. Update them through the official upgrade and workflow installer; npm installation alone does not update workflows. [Issue #88 evidence](../delivery/evidence/issue-88/README.md) records release and validation evidence.
 
-The installed workers are `triage`, `refine`, `propose`, `implement`, `integrate`, `review` and `apply-review`. Optional maintenance is not installed; automatic retry recovery and aggregated maintenance reports remain disabled. GitHub Actions executes work and issues retain receipts and reservations. The [adoption evidence](../delivery/evidence/issue-74/README.md) records validation and live-acceptance limits.
+The installed workers are `triage`, `refine`, `propose`, `implement`, `integrate`, `review` and `apply-review`. Optional unattended and maintenance workflows are installed. Unattended execution and merge are disabled in project policy; maintenance, recovery and report publication require separate operator opt-ins and remain disabled. GitHub Actions executes work and issues retain receipts and reservations. The [adoption evidence](../delivery/evidence/issue-74/README.md) records validation and live-acceptance limits.
 
 The router projects implementation PR state after supported events and on a five-minute GitHub Actions schedule, gated by `LIGHTHOUSE_AUTOMATION_ENABLED`. It rechecks bounded candidates and required evidence, including when GitHub suppresses a chained completion event. This reconciliation can return a PR to draft or make a fully checked candidate ready; it does not approve or merge it. Issues show `pr-draft` or `pr-ready` and stay open until post-merge review. This PR-state projection is separate from the optional maintenance workflow and does not establish reconciliation of every canonical `status:*` label.
 
-After publishing refinement, the worker explicitly requests verified implementation continuation through the router. The existing `future` pause and duplicate-dispatch controls still apply. No model profile or delegation executor is enabled by this adoption; the existing operator-selected model and authentication remain authoritative.
+After publishing refinement, the worker explicitly requests verified implementation continuation through the router. The existing `future` pause and duplicate-dispatch controls still apply. The project declares Sol Medium implementation and Luna High independent review. The existing operator enables profiles and permits these model/effort combinations; its overrides and authentication remain authoritative. Provider access is a separate activation prerequisite. No delivery was dispatched by adoption.
 
 ## Reproducible application checks
 
@@ -45,11 +45,17 @@ Preflight verifies Node 24, npm, Git, Chromium, OpenCode 2.1.0 and .NET SDK 10.0
 To regenerate the existing workflow set from a verified Lighthouse checkout, first preview and review differences, then apply:
 
 ```sh
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 806223d06302628d25791e42e35b609ca6e1d32c --with-completion --replace-reviewed
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 806223d06302628d25791e42e35b609ca6e1d32c --with-completion --replace-reviewed --apply
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 9b165b590b415dcdb25de5a2f843c6fb30e9e445 --with-unattended --with-maintenance --replace-reviewed
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 9b165b590b415dcdb25de5a2f843c6fb30e9e445 --with-unattended --with-maintenance --replace-reviewed --apply
 ```
 
 Commit generated locks with their sources. The host authenticates product revision separately from workflow revision: a manual router dispatch can test this PR's workflow branch, while implementation policy and environment still come from the current default branch. Such a pre-merge run cannot prove activation of an unmerged environment declaration. Use isolated consumer acceptance for the candidate and retain this live-acceptance limitation until post-merge verification.
+
+## Bounded unattended adoption
+
+See [activation and rollback](lighthouse-unattended.md). `.lighthouse/unattended.json` permits only the `ff` route and the observer modules `src/observation/` and `src/web/`, with execution and merge disabled. Hotfix and five-point changes are excluded. The default implementation policy still requires owner review. The verification inventory freezes tests, wrappers, manifests, lockfiles, provider inputs and CI configuration with no correction exceptions. The existing required `verify` job also runs on App-created `lighthouse/verification-*` pushes.
+
+The owner-only **Lighthouse CI App preflight** workflow uses the pinned trusted harness to check the existing App installation, mint a repository-only `contents: write` token, and require confirmed revocation. It creates no verification ref or delivery. It is available for dispatch on the default branch after adoption merges.
 
 ## Recovery
 

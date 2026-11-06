@@ -1,6 +1,6 @@
 # Engineering lifecycle
 
-**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-10-27
+**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-11-06
 
 ## Definition of Ready
 
@@ -132,11 +132,11 @@ Invoke `/agentic-sdlc:ff <work-item-id>` in Claude Code or `ff <work-item-id>` i
 
 | Setting | This project requires |
 | --- | --- |
-| Enabled | Yes when the active harness can attest a distinct reviewer model |
-| Executor and reviewer | Resolve at run time; reviewer must be a different model |
-| Maximum correction rounds | 3 per gate |
+| Enabled | Native unattended delivery is disabled by default in `.lighthouse/unattended.json`; activation requires the [owner procedure](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
+| Executor and reviewer | Native project profiles select Sol Medium and Luna High; private operator resolution must attest distinct models and available capabilities before execution |
+| Maximum correction rounds | Native unattended: 1 shared plan/candidate correction; portable FF: 3 per gate |
 | Substitutable judgement items | None by default; owner remains responsible for every Definition of Done judgement item |
-| Durable evidence | `docs/delivery/ff/<work-item-id>/<run-id>/run.json` and `summary.md` |
+| Durable evidence | Portable FF: `docs/delivery/ff/<work-item-id>/<run-id>/run.json` and `summary.md`; native: bound Actions receipts and the adopted protected evidence branch |
 | Human-only or protected gates | Product-scope and accepted-decision changes, owner-only judgements, required forge approvals, deployment, and repository red lines |
 
 `/ff` may prepare and update a PR, push its branch, and merge only when every configured gate passes and the forge permits it. The routine PR review can be performed by the configured independent reviewer; owner-only decisions and deployment still stop automation.
@@ -194,3 +194,4 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 | --- | --- | --- | --- |
 | 2026-10-19 | All | Initial adoption of the shared lifecycle | Align SoFa with the Agentic SDLC practices used across the other repositories |
 | 2026-10-28 | Issue labels, stages, gates and WIP | Use the installed Lighthouse SDLC contract as the workflow authority; remove the parallel `status:*` convention | Lighthouse 0.15.0 supplies request labels, gates, state evidence, reservations and PR projections |
+| 2026-11-06 | Fast Forward | Adopt disabled native FF, narrow scope, verification integrity and distinct reviewer profiles | Owner-authorized #88 adoption; first delivery and merge remain separately authorized |

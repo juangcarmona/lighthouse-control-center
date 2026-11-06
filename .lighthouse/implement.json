@@ -2,7 +2,54 @@
   "defaults": {
     "reviewRequired": true,
     "scope": "Implement only the issue and its acceptance criteria. Preserve SoFa product and architecture authority; owner review and the full host CI suite remain required before integration.",
-    "paths": ["*"],
-    "checks": [["npm", "ci", "--ignore-scripts"], ["env", "CI=true", "npm", "run", "verify:container"]]
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig"
+      ],
+      "corrections": {}
+    }
   }
 }

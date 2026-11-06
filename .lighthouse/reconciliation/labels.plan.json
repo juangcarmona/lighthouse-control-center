@@ -5,7 +5,7 @@
     "id": "labels",
     "provider": "github",
     "selection": "selected-by-default",
-    "version": "2"
+    "version": "4"
   },
   "catalogVersion": "0.5.0",
   "operationPolicy": {
@@ -30,7 +30,7 @@
       {
         "id": "labels",
         "provider": "github",
-        "version": "2",
+        "version": "4",
         "adapter": "github-labels",
         "catalogVersion": "0.5.0",
         "configuration": {
@@ -66,10 +66,22 @@
               "description": "Owner request for a separate proposal PR from current refinement evidence."
             },
             {
+              "name": "integrate",
+              "role": "command",
+              "color": "238636",
+              "description": "Assess the linked PR after current owner approval and passing checks; never authorizes merge."
+            },
+            {
               "name": "future",
               "role": "overlay",
               "color": "8B949E",
               "description": "Pause implementation; triage, refinement and proposal remain available."
+            },
+            {
+              "name": "execution-failed",
+              "role": "state",
+              "color": "CF222E",
+              "description": "A worker attempt failed; inspect its latest outcome and recovery action."
             },
             {
               "name": "waiting-review",
@@ -277,11 +289,11 @@
     "capability": {
       "id": "labels",
       "provider": "github",
-      "version": "2"
+      "version": "4"
     },
-    "desiredHash": "108629bb928a12c842d346f996661da24ce58cd4eec4a3402e0b300e46ab9bb4",
-    "observedHash": "80c8f253dd400aab5b3f2d944a9d63991c8e532f5559d5b613572c60547a7632",
-    "targetHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
+    "desiredHash": "cdf151b5d28fd123ac00d8dccdb632c1c8fdf648691196889c981564ed80b055",
+    "observedHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
+    "targetHash": "95cff28127f9ecadd11b1ceafba9b2cd95124a1710736a4e34d2f540889f50ba",
     "target": [
       {
         "name": "accessibility",
@@ -337,6 +349,11 @@
         "name": "enhancement",
         "color": "A2EEEF",
         "description": "New feature or request"
+      },
+      {
+        "name": "execution-failed",
+        "color": "CF222E",
+        "description": "A worker attempt failed; inspect its latest outcome and recovery action."
       },
       {
         "name": "future",
@@ -510,9 +527,9 @@
       }
     ],
     "drift": {
-      "status": "drift",
-      "expectedHash": "150fdb3f2e1aba4902e56e33a73f119188a2bc82dddd29aad64caa8f5bf1d136",
-      "observedHash": "80c8f253dd400aab5b3f2d944a9d63991c8e532f5559d5b613572c60547a7632"
+      "status": "none",
+      "expectedHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
+      "observedHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55"
     },
     "operationPolicy": {
       "allowed": [
@@ -527,6 +544,7 @@
       ]
     },
     "blockedOperations": [
+      "modify",
       "modify",
       "modify",
       "modify",
@@ -681,9 +699,26 @@
         }
       },
       {
-        "name": "future",
+        "name": "execution-failed",
         "status": "missing",
         "operation": "create",
+        "desired": {
+          "name": "execution-failed",
+          "color": "CF222E",
+          "description": "A worker attempt failed; inspect its latest outcome and recovery action.",
+          "role": "state"
+        }
+      },
+      {
+        "name": "future",
+        "status": "unchanged",
+        "operation": "preserve",
+        "blockedOperations": [],
+        "existing": {
+          "name": "future",
+          "color": "8B949E",
+          "description": "Pause implementation; triage, refinement and proposal remain available."
+        },
         "desired": {
           "name": "future",
           "color": "8B949E",
@@ -806,12 +841,21 @@
       },
       {
         "name": "integrate",
-        "status": "preserved",
+        "status": "customized",
         "operation": "preserve",
+        "blockedOperations": [
+          "modify"
+        ],
         "existing": {
           "name": "integrate",
           "color": "A371F7",
           "description": "Integration stage request; exact head and explicit merge authorization required."
+        },
+        "desired": {
+          "name": "integrate",
+          "color": "238636",
+          "description": "Assess the linked PR after current owner approval and passing checks; never authorizes merge.",
+          "role": "command"
         }
       },
       {
@@ -1248,9 +1292,9 @@
       {
         "type": "create-label",
         "kind": "create",
-        "name": "future",
-        "color": "8B949E",
-        "description": "Pause implementation; triage, refinement and proposal remain available."
+        "name": "execution-failed",
+        "color": "CF222E",
+        "description": "A worker attempt failed; inspect its latest outcome and recovery action."
       }
     ],
     "errors": [],
@@ -1259,21 +1303,22 @@
       "capability": {
         "id": "labels",
         "provider": "github",
-        "version": "2"
+        "version": "4"
       },
-      "desiredHash": "108629bb928a12c842d346f996661da24ce58cd4eec4a3402e0b300e46ab9bb4",
-      "observedHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
-      "targetHash": "6b99081ec7d72d9542f6c9b28452ff9941b5197f59f211b9280310a71b93ea55",
+      "desiredHash": "cdf151b5d28fd123ac00d8dccdb632c1c8fdf648691196889c981564ed80b055",
+      "observedHash": "95cff28127f9ecadd11b1ceafba9b2cd95124a1710736a4e34d2f540889f50ba",
+      "targetHash": "95cff28127f9ecadd11b1ceafba9b2cd95124a1710736a4e34d2f540889f50ba",
       "operations": [
         {
           "type": "create-label",
           "kind": "create",
-          "name": "future",
-          "color": "8B949E",
-          "description": "Pause implementation; triage, refinement and proposal remain available."
+          "name": "execution-failed",
+          "color": "CF222E",
+          "description": "A worker attempt failed; inspect its latest outcome and recovery action."
         }
       ],
       "blockedOperations": [
+        "modify",
         "modify",
         "modify",
         "modify",
@@ -1287,7 +1332,7 @@
   },
   "authorization": {
     "required": true,
-    "planHash": "fb1c054f2f63969e46a8cbea1241ddce5900252f56c5bce8c0107ff51f02f823"
+    "planHash": "105d2fec521d6d5e8aa5f01f2393ca51d1303f56a66c4ad984550abbf8e63af8"
   },
   "nextAction": "lighthouse capabilities apply --plan-file .lighthouse/reconciliation/labels.plan.json --authorize <plan-hash>"
 }

@@ -6,12 +6,12 @@
   "profiles": [],
   "integrations": {
     "productShape": "0.23.0",
-    "arcShape": "0.1.6"
+    "arcShape": "0.4.0"
   },
   "packages": {
     "sdlc": {
       "name": "@juangcarmona/lighthouse-sdlc",
-      "version": "0.16.0"
+      "version": "0.20.9"
     }
   },
   "managed": [
