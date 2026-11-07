@@ -22,6 +22,12 @@ Development Keycloak protocol, revocation and outage behavior have a host-only v
 
 Install browser prerequisites with `npx playwright install --with-deps chromium` before verification. CI retains safe post-callback screenshots and reports. Its identity-provider test requires `libnss3-tools` for an isolated browser trust database.
 
+## Find configured work
+
+Open `/workspace/factory` for ordinary issues, project metadata and equivalent list/board views. Title search and combined filters cover visibly collected pages; exact-number lookup can reach an issue outside those pages. Load more extends the bounded collection, while Refresh starts it again. Source times, denied/unavailable repositories, partial labels and unknown report/associated-run facts remain visible. The board groups GitHub open/closed state and never requests a transition.
+
+Optional `SoFa:RepositoryBranches` entries map an already configured repository to its expected default branch. The discovered branch is a separate source fact; conflict or missing metadata grants no permission. Use Read issue evidence for the existing source-associated #50 summaries and open the shared reader from every card. Health/version metrics remain separate #57 work. This is a read-only implementation; actual connected-user discovery acceptance is not established by its fixtures.
+
 ## Repository map
 
 - [`docs/product/`](docs/product/README.md): ProductShape model and Product Changes.

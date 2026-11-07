@@ -1,0 +1,36 @@
+{
+  "scope": "Implemented bounded factory/project discovery; actual connected-user acceptance remains open and no Done verdict is claimed.",
+  "planningReview": "planning-review.json accepted exact plan7b12d132d14d1d714387600d77f7acaa58020d20 before code.",
+  "sourceBehavior": [
+    "Configured repositories only, current issue authority and mandatory atomic source guard.",
+    "Explicit25-record pages1\u201310, PR exclusion with raw coverage, direct exact-number lookup.",
+    "Same connection scope across project pages; denied/replaced source clears prior rows, transient reads retain stale source times.",
+    "Optional configured default branches remain separate from observed metadata.",
+    "One shared list/board filter predicate, preserved URL selection and source issue destinations.",
+    "Historical source evidence reuses50; current lease/eligibility remains unknown.",
+    "Four-MiB retained collection bound; source payload/projection bounds and explicit incomplete coverage."
+  ],
+  "checks": {
+    "command": "npm run verify with inherited two-CPU affinity, matching hosted runner capacity",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 120,
+      "retainedRuntime": 38,
+      "browser": 29
+    },
+    "logSha256": "800636139b416f8c2f7fdd813ee422b3c687a21ecbf3b1041d7d0932bd0d9d25",
+    "sourceFocused": "FactoryDiscoveryTests4/4 passed on actual restored/built test assembly.",
+    "browserFocused": "Two-repository paging, exact lookup/mode switch, equivalent filtered list/board, denial/stale/replacement, keyboard/axe and390px fixtures passed."
+  },
+  "hostLimit": {
+    "unboundedRun": "The later presentation verification aborted at local CLR startup with0x80131506. Its failure was preserved, not called green. Full verification on two-CPU affinity passed without source/check suppression. Cause is not yet established; no production/runtime fix is claimed.",
+    "earlierNormalRun": "Before the presentation-only hierarchy update, ordinary full verification passed39/120/38/29. This is supporting prior-source evidence, not exact-current-layout evidence."
+  },
+  "runtime": "Desktop and390px synthetic screenshots were visually inspected; issues precede collapsed source details, advanced filters remain available. No real GitHub/phone proof is inferred.",
+  "remaining": [
+    "Current prerequisite50 source acceptance and active reservation limitation.",
+    "Independent implementation audit and exact-head hosted CI.",
+    "Actual connected-user discovery/source evidence."
+  ]
+}

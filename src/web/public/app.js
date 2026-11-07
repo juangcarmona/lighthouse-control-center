@@ -164,7 +164,8 @@ $('appearance').addEventListener('change', event => { document.documentElement.d
 if (location.pathname === '/workspace/operations') {
   const account = node('a', 'Account'); account.href = '/workspace';
   const issues = node('a', 'Issues'); issues.href = '/workspace/issues';
-  document.querySelector('.topbar').append(account, issues);
+  const factory = node('a', 'Factory'); factory.href = '/workspace/factory';
+  document.querySelector('.topbar').append(factory, account, issues);
 }
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);

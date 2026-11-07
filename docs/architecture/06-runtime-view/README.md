@@ -54,3 +54,7 @@ Ordinary comment and reply-and-continue are different user intents. The reposito
 ### Portfolio and signals
 
 Search, project boards and inbox resolve stable source identities and enter the same issue flow. A signal drill-down uses retained source observations and its calculation/version, not a fresh unrelated aggregate. An idea stays a draft until explicit create-or-link; uncertain issue creation uses the same receipt principles.
+
+## Implemented factory discovery
+
+The owner explicitly collects configured issue pages or looks up an exact issue number. Account status establishes the source connection scope; each data request independently checks repository issue permission and the atomic source guard. The browser reconciles ordinary issues by source ID, keeps raw page coverage separate from PR exclusion and labels title filtering as collected-scope search. Source-account changes remove prior rows; temporary failures retain same-scope stale times and denied access removes affected context. Explicit historical report reads never establish a live lease or command eligibility. [Source/browser regressions](../../../tests/SoFa.Web.Tests/FactoryDiscoveryTests.cs) cover this implemented boundary; they do not prove actual GitHub user acceptance.

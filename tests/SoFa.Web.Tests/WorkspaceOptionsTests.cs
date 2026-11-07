@@ -53,6 +53,21 @@ public sealed class WorkspaceOptionsTests
   }
 
   [Fact]
+  public void OptionalDefaultBranchesAreBoundedMetadataForConfiguredRepositoriesOnly()
+  {
+    var values = Values();
+    values["SoFa:RepositoryBranches:owner/repository"] = "main";
+    var configured = WorkspaceOptions.Load(Configuration(values));
+    Assert.Equal("main", configured.RepositoryBranches["owner/repository"]);
+    Assert.Null(configured.GitHubClientId);
+    values["SoFa:RepositoryBranches:private/other"] = "main";
+    Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+    values.Remove("SoFa:RepositoryBranches:private/other");
+    values["SoFa:RepositoryBranches:owner/repository"] = new string('x', 256);
+    Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+  }
+
+  [Fact]
   public void ConfigurationErrorsAndDefaultSerializationContainNoCredential()
   {
     var values = Values();

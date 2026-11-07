@@ -6,7 +6,7 @@ description: Known risks, technical debt, and their planned responses.
 
 # 11. Remaining limitations
 
-The current observer reads only the latest twenty runs and the first hundred open issue records per repository. It is not a complete audit and does not verify artifact contents. The authenticated development boundary and source-read adapters are implemented; full issue context and source command controls remain future work. The installed router admits the owner and supports Refine, Propose, Implement, Integrate and Review entry under stage-specific evidence and gate checks. Runner loss may leave a reservation requiring operator reconciliation. Legacy execution code remains opt-in for rollback and must not regain product authority.
+The current observer reads only the latest twenty runs and the first hundred open issue records per repository. It is not a complete audit and does not verify artifact contents. The authenticated development boundary and source-read adapters are implemented; the issue reader and factory discovery are implemented with bounded source reads, but actual connected-user issue/discovery acceptance and active reservation coverage remain open. Source command controls remain future work. The installed router admits the owner and supports Refine, Propose, Implement, Integrate and Review entry under stage-specific evidence and gate checks. Runner loss may leave a reservation requiring operator reconciliation. Legacy execution code remains opt-in for rollback and must not regain product authority.
 
 <!-- pdac:cite id="FR-DELIVERY-EVIDENCE" digest="sha256:5a56ea8e0030730dfdf0d8fd51027c45c2e6ddd65393b6d7726c85c27e543074" -->
 
@@ -16,7 +16,7 @@ See [ADR-0006](../09-architecture-decisions/0006-observe-repository-owned-workfl
 
 | Risk | Owning work |
 | --- | --- |
-| Real GitHub consent and physical-phone behavior are not established by fixtures | Complete the actual source/device matrix before claiming delivery acceptance |
+| The owner confirmed desktop GitHub connection/operations for49; issue/discovery acceptance remains open and phone rehearsal was owner-deferred | Record actual source proof per delivery; never infer device/command acceptance from fixtures |
 | Process-memory development state is lost on restart | Fresh identity login and source relinking; production persistence/custody remain release work |
 | Source dispatch receipt received versus response lost | Command journal plus Lighthouse correlation/deduplication contract; no time-based matching |
 | Ordinary comments may resume needs-info or invalidate task digest | Lighthouse explicit intent contract; UI pre-submit effect explanation |

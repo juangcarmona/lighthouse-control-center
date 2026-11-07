@@ -9,6 +9,7 @@ internal sealed class WorkspaceOptions
   public required string IdentityMode { get; init; }
   public required IdentityProfile Identity { get; init; }
   public required IReadOnlyList<string> Repositories { get; init; }
+  public IReadOnlyDictionary<string, string> RepositoryBranches { get; init; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
   public string? GitHubClientId { get; init; }
   [System.Text.Json.Serialization.JsonIgnore]
   public string? GitHubClientSecret { get; init; }
@@ -44,6 +45,11 @@ internal sealed class WorkspaceOptions
             TimeSpan.FromMilliseconds(100))))
       throw new InvalidOperationException("Configure one to ten distinct, valid repository names.");
 
+    var branches = section.GetSection("RepositoryBranches").GetChildren().ToDictionary(c => c.Key, c => c.Value ?? "", StringComparer.OrdinalIgnoreCase);
+    if (branches.Any(pair => !repositories.Contains(pair.Key, StringComparer.OrdinalIgnoreCase)
+        || pair.Value.Length is < 1 or > 255 || pair.Value.Any(char.IsControl)))
+      throw new InvalidOperationException("Default branches must name configured repositories with bounded nonempty values.");
+
     var githubClient = section["GitHub:ClientId"];
     var githubSecret = section["GitHub:ClientSecret"];
     if (string.IsNullOrWhiteSpace(githubClient) != string.IsNullOrWhiteSpace(githubSecret))
@@ -55,6 +61,7 @@ internal sealed class WorkspaceOptions
       IdentityMode = mode,
       Identity = new IdentityProfile { Issuer = issuer, ClientId = client, ClientSecret = secret, OwnerSubject = subject, RequiredAssurance = mode == "Development" ? "1" : "2" },
       Repositories = repositories,
+      RepositoryBranches = branches,
       GitHubClientId = githubClient,
       GitHubClientSecret = githubSecret,
     };

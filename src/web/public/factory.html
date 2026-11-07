@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" data-lh-theme="dark">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SoFa · Factory</title><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/factory.css"><script type="module" src="/factory.js"></script></head>
+<body>
+<a class="skip" href="#factory-main">Skip to factory work</a>
+<header class="topbar"><a class="brand" href="/workspace/factory">SoFa</a><nav aria-label="Workspace navigation"><a href="/workspace">Account</a><a href="/workspace/operations">Operations</a><a href="/workspace/issues">Open issue</a></nav></header>
+<main id="factory-main" tabindex="-1">
+<div class="intro"><div><p class="eyebrow">Factory work</p><h1>Find your work</h1><p>Configured projects, ordinary issues and their source evidence.</p></div><button id="factory-refresh" type="button">Refresh collection</button></div>
+<p id="factory-status" role="status" aria-live="polite">Checking the connected GitHub account…</p>
+<form id="factory-filters" aria-label="Find repository work">
+<label>Repository<select id="factory-repository"><option value="">All repositories</option></select></label>
+<label>Title or issue number<input id="factory-search" type="search" maxlength="200" placeholder="Search collected titles or #number"></label>
+<button type="submit">Apply search</button>
+<label>View<select id="factory-view"><option value="list">List</option><option value="board">Board by issue state</option></select></label>
+<details id="factory-more-filters"><summary>More filters</summary><div class="factory-filter-grid">
+<label>Issue state<select id="factory-state"><option value="">All states</option><option value="open">Open</option><option value="closed">Closed</option><option value="unknown">Unknown</option></select></label>
+<label>Reported stage<select id="factory-stage"><option value="">Any / unread</option><option value="unknown">Unknown / unread</option></select></label>
+<label>Linked run status<select id="factory-execution"><option value="">Any / unread</option><option value="unknown">Unknown / unread</option></select></label>
+<label>Waiting for<select id="factory-wait"><option value="">Any labels</option><option value="needs-info">Needs information</option><option value="waiting-review">Waiting for review</option><option value="both">Both waits</option><option value="none">No collected wait labels</option><option value="unknown">Incomplete labels</option></select></label>
+</div></details>
+</form>
+<p id="factory-scope" class="notice">Search and filters cover collected issues only. Use an exact number to look beyond collected pages.</p>
+<details class="factory-explanation"><summary>How to read this view</summary><p class="muted">Board columns show GitHub open/closed state. Reported stages and associated run statuses describe collected historical evidence; they do not establish a current lease or command eligibility. Source wait labels do not identify a pending question or approver.</p></details>
+
+<section aria-labelledby="work-heading"><h2 id="work-heading">Repository issues</h2><p id="factory-count"></p><div id="factory-results"></div></section>
+<details id="factory-project-details"><summary id="factory-project-summary">Projects and source coverage</summary><section aria-labelledby="projects-heading"><h2 id="projects-heading">Projects and source coverage</h2><div id="factory-projects" class="factory-projects"></div></section></details>
+</main></body></html>
