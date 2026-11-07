@@ -1,0 +1,37 @@
+{
+  "scope": "Atomic source-request admission shared by authorization, repository-authority pagination and observations.",
+  "behavior": [
+    "Every credential-bearing transport call requires a SourceRequestGuard.",
+    "The session/connection/generation check and HttpClient request initiation share the same lock used by disconnect/replacement.",
+    "Invalidation cancels the prior connection source I/O; an invalidated scope cannot initiate later requests."
+  ],
+  "counterfactual": {
+    "method": "A separate source copy removed only the BeginRequest guard lock. The same synchronization test and pinned public UI stylesheet were supplied to build the test assembly. This is a controlled transport test, not clean-consumer or real-GitHub qualification.",
+    "exitCode": 1,
+    "failedTests": 1,
+    "failure": "Invalidation cannot pass between the identity check and request initiation.",
+    "logSha256": "1127d8f67d94dc74eb8a25e03ff04d3d0f71a114a493bdf17d44908efc5e07ef"
+  },
+  "green": {
+    "command": "dotnet test tests/SoFa.Web.Tests/SoFa.Web.Tests.csproj -c Release --no-restore",
+    "exitCode": 0,
+    "webTests": 70,
+    "logSha256": "4794f09b4e13d255e8fd5f072d17d8eb963ae53d5da32133a518366e7252e409"
+  },
+  "fullVerification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 70,
+      "legacyDotnet": 38,
+      "browser": 16
+    },
+    "logSha256": "4569019636b0fcd57752444bc2cff1ae8ee3fecc6bd63f5cd5d54e20ff850371"
+  },
+  "foundation": "Official upgrade to CLI0.12.55/SDLC0.21.6 retained the dotnet-backend profile; Lighthouse verify and guard passed. Workflow source stays6890cfe41032a53240faa4932f4630e3c2464473.",
+  "limits": [
+    "Current actual-provider replay and independent review remain pending.",
+    "This transport qualification does not claim a physical-phone or live user grant-revocation test."
+  ]
+}

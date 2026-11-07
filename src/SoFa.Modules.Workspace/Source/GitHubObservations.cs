@@ -64,12 +64,13 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
   {
     using var budget = new CancellationTokenSource(TimeSpan.FromSeconds(20));
     var observedAt = clock.GetUtcNow();
+    var guard = new SourceRequestGuard(record.Sync, () => Live(record, connection, generation), connection.Stopped.Token);
     try
     {
       lock (record.Sync) if (!Live(record, connection, generation)) return Unavailable(repository);
-      using var runs = await transport.GetAsync("/repos/" + repository + "/actions/runs?per_page=20", connection.Tokens.Access, budget.Token).ConfigureAwait(false);
+      using var runs = await transport.GetAsync("/repos/" + repository + "/actions/runs?per_page=20", connection.Tokens.Access, guard, budget.Token).ConfigureAwait(false);
       lock (record.Sync) if (!Live(record, connection, generation)) return Unavailable(repository);
-      using var issues = await transport.GetAsync("/repos/" + repository + "/issues?state=open&per_page=100", connection.Tokens.Access, budget.Token).ConfigureAwait(false);
+      using var issues = await transport.GetAsync("/repos/" + repository + "/issues?state=open&per_page=100", connection.Tokens.Access, guard, budget.Token).ConfigureAwait(false);
       if (runs.Status == System.Net.HttpStatusCode.Unauthorized || issues.Status == System.Net.HttpStatusCode.Unauthorized)
         GitHubAuthorization.Invalidate(record, connection);
       if (!runs.Successful || !issues.Successful || runs.Value.ValueKind != JsonValueKind.Object

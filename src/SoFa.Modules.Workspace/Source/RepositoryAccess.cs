@@ -25,8 +25,9 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
     if (!Live()) return Unknown(SourceAvailability.Unavailable);
-    using var repo = await transport.GetAsync("/repos/" + repository, connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
+    using var repo = await transport.GetAsync("/repos/" + repository, connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
     if (!repo.Successful)
     {
       if (repo.Status == HttpStatusCode.Unauthorized) GitHubAuthorization.Invalidate(record, connection);
@@ -43,7 +44,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     {
       if (!Live()) return Unknown(SourceAvailability.Unavailable);
       using var installations = await transport.GetAsync("/user/installations?per_page=100&page="
-          + page.ToString(System.Globalization.CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
+          + page.ToString(System.Globalization.CultureInfo.InvariantCulture), connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
       if (!installations.Successful || !Array(installations.Value, "installations", out var rows))
       {
         if (installations.Status == HttpStatusCode.Unauthorized) GitHubAuthorization.Invalidate(record, connection);
@@ -62,7 +63,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
         {
           if (!Live()) return Unknown(SourceAvailability.Unavailable);
           using var accessible = await transport.GetAsync("/user/installations/" + id.ToString(System.Globalization.CultureInfo.InvariantCulture)
-              + "/repositories?per_page=100&page=" + repoPage.ToString(System.Globalization.CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
+              + "/repositories?per_page=100&page=" + repoPage.ToString(System.Globalization.CultureInfo.InvariantCulture), connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
           if (!accessible.Successful || !Array(accessible.Value, "repositories", out var repositories))
           {
             if (accessible.Status == HttpStatusCode.Unauthorized) GitHubAuthorization.Invalidate(record, connection);

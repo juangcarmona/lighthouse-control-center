@@ -16,6 +16,8 @@ internal sealed class GitHubSession
     Generation++;
     Attempt++;
     Authorization = null;
+    Current?.Stopped.Cancel();
+    Replacement?.Stopped.Cancel();
     Current = null;
     Replacement = null;
     Observations.Clear();
@@ -33,6 +35,7 @@ internal sealed class GitHubAuthorizationAttempt(string state, string verifier, 
 
 internal sealed class GitHubConnection(long userId, string login, GitHubTokens tokens, DateTimeOffset verifiedAt)
 {
+  internal CancellationTokenSource Stopped { get; } = new();
   internal long UserId { get; } = userId;
   internal string Login { get; set; } = login;
   internal GitHubTokens Tokens { get; set; } = tokens;
