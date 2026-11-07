@@ -88,9 +88,9 @@ public sealed class OwnerSessionsTests
         authenticationTime: clock.GetUtcNow().ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture)), "owner");
 }
 
-internal sealed class TestClock : TimeProvider
+internal sealed class TestClock(DateTimeOffset? start = null) : TimeProvider
 {
-    public DateTimeOffset Start { get; } = DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
+    public DateTimeOffset Start { get; } = start ?? DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
     private TimeSpan elapsed;
     public override DateTimeOffset GetUtcNow() => Start + elapsed;
     public void Advance(TimeSpan duration) => elapsed += duration;

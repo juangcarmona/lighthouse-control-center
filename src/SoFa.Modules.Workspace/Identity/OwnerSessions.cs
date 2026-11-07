@@ -1,9 +1,12 @@
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Http;
+using JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Identity;
 
@@ -12,9 +15,35 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     internal const string SessionClaim = "sofa:session";
     private readonly ConcurrentDictionary<string, OwnerSession> sessions = new(StringComparer.Ordinal);
     private readonly object admissionLock = new();
+    private readonly ConditionalWeakTable<ClaimsPrincipal, OwnerSession> rotations = new();
 
     public Task<string> StoreAsync(AuthenticationTicket ticket)
     {
+        if (rotations.TryGetValue(ticket.Principal, out var original))
+        {
+            lock (original.Sync)
+            {
+                rotations.Remove(ticket.Principal);
+                if (!ReferenceEquals(Get(original.Id), original)
+                    || OwnerAdmission.Validate(ticket.Principal, profile, clock.GetUtcNow(), false)?.AuthenticationTime != original.AuthenticationTime)
+                    throw new InvalidOperationException("The session can no longer change its reference.");
+                var previous = original.Id;
+                var replacement = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+                // A provider refresh can finish after preparation but before issuance.
+                // Transfer its latest tokens atomically, never the prepared snapshot's tokens.
+                ticket.Properties.StoreTokens(original.Ticket.Properties.GetTokens());
+                ticket.Properties.IssuedUtc = original.Ticket.Properties.IssuedUtc;
+                SetReference(ticket, replacement);
+                ticket.Properties.ExpiresUtc = original.AbsoluteDeadline;
+                ticket.Properties.AllowRefresh = false;
+                ticket.Properties.IsPersistent = false;
+                if (!sessions.TryRemove(previous, out _) || !sessions.TryAdd(replacement, original))
+                    throw new InvalidOperationException("Could not rotate the session reference.");
+                original.Id = replacement;
+                original.Ticket = ticket;
+                return Task.FromResult(replacement);
+            }
+        }
         var now = clock.GetUtcNow();
         var admission = OwnerAdmission.Validate(ticket.Principal, profile, now, freshCeremony: true)
             ?? throw new InvalidOperationException("The identity cannot establish an owner session.");
@@ -25,9 +54,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
                 throw new InvalidOperationException("The development session capacity is full. End an existing session or wait for expiry.");
 
             var id = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
-            foreach (var identity in ticket.Principal.Identities)
-                foreach (var claim in identity.FindAll(SessionClaim).ToArray()) identity.RemoveClaim(claim);
-            ((ClaimsIdentity)ticket.Principal.Identity!).AddClaim(new Claim(SessionClaim, id));
+            SetReference(ticket, id);
             ticket.Properties.IssuedUtc = now;
             ticket.Properties.ExpiresUtc = admission.AbsoluteDeadline;
             ticket.Properties.AllowRefresh = false;
@@ -38,6 +65,28 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
                 throw new InvalidOperationException("Could not establish a new session reference.");
             return Task.FromResult(id);
         }
+    }
+
+    internal async Task RotateCookieAsync(HttpContext context, OwnerSession record)
+    {
+        ClaimsPrincipal principal;
+        AuthenticationProperties properties;
+        lock (record.Sync)
+        {
+            if (!ReferenceEquals(Get(record.Id), record)) throw new InvalidOperationException("The session has ended.");
+            principal = record.Ticket.Principal.Clone();
+            properties = new AuthenticationProperties(new Dictionary<string, string?>(record.Ticket.Properties.Items));
+            rotations.Add(principal, record);
+        }
+        try { await context.SignInAsync(IdentitySchemes.Issuance, principal, properties).ConfigureAwait(false); }
+        finally { rotations.Remove(principal); }
+    }
+
+    private static void SetReference(AuthenticationTicket ticket, string reference)
+    {
+        foreach (var identity in ticket.Principal.Identities)
+            foreach (var claim in identity.FindAll(SessionClaim).ToArray()) identity.RemoveClaim(claim);
+        ((ClaimsIdentity)ticket.Principal.Identity!).AddClaim(new Claim(SessionClaim, reference));
     }
 
     public Task<AuthenticationTicket?> RetrieveAsync(string key) => Task.FromResult(Get(key)?.Ticket);
@@ -107,6 +156,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
         {
             record.Active = false;
             record.Ticket.Properties.StoreTokens([]);
+            record.GitHub.Clear();
         }
     }
 
@@ -117,11 +167,14 @@ internal sealed class OwnerSession(string id, AuthenticationTicket ticket, DateT
     DateTimeOffset absoluteDeadline, DateTimeOffset idleDeadline, DateTimeOffset providerValidatedAt)
 {
     internal object Sync { get; } = new();
-    internal string Id { get; } = id;
+    internal string Id { get; set; } = id;
     internal AuthenticationTicket Ticket { get; set; } = ticket;
     internal DateTimeOffset AuthenticationTime { get; } = authenticationTime;
     internal DateTimeOffset AbsoluteDeadline { get; } = absoluteDeadline;
     internal DateTimeOffset IdleDeadline { get; set; } = idleDeadline;
     internal DateTimeOffset ProviderValidatedAt { get; set; } = providerValidatedAt;
+    internal DateTimeOffset ProviderRetryAfter { get; set; }
+    internal Task<ProviderAuthority>? ProviderRefresh { get; set; }
     internal bool Active { get; set; } = true;
+    internal GitHubSession GitHub { get; } = new();
 }
