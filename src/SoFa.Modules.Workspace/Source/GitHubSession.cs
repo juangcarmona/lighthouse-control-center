@@ -36,7 +36,7 @@ internal sealed class GitHubAuthorizationAttempt(string state, string verifier, 
 internal sealed class GitHubConnection(long userId, string login, GitHubTokens tokens, DateTimeOffset verifiedAt)
 {
   internal string DataScope { get; } = Guid.NewGuid().ToString("N");
-  internal IssueContext? EvidencePage { get; set; }
+  internal (long Generation, IssueContext Page)? EvidencePage { get; set; }
   internal CancellationTokenSource Stopped { get; } = new();
   internal long UserId { get; } = userId;
   internal string Login { get; set; } = login;

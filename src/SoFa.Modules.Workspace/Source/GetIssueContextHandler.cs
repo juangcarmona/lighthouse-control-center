@@ -116,7 +116,7 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
     {
       if (!Live()) return Failure("disconnected", "The source identity or session changed.");
       // One bounded page per connection, consumed by the separate evidence read.
-      connection.EvidencePage = result;
+      connection.EvidencePage = (generation, result);
     }
     return result;
   }
@@ -127,8 +127,9 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
     lock (record.Sync)
     {
       if (!ReferenceEquals(sessions.Get(record.Id), record) || record.GitHub.Current is not { } connection
-          || connection.EvidencePage is not { } page || page.Snapshot != query.Snapshot
-          || !string.Equals(page.Repository, query.Repository, StringComparison.OrdinalIgnoreCase)
+          || connection.EvidencePage is not { } entry || entry.Generation != record.GitHub.Generation) return null;
+      var page = entry.Page;
+      if (page.Snapshot != query.Snapshot || !string.Equals(page.Repository, query.Repository, StringComparison.OrdinalIgnoreCase)
           || page.Number != query.Number || page.Conversation?.Page != query.Page) return null;
       connection.EvidencePage = null;
       return clock.GetUtcNow() < page.ObservedAt.AddSeconds(30) ? page : null;

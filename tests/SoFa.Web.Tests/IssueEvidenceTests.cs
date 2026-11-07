@@ -62,6 +62,7 @@ public sealed class IssueEvidenceTests
   [InlineData("snapshot")]
   [InlineData("number")]
   [InlineData("account")]
+  [InlineData("generation")]
   public async Task DisplayedPageCannotBeUsedForAnotherSourceIdentity(string changed)
   {
     using var fixture = Ready();
@@ -72,6 +73,7 @@ public sealed class IssueEvidenceTests
       session.GitHub.Current = new(72, "replacement", session.GitHub.Current!.Tokens, fixture.Clock.GetUtcNow());
       session.GitHub.Generation++;
     }
+    if (changed == "generation") session.GitHub.Generation++;
     var calls = fixture.Handler.Paths.Count;
     var result = await fixture.Evidence.Handle(new(new(session, "example/repository", changed == "number" ? 8 : 7,
         Snapshot: changed == "snapshot" ? "another-snapshot" : page.Snapshot)), CancellationToken.None);
