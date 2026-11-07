@@ -18,5 +18,7 @@
   "adoptionGuard": "Existing exact expected CI-preflight source pin updated to the new reviewed immutable revision; all other assertions preserved. The first run rejected the former pin expectation; the full suite passed after updating that literal.",
   "hostedCI": "pending",
   "independentAdoptionReview": "pending",
-  "nativeQualification": "pending; prior diagnostics do not qualify native delivery"
+  "nativeQualification": "pending; prior diagnostics do not qualify native delivery",
+  "externalGateFieldsRecordedBeforePush": true,
+  "currentHostedResults": "Read the PR checks for the exact head; pre-push pending fields are historical, not a live status cache."
 }

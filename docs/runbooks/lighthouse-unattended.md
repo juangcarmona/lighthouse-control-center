@@ -80,7 +80,7 @@ Delegated merge requires a later, separate owner grant for another bounded issue
 
 Set `merge: false`; restore `enabled: false` and remove only the qualification issue's override. Supervised defaults and workers remain installed. For an urgent stop of all new work, the owner can set `LIGHTHOUSE_AUTOMATION_ENABLED=false`; inspect active runs before cancellation or reservation cleanup. Do not unset the existing App credentials or alter repository protections. Do not enable `LIGHTHOUSE_MAINTENANCE_ENABLED`, `LIGHTHOUSE_RECOVERY_ENABLED`, a report index or CI repair as part of this adoption. Installing their workflows does not grant their execution.
 
-After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The workflow source pin7815b7c supplies host-prepared OpenSpec discovery to read-only planning; package versions and the single correction budget are unchanged.
+After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The current workflow source `860624fcca7eeb676a8d1945088452a6d321061d` retains host-prepared OpenSpec discovery and adds the verification/admission correction below; installed package versions and the single correction budget are unchanged.
 
 ## Verification and admission correction
 
