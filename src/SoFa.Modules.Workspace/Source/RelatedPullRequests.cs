@@ -16,7 +16,7 @@ internal sealed partial class GetIssueEvidenceHandler
       && url.AbsolutePath.StartsWith("/" + repository + "/", StringComparison.OrdinalIgnoreCase) ? url.AbsoluteUri : null;
 
   private async Task<IReadOnlyList<RelatedPullRequest>> ReadRelatedPullRequests(string repository, IssueContext page,
-      GitHubConnection connection, CancellationToken cancellationToken)
+      GitHubConnection connection, Func<bool> live, CancellationToken cancellationToken)
   {
     var references = new Dictionary<int, List<string>>();
     var rows = new[] { (Body: page.Issue!.Body, Url: page.Issue.SourceUrl) }
@@ -41,6 +41,7 @@ internal sealed partial class GetIssueEvidenceHandler
       { related.Add(new(number, "unavailable", source, sources, Reason: "The evidence read budget was reached.")); continue; }
       try
       {
+        if (!live()) { related.Add(new(number, "disconnected", source, sources)); break; }
         using var pull = await transport.GetAsync("/repos/" + repository + "/pulls/" + number.ToString(CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
         if (pull.Status == System.Net.HttpStatusCode.Unauthorized)
         { related.Add(new(number, "disconnected", source, sources)); break; }
@@ -52,6 +53,7 @@ internal sealed partial class GetIssueEvidenceHandler
         { related.Add(new(number, "unavailable", source, sources, Reason: "The source-referenced PR identity or revision could not be verified.")); continue; }
         var title = SourceJson.Text(pull.Value, "title"); var state = SourceJson.Text(pull.Value, "state");
         bool? draft = pull.Value.TryGetProperty("draft", out var flag) && flag.ValueKind is JsonValueKind.True or JsonValueKind.False ? flag.GetBoolean() : null;
+        if (!live()) { related.Add(new(number, "disconnected", source, sources)); break; }
         using var checks = await transport.GetAsync("/repos/" + repository + "/commits/" + revision + "/check-runs?per_page=100", connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
         if (checks.Status == System.Net.HttpStatusCode.Unauthorized)
         { related.Add(new(number, "disconnected", source, sources)); break; }

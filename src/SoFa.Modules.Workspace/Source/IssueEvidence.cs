@@ -46,6 +46,11 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
     lock (record.Sync) generation = record.GitHub.Generation;
     if (page.DataScope != connection.DataScope)
       return new("disconnected", clock.GetUtcNow(), [], Scope, "The acting account changed during the evidence read.");
+    bool Live()
+    {
+      lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
+          && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
+    }
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     budget.CancelAfter(TimeSpan.FromSeconds(20));
     var reports = new List<StageEvidence>();
@@ -55,7 +60,7 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
       if (budget.IsCancellationRequested) { reports.Add(new(comment.Id, comment.SourceUrl, "unavailable", Reason: "The 20-second evidence read budget was reached.")); break; }
       try
       {
-        var report = await ReadReport(query.Context.Repository, query.Context.Number, comment, connection, budget.Token).ConfigureAwait(false);
+        var report = await ReadReport(query.Context.Repository, query.Context.Number, comment, connection, Live, budget.Token).ConfigureAwait(false);
         if (report.Availability == "disconnected")
         {
           GitHubAuthorization.Invalidate(record, connection);
@@ -65,7 +70,7 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
       }
       catch (OperationCanceledException) { reports.Add(new(comment.Id, comment.SourceUrl, "unavailable", Reason: "Evidence read timed out or was cancelled.")); break; }
     }
-    var related = await ReadRelatedPullRequests(query.Context.Repository, page, connection, budget.Token).ConfigureAwait(false);
+    var related = await ReadRelatedPullRequests(query.Context.Repository, page, connection, Live, budget.Token).ConfigureAwait(false);
     if (related.Any(pull => pull.Availability == "disconnected"))
     {
       GitHubAuthorization.Invalidate(record, connection);
@@ -79,7 +84,7 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
   }
 
   private async Task<StageEvidence> ReadReport(string repository, int number, IssueComment comment,
-      GitHubConnection connection, CancellationToken cancellationToken)
+      GitHubConnection connection, Func<bool> live, CancellationToken cancellationToken)
   {
     IReadOnlyList<SourceArtifact>? references = null;
     StageEvidence Unknown(string reason, long? run = null, int? attempt = null, string? execution = null, string? conclusion = null) =>
@@ -90,12 +95,14 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
     if (marker.Count != 1 || stages.Count != 1 || links.Count != 1
         || !long.TryParse(links[0].Groups[1].Value, out var id) || id > 9_007_199_254_740_991)
       return Unknown("Source report markers or repository-local run association are missing or ambiguous.");
+    if (!live()) return new(comment.Id, comment.SourceUrl, "disconnected");
     using var run = await transport.GetAsync("/repos/" + repository + "/actions/runs/" + id.ToString(CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
     if (run.Status == HttpStatusCode.Unauthorized) return new(comment.Id, comment.SourceUrl, "disconnected");
     if (!run.Successful || SourceJson.Number(run.Value, "id") != id) return Unknown("Exactly referenced workflow execution is unavailable.", id);
     var attempt = SourceJson.Number(run.Value, "run_attempt");
     var status = SourceJson.Text(run.Value, "status"); var conclusion = SourceJson.Text(run.Value, "conclusion");
     if (attempt is not > 0 or > int.MaxValue) return Unknown("Source run attempt is unavailable.", id, execution: status, conclusion: conclusion);
+    if (!live()) return new(comment.Id, comment.SourceUrl, "disconnected");
     using var inventory = await transport.GetAsync("/repos/" + repository + "/actions/runs/" + id.ToString(CultureInfo.InvariantCulture) + "/artifacts?per_page=100", connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
     if (inventory.Status == HttpStatusCode.Unauthorized) return new(comment.Id, comment.SourceUrl, "disconnected");
     if (!inventory.Successful || inventory.Value.ValueKind != JsonValueKind.Object
@@ -115,13 +122,14 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
     }).ToArray();
     async Task<ArtifactJson> Read(string kind, string member)
     {
+      if (!live()) return new("disconnected", "The acting account changed.");
       var name = "lighthouse-" + prefix + kind + "-" + number.ToString(CultureInfo.InvariantCulture) + "-" + attempt.Value.ToString(CultureInfo.InvariantCulture);
       var matches = artifacts.EnumerateArray().Where(row => SourceJson.Text(row, "name") == name).ToArray();
       if (matches.Length != 1 || !matches[0].TryGetProperty("expired", out var expired) || expired.ValueKind != JsonValueKind.False
           || SourceJson.Number(matches[0], "size_in_bytes") is not >= 0 or > 2 * 1024 * 1024
           || SourceJson.Number(matches[0], "id") is not > 0)
         return new("unavailable", "Required artifact is missing, expired, ambiguous or beyond 2 MiB compressed.");
-      return await transport.ReadArtifactAsync(repository, SourceJson.Number(matches[0], "id")!.Value, connection.Tokens.Access, member, cancellationToken).ConfigureAwait(false);
+      return await transport.ReadArtifactAsync(repository, SourceJson.Number(matches[0], "id")!.Value, connection.Tokens.Access, member, cancellationToken, live).ConfigureAwait(false);
     }
     var input = await Read("input", "request.json").ConfigureAwait(false);
     var output = await Read("result", "envelope.json").ConfigureAwait(false);

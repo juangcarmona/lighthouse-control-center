@@ -54,6 +54,7 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
     var path = "/repos/" + query.Repository + "/issues/" + query.Number.ToString(CultureInfo.InvariantCulture);
+    if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     using var issue = await transport.GetAsync(path, connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     if (issue.Status == HttpStatusCode.Unauthorized)
@@ -78,6 +79,7 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
     var content = new IssueContent(id, query.Number, SourceJson.Text(value, "title") ?? "Untitled source issue",
         SourceJson.Text(value, "body") ?? "", SourceJson.Text(value, "state") ?? "unknown", Actor(value),
         Time(value, "created_at"), updated, Labels(value), source, SourceLabelCatalog.Describe(Labels(value)));
+    if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     using var response = await transport.GetAsync(path + "/comments?per_page=100&page="
         + query.Page.ToString(CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");

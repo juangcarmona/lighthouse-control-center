@@ -145,6 +145,43 @@ public sealed class IssueEvidenceTests
     Assert.DoesNotContain(fixture.Handler.Paths, path => path.EndsWith("/pulls/12", StringComparison.Ordinal));
   }
 
+  [Theory]
+  [InlineData("/repos/example/repository/actions/runs/500")]
+  [InlineData("/repos/example/repository/actions/runs/500/artifacts")]
+  [InlineData("/repos/example/repository/actions/artifacts/11/zip")]
+  public async Task DisconnectDuringEvidenceStopsEverySubsequentSourceRequest(string interruptedPath)
+  {
+    using var fixture = Ready();
+    var session = await fixture.Session();
+    var original = fixture.Handler.Responses[interruptedPath];
+    fixture.Handler.Responses[interruptedPath] = request =>
+    {
+      var response = original(request);
+      GitHubAuthorization.Disconnect(session);
+      return response;
+    };
+    var result = await fixture.Evidence.Handle(new(new(session, "example/repository", 7)), CancellationToken.None);
+    Assert.Equal("disconnected", result.Availability);
+    Assert.Equal(interruptedPath, fixture.Handler.Paths[^1]);
+    Assert.Empty(fixture.Handler.AssetReads);
+  }
+
+  [Fact]
+  public async Task DisconnectDuringRelatedPullRequestReadStopsItsHeadCheckRequest()
+  {
+    using var fixture = Ready();
+    fixture.Handler.ReportBody += "\nhttps://github.com/example/repository/pull/13";
+    var session = await fixture.Session();
+    fixture.Handler.Responses["/repos/example/repository/pulls/13"] = _ =>
+    {
+      GitHubAuthorization.Disconnect(session);
+      return Json(new { number = 13, @base = new { repo = new { full_name = "example/repository" } }, head = new { sha = Revision } });
+    };
+    var result = await fixture.Evidence.Handle(new(new(session, "example/repository", 7)), CancellationToken.None);
+    Assert.Equal("disconnected", result.Availability);
+    Assert.Equal("/repos/example/repository/pulls/13", fixture.Handler.Paths[^1]);
+  }
+
   private static IssueContextTests.Fixture Ready(string? changed = null)
   {
     var fixture = new IssueContextTests.Fixture();

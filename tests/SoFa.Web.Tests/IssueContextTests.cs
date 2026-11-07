@@ -201,6 +201,7 @@ public sealed class IssueContextTests
   internal sealed class Handler : HttpMessageHandler
   {
     internal List<string> Paths { get; } = [];
+    internal List<string> AssetReads { get; } = [];
     internal bool CanRead { get; set; } = true;
     internal bool Revoked { get; set; }
     internal bool UserUnavailable { get; set; }
@@ -217,6 +218,7 @@ public sealed class IssueContextTests
       Assert.Equal(HttpMethod.Get, request.Method);
       if (request.RequestUri!.Host == "fixture.blob.core.windows.net")
       {
+        AssetReads.Add(request.RequestUri.AbsolutePath);
         Assert.Null(request.Headers.Authorization);
         return new(HttpStatusCode.OK) { Content = new ByteArrayContent(Assets[request.RequestUri.AbsolutePath]) };
       }

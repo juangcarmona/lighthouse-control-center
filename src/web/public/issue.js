@@ -135,6 +135,7 @@ async function readEvidence(target, page, snapshot, operation) {
       if (byId('related-pr-' + pull.number)) continue;
       const item = document.createElement('article'); item.id = 'related-pr-' + pull.number;
       const heading = document.createElement('h3'); heading.append(sourceLink('PR #' + pull.number + (pull.title ? ' · ' + pull.title : ''), pull.sourceUrl));
+      item.append(paragraph('Evidence observed: ' + (data.observedAt ?? 'unknown')));
       item.append(heading, paragraph(`Source: ${pull.availability} · State ${pull.state ?? 'unknown'} · Draft ${pull.draft ?? 'unknown'}`));
       if (pull.headRevision) item.append(paragraph('Head revision: ' + pull.headRevision));
       item.append(paragraph('Checks: ' + (pull.checksAvailability ?? 'unavailable')));
@@ -150,7 +151,7 @@ async function readEvidence(target, page, snapshot, operation) {
       const item = document.createElement('article'); item.id = 'evidence-' + report.commentId;
       const heading = document.createElement('h3'); heading.textContent = report.availability === 'available'
         ? (report.stage ?? 'Unknown stage') + ' · ' + (report.result ?? 'unknown result') : 'Unverified source report';
-      item.append(heading, sourceLink('Inspect source report', report.sourceUrl));
+      item.append(heading, sourceLink('Inspect source report', report.sourceUrl), paragraph('Evidence observed: ' + (data.observedAt ?? 'unknown')));
       if (report.runId) item.append(paragraph(`Workflow ${report.runId} · Attempt ${report.attempt ?? 'unknown'} · Execution ${report.executionStatus ?? 'unknown'} / ${report.executionConclusion ?? 'unknown'}`),
         sourceLink('Inspect workflow execution', `https://github.com/${target.repository}/actions/runs/${report.runId}`));
       if (report.executionRequestId) item.append(paragraph('Source execution request: ' + report.executionRequestId));

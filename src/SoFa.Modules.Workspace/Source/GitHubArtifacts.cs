@@ -10,7 +10,7 @@ internal sealed record ArtifactJson(string Availability, string? Reason = null, 
 internal sealed partial class GitHubTransport
 {
   internal async Task<ArtifactJson> ReadArtifactAsync(string repository, long artifactId, string token, string member,
-      CancellationToken cancellationToken)
+      CancellationToken cancellationToken, Func<bool>? live = null)
   {
     if (artifactId <= 0 || member is not ("request.json" or "envelope.json"))
       return new("unavailable", "Unsupported artifact identity or member.");
@@ -21,6 +21,7 @@ internal sealed partial class GitHubTransport
     request.Headers.Add("X-GitHub-Api-Version", "2026-03-10");
     try
     {
+      if (live?.Invoke() == false) return new("disconnected", "The acting account changed.");
       using var source = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
       if (source.StatusCode == HttpStatusCode.Unauthorized) return new("disconnected", "GitHub rejected the connected-user credential.");
       if (source.StatusCode != HttpStatusCode.Found || source.Headers.Location is not { IsAbsoluteUri: true } location
@@ -30,6 +31,7 @@ internal sealed partial class GitHubTransport
         return new("unavailable", "The source artifact is inaccessible or its download destination is unsupported.");
       // A signed asset URL is never returned or logged, and receives no user credential.
       using var download = new HttpRequestMessage(HttpMethod.Get, location);
+      if (live?.Invoke() == false) return new("disconnected", "The acting account changed.");
       using var response = await client.SendAsync(download, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
       if (response.StatusCode != HttpStatusCode.OK) return new("unavailable", "Artifact download failed or redirected again.");
       if (response.Content.Headers.ContentLength > 2 * 1024 * 1024) return new("unavailable", "Artifact exceeds 2 MiB compressed.");
@@ -43,7 +45,7 @@ internal sealed partial class GitHubTransport
         compressed.Write(buffer, 0, read);
       }
       compressed.Position = 0;
-      return ParseArtifact(compressed, member);
+      return live?.Invoke() == false ? new("disconnected", "The acting account changed.") : ParseArtifact(compressed, member);
     }
     catch (Exception error) when (error is HttpRequestException or InvalidDataException or JsonException or IOException)
     { return new("unavailable", "Artifact is malformed, inaccessible or outside the supported JSON/ZIP bounds."); }
