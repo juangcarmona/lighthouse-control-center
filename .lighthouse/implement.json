@@ -47,7 +47,9 @@
         "commitlint.config.mjs",
         "lighthouse.json",
         "skills-lock.json",
-        ".editorconfig"
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/"
       ],
       "corrections": {}
     }
@@ -105,6 +107,8 @@
         "lighthouse.json",
         "skills-lock.json",
         ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
         "tests/observation.test.mjs",
         "tests/browser/observation.spec.mjs"
       ],

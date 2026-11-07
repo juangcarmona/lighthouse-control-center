@@ -1,0 +1,14 @@
+{
+  "observedAt": "2026-11-07T07:21:56.922071+00:00",
+  "baseRevision": "764111ebf38fbd413fa7b5099bb89f045f9d4ef8",
+  "provider": "@fission-ai/openspec@1.15.0",
+  "command": [
+    "openspec",
+    "list",
+    "--specs",
+    "--json"
+  ],
+  "exitCode": 0,
+  "specs": [],
+  "scope": "Initial OpenSpec adoption inventory before native issue #90 planning. No baseline specifications were recovered or invented."
+}
