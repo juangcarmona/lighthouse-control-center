@@ -138,6 +138,8 @@ async function refresh() {
     if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.'); return; }
     const account = await response.json();
     if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading factory work.'); return; }
+    const configured = new Set(account.repositories.map(row => row.repository));
+    for (const repository of repositories.keys()) if (!configured.has(repository)) repositories.delete(repository);
     if (dataScope !== account.dataScope) { repositories.clear(); evidence.clear(); }
     dataScope = account.dataScope; evidence.clear(); lookupNumber = exactNumber(byId('factory-search').value);
     const picker = byId('factory-repository'), selected = picker.value || new URL(location.href).searchParams.get('repository') || '';
@@ -146,6 +148,8 @@ async function refresh() {
     picker.value = account.repositories.some(row => row.repository === selected) ? selected : '';
     const selectedRepositories = account.repositories.filter(row => !picker.value || row.repository === picker.value);
     for (const row of account.repositories) if (row.availability === 'denied' || row.availability === 'available' && !row.issuesRead) repositories.set(row.repository, { availability: 'denied', issues: [], reason: 'Current issue-read authority is denied.' });
+    for (const row of account.repositories) if (!repositories.has(row.repository)) repositories.set(row.repository, { availability: 'unread', issues: [], complete: false, reason: 'Source collection has not completed.' });
+    render();
     await Promise.all(selectedRepositories.map(async row => {
       if (repositories.get(row.repository)?.availability === 'denied' && (row.availability !== 'available' || !row.issuesRead)) return;
       try { await getPage(row.repository, 1, requestEpoch, exactNumber(byId('factory-search').value)); }
