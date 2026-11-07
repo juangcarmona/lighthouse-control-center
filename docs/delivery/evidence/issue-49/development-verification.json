@@ -1,13 +1,13 @@
 {
   "scope": "Implemented development workspace checkpoint; issue49 is not Done and remains a draft.",
-  "verifiedAt": "2026-11-07T14:49:56.369531+00:00",
+  "verifiedAt": "2026-11-07T15:04:10.787478+00:00",
   "checks": [
     {
       "command": "DOTNET_PROCESSOR_COUNT=2 MSBUILDDISABLENODEREUSE=1 CI=true npm run verify",
       "exitCode": 0,
       "nodeTests": 38,
-      "dotnetTests": 89,
-      "ownerSourceAndCompositionTests": 51,
+      "dotnetTests": 90,
+      "ownerSourceAndCompositionTests": 52,
       "legacyBrowserTests": 15,
       "warningsAsErrors": true,
       "realCompilerRejection": [
@@ -50,7 +50,8 @@
     "Real Chromium form redirects require exact trusted authentication origins in CSP.",
     "Keycloak basic scope supplies the required sub/auth_time claims; application validation remains strict.",
     "Static assets assert real bodies and MIME types, preventing the discarded Task<IResult> route overload.",
-    "An expired framework nonce is denied with a valid synthetic code/signature; navigation failures expose only data-free recovery links."
+    "An expired framework nonce is denied with a valid synthetic code/signature; navigation failures expose only data-free recovery links.",
+    "Logout destroys the authenticated server record even when its cookie reference rotates between authentication and the route; independently copied ClaimsIdentity instances preserve the old reference. The focused regression failed with 401 before the guard fix and passes with 302 and server authority revoked."
   ],
   "openAcceptance": [
     "Actual development GitHub App user consent, designated-repository permission/revocation evidence.",

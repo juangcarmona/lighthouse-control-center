@@ -132,7 +132,7 @@ internal sealed class ProviderSessions(OwnerSessions sessions, IdentityProfile p
 
   private ProviderAuthority Revoke(OwnerSession record)
   {
-    sessions.Remove(record.Id);
+    sessions.Remove(record);
     return ProviderAuthority.Revoked;
   }
 

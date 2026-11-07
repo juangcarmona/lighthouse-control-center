@@ -42,8 +42,9 @@ internal static class OwnerIdentity
         OnRedirectToAccessDenied = context => AccessFailure(context.HttpContext, 403),
         OnValidatePrincipal = context =>
             {
-              if (context.HttpContext.RequestServices.GetRequiredService<OwnerSessions>().Get(context.Principal!) is null)
-                context.RejectPrincipal();
+              var record = context.HttpContext.RequestServices.GetRequiredService<OwnerSessions>().Get(context.Principal!);
+              if (record is null) context.RejectPrincipal();
+              else context.HttpContext.Items[typeof(OwnerSession)] = record;
               return Task.CompletedTask;
             },
       };
@@ -124,7 +125,7 @@ internal static class OwnerIdentity
                   var previous = await context.HttpContext.AuthenticateAsync(IdentitySchemes.Cookie).ConfigureAwait(false);
                   var sessions = context.HttpContext.RequestServices.GetRequiredService<OwnerSessions>();
                   if (previous.Principal is not null && sessions.Get(previous.Principal) is { } record)
-                    sessions.Remove(record.Id);
+                    sessions.Remove(record);
                 },
           };
         });
@@ -144,10 +145,11 @@ internal static class OwnerIdentity
     if (context.GetEndpoint()?.Metadata.GetMetadata<IAllowAnonymous>() is null && context.User.Identity?.IsAuthenticated == true)
     {
       var sessions = context.RequestServices.GetRequiredService<OwnerSessions>();
-      var record = sessions.Get(context.User);
+      var localRemoval = context.GetEndpoint()?.Metadata.GetMetadata<LocalSignOut>() is not null;
+      var record = localRemoval ? sessions.GetAuthenticatedRequest(context) : sessions.Get(context.User);
       if (record is null) { await AccessFailure(context, 401).ConfigureAwait(false); return; }
       // Removing local authority must remain possible during an identity-provider outage.
-      if (context.GetEndpoint()?.Metadata.GetMetadata<LocalSignOut>() is not null)
+      if (localRemoval)
       { await next(context).ConfigureAwait(false); return; }
       var authority = await context.RequestServices.GetRequiredService<ProviderSessions>()
           .EnsureCurrentAsync(record, context.RequestAborted).ConfigureAwait(false);

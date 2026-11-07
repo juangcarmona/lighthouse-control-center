@@ -74,7 +74,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     lock (record.Sync)
     {
       if (!ReferenceEquals(Get(record.Id), record)) throw new InvalidOperationException("The session has ended.");
-      principal = record.Ticket.Principal.Clone();
+      principal = new ClaimsPrincipal(record.Ticket.Principal.Identities.Select(identity => new ClaimsIdentity(identity)));
       properties = new AuthenticationProperties(new Dictionary<string, string?>(record.Ticket.Properties.Items));
       rotations.Add(principal, record);
     }
@@ -97,12 +97,13 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     if (record is null) return Task.CompletedTask;
     lock (record.Sync)
     {
+      if (record.Id != key || !ReferenceEquals(Get(key), record)) return Task.CompletedTask;
       var admission = OwnerAdmission.Validate(ticket.Principal, profile, clock.GetUtcNow(), freshCeremony: false);
       var identity = ticket.Principal.FindAll(SessionClaim).ToArray();
       if (!record.Active || admission?.AuthenticationTime != record.AuthenticationTime
           || identity.Length != 1 || identity[0].Value != key)
       {
-        Remove(key);
+        Remove(record);
         return Task.CompletedTask;
       }
       ticket.Properties.ExpiresUtc = record.AbsoluteDeadline;
@@ -129,9 +130,10 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     if (!sessions.TryGetValue(key, out var record)) return null;
     lock (record.Sync)
     {
+      if (record.Id != key || !sessions.TryGetValue(key, out var current) || !ReferenceEquals(record, current)) return null;
       var now = clock.GetUtcNow();
       if (record.Active && now < record.IdleDeadline && now < record.AbsoluteDeadline) return record;
-      Remove(key);
+      Remove(record);
       return null;
     }
   }
@@ -143,7 +145,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     lock (record.Sync)
     {
       var now = clock.GetUtcNow();
-      if (!record.Active || now >= record.IdleDeadline || now >= record.AbsoluteDeadline) return false;
+      if (record.Id != key || !record.Active || now >= record.IdleDeadline || now >= record.AbsoluteDeadline) return false;
       record.IdleDeadline = Earlier(now.AddMinutes(15), record.AbsoluteDeadline);
       return true;
     }
@@ -151,10 +153,25 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
 
   internal void Remove(string key)
   {
-    if (!sessions.TryRemove(key, out var record)) return;
+    if (!sessions.TryGetValue(key, out var record)) return;
+    lock (record.Sync)
+      if (record.Id == key) Remove(record);
+  }
+
+  internal OwnerSession? GetAuthenticatedRequest(HttpContext context)
+  {
+    if (!context.Items.TryGetValue(typeof(OwnerSession), out var value) || value is not OwnerSession record) return null;
+    lock (record.Sync) return ReferenceEquals(Get(record.Id), record) ? record : null;
+  }
+
+  internal void Remove(OwnerSession record)
+  {
     lock (record.Sync)
     {
+      if (!record.Active) return;
       record.Active = false;
+      if (sessions.TryGetValue(record.Id, out var current) && ReferenceEquals(record, current))
+        sessions.TryRemove(record.Id, out _);
       record.Ticket.Properties.StoreTokens([]);
       record.GitHub.Clear();
     }

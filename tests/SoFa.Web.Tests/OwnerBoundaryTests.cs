@@ -156,6 +156,7 @@ public sealed class OwnerBoundaryTests
     Assert.Equal("provider-rotated-before-reference-change", record.Ticket.Properties.GetTokenValue("refresh_token"));
     var nextCookie = Assert.Single(context.Response.Headers.SetCookie.ToArray(), c => c!.StartsWith("__Host-SoFa.Owner=", StringComparison.Ordinal))!.Split(';')[0];
     Assert.NotEqual(previousId, record.Id);
+    Assert.Equal(previousId, authenticated.Principal!.FindFirst(OwnerSessions.SessionClaim)!.Value);
     Assert.Null(sessions.Get(previousId));
     Assert.Same(record, sessions.Get(record.Id));
     Assert.Equal(absolute, record.AbsoluteDeadline);
@@ -222,6 +223,29 @@ public sealed class OwnerBoundaryTests
   private static FormUrlEncodedContent Form(string token) => new(new Dictionary<string, string> { ["__RequestVerificationToken"] = token });
 
   [Fact]
+  public async Task LogoutStillDestroysAuthorityIfItsAuthenticatedReferenceRotatesBeforeTheRouteRuns()
+  {
+    await using var app = new OwnerApplication();
+    using var client = app.Client();
+    await client.GetAsync(await app.Begin(client));
+    var token = Token(await client.GetStringAsync("/workspace"));
+    OwnerSession? rotated = null;
+    app.OnValidated = async context =>
+    {
+      if (context.Request.Path != "/auth/logout") return;
+      var sessions = context.HttpContext.RequestServices.GetRequiredService<OwnerSessions>();
+      rotated = sessions.Get(context.Principal!)!;
+      await sessions.RotateCookieAsync(context.HttpContext, rotated);
+    };
+    var response = await client.PostAsync("/auth/logout", Form(token));
+    Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+    Assert.NotNull(rotated);
+    Assert.False(rotated.Active);
+    Assert.Null(rotated.Ticket.Properties.GetTokenValue("refresh_token"));
+    Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/session")).StatusCode);
+  }
+
+  [Fact]
   public async Task AuthenticatedObserverServesExistingAssetsAndLosesCachedDataWhenSourcePermissionIsRemoved()
   {
     await using var app = new OwnerApplication();
@@ -282,6 +306,7 @@ public sealed class OwnerBoundaryTests
     internal int TokenExchanges;
     internal TimeSpan? NonceLifetime { get; init; }
     internal Action? BeforeIssue { get; set; }
+    internal Func<CookieValidatePrincipalContext, Task>? OnValidated { get; set; }
     internal GitHubAuthorizationTests.SourceHandler Source { get; } = new();
     internal TestClock Clock { get; } = new(DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
 
@@ -309,7 +334,18 @@ public sealed class OwnerBoundaryTests
         services.PostConfigure<CookieAuthenticationOptions>(IdentitySchemes.Issuance, options =>
                   options.Events.OnSigningIn = _ => { BeforeIssue?.Invoke(); return Task.CompletedTask; });
         services.PostConfigure<OpenIdConnectOptions>(IdentitySchemes.Oidc, ConfigureProvider);
+        services.PostConfigure<CookieAuthenticationOptions>(IdentitySchemes.Cookie, ConfigureOwnerCookie);
       });
+    }
+
+    private void ConfigureOwnerCookie(CookieAuthenticationOptions options)
+    {
+      var validate = options.Events.OnValidatePrincipal;
+      options.Events.OnValidatePrincipal = async context =>
+      {
+        await validate(context);
+        if (context.Principal is not null && OnValidated is not null) await OnValidated(context);
+      };
     }
 
     private void ConfigureProvider(OpenIdConnectOptions options)

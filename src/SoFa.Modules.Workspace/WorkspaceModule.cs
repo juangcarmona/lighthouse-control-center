@@ -79,8 +79,8 @@ public static class WorkspaceModule
     app.MapPost("/auth/logout", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions) =>
     {
       if (!await Csrf(context, antiforgery).ConfigureAwait(false)) return;
-      var record = sessions.Get(context.User);
-      if (record is not null) sessions.Remove(record.Id);
+      var record = sessions.GetAuthenticatedRequest(context);
+      if (record is not null) sessions.Remove(record);
       await context.SignOutAsync(IdentitySchemes.Cookie).ConfigureAwait(false);
       context.Response.Redirect("/");
     }).WithMetadata(new OwnerIdentity.LocalSignOut());
@@ -155,7 +155,8 @@ public static class WorkspaceModule
     app.MapPost("/connections/github/disconnect", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions) =>
     {
       if (!await Csrf(context, antiforgery).ConfigureAwait(false)) return;
-      var record = sessions.Get(context.User)!;
+      var record = sessions.GetAuthenticatedRequest(context);
+      if (record is null) { await OwnerIdentity.AccessFailure(context, 401).ConfigureAwait(false); return; }
       GitHubAuthorization.Disconnect(record);
       await sessions.RotateCookieAsync(context, record).ConfigureAwait(false);
       sessions.TouchUserActivity(record.Id);
