@@ -111,19 +111,28 @@ public sealed class IssueEvidenceTests
     fixture.Handler.Count = 0;
     fixture.Handler.Responses["/repos/example/repository/issues/7"] = _ => Json(new
     {
-      id = 70, number = 7, title = "Related changes", comments = 0, updated_at = "2026-11-07T10:00:00Z",
+      id = 70,
+      number = 7,
+      title = "Related changes",
+      comments = 0,
+      updated_at = "2026-11-07T10:00:00Z",
       body = "https://github.com/example/repository/pull/12not-a-pr "
           + "https://github.com/other/repository/pull/14 "
           + "[Proposal](https://github.com/example/repository/pull/13#discussion)"
     });
     fixture.Handler.Responses["/repos/example/repository/pulls/13"] = _ => Json(new
     {
-      number = 13, title = "Source PR", state = "open", draft = true,
-      @base = new { repo = new { full_name = "example/repository" } }, head = new { sha = Revision }
+      number = 13,
+      title = "Source PR",
+      state = "open",
+      draft = true,
+      @base = new { repo = new { full_name = "example/repository" } },
+      head = new { sha = Revision }
     });
     fixture.Handler.Responses["/repos/example/repository/commits/" + Revision + "/check-runs"] = _ => Json(new
     {
-      total_count = 1, check_runs = new[] { new { id = 901, name = "verify", status = "completed", conclusion = "failure",
+      total_count = 1,
+      check_runs = new[] { new { id = 901, name = "verify", status = "completed", conclusion = "failure",
         html_url = "https://github.com/example/repository/actions/runs/500/job/901" } }
     });
     var result = await fixture.Evidence.Handle(new(new(await fixture.Session(), "example/repository", 7)), CancellationToken.None);
