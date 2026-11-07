@@ -5,9 +5,12 @@ import { mkdtemp, mkdir, readdir, writeFile, readFile, rm } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 
+import { prepareAspire } from './prepare-aspire.mjs';
+
 const root = process.cwd();
+const environment = await prepareAspire();
 function dotnet(args, options = {}) {
-  const result = spawnSync('dotnet', args, { cwd: root, encoding: 'utf8', ...options });
+  const result = spawnSync('dotnet', args, { cwd: root, env: environment, encoding: 'utf8', ...options });
   if (result.error) throw result.error;
   return result;
 }

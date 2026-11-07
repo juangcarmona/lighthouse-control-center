@@ -4,7 +4,7 @@ The supported application uses one HTTPS workspace and a separate development Ke
 
 ## Prepare private development configuration
 
-Install Node 22+, .NET 10, Docker, OpenSSL and Chromium prerequisites. Keep Docker available to the AppHost host. Choose stable HTTPS application and issuer addresses reachable from the intended browser or phone. Both must use the same registered issuer hostname; an internal container hostname is not a replacement.
+Install Node 22+, .NET 10, Docker, OpenSSL and Chromium prerequisites. `npm ci` supplies the exact Aspire CLI paired with the AppHost SDK, including SDK 10.0.100 environments; no global CLI installation is required. Create the private setup as a non-root POSIX user. The generated `ProviderUser` matches that user UID with the image group 0 so 0600 files remain private and readable on GitHub runners as well as local hosts. Recreate the isolated setup when moving between OS users; do not make its keys world-readable. Keep Docker available to the AppHost host. Choose stable HTTPS application and issuer addresses reachable from the intended browser or phone. Both must use the same registered issuer hostname; an internal container hostname is not a replacement.
 
 For a loopback development example:
 
