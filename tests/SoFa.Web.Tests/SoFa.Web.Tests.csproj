@@ -13,5 +13,6 @@
     <Using Include="Xunit" />
     <ProjectReference Include="../../src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj" />
     <ProjectReference Include="../../src/SoFa.Web/SoFa.Web.csproj" />
+    <ProjectReference Include="../../src/SoFa.AppHost/SoFa.AppHost.csproj" />
   </ItemGroup>
 </Project>

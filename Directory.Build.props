@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SoFa.Modules.Workspace' Or '$(MSBuildProjectName)' == 'SoFa.Web' Or '$(MSBuildProjectName)' == 'SoFa.Web.Tests' Or '$(MSBuildProjectName)' == 'Lighthouse.Cqrs' Or '$(MSBuildProjectName)' == 'Lighthouse.Analyzers'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SoFa.AppHost' Or '$(MSBuildProjectName)' == 'SoFa.Modules.Workspace' Or '$(MSBuildProjectName)' == 'SoFa.Web' Or '$(MSBuildProjectName)' == 'SoFa.Web.Tests' Or '$(MSBuildProjectName)' == 'Lighthouse.Cqrs' Or '$(MSBuildProjectName)' == 'Lighthouse.Analyzers'">
     <LangVersion>14.0</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
