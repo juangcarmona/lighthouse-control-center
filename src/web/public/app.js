@@ -86,12 +86,16 @@ function render(data) {
   for (const repo of rows) {
     const card = node('article', undefined, 'repository'); card.dataset.repository = repo.repository;
     const heading = node('div', undefined, 'repo-heading');
-    heading.append(node('h3', repo.repository), badge(repo.availability === 'available' ? 'Observed' : 'Evidence unavailable', repo.availability === 'available' ? 'positive' : 'caution'));
+    heading.append(node('h3', repo.repository), badge(repo.availability === 'available' ? 'Observed' : repo.availability === 'stale' ? 'Stale evidence' : 'Evidence unavailable', repo.availability === 'available' ? 'positive' : 'caution'));
     card.append(heading, node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp'));
     const actions = node('nav', undefined, 'repo-actions'); actions.setAttribute('aria-label', `${repo.repository} actions`);
     actions.append(link('Open workflow actions ↗', `https://github.com/${repo.repository}/actions/workflows/lighthouse-sdlc-router.yml`, repo.repository, 'actions/', sourceKey(repo.repository, 'actions', '')), link('Issues ↗', `https://github.com/${repo.repository}/issues`, repo.repository, undefined, sourceKey(repo.repository, 'issues', '')));
     card.append(actions);
-    if (repo.availability !== 'available') card.append(node('p', 'GitHub evidence could not be collected. Activity and backlog are unknown; this does not mean the repository is idle.', 'notice'));
+    if (repo.availability === 'stale') {
+      card.append(node('p', 'Temporary GitHub collection failure. Last known evidence is shown below; current activity is unknown. These records are excluded from current counts.', 'notice'),
+        node('h4', 'Last known workflow runs'), list(repo.runs.map(run => runCard(repo, run))),
+        node('h4', 'Last known source labels'), list(uniqueIssues(repo).map(issue => issueCard(repo, issue))));
+    } else if (repo.availability !== 'available') card.append(node('p', 'GitHub evidence could not be collected. Activity and backlog are unknown; this does not mean the repository is idle.', 'notice'));
     else {
       const other = uniqueIssues(repo).filter(issue => !humanWait(issue));
       card.append(node('h4', 'Other collected source labels'), other.length ? list(other.map(issue => issueCard(repo, issue))) : node('p', 'No other attention labels in the collected issues.', 'empty'));
@@ -144,7 +148,7 @@ async function refresh() {
     }
     if (!response.ok) throw Error();
     const data = await response.json();
-    if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (r.availability === 'available' && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
+    if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (['available', 'stale'].includes(r.availability) && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
     showObservationControls(true); render(data); snapshot = data;
     $('connection').textContent = `Observation received ${new Date().toISOString()}. Refreshes every 30 seconds; source observation times are shown below.`;
   } catch {

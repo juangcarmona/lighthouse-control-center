@@ -301,6 +301,8 @@ public sealed class OwnerBoundaryTests
     app.Source.ExpectedChallenge = query["code_challenge"].ToString();
     await client.GetAsync(QueryHelpers.AddQueryString("/connections/github/callback", new Dictionary<string, string?>
     { ["state"] = query["state"], ["code"] = "isolated-code" }));
+    var connectedAccount = await client.GetStringAsync("/workspace");
+    Assert.Contains("href=\"https://github.com/verified-user\"", connectedAccount, StringComparison.Ordinal);
     var operations = await client.GetStringAsync("/workspace/operations");
     Assert.Contains("Factory operations", operations, StringComparison.Ordinal);
     using var anonymous = app.Client();

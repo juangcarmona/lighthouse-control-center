@@ -1,0 +1,122 @@
+{
+  "reviewedHead": "820872c2ed43c9f3c6741435f2585f16451a1737",
+  "review": {
+    "head": "820872c2ed43c9f3c6741435f2585f16451a1737",
+    "verdict": "request-changes",
+    "findings": [
+      {
+        "id": "F1",
+        "severity": "low",
+        "path": "src/SoFa.Modules.Workspace/WorkspaceModule.cs:109-111",
+        "criterion": "openspec/changes/issue-49-proposal/specs/github-user-connection/spec.md:17-21",
+        "issue": "The verified GitHub login and numeric user ID are displayed, but the required link to that user's GitHub profile is not rendered.",
+        "consequence": "The owner cannot directly verify the connected acting account from the account page as required by the accepted connection behavior.",
+        "fix": "Render a safely encoded link to the fixed https://github.com/{verified-login} profile URL (with appropriate rel attributes), and cover it in account UI tests."
+      },
+      {
+        "id": "F2",
+        "severity": "medium",
+        "path": "src/SoFa.Modules.Workspace/Source/GitHubObservations.cs:39-44,63-89",
+        "criterion": "openspec/changes/issue-49-proposal/design.md:25,81; README.md:19",
+        "issue": "After a fresh repository-authority check succeeds, a transient run/issue collection failure returns an `unavailable` result and replaces the cache result; no last-known observation/source timestamps are returned with a stale indication. The supported README explicitly promises that temporary transport failure retains old source times with a stale warning.",
+        "consequence": "A transient source outage drops the last-known evidence rather than preserving the documented stale/unavailable distinction, so the operational view loses useful context and does not meet the stated adapter behavior.",
+        "fix": "After rechecking current repository authority, retain and return the last successful observation on transient collection failures with an explicit stale state/reason and original source timestamps; never treat stale data as current permission. Add a deterministic regression test. If stale retention is intentionally out of scope, revise the accepted design/docs and tests instead of claiming the existing behavior."
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "Acceptance criteria",
+        "status": "reviewed-with-findings",
+        "evidence": "AC1-AC7 reconciled against the proposal/specs, source, and supplied evidence. Password-only Development assurance1 follows the owner's revision; External remains assurance2. Owner-confirmed desktop GitHub use is credited without claiming a manual grant-revocation rehearsal. Physical-phone use was owner-deferred and is not claimed. F1 and F2 are remaining gaps."
+      },
+      {
+        "name": "Implementation completeness",
+        "status": "reviewed-with-findings",
+        "evidence": "Inspected the supported ASP.NET/Aspire composition, identity/session and provider revalidation, GitHub authorization/permission/source guard, and observation adapter. Findings F1-F2 identify incomplete explicit behavior. Task 6.3 is this review/presentation and CI gate; it is not yet complete for integration."
+      },
+      {
+        "name": "Tests",
+        "status": "evidence-reported",
+        "evidence": "Supplied evidence reports root verification at 39 Node, 70 web, 38 legacy .NET, and 16 browser tests; provider lane passed; SourceRequestGuard green tests and lock-removal counterfactual are recorded. No tests were executed during this read-only review."
+      },
+      {
+        "name": "Quality checks",
+        "status": "pending-hosted-ci",
+        "evidence": "Current-head verify run https://github.com/juangcarmona/sofa/actions/runs/42402679485 and foundation run https://github.com/juangcarmona/sofa/actions/runs/42402679467 were reported running at preparation. Trusted host must settle both successfully before integration. The cold combined SDK-image qualification timed out; it belongs to #88 and is not claimed green here."
+      },
+      {
+        "name": "Security",
+        "status": "reviewed-no-additional-finding",
+        "evidence": "Inspected PKCE/OIDC issuer, audience, signature and assurance admission; exact issuer/subject; freshness and bounded server-held sessions; due provider refresh/revocation behavior; CSRF; fixed HTTPS source endpoints; session/source/generation scoping; bounded permissions/cache and atomic request initiation/invalidation. No operator-credential fallback or browser token storage path was found in inspected implementation."
+      },
+      {
+        "name": "Architecture / design conformance",
+        "status": "reviewed-with-findings",
+        "evidence": "External mode composes no Keycloak; AppHost pins the Keycloak image digest and waits for it in Development; the supported path is the .NET workspace. Process-local state/restart loss and production separation match the accepted design. F2 is a behavior mismatch with the designed stale/unavailable handling."
+      },
+      {
+        "name": "Documentation",
+        "status": "reviewed-with-finding",
+        "evidence": "Inspected README and proposal/design/runbook evidence. README.md:19 documents stale retention that the adapter does not implement (F2). The README and evidence correctly state the password-only development revision, owner-confirmed desktop use, physical-phone deferral, and production boundary."
+      },
+      {
+        "name": "Product / spec consistency",
+        "status": "reviewed-with-finding",
+        "evidence": "Applicable owner-access and github-user-connection scenarios were reconciled. The provider and source identity boundaries remain separate; no production or execution authority is introduced. F1 misses the specified source profile link; F2 misses the documented stale-state behavior."
+      },
+      {
+        "name": "Evidence",
+        "status": "pending-hosted-ci",
+        "evidence": "Read-only evidence includes actual Keycloak 26.8.1 password-provider verification (reported pass), owner-reported desktop GitHub use, deterministic source-grant and atomic transport coverage, and root verification results. Current-head hosted CI is pending; no success is inferred. No physical-phone or human forge vote is claimed."
+      },
+      {
+        "name": "Human review",
+        "status": "reviewed",
+        "evidence": "Independent technical judgement review performed under the explicit delegation recorded in /input/context.json. This is not represented as a human forge vote and grants no protected forge bypass or deployment approval."
+      },
+      {
+        "name": "Known limitations",
+        "status": "recorded",
+        "evidence": "Physical phone not tested by owner request; manual negative source-grant transitions not repeated and deterministic coverage is limited; process-local sessions/credentials do not survive restart; production identity/persistence/deployment remain #58; hosted current-head CI is pending; cold combined SDK-image qualification is not green evidence for #49."
+      }
+    ],
+    "kind": "implementation-judgement",
+    "issue": 49,
+    "requestedModel": "openai/gpt-6-luna",
+    "requestedEffort": "high",
+    "reviewedAt": "2026-11-07T18:59:04.314Z",
+    "sourceReadOnly": true,
+    "requestPath": "/tmp/sofa-review-49-implementation-judgement-820872c2ed-143988fd/context.json"
+  },
+  "corrections": [
+    "The account page links to the verified GitHub login on fixed github.com with an encoded path and safe rel attributes.",
+    "After fresh repository authority, transient collection failures retain the same connection/generation observation with original source times and an explicit stale marker. Stale records are excluded from current counts. Authority denial or non-transient403/404 drops records; later temporary failure cannot resurrect them."
+  ],
+  "regression": {
+    "command": "dotnet test tests/SoFa.Web.Tests/SoFa.Web.Tests.csproj -c Release --no-restore --filter <changed-account-and-stale-cases>",
+    "red": {
+      "failed": 3,
+      "passed": 2,
+      "exitCode": 1
+    },
+    "green": {
+      "passed": 5,
+      "exitCode": 0
+    }
+  },
+  "fullVerification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 74,
+      "legacyDotnet": 38,
+      "browser": 17
+    },
+    "logSha256": "37db9b4760f1cbf2ecb1b0eaa3c5f1e5cfd5d3a513b63ba69a2331fbb6d14032"
+  },
+  "limits": [
+    "Independent correction audit and current-head hosted CI remain required before integration.",
+    "The real password provider passed on the earlier identity implementation; hosted CI repeats the real provider lane on this final source."
+  ]
+}
