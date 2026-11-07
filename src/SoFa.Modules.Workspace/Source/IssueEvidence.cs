@@ -24,7 +24,16 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
   private const string Scope = "At most 10 Lighthouse reports and 10 explicitly referenced PRs from this conversation page. Additional references and other pages may contain more evidence; current command eligibility remains a separate source decision.";
   public async Task<IssueEvidence> Handle(GetIssueEvidence query, CancellationToken cancellationToken)
   {
-    var page = await context.Handle(query.Context, cancellationToken).ConfigureAwait(false);
+    var page = string.IsNullOrEmpty(query.Context.Snapshot)
+        ? await context.Handle(query.Context, cancellationToken).ConfigureAwait(false)
+        : context.TakeEvidencePage(query.Context);
+    if (page is null)
+    {
+      lock (query.Context.Session.Sync)
+        return new("unavailable", clock.GetUtcNow(), [], Scope,
+            "This page reference was consumed, expired or replaced. Refresh the issue before reading its evidence again.",
+            DataScope: query.Context.Session.GitHub.Current?.DataScope);
+    }
     if (page.Availability != "available" || page.Conversation?.Availability is not ("available" or "partial"))
       return new(page.Availability, clock.GetUtcNow(), [], Scope, page.Reason ?? page.Conversation?.Reason, DataScope: page.DataScope);
     var record = query.Context.Session;

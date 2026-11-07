@@ -109,8 +109,29 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
         : hasMore && next is null ? "The 10-page / 1,000-comment source-read cap was reached. Inspect the source for later records."
         : !complete && next is null ? "Source count and page coverage do not establish completeness; GitHub pagination is not atomic."
         : "GitHub pagination is not atomic; source and observation times describe each page independently.";
-    return new(query.Repository, query.Number, "available", clock.GetUtcNow(), connection.UserId, snapshot, content,
+    var result = new IssueContext(query.Repository, query.Number, "available", clock.GetUtcNow(), connection.UserId, snapshot, content,
         new(malformed ? "partial" : "available", mapped, query.Page, PerPage, count, next, complete, reason), DataScope: connection.DataScope, EvidenceReadAllowed: authority.ActionsRead);
+    lock (record.Sync)
+    {
+      if (!Live()) return Failure("disconnected", "The source identity or session changed.");
+      // One bounded page per connection, consumed by the separate evidence read.
+      connection.EvidencePage = result;
+    }
+    return result;
+  }
+
+  internal IssueContext? TakeEvidencePage(GetIssueContext query)
+  {
+    var record = query.Session;
+    lock (record.Sync)
+    {
+      if (!ReferenceEquals(sessions.Get(record.Id), record) || record.GitHub.Current is not { } connection
+          || connection.EvidencePage is not { } page || page.Snapshot != query.Snapshot
+          || !string.Equals(page.Repository, query.Repository, StringComparison.OrdinalIgnoreCase)
+          || page.Number != query.Number || page.Conversation?.Page != query.Page) return null;
+      connection.EvidencePage = null;
+      return clock.GetUtcNow() < page.ObservedAt.AddSeconds(30) ? page : null;
+    }
   }
 
   private static string? Actor(JsonElement value) => value.ValueKind == JsonValueKind.Object

@@ -29,6 +29,70 @@ public sealed class IssueEvidenceTests
     Assert.Contains("does not validate current admission", result.Reason, StringComparison.Ordinal);
   }
 
+  [Fact]
+  public async Task DisplayedPageEvidenceDoesNotFetchTheConversationTwice()
+  {
+    using var fixture = Ready();
+    var session = await fixture.Session();
+    var page = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    var evidence = await fixture.Evidence.Handle(new(new(session, "example/repository", 7, Snapshot: page.Snapshot)), CancellationToken.None);
+    Assert.Equal("available", evidence.Availability);
+    Assert.Single(fixture.Handler.Paths, path => path == "/repos/example/repository/issues/7/comments");
+    var calls = fixture.Handler.Paths.Count;
+    var repeated = await fixture.Evidence.Handle(new(new(session, "example/repository", 7, Snapshot: page.Snapshot)), CancellationToken.None);
+    Assert.Equal("unavailable", repeated.Availability);
+    Assert.Equal(calls, fixture.Handler.Paths.Count);
+  }
+
+  [Fact]
+  public async Task DisplayedPageEvidenceStillChecksFreshRepositoryAuthority()
+  {
+    using var fixture = Ready();
+    var session = await fixture.Session();
+    var page = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    fixture.Handler.CanRead = false;
+    var result = await fixture.Evidence.Handle(new(new(session, "example/repository", 7, Snapshot: page.Snapshot)), CancellationToken.None);
+    Assert.Equal("denied", result.Availability);
+    Assert.Empty(result.Reports);
+    Assert.DoesNotContain(fixture.Handler.Paths, path => path.Contains("/actions/", StringComparison.Ordinal));
+    Assert.Single(fixture.Handler.Paths, path => path == "/repos/example/repository/issues/7/comments");
+  }
+
+  [Theory]
+  [InlineData("snapshot")]
+  [InlineData("number")]
+  [InlineData("account")]
+  public async Task DisplayedPageCannotBeUsedForAnotherSourceIdentity(string changed)
+  {
+    using var fixture = Ready();
+    var session = await fixture.Session();
+    var page = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    if (changed == "account")
+    {
+      session.GitHub.Current = new(72, "replacement", session.GitHub.Current!.Tokens, fixture.Clock.GetUtcNow());
+      session.GitHub.Generation++;
+    }
+    var calls = fixture.Handler.Paths.Count;
+    var result = await fixture.Evidence.Handle(new(new(session, "example/repository", changed == "number" ? 8 : 7,
+        Snapshot: changed == "snapshot" ? "another-snapshot" : page.Snapshot)), CancellationToken.None);
+    Assert.Equal("unavailable", result.Availability);
+    Assert.Empty(result.Reports);
+    Assert.Equal(calls, fixture.Handler.Paths.Count);
+  }
+
+  [Fact]
+  public async Task ExpiredDisplayedPageDoesNotSilentlyFetchAnotherConversationPage()
+  {
+    using var fixture = Ready();
+    var session = await fixture.Session();
+    var page = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    fixture.Clock.Advance(TimeSpan.FromSeconds(31));
+    var calls = fixture.Handler.Paths.Count;
+    var evidence = await fixture.Evidence.Handle(new(new(session, "example/repository", 7, Snapshot: page.Snapshot)), CancellationToken.None);
+    Assert.Equal("unavailable", evidence.Availability);
+    Assert.Equal(calls, fixture.Handler.Paths.Count);
+  }
+
   [Theory]
   [InlineData("issue")]
   [InlineData("attempt")]
