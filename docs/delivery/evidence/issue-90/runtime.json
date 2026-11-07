@@ -1,19 +1,19 @@
 {
-  "observedAt": "2026-11-07T08:29:45.466Z",
+  "observedAt": "2026-11-07T08:33:17.844Z",
   "url": "http://192.168.0.3:5170",
   "mocked": false,
   "repositories": [
     {
       "repository": "juangcarmona/lighthouse",
       "availability": "available",
-      "observedAt": "2026-11-07T08:29:40.354Z",
+      "observedAt": "2026-11-07T08:33:11.524Z",
       "collectedRuns": 20,
       "collectedAttention": 1
     },
     {
       "repository": "juangcarmona/sofa",
       "availability": "available",
-      "observedAt": "2026-11-07T08:29:40.360Z",
+      "observedAt": "2026-11-07T08:33:11.531Z",
       "collectedRuns": 20,
       "collectedAttention": 1
     }
