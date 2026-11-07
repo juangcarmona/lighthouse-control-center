@@ -2,7 +2,7 @@
 
 <!-- pdac-scope: cited -->
 
-The owner authorized this development proposal and necessary dependencies on 2026-11-07, explicitly lifting the `future` hold (issue comment 6706085004). Complete groups in order and preserve actual provider/source/device verification; production remains separate. Unchecked tasks are not implemented.
+The owner authorized this development proposal and necessary dependencies on 2026-11-07, explicitly lifting the `future` hold (issue comment 6706085004). Build the independently testable identity/session foundations first, then compose and wire the runtime; complete each group's listed verification before marking it done. Preserve actual provider/source/device verification; production remains separate. Unchecked tasks are not implemented.
 
 ## 1. Confirm authority and shared contract
 
