@@ -12,10 +12,12 @@
   <a class="skip" href="#workspace">Skip to repositories</a>
   <header class="topbar"><a class="brand" href="/"><span class="mark" aria-hidden="true">S</span>SoFa<span class="brand-note">Software factory</span></a><label class="appearance">Appearance <select id="appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label></header>
   <main id="workspace" tabindex="-1">
-    <section class="intro"><div><p class="eyebrow">FACTORY OVERVIEW</p><h1>Your work, in one place.</h1><p class="lead">Follow repository activity, find what needs attention, and pick up where work stopped.</p></div><button id="refresh" type="button">Refresh observations</button></section>
+    <section class="intro"><div><p class="eyebrow">FACTORY OVERVIEW</p><h1>Factory operations</h1><p class="lead">Workflow activity and human waits observed in GitHub.</p></div><button id="refresh" type="button">Refresh observations</button></section>
     <p id="connection" role="status" aria-live="polite">Connecting to GitHub…</p>
-    <section class="metrics" aria-label="Observed activity"><div><strong id="repo-count">—</strong><span>Repositories</span></div><div><strong id="active-count">—</strong><span>Active runs</span></div><div><strong id="attention-count">—</strong><span>Attention items</span></div><div><strong id="unknown-count">—</strong><span>Unavailable</span></div></section>
-    <div class="section-heading"><h2>Repositories</h2><span>Source: GitHub</span></div>
+    <label class="repository-filter">Repository <select id="repository-filter"><option value="">All repositories</option></select></label>
+    <p id="count-scope" class="muted">Counts describe collected evidence in the selected repositories.</p>
+    <section class="metrics" aria-label="Observed activity"><div><strong id="repo-count">—</strong><span>Observed / selected repositories</span></div><div><strong id="active-count">—</strong><span>Collected active runs</span></div><div><strong id="attention-count">—</strong><span>Collected human waits</span></div><div><strong id="unknown-count">—</strong><span>Unavailable repositories</span></div></section>
+    <p class="scope">Source: GitHub. Latest 20 workflow runs and first 100 open issue records per repository; PR records excluded from attention. Partial observation, not an exhaustive activity inventory or delivery audit.</p>
     <div id="repositories" aria-busy="true"><p class="loading">Loading repository observations…</p></div>
     <aside class="boundary"><strong>Repository workflows own execution.</strong><p>Use “Open workflow actions” to request a stage or review a delivery in GitHub. This observation page cannot start agents or approve changes.</p></aside>
   </main>
