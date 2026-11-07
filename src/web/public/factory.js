@@ -14,7 +14,18 @@ function remember() {
   history.replaceState(null, '', url);
 }
 function setBusy(value) { busy = value; byId('factory-refresh').disabled = value; for (const button of document.querySelectorAll('#factory-projects button, #factory-results button')) button.disabled = value; }
-function clearSource(message) { epoch++; repositories.clear(); evidence.clear(); dataScope = undefined; render(); status(message); }
+function clearSource(message) {
+  epoch++; repositories.clear(); evidence.clear(); dataScope = undefined; render();
+  byId('factory-count').textContent = 'No authorized collection is available.';
+  const account = node('a', 'Open account'); account.href = '/workspace';
+  byId('factory-results').replaceChildren(node('p', 'Verify your account to read factory work.'), account);
+  status(message);
+}
+function denyRepository(repository) {
+  repositories.set(repository, { availability: 'denied', issues: [], complete: false, reason: 'Current repository authority is denied.' });
+  for (const key of evidence.keys()) if (key.startsWith(repository.toLowerCase() + ':')) evidence.delete(key);
+  render(); status('Repository authority was denied; its earlier issue context was removed.');
+}
 function sourceLink(text, repository, suffix) {
   const link = node('a', text); link.href = 'https://github.com/' + repository + suffix; link.rel = 'noreferrer noopener'; return link;
 }
@@ -118,7 +129,7 @@ async function getPage(repository, page, requestEpoch, number) {
   if ([401, 409].includes(response.status)) { clearSource('The owner session or source connection changed. Open Account to connect again.'); return; }
   const data = await response.json().catch(() => null);
   if (requestEpoch !== epoch) return;
-  if (response.status === 403) { repositories.set(repository, { availability: 'denied', issues: [], complete: false, reason: 'Current repository authority is denied.' }); evidence.clear(); return; }
+  if (response.status === 403) { denyRepository(repository); return; }
   if (!response.ok || data?.availability !== 'available' || data.repository !== repository || !Array.isArray(data.issues) || typeof data.dataScope !== 'string') throw Error('Unavailable source page');
   if (data.dataScope !== dataScope) { clearSource('The source account changed during collection. Refresh to start a new source scope.'); return; }
   const previous = page > 1 ? repositories.get(repository) : undefined;
@@ -172,12 +183,12 @@ async function readEvidence(repository, issue) {
     const response = await fetch(path, { signal: AbortSignal.timeout(35000) });
     if (requestEpoch !== epoch) return;
     if ([401, 409].includes(response.status)) { clearSource('Source authority changed. Refresh the connected account.'); return; }
-    if (response.status === 403) { repositories.delete(repository); evidence.clear(); render(); status('Repository issue authority was denied; previous context was removed.'); return; }
+    if (response.status === 403) { denyRepository(repository); return; }
     const context = await response.json();
     if (!response.ok || context.dataScope !== dataScope || context.issue?.id !== issue.id || typeof context.snapshot !== 'string') throw Error('Issue evidence context unavailable');
     const result = await fetch(path + '/evidence?snapshot=' + encodeURIComponent(context.snapshot), { signal: AbortSignal.timeout(35000) });
     if ([401, 409].includes(result.status)) { clearSource('The source connection changed while reading evidence.'); return; }
-    if (result.status === 403) { repositories.delete(repository); evidence.clear(); render(); status('Current source authority was denied.'); return; }
+    if (result.status === 403) { denyRepository(repository); return; }
     const source = await result.json();
     if (requestEpoch !== epoch) return;
     if (!result.ok || source.dataScope !== dataScope || !Array.isArray(source.reports)) throw Error('Source evidence unavailable');

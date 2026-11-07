@@ -4,10 +4,11 @@ const origin = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'
 const makeIssue = (number, title, state = 'open', labels = []) => ({ id: number + 1000, number, title, state, labels,
   labelsComplete: true, updatedAt: '2026-11-07T10:00:00Z', sourceUrl: `https://github.com/example/repository/issues/${number}` });
 async function fixture(page) {
-  let failure = 0, scope = 'factory-71', title = 'Ordinary work', configured = ['example/repository', 'example/other'], otherWait;
+  let accountStatus = 0, failure = 0, scope = 'factory-71', title = 'Ordinary work', configured = ['example/repository', 'example/other'], otherWait;
   const methods = [];
   await page.route('**/api/**', async route => {
     methods.push(route.request().method()); const url = new URL(route.request().url());
+    if (url.pathname === '/api/connections/github' && accountStatus) return route.fulfill({ status: accountStatus, body: 'Session ended' });
     if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true })) } });
     if (url.pathname.startsWith('/api/issues/')) return route.fulfill({ json: url.pathname.endsWith('/evidence')
       ? { availability: 'available', dataScope: scope, observedAt: '2026-11-07T12:00:00Z', reports: [{ availability: 'available', stage: 'propose', result: 'blocked', executionStatus: 'completed', executionConclusion: 'success', runId: 500, attempt: 2 }], scope: 'Synthetic one-page report fixture; live lease unknown.' }
@@ -23,7 +24,7 @@ async function fixture(page) {
       nextPage: selectedPage === 1 && repository === 'example/repository' && !number ? 2 : null, complete: selectedPage > 1 || repository === 'example/other' || !!number,
       configuredBranch: 'expected', observedBranch: 'main', reason: 'Synthetic collection: bounded live pages, not an atomic snapshot.' } });
   });
-  return { methods, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
+  return { methods, expireAccount() { accountStatus = 401; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
 }
 for (const width of [1280, 390]) test(`factory ${width}: list board filters evidence paging and keyboard`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 }); const source = await fixture(page);
@@ -92,4 +93,28 @@ test('removed repository titles and evidence disappear before a slow remaining r
   } finally { release(); }
   await expect(page.getByRole('button', { name: 'Refresh collection' })).toBeEnabled();
   await expect(page.locator('.factory-issue')).toHaveCount(1);
+});
+
+test('a denied page removes old titles before a slow sibling response settles', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
+  source.fail(403); const release = source.pauseOther();
+  try {
+    await page.getByRole('button', { name: 'Refresh collection' }).click();
+    await expect(page.locator('#factory-results')).not.toContainText('Ordinary work');
+    await expect(page.locator('.factory-issue')).toHaveCount(1);
+    await expect(page.getByRole('button', { name: 'Refresh collection' })).toBeDisabled();
+  } finally { release(); }
+  await expect(page.getByRole('button', { name: 'Refresh collection' })).toBeEnabled();
+});
+
+
+test('session loss clears source data and offers account recovery instead of a false empty backlog', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
+  source.expireAccount(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-issue')).toHaveCount(0);
+  await expect(page.locator('#factory-count')).toHaveText('No authorized collection is available.');
+  await expect(page.locator('#factory-results').getByRole('link', { name: 'Open account' })).toHaveAttribute('href', '/workspace');
+  await expect(page.locator('#factory-results')).not.toContainText('contains no ordinary issues');
 });
