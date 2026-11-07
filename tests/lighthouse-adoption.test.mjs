@@ -50,6 +50,9 @@ test('verification integrity freezes Node, browser, .NET and CI inputs including
     'scripts/verify-runtime.mjs', 'scripts/verify-container.mjs', 'tests/browser/observation.spec.mjs',
     'tests/SoFa.Runtime.Tests/packages.lock.json', 'src/tooling/security/check-secrets.mjs', '.github/workflows/verify.yml'];
   const before = new Map(paths.map(path => [path, { mode: '100644', content: read(path) }]));
+  const baselineSpec = 'openspec/specs/accepted/spec.md';
+  before.set(baselineSpec, { mode: '100644', content: Buffer.from('Accepted delivery specification\n') });
+  paths.push(baselineSpec);
   assert.equal(verificationIntegrity(before, before, implementation, 88).status, 'passed');
   for (const path of paths) {
     const changed = new Map(before).set(path, { mode: '100644', content: Buffer.from('changed verification input') });

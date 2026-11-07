@@ -49,7 +49,8 @@
         "skills-lock.json",
         ".editorconfig",
         "openspec/config.yaml",
-        "openspec/schemas/"
+        "openspec/schemas/",
+        "openspec/specs/"
       ],
       "corrections": {}
     }
@@ -109,6 +110,7 @@
         ".editorconfig",
         "openspec/config.yaml",
         "openspec/schemas/",
+        "openspec/specs/",
         "tests/observation.test.mjs",
         "tests/browser/observation.spec.mjs"
       ],
