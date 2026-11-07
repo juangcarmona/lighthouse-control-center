@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-11-07T16:26:00.343577+00:00",
+  "scope": "Development tooling checkpoint; actual GitHub user and physical-device acceptance remain open.",
+  "checks": {
+    "rootVerificationExitCode": 0,
+    "nodeTests": 38,
+    "dotnetTests": 94,
+    "browserTests": 15
+  },
+  "tooling": {
+    "cliPackage": "@microsoft/aspire-cli-linux-x64@13.6.1",
+    "verifiedHost": "linux/x64",
+    "publicPayloadCache": "ignored node_modules/.cache/sofa/aspire/<version>",
+    "privateRuntimeState": "user cache outside the checkout",
+    "setupEnvironment": "PATH/HOME and fixed Aspire-only setup variables; no workspace/provider/source credentials"
+  },
+  "ports": {
+    "failure": "Concurrent worktree checks collided on fixed loopback ports; a manually selected port was also already occupied.",
+    "guard": "Playwright allocates a free loopback port immediately before server startup and passes it to workers. Explicit valid ports remain supported; existing servers are never reused.",
+    "counterfactual": "Both worktree suites passed concurrently with independent allocated endpoints; fixed-port attempts failed before tests."
+  },
+  "sdkImage": {
+    "coldCombinedCheck": "Prior universal-CLI checkpoint timed out after an8minute npm install. Separate diagnosis failed during CLI preparation; it did not establish parity.",
+    "freshHostOnlyPackageCheck": "pending; no native qualification is claimed"
+  }
+}
