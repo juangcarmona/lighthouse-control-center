@@ -7,6 +7,11 @@ internal static class WorkspaceComposition
   internal static void Add(IDistributedApplicationBuilder builder, string configurationFile)
   {
     WorkspaceModule.ValidateConfiguration(builder.Configuration);
+    var providerUser = builder.Configuration["SoFa:Identity:Development:ProviderUser"] ?? "1000:0";
+    if (builder.Configuration["SoFa:Identity:Mode"] == "Development"
+        && (!System.Text.RegularExpressions.Regex.IsMatch(providerUser, @"^[1-9][0-9]{0,9}:0$")
+            || !uint.TryParse(providerUser.AsSpan(0, providerUser.Length - 2), out var uid) || uid == uint.MaxValue))
+      throw new InvalidOperationException("Development provider requires a non-root private-file owner UID and image group 0.");
     var origin = new Uri(builder.Configuration["SoFa:Origin"]!);
     var workspace = builder.AddProject<Projects.SoFa_Web>("workspace", launchProfileName: null)
         .WithEnvironment("SOFA_CONFIG_FILE", configurationFile)
@@ -32,7 +37,7 @@ internal static class WorkspaceComposition
         .WithEnvironment("KC_LOG_LEVEL", "warn")
         .WithBindMount(Path.Combine(directory, "tls"), "/run/sofa-tls", isReadOnly: true)
         .WithBindMount(Path.Combine(directory, "import"), "/opt/keycloak/data/import", isReadOnly: true)
-        .WithContainerRuntimeArgs("--publish", issuer.Host + ":" + issuer.Port.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":8443",
+        .WithContainerRuntimeArgs("--user", providerUser, "--publish", issuer.Host + ":" + issuer.Port.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":8443",
                 "--cpus", "2", "--memory", "1g", "--pids-limit", "512", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
                 "--label", "sofa.scope=issue-49-development")
         .WithUrl(issuer.GetLeftPart(UriPartial.Authority), "Development identity");

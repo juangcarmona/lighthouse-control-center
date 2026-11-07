@@ -23,6 +23,7 @@ test('development setup keeps credentials private, emits trusted certificates an
     const configuration = JSON.parse(original);
     const accounts = JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8'));
     assert.equal(accounts.length, 2);
+    assert.equal(configuration.SoFa.Identity.Development.ProviderUser, `${process.getuid()}:0`);
     assert.equal(configuration.SoFa.Identity.Development.OwnerSubject, accounts[0].subject);
     assert.ok(!result.stdout.includes(configuration.SoFa.Identity.Development.ClientSecret));
     for (const account of accounts) {

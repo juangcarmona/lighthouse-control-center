@@ -1,13 +1,13 @@
 {
   "scope": "Implemented development workspace checkpoint; issue49 is not Done and remains a draft.",
-  "verifiedAt": "2026-11-07T15:04:10.787478+00:00",
+  "verifiedAt": "2026-11-07T15:31:44.430743+00:00",
   "checks": [
     {
       "command": "DOTNET_PROCESSOR_COUNT=2 MSBUILDDISABLENODEREUSE=1 CI=true npm run verify",
       "exitCode": 0,
       "nodeTests": 38,
-      "dotnetTests": 90,
-      "ownerSourceAndCompositionTests": 52,
+      "dotnetTests": 94,
+      "ownerSourceAndCompositionTests": 56,
       "legacyBrowserTests": 15,
       "warningsAsErrors": true,
       "realCompilerRejection": [
@@ -51,7 +51,9 @@
     "Keycloak basic scope supplies the required sub/auth_time claims; application validation remains strict.",
     "Static assets assert real bodies and MIME types, preventing the discarded Task<IResult> route overload.",
     "An expired framework nonce is denied with a valid synthetic code/signature; navigation failures expose only data-free recovery links.",
-    "Logout destroys the authenticated server record even when its cookie reference rotates between authentication and the route; independently copied ClaimsIdentity instances preserve the old reference. The focused regression failed with 401 before the guard fix and passes with 302 and server authority revoked."
+    "Logout destroys the authenticated server record even when its cookie reference rotates between authentication and the route; independently copied ClaimsIdentity instances preserve the old reference. The focused regression failed with 401 before the guard fix and passes with 302 and server authority revoked.",
+    "Private provider files owned by UID20003 fail with the image default UID1000 and start successfully with nonroot UID20003/image group0. Generated setup records the actual nonroot private-file owner; no world-readable permissions are added.",
+    "Project-pinned Aspire CLI13.6.1 prepares its bundle with matching isolated ASPIRE_HOME and --install-path, and builds with explicit AspireCliBundlePath. The implicit global/DNX route and mismatched extraction-home failure are no longer build prerequisites."
   ],
   "openAcceptance": [
     "Actual development GitHub App user consent, designated-repository permission/revocation evidence.",

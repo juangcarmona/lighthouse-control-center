@@ -2,13 +2,15 @@ import { spawn, spawnSync } from 'node:child_process';
 import { readFile, realpath } from 'node:fs/promises';
 import { dirname, isAbsolute, resolve, sep } from 'node:path';
 
+import { prepareAspire } from './prepare-aspire.mjs';
+
 const root = resolve(import.meta.dirname, '..');
 const configured = process.env.SOFA_CONFIG_FILE;
 if (!configured || !isAbsolute(configured)) throw Error('Set SOFA_CONFIG_FILE to an absolute private configuration file.');
 const file = await realpath(configured);
 if (file === root || file.startsWith(root + sep)) throw Error('Keep workspace credentials outside the checkout.');
 const configuration = JSON.parse(await readFile(file, 'utf8'));
-const environment = { ...process.env, SOFA_CONFIG_FILE: file };
+const environment = await prepareAspire({ ...process.env, SOFA_CONFIG_FILE: file });
 if (configuration.SoFa?.Identity?.Mode === 'Development') environment.SSL_CERT_FILE = resolve(dirname(file), 'trust-bundle.pem');
 for (const args of [
   ['restore', 'SoFa.slnx', '--locked-mode', '--disable-build-servers'],

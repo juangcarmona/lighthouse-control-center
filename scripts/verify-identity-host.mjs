@@ -5,14 +5,16 @@ import { createServer } from 'node:net';
 import { spawn, spawnSync } from 'node:child_process';
 import https from 'node:https';
 import assert from 'node:assert/strict';
+import { prepareAspire } from './prepare-aspire.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const parent = await mkdtemp(join(tmpdir(), 'sofa-provider-host-'));
 const directory = join(parent, 'identity');
 const evidence = resolve(root, 'test-results/identity');
 let application, providerContainer, proof;
+let stage = 'private-setup';
 const wait = milliseconds => new Promise(done => setTimeout(done, milliseconds));
-const environment = Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^sofa(?:__|_config_file$)/i.test(name)));
+let environment = Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^sofa(?:__|_config_file$)/i.test(name)));
 function command(executable, args, options = {}) {
   const result = spawnSync(executable, args, { cwd: root, env: environment, encoding: 'utf8', ...options });
   if (result.error || result.status !== 0) throw Error('A required identity host setup command failed.');
@@ -55,6 +57,7 @@ try {
   // credential or actual user consent is supplied; source transport tests own that lane.
   configuration.SoFa.GitHub = { ClientId: 'development-ui-fixture', ClientSecret: 'isolated-client-fixture-value' };
   await writeFile(configurationPath, JSON.stringify(configuration), { mode: 0o600 });
+  stage = 'isolated-browser-trust';
   const browserHome = join(directory, 'browser-home');
   const nss = join(browserHome, '.pki/nssdb');
   await mkdir(nss, { recursive: true, mode: 0o700 });
@@ -67,12 +70,17 @@ try {
   environment.DOTNET_ENVIRONMENT = 'Development';
   environment.SSL_CERT_FILE = join(directory, 'trust-bundle.pem');
   // Build before launch so resource discovery uses the exact Release assembly.
+  stage = 'pinned-aspire-bundle';
+  environment = await prepareAspire(environment);
+  stage = 'release-build';
   command('dotnet', ['build', 'src/SoFa.AppHost/SoFa.AppHost.csproj', '-c', 'Release', '--no-restore', '--disable-build-servers']);
   const { open } = await import('node:fs/promises');
   const log = await open(join(directory, 'apphost.log'), 'wx', 0o600);
+  stage = 'application-start';
   application = spawn('dotnet', ['src/SoFa.AppHost/bin/Release/net10.0/SoFa.AppHost.dll'], { cwd: root, env: environment, stdio: ['ignore', log.fd, log.fd] });
   await log.close();
   const ca = await readFile(join(directory, 'ca.crt'));
+  stage = 'workspace-and-provider-readiness';
   let healthy = false;
   for (let attempt = 0; attempt < 180; attempt++) {
     if (application.exitCode !== null) break;
@@ -95,6 +103,7 @@ try {
   }
   assert.ok(providerContainer, 'Find only the provider mounted from this test setup.');
   await mkdir(evidence, { recursive: true });
+  stage = 'real-provider-browser-proof';
   proof = spawn(process.execPath, ['scripts/verify-identity-provider.mjs', '--private-directory', directory,
     '--evidence-directory', evidence, '--provider-container', providerContainer], {
     cwd: root, env: { ...environment, NODE_EXTRA_CA_CERTS: join(directory, 'ca.crt') }, stdio: 'inherit',
@@ -102,7 +111,13 @@ try {
   const exit = await new Promise((done, reject) => { proof.once('error', reject); proof.once('exit', code => done(code)); });
   assert.equal(exit, 0, 'Real provider verification must pass.');
   console.log('Isolated Aspire identity verification passed; physical phone and real GitHub consent remain separate.');
-} catch {
+} catch (error) {
+  await mkdir(evidence, { recursive: true });
+  await writeFile(join(evidence, 'host-failure.json'), JSON.stringify({
+    stage, errorType: error?.constructor?.name ?? 'Error',
+    applicationExited: application ? application.exitCode !== null : null,
+    privateLogsRetained: false,
+  }, null, 2) + '\n');
   console.error('Identity host verification failed. No private setup or raw browser/host logs are retained as public artifacts.');
   process.exitCode = 1;
 } finally {

@@ -45,6 +45,20 @@ public sealed class WorkspaceCompositionTests
     finally { Directory.Delete(directory, recursive: true); }
   }
 
+  [Theory]
+  [InlineData("0:0")]
+  [InlineData("1001:1001")]
+  [InlineData("4294967295:0")]
+  [InlineData("1001:0 --privileged")]
+  public void UnsafeProviderUsersFailBeforeResourceComposition(string user)
+  {
+    var builder = Builder("Development");
+    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+    { ["SoFa:Identity:Development:ProviderUser"] = user });
+    Assert.Throws<InvalidOperationException>(() => WorkspaceComposition.Add(builder, "/unused/private/development.json"));
+    Assert.Empty(builder.Resources);
+  }
+
   [Fact]
   public void MixedProfilesFailBeforeAnyResourceIsComposed()
   {

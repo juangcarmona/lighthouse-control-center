@@ -25,6 +25,7 @@ const directory = resolve(await realpath(dirname(resolve(values.get('--directory
 const repository = await realpath(fileURLToPath(new URL('..', import.meta.url)));
 if (directory === repository || directory.startsWith(repository + sep)) throw Error('Keep development secrets outside the checkout.');
 const testAccounts = values.get('--test-accounts') === true;
+if (typeof process.getuid !== 'function' || process.getuid() === 0) throw Error('Create the private development setup as a non-root POSIX user.');
 if (!testAccounts && !values.get('--owner-subject')) throw Error('Supply the exact provider owner subject, or request isolated synthetic test accounts.');
 await mkdir(directory, { mode: 0o700 }); // Refuse to overwrite an existing private setup.
 const tls = resolve(directory, 'tls');
@@ -68,7 +69,7 @@ await privateWrite(resolve(directory, 'trust-bundle.pem'), await readFile('/etc/
 await privateWrite(resolve(directory, 'development.json'), JSON.stringify({
   Kestrel: { Endpoints: { Https: { Url: origin.origin, Certificate: { Path: resolve(tls, 'app.crt'), KeyPath: resolve(tls, 'app.key') } } } },
   SoFa: { Origin: origin.origin, Identity: { Mode: 'Development', Development: {
-    Issuer: issuer.href, ClientId: 'sofa-development', ClientSecret: clientSecret, OwnerSubject: ownerSubject,
+    ProviderUser: `${process.getuid()}:0`, Issuer: issuer.href, ClientId: 'sofa-development', ClientSecret: clientSecret, OwnerSubject: ownerSubject,
   } }, Repositories: ['juangcarmona/lighthouse', 'juangcarmona/sofa'] },
 }, null, 2));
 await privateWrite(resolve(directory, 'provider.env'), [
