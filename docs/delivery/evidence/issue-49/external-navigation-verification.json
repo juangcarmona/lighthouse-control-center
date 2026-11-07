@@ -1,0 +1,26 @@
+{
+  "scope": "Actual trusted-browser external navigation to live development workspace; no owner/source account used",
+  "status": 401,
+  "fetchSite": "cross-site",
+  "friendlySignIn": true,
+  "httpsValidationDisabled": false,
+  "verifiedAt": "2026-11-07T17:23:20.156Z",
+  "regression": {
+    "before": "External GET document navigation returned bare403 before reaching the owner gate",
+    "after": "Anonymous external document navigation reaches the friendly401 sign-in page; authenticated navigation is allowed by the middleware regression test",
+    "preservedDenials": [
+      "Cross-site API fetch",
+      "Cross-site framed document",
+      "Cross-site POST even with a valid antiforgery token"
+    ]
+  },
+  "localRootVerification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "nodeTests": 38,
+    "dotnetTests": 96,
+    "browserTests": 16,
+    "logSha256": "b5e90f01cd2c506a26b6a8580959ee0bd13c81a71dbe63ee7111f422c3f61009"
+  },
+  "realProviderHostProof": "Full current-head provider lane remains pending; its browser now tests actual external arrivals before and after owner MFA."
+}

@@ -172,6 +172,35 @@ public sealed class OwnerBoundaryTests
   }
 
   [Fact]
+  public async Task ExternalDocumentNavigationCanEnterTheWorkspaceWithoutAllowingCrossSiteApiOrWrites()
+  {
+    await using var app = new OwnerApplication();
+    using var client = app.Client();
+    static HttpRequestMessage External(string path, HttpMethod? method = null, string mode = "navigate", string destination = "document")
+    {
+      var request = new HttpRequestMessage(method ?? HttpMethod.Get, path);
+      request.Headers.Add("Sec-Fetch-Site", "cross-site");
+      request.Headers.Add("Sec-Fetch-Mode", mode);
+      request.Headers.Add("Sec-Fetch-Dest", destination);
+      return request;
+    }
+    using var anonymous = External("/workspace");
+    var denied = await client.SendAsync(anonymous);
+    Assert.Equal(HttpStatusCode.Unauthorized, denied.StatusCode);
+    Assert.Contains("Sign in required", await denied.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+    await client.GetAsync(await app.Begin(client));
+    using var navigation = External("/workspace");
+    Assert.Equal(HttpStatusCode.OK, (await client.SendAsync(navigation)).StatusCode);
+    using var embedded = External("/workspace/operations", destination: "iframe");
+    Assert.Equal(HttpStatusCode.Forbidden, (await client.SendAsync(embedded)).StatusCode);
+    using var api = External("/api/session", mode: "cors", destination: "empty");
+    Assert.Equal(HttpStatusCode.Forbidden, (await client.SendAsync(api)).StatusCode);
+    using var write = External("/connections/github/start", HttpMethod.Post);
+    write.Content = new FormUrlEncodedContent(new Dictionary<string, string> { ["__RequestVerificationToken"] = Token(await client.GetStringAsync("/workspace")) });
+    Assert.Equal(HttpStatusCode.Forbidden, (await client.SendAsync(write)).StatusCode);
+  }
+
+  [Fact]
   public async Task MissingGitHubAppExplainsSetupAndDoesNotOfferDisconnect()
   {
     await using var app = new OwnerApplication { GitHubConfigured = false };

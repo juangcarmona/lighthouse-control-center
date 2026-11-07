@@ -4,6 +4,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHmac } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
+import { createServer as createHttpServer } from 'node:http';
 import assert from 'node:assert/strict';
 
 const argumentsMap = new Map();
@@ -79,6 +80,25 @@ function totp(secret, offset = 0) {
   return String((digest.readUInt32BE(digest.at(-1) & 15) & 0x7fffffff) % 1_000_000).padStart(6, '0');
 }
 
+async function externalWorkspaceNavigation(page, expectedStatus) {
+  const target = origin + '/workspace';
+  const source = createHttpServer((request, response) => {
+    response.writeHead(200, { 'Content-Type': 'text/html', 'Cache-Control': 'no-store' });
+    response.end('<!doctype html><title>External navigation fixture</title><a href="' + target + '">Open SoFa workspace</a>');
+  });
+  await new Promise((ready, reject) => { source.once('error', reject); source.listen(0, '127.0.0.1', ready); });
+  try {
+    await page.goto('http://127.0.0.1:' + source.address().port);
+    const navigation = page.waitForResponse(response => response.url() === target && response.request().isNavigationRequest());
+    await page.getByRole('link', { name: 'Open SoFa workspace' }).click();
+    const response = await navigation;
+    assert.equal((await response.request().allHeaders())['sec-fetch-site'], 'cross-site');
+    assert.equal(response.status(), expectedStatus, 'External document navigation must reach the owner gate.');
+    if (expectedStatus === 401) await page.getByRole('heading', { name: 'Sign in required' }).waitFor();
+    proofs.externalDocumentNavigation = true;
+  } finally { await new Promise(done => source.close(done)); }
+}
+
 async function signIn(page, account, secretFile, { wrongFactor = false, denied = false } = {}) {
   activePage = page;
   await page.goto(origin + '/');
@@ -139,6 +159,7 @@ try {
   browser = await chromium.launch({ headless: true, env: { ...process.env, HOME: resolve(directory, 'browser-home') } });
   const desktop = await browser.newContext({ viewport: { width: 1365, height: 900 } });
   const page = await desktop.newPage();
+  await externalWorkspaceNavigation(page, 401);
   await page.goto(origin + '/');
   await accessible(page, 'signed-out');
   await page.screenshot({ path: resolve(evidenceDirectory, 'signed-out.png'), fullPage: true });
@@ -161,6 +182,7 @@ try {
   const ownerCookies = await desktop.cookies(origin + '/workspace');
   assert.ok(ownerCookies.some(cookie => cookie.name === '__Host-SoFa.Owner' && cookie.secure && cookie.httpOnly && cookie.sameSite === 'Lax'));
   assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length), 0);
+  await externalWorkspaceNavigation(page, 200);
   await page.screenshot({ path: resolve(evidenceDirectory, 'owner-desktop.png'), fullPage: true });
   proofs.opaqueSecureCookie = proofs.browserStorageEmpty = proofs.trustedHttps = true;
 

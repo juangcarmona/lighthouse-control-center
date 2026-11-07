@@ -43,7 +43,10 @@ public static class WorkspaceModule
       context.Response.Headers["Referrer-Policy"] = "no-referrer";
       if (!context.Request.IsHttps || !string.Equals(context.Request.Host.Value, settings.Origin.Authority, StringComparison.OrdinalIgnoreCase))
       { context.Response.StatusCode = 400; return; }
-      if (context.Request.Headers["Sec-Fetch-Site"] == "cross-site"
+      var documentNavigation = HttpMethods.IsGet(context.Request.Method)
+          && context.Request.Headers["Sec-Fetch-Mode"] == "navigate"
+          && context.Request.Headers["Sec-Fetch-Dest"] == "document";
+      if (context.Request.Headers["Sec-Fetch-Site"] == "cross-site" && !documentNavigation
               && context.Request.Path != "/signin-oidc" && context.Request.Path != "/connections/github/callback")
       { context.Response.StatusCode = 403; return; }
       try { await next(context).ConfigureAwait(false); }
