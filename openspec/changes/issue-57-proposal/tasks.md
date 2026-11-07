@@ -4,7 +4,7 @@
 
 ## 1. Host evidence
 
-- [ ] 1.1 Add bounded private source configuration and a tokenless fixed-file/read-only Git helper; prove exact committed adoption, safe registration projection, literal-origin/bounded-ref parsing and disposable bare object reads isolated from all source/system/global Git configuration; prove hostile config never launches helpers or network, source metadata stays unchanged, and every numeric bound has at/over-limit cases.
+- [ ] 1.1 Add bounded private source configuration and a tokenless fixed-file/read-only Git helper; prove exact committed adoption, safe registration projection, literal-origin/bounded-ref parsing and disposable bare object reads isolated from all source/system/global Git configuration; prove hostile config never launches helpers or network, source metadata stays unchanged, and every numeric/form/traversal bound has at/over-limit cases. Add same-handle file/parent replacement races and ownership/unsupported-platform cases; never reopen a validated source pathname.
 - [ ] 1.2 Add owner-gated bounded process bridge and host query with owner-lifetime/deadline cancellation, atomic helper initiation, a global nonqueuing host1 cap and sequential Git children; no secret/path output, network, source writes or runtime process control.
 
 ## 2. GitHub evidence

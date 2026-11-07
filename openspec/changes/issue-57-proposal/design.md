@@ -26,6 +26,21 @@ Hostile system/global/local Git config tests install credential-helper, fsmonito
 
 Alternative: host Docker socket, process scan or operator `gh` fallback. Rejected: broad authority, credentials and guessed mappings are unnecessary for a registration overview. Direct .NET Git/process parsing is possible; the existing bounded tokenless Node bridge is easier to test using built-in Node and public Git behavior without new dependencies.
 
+### Local input forms and file handles
+
+| Input | Accepted form / maximum | Failure |
+| --- | --- | --- |
+| Public source alias | ASCII `[A-Za-z0-9][A-Za-z0-9_.-]{0,63}`; 64 characters | Reject configuration |
+| Private source path | Canonical absolute path; 4,096 UTF-8 bytes; no NUL/control characters | Reject configuration |
+| Directory traversal | At most 64 components; no symlink components or `.`/`..` ref components | Unknown source |
+| Worktree metadata redirections | At most two: one `.git` file and one `commondir`; selected operator-owned metadata only | Unknown source |
+| Symbolic refs | At most five hops; cycle detection; validated `refs/` descendants only | Unknown source |
+| Metadata files | `.git`, HEAD and commondir: 8 KiB each; config: 64 KiB; loose refs: 1 KiB; packed refs: 2 MiB | Unknown/incomplete source |
+| Registrations / checkouts | At most ten of each; distinct configured repositories for checkouts | Reject configuration |
+| Protocol / projection | stdin 128 KiB; stdout 1 MiB; stderr 8 KiB; final HTTP JSON 2 MiB | Unavailable/incomplete; never empty/complete |
+
+Open `.runner` and every metadata file with no-follow/nonblocking semantics, check a regular file using the opened handle and read its bounded bytes through that same handle. Never validate a pathname then reopen it for data. Pin selected directory/metadata/object handles for the observation and use no-follow component traversal; renames or symlink replacements cannot redirect subsequent reads to another directory. On Linux, descriptor-relative paths through the owned process's `/proc/.../fd/` handles can support fixed Git object reads; if these guarantees are unsupported, return unknown rather than silently use a weaker path read. Group/other-writable or foreign-owned metadata requires explicit trusted-operator ownership at deployment; untrusted principals must not replace approved directory ancestors. Do not interpret Git metadata as an expansion of GitHub authority. Test a file and parent directory replaced with an outside symlink between handle acquisition and read, symlink files, ref cycles, traversal exhaustion and unsupported ownership; only original pinned content or unavailable is acceptable. Temporary handles/scratch are closed/removed on every exit.
+
 ### 2. Connected-user GitHub repository runners
 
 A separate query per configured repository uses RepositoryAccess and GitHubAuthorization. Extend authority with `AdministrationRead`: effective user admin AND current installation administration read/write grant AND metadata authority. Do not expose another App's runners or infer permissions from successful issue reads. Missing grant returns denied without calling `/actions/runners`; uncertain authority stays unavailable. Every credentialed call uses the existing mandatory atomic source guard and connection stop token; connection/session/generation are rechecked before response.
