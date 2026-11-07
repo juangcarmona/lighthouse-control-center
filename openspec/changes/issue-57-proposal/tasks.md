@@ -5,12 +5,12 @@
 ## 1. Host evidence
 
 - [ ] 1.1 Add bounded private source configuration and a tokenless fixed-file/read-only Git helper; prove exact committed adoption, safe registration projection and hostile/missing/bounded input behavior.
-- [ ] 1.2 Add owner-gated bounded process bridge and host query without secret/path output, network, source writes or process control.
+- [ ] 1.2 Add owner-gated bounded process bridge and host query with owner-lifetime/deadline cancellation, atomic helper initiation, a global nonqueuing host1 cap and sequential Git children; no secret/path output, network, source writes or runtime process control.
 
 ## 2. GitHub evidence
 
-- [ ] 2.1 Extend effective authority with administration read and add guarded bounded repository runner projection, coverage, unknown fields and honest denial.
-- [ ] 2.2 Prove no-call denial, source errors, identity/generation/read-stop boundaries and preserve existing assertions.
+- [ ] 2.1 Extend effective authority with administration read and add guarded bounded repository runner projection, coverage, unknown fields and honest denial; globally cap runtime GitHub queries at2 without queueing.
+- [ ] 2.2 Prove owner logout/expiry stops a held helper; initiation/removal races, concurrency limits/busy results and cancellation slot release; no-call denial, source errors, identity/generation/read-stop boundaries and preserve existing assertions.
 
 ## 3. Runtime workspace
 

@@ -1,0 +1,49 @@
+{
+  "kind": "operator-read-only-source-preflight",
+  "observedAt": "2026-11-07T20:42:59.708023+00:00",
+  "registrationCoverage": "Two selected repository-scoped installations; not exhaustive host/process inventory",
+  "registrations": [
+    {
+      "source": "operator-selected .runner registration",
+      "alias": "runner-sofa",
+      "repositoryUrl": "https://github.com/juangcarmona/sofa",
+      "runnerId": 22,
+      "runnerName": "bastion-sofa-gh-aw",
+      "collectedAt": "2026-11-07T20:42:59.708023+00:00",
+      "modifiedAt": "2026-10-26T07:33:39.509780+00:00",
+      "processHealth": "unobserved",
+      "githubAvailability": "unobserved",
+      "format": "UTF-8 JSON; producer BOM supported"
+    },
+    {
+      "source": "operator-selected .runner registration",
+      "alias": "runner-lighthouse",
+      "repositoryUrl": "https://github.com/juangcarmona/lighthouse",
+      "runnerId": 21,
+      "runnerName": "bastion-lighthouse-gh-aw",
+      "collectedAt": "2026-11-07T20:42:59.708023+00:00",
+      "modifiedAt": "2026-10-27T06:04:06.335892+00:00",
+      "processHealth": "unobserved",
+      "githubAvailability": "unobserved",
+      "format": "UTF-8 JSON; producer BOM supported"
+    }
+  ],
+  "adoption": {
+    "repository": "juangcarmona/sofa",
+    "revision": "210acf27ee9911535094b12013759ad12cf5afe5",
+    "origin": "https://github.com/juangcarmona/sofa.git",
+    "cliDeclaration": "0.12.55",
+    "cliLocked": "0.12.55",
+    "sdlcManifest": {
+      "name": "@juangcarmona/lighthouse-sdlc",
+      "version": "0.21.6"
+    },
+    "installedDeployedAndRequiredVersion": "unverified"
+  },
+  "limits": [
+    "Operator source preflight, not product acceptance",
+    "No acting-user GitHub runner data requested",
+    "Registration does not prove process health",
+    "ID-only matching across repositories is invalid"
+  ]
+}
