@@ -1,0 +1,31 @@
+{
+  "checks": [
+    {
+      "command": "npm run verify",
+      "exitCode": 0,
+      "logSha256": "6dcd234482c03ca13479e291f11117b6d0ede3f1161a7bf28e0ba83c55a1a6ce"
+    },
+    {
+      "command": "lighthouse verify",
+      "exitCode": 0,
+      "logSha256": "38ff95df6ab3ec21d9f4fbddb75321e4dd67438bedf573820eaa84e231686f41"
+    },
+    {
+      "command": "gh-aw compile --validate --no-emit --no-check-update",
+      "exitCode": 0,
+      "logSha256": "a45bc5a2678bd05ca21e3ee64cb0050f181935af8d23de07f5fbb6f277539dde"
+    },
+    {
+      "command": "actionlint verify and App preflight workflows",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "tests": {
+    "node": 35,
+    "dotnet": 38,
+    "browser": 12
+  },
+  "additionalProbe": "The installed actionlint rejects existing queue:max syntax and the configured self-hosted label when run on unattended/router templates. Those fields are unchanged by this pin update; no validator override or workflow edit was applied. All seven generated gh-aw workflows validate.",
+  "scope": "Source-pin adoption only. Native #99 qualification requires a fresh request after integration."
+}

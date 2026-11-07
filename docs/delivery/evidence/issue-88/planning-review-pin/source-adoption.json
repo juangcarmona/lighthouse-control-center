@@ -1,0 +1,26 @@
+{
+  "reason": "Native run42395296793 stopped when planning review incorrectly required skip_specs on a validated spec-bearing plan. Its existing correction budget had been consumed by a legitimate formatting repair. The failure remains negative evidence; no candidate or merge was produced.",
+  "failedRun": "https://github.com/juangcarmona/sofa/actions/runs/42395296793",
+  "upstreamRepair": "https://github.com/juangcarmona/lighthouse/pull/549",
+  "workflowSourceRevision": "6890cfe41032a53240faa4932f4630e3c2464473",
+  "distribution": "Documented immutable-source workflow mode, rendered through the installed official installer. Installed CLI0.12.55/SDLC0.21.6 packages remain unchanged; no new package publication is claimed.",
+  "sourceVerification": {
+    "repository": "https://github.com/juangcarmona/lighthouse/actions/runs/42397806903",
+    "packages": "https://github.com/juangcarmona/lighthouse/actions/runs/42397806461",
+    "reviewedHead": "0d996fc5dd0a9c29b4b4ff9b8feb02ffd5483115",
+    "independentModel": "openai/gpt-6-luna",
+    "reasoningEffort": "high",
+    "verdict": "accept",
+    "findings": []
+  },
+  "unchangedFiles": {
+    "package.json": "6bb028180e85e60d83251db4616359c32b5b6a069a7f3cc586b4f1977bcca5f1",
+    "package-lock.json": "22c537cf35858c18b0c04097535de56fcb34ed7dec6c2ce42944e6ff3f1099c9",
+    ".lighthouse/unattended.json": "1b354f85bc3f3d349343dae23d2016433ffb446a16c4b8f43357cff70158a46e",
+    ".lighthouse/github.json": "0c4157b408ad7a31885af327cbba8dd982b3a14ba1cf1efcfd03f6bc54aef647",
+    ".lighthouse/models.json": "09b3bc90beac5eccf9ebb78a654b814cb84caa3243ec61bb20bcbf297036ecf9",
+    "docs/engineering-lifecycle.md": "35c55778a6b47c565f688375f6647b7b008ecaa60f98ff33502398d028db35ef"
+  },
+  "scope": "No request grant, merge setting, correction budget, models, execution environment, dependencies or accepted product model changed.",
+  "nativeQualification": "Requires a fresh request after adoption and current preflights; not established by this source-pin update."
+}
