@@ -1,8 +1,6 @@
----
-pdac-scope: cited
----
-
 ## Purpose
+
+<!-- pdac-scope: cited -->
 
 Define engineering verification behavior for the independent repository delivery toolchain, preserving the accepted boundary that SoFa is an optional observer and verifier.
 <!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
