@@ -21,7 +21,7 @@
 
 - [ ] 4.1 Observe actual host registrations and committed adoption with source-safe receipt; distinguish real App limitations, fixtures and unobserved health/usage. Record independent supervision without restarting/cancelling runtime.
 - [ ] 4.2 Update implementation architecture/README/configuration docs and validate current ProductShape citations.
-- [ ] 4.3 Run full repository and hosted verification; independent final-head review every Done dimension, including acceptance, implementation completeness, tests, quality, security, architecture, docs, product/spec consistency, evidence, review and known limitations.
+- [ ] 4.3 Run full repository and hosted verification; configured isolated LunaHigh (`openai/gpt-6-luna#high`) final-head review with actual executor identity, distinct selected-model attestation and durable exact-head/decision evidence; review every Done dimension, including acceptance, implementation completeness, tests, quality, security, architecture, docs, product/spec consistency, evidence, review and known limitations.
 - [ ] 4.4 Integrate only after prerequisites and Done pass; synchronize/archive accepted specs through OpenSpec, merge with exact-head protections, check postmerge and record retrospective. Do not close future capacity/usage scope as implemented.
 
 <!-- pdac:cite id="FR-RUNTIME-HEALTH" digest="sha256:3566c2bc7919a04b15a3e0e89d2cc2947a9ba38962673d6eb67f7d4addb6dce2" -->
