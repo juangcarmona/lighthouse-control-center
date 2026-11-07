@@ -1,5 +1,7 @@
 # Proposal
 
+<!-- pdac-scope: cited -->
+
 ## Why
 
 The owner needs authenticated access to the operational workspace and a separately verified GitHub account before production identity is available. The existing anonymous read-only observer and empty Aspire AppHost do not provide that boundary.
@@ -22,7 +24,7 @@ The owner needs authenticated access to the operational workspace and a separate
 
 ### Modified Capabilities
 
-None. `/workspace/openspec` is absent in this checkout; no existing OpenSpec capability or active change was found to reuse. ProductShape remains the product authority; these specifications realize its applied authenticated-operations direction, not a replacement product model.
+None. Existing `factory-overview` and `delivery-verification` capabilities are now present on the current base. The former remains the separate legacy read-only observer contract; the authenticated successor preserves its observation data under the new owner/source boundary. ProductShape remains the product authority.
 
 ## Impact
 
@@ -34,4 +36,18 @@ Juan accepted .NET and Aspire for SoFa; ADR-0009 records that direction in this 
 
 Product basis: UC-ACCESS-FACTORY, FR-AUTHORIZED-ENTRY, QR-EXECUTION-SECURITY, QR-MOBILE-OPERATIONS, BR-LAN-PRIVILEGE-BOUNDARY and CON-TRUSTED-LAN under `docs/product/model/`, as applied by CHG-AUTHENTICATED-OPERATIONS-001. Preserve accepted ADR-0006. Juan accepted ADR-0007 on 2026-10-31; its status is recorded in this PR pending merge. ADR-0008 remains Proposed.
 
-Issue: <https://github.com/juangcarmona/sofa/issues/49>. The `planned` assessment means a complete candidate for Juan's review, not implementation permission. The `future` hold remains in force.
+Issue: <https://github.com/juangcarmona/sofa/issues/49>. The owner explicitly authorized implementing #49 and necessary dependencies on 2026-11-07, including lifting its development `future` hold, based on this reviewed proposal. The authorization is recorded in issue comment 6706085004. Production remains separate; actual provider/source/phone evidence and protected gates are still required.
+
+## Product grounding
+
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+
+<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:56eeb8a1f5a920882d473c57262a9c9da1de3c920c812570ae8ef45f4f3bfab8" -->
+
+<!-- pdac:cite id="FR-AUTHORIZED-ENTRY" digest="sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463" -->
+
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+
+<!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->

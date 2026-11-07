@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/juangcarmona/sofa/issues/88",
+  "observedDate": "2026-11-06",
+  "base": "6d623d636d3310828a27fd25cde00f0ac77d9a3d",
+  "packages": {
+    "@juangcarmona/lighthouse": {
+      "version": "0.12.42",
+      "integrity": "sha512-64WIZgKjxCQL1cqtjfpqpAbvUhM1EPnqCA9a7Y5pQSO+HLyaXsHBGeqU1sRtE3+qe06Q7zGOqYHFMbEhpTVZGQ=="
+    },
+    "@juangcarmona/lighthouse-sdlc": {
+      "version": "0.20.9",
+      "integrity": "sha512-Au23GpX7xywjnY03Wbc/Z2jacNlrZ/vJx8CsxRbLC0RY9zt1FtV0HsSBaB5MzNWSOVFzE18tyH6OXMrHgy9lFQ=="
+    }
+  },
+  "workflowSource": "9b165b590b415dcdb25de5a2f843c6fb30e9e445",
+  "compiler": "gh-aw 0.93.2",
+  "runner": {
+    "label": "lighthouse-workflow",
+    "observedStatus": "online",
+    "gatewayJobHookObserved": true,
+    "engineLockObserved": true
+  },
+  "environment": {
+    "profile": "dotnet",
+    "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+    "postgresImage": "sha256:858bb5e98eed02eb8cafbcdc007f9a65d1b613972028944a8ec2133ccaf80d27",
+    "officialPrerequisiteProbe": "passed",
+    "serviceCleanup": true
+  },
+  "models": {
+    "implementation": "openai/gpt-6.1-sol#medium",
+    "reviewer": "openai/gpt-6-luna#high",
+    "operatorResolution": "passed-distinct",
+    "providerReported": "unverified",
+    "liveProviderProbe": "not-run"
+  },
+  "github": {
+    "appSettingsNamesPresent": true,
+    "appInstallationProbe": "pending-default-branch-owner-dispatch",
+    "eligibleNativePush": "pending-separately-authorized-delivery",
+    "requiredCheck": {
+      "context": "verify",
+      "integrationId": 15368,
+      "strict": true
+    },
+    "rulesets": [
+      25811673,
+      25811689
+    ],
+    "evidenceProtectionObservation": "958e2cada0e7225f46f5b7119b2df20214f3bfaf5f745401e50c3bba55c05578"
+  },
+  "authorityValidation": {
+    "productShape": "0.23.0",
+    "lighthouseArcShapeValidator": "0.4.0",
+    "retainedDirectArcShape": "0.1.6",
+    "providerOwnedFilesChanged": false
+  },
+  "activation": {
+    "execution": false,
+    "merge": false,
+    "hotfix": false,
+    "defaultReviewRequired": true,
+    "issueOverrides": [],
+    "maintenanceEnabled": false,
+    "recoveryEnabled": false
+  },
+  "preservedOpenPrs": [
+    60,
+    71,
+    84
+  ]
+}

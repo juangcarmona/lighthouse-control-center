@@ -1,10 +1,12 @@
 # Design
 
+<!-- pdac-scope: cited -->
+
 ## Context
 
 See proposal.md for motivation and the three capability specifications for behavior. The current Node server serves fixed GET/HEAD assets and `/api/observations`, uses operator `gh` authentication and has no identity session. AppHost is empty; its project targets .NET 10 with Aspire 13.6.1. Existing tests cover bounded repository collection, cache coalescing, safe errors and a non-mutating observer.
 
-ProductShape's applied CHG-AUTHENTICATED-OPERATIONS-001 and canonical access/security/mobile rules authorize this slice. Some model frontmatter still says `draft`; the host-supplied accepted product record and applied change are the authority evidence, not an inferred promotion of every file. ADR-0006 is Accepted; Juan accepted ADR-0007 on 2026-10-31, recorded in this PR pending merge. ADR-0008 and the corresponding application views remain Proposed. This document is a reviewable implementation candidate, not a current-runtime claim.
+ProductShape's applied CHG-AUTHENTICATED-OPERATIONS-001 and canonical access/security/mobile rules authorize this slice. Some model frontmatter still says `draft`; the host-supplied accepted product record and applied change are the authority evidence, not an inferred promotion of every file. ADR-0006 is Accepted; Juan accepted ADR-0007 on 2026-10-31, recorded in this PR pending merge. ADR-0008 and the corresponding application views remain Proposed. The owner explicitly authorized development implementation and release of the `future` hold on 2026-11-07 (issue comment 6706085004). This plan still does not claim implemented runtime behavior or production readiness.
 
 ## Goals / Non-Goals
 
@@ -50,7 +52,7 @@ Revalidate the provider session synchronously when its last successful validatio
 
 Logout is an anti-CSRF-protected POST that removes the server ticket, connection credentials and caches before optional provider end-session redirect. An unavailable provider cannot preserve local access. Show that the provider may still hold SSO and distinguish local logout from global logout; any subsequent sign-in requires the fresh ceremony. An operator session invalidation is immediate.
 
-Alternatives: a long-lived encrypted browser ticket simplifies storage but prevents reliable server invalidation; password-only assurance and sliding sessions without an absolute cap are rejected for unattended phone use. More restrictive five-minute sessions or mandatory MFA on every refresh add friction without making provider revocation instantaneous. These chosen values are explicit proposal decisions for Juan's review, not previously approved product constants.
+Alternatives: a long-lived encrypted browser ticket simplifies storage but prevents reliable server invalidation; password-only assurance and sliding sessions without an absolute cap are rejected for unattended phone use. More restrictive five-minute sessions or mandatory MFA on every refresh add friction without making provider revocation instantaneous. The owner authorized this concrete development proposal on 2026-11-07; these are explicit development implementation choices, not general ProductShape constants.
 
 ### 4. Explicit GitHub App user authorization
 
@@ -80,11 +82,11 @@ Apply no-store to protected content, restrictive CSP with only the required same
 - [Broad installation or insufficient user grants] → Select only test repositories, display current effective authority and fail closed on uncertainty.
 - [Process-local credentials force reauthentication after restart] → Make this explicit in UI/runbooks and test it; do not introduce an unreviewed persistent store.
 - [Remote provider revocation is not instantaneous] → Publish the five-minute maximum revalidation interval, deny when due validation fails, and invalidate recognized revocation immediately.
-- [Proposed architecture could be mistaken for approval] → Preserve ADR status and require Juan's explicit architecture/session decision and release of the `future` hold before implementation.
+- [Proposed architecture could be mistaken for approval] → Preserve the accepted ADRs and the recorded 2026-11-07 authorization; no production readiness or new owner-only decision is inferred.
 
 ## Migration Plan
 
-After explicit owner approval only: add the new workspace and tests, compose it with isolated Keycloak, then switch the documented supported Aspire entrypoint to the authenticated successor. Do not launch both public surfaces. Keep Node collector and observer tests clearly identified as legacy compatibility coverage until intentionally retired; adjust browser tests to target the new protected entrypoint and retain authenticated source presentation coverage.
+Under the recorded development authorization: add the new workspace and tests, compose it with isolated Keycloak, then switch the documented supported Aspire entrypoint to the authenticated successor. Do not launch both public surfaces. Keep Node collector and observer tests clearly identified as legacy compatibility coverage until intentionally retired; adjust browser tests to target the new protected entrypoint and retain authenticated source presentation coverage.
 
 Rollback stops the new development workspace and discards process-local sessions/connections. It must not silently restore anonymous network access or change repository execution. A separately invoked historical observer remains non-privileged and is not an authenticated fallback. No source mutation or execution migration is required. Update canonical architecture views using their owning skill as implementation progresses, clearly separating implemented facts from proposed work. ADR-0008 is not a prerequisite.
 
@@ -99,4 +101,18 @@ Rollback stops the new development workspace and discards process-local sessions
 
 ## Review boundary and setup values
 
-There is no unresolved design choice hidden in the task list. Juan accepted the .NET/Aspire direction; he may accept or request changes to the candidate MFA/session values and ephemeral development storage before implementation. Operator-selected DNS names/ports, certificates, exact configured subject, development GitHub App registration and designated test repository can be supplied later without changing these contracts or slices. Never request credentials in a public issue or proposal. Production credential storage and provider provisioning remain separately unresolved under #58, not claims of this proposal.
+There is no unresolved design choice hidden in the task list. Juan accepted .NET/Aspire and authorized this concrete development proposal, including its session/assurance policy and process-local storage, on 2026-11-07. Material deviations still require explicit review. Operator-selected DNS names/ports, certificates, exact configured subject, development GitHub App registration and designated test repository can be supplied later without changing these contracts or slices. Never request credentials in a public issue or proposal. Production credential storage and provider provisioning remain separately unresolved under #58, not claims of this proposal.
+
+## Product grounding
+
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+
+<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:56eeb8a1f5a920882d473c57262a9c9da1de3c920c812570ae8ef45f4f3bfab8" -->
+
+<!-- pdac:cite id="FR-AUTHORIZED-ENTRY" digest="sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463" -->
+
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+
+<!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->

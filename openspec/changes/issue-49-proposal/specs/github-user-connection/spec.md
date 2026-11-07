@@ -2,6 +2,8 @@
 
 ## Purpose
 
+<!-- pdac-scope: cited -->
+
 Associate the signed-in owner with an explicitly authorized GitHub user and expose current repository authority without requesting repository execution.
 
 ## ADDED Requirements
@@ -9,6 +11,8 @@ Associate the signed-in owner with an explicitly authorized GitHub user and expo
 ### Requirement: Explicit actor-preserving connection
 
 An authenticated owner SHALL explicitly initiate GitHub user authorization independently of provider login. SoFa MUST verify the source user, bind the connection to the initiating owner session and display the verified account. Email matching, operator credentials and installation bot tokens MUST NOT substitute for user authority.
+
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 
 #### Scenario: Explicit connection
 
@@ -29,6 +33,7 @@ An authenticated owner SHALL explicitly initiate GitHub user authorization indep
 ### Requirement: Current repository authority
 
 SoFa SHALL check the actual connected user's permissions and application grants for the configured repository on the server. It MUST distinguish readable repository access from authority needed by a dependent operation and MUST NOT use cached observations as permission evidence.
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 
 #### Scenario: Designated repository is authorized
 
@@ -45,6 +50,8 @@ SoFa SHALL check the actual connected user's permissions and application grants 
 ### Requirement: Connection lifecycle without execution
 
 Missing, expired, revoked or disconnected source authority SHALL block dependent operations. Source authority MUST be rechecked before each dependent operation; connection status displayed as current MUST be revalidated at least every five minutes. Link, reconnect and disconnect MUST NOT request repository work.
+
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
 
 #### Scenario: Source permission is lost
 

@@ -4,7 +4,7 @@ name: implement
 description: Plan and implement an authorized issue in an isolated workspace and deliver a reviewable PR.
 run-name: "implement #${{ inputs.issue }} · request ${{ inputs.dispatch-request }}"
 concurrency:
-  group: lighthouse-issue-${{ inputs.issue }}
+  group: ${{ inputs.epic-parent && format('lighthouse-epic-child-{0}', inputs.issue) || format('lighthouse-issue-{0}', inputs.issue) }}
   cancel-in-progress: false
   queue: max
   job-discriminator: ${{ github.run_id }}
@@ -21,6 +21,10 @@ on:
         description: Authenticated router receipt comment ID
         required: true
         type: string
+      epic-parent:
+        description: Authenticated parent issue for shared epic serialization
+        required: false
+        type: string
   needs: [prepare]
 if: needs.prepare.outputs.eligible == 'true'
 runs-on: [self-hosted, linux, lighthouse-workflow]
@@ -28,6 +32,8 @@ runs-on-slim: ubuntu-24.04
 timeout-minutes: 55
 env:
   LIGHTHOUSE_RECOVERY_ENABLED: ${{ vars.LIGHTHOUSE_RECOVERY_ENABLED }}
+  LIGHTHOUSE_MAINTENANCE_ISSUES: ${{ vars.LIGHTHOUSE_MAINTENANCE_ISSUES }}
+  LIGHTHOUSE_EPIC_CAPACITY: ${{ vars.LIGHTHOUSE_EPIC_CAPACITY }}
   LIGHTHOUSE_STAGE: implement
   LIGHTHOUSE_DISPATCH_REQUIRED: "true"
 permissions:
@@ -67,8 +73,8 @@ steps:
     uses: actions/checkout@v5
     with:
       repository: juangcarmona/lighthouse
-      ref: 806223d06302628d25791e42e35b609ca6e1d32c
-      path: tools
+      ref: dd1694735391f54241604a1686ccd627de7b2036
+      path: .lighthouse-harness
       persist-credentials: false
   - name: Load the authorized issue context
     uses: actions/download-artifact@v8
@@ -77,7 +83,7 @@ steps:
       path: ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}
 post-steps:
   - name: Validate the Lighthouse result
-    run: node tools/src/packages/sdlc/src/issue-actions.mjs validate
+    run: node .lighthouse-harness/src/packages/sdlc/src/issue-actions.mjs validate
   - name: Preserve the result and runtime receipt
     if: always()
     uses: actions/upload-artifact@v7
@@ -86,6 +92,7 @@ post-steps:
       path: |
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/envelope.json
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/runtime.json
+        ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/engine-error.json
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/changes.json
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/checks.json
       if-no-files-found: error
@@ -108,6 +115,10 @@ post-steps:
       retention-days: 14
 jobs:
   prepare:
+    concurrency:
+      group: ${{ inputs.epic-parent && format('lighthouse-issue-{0}', inputs.epic-parent) || format('lighthouse-prepare-{0}', github.run_id) }}
+      cancel-in-progress: false
+      queue: max
     outputs:
       eligible: ${{ steps.prepare.outputs.eligible }}
       source_revision: ${{ steps.prepare.outputs.source_revision }}
@@ -115,15 +126,17 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       actions: read
+      checks: read
       contents: read
       issues: write
+      pull-requests: read
     env:
       LIGHTHOUSE_ISSUE: ${{ inputs.issue }}
     steps:
       - uses: actions/checkout@v5
         with:
           repository: juangcarmona/lighthouse
-          ref: 806223d06302628d25791e42e35b609ca6e1d32c
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -145,10 +158,33 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_PREPARE_FAILED: "true"
         run: node src/packages/sdlc/src/issue-actions.mjs cleanup
+      - name: Observe workflow telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/telemetry-workflow.mjs
+      - name: Preserve workflow telemetry
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-telemetry-${{ github.job }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gh-aw/telemetry/*.jsonl
+            ${{ runner.temp }}/gh-aw/telemetry/????????-????-????-????-????????????.json
+            ${{ runner.temp }}/gh-aw/telemetry/export-health.json
+          if-no-files-found: ignore
+          retention-days: 14
   publish:
+    concurrency:
+      group: ${{ inputs.epic-parent && format('lighthouse-issue-{0}', inputs.epic-parent) || format('lighthouse-publish-{0}', github.run_id) }}
+      cancel-in-progress: false
+      queue: max
     name: Validate, publish and release
-    needs: [prepare, agent]
+    needs: [prepare, pre_activation, activation, agent]
     if: always() && needs.prepare.result == 'success' && needs.prepare.outputs.eligible == 'true'
     runs-on: ubuntu-24.04
     permissions:
@@ -162,7 +198,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: juangcarmona/lighthouse
-          ref: 806223d06302628d25791e42e35b609ca6e1d32c
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -187,12 +223,59 @@ jobs:
         if: needs.agent.result == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_CI_APP_CLIENT_ID: ${{ vars.LIGHTHOUSE_CI_APP_CLIENT_ID }}
+          LIGHTHOUSE_CI_APP_PRIVATE_KEY: ${{ secrets.LIGHTHOUSE_CI_APP_PRIVATE_KEY }}
         run: node src/packages/sdlc/src/issue-actions.mjs publish
+      - name: Preserve authenticated command evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-command-evidence-${{ inputs.issue }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/implementation-evidence.json
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Preserve the publication receipt
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-implement-publication-${{ inputs.issue }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/published-pr.json
+            ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/ci-requests.json
+            ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/ci-failure.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Release the issue reservation
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_PRE_ACTIVATION_RESULT: ${{ needs.pre_activation.result }}
+          LIGHTHOUSE_ACTIVATION_RESULT: ${{ needs.activation.result }}
+          LIGHTHOUSE_AGENT_RESULT: ${{ needs.agent.result }}
+          LIGHTHOUSE_PUBLISH_STATUS: ${{ job.status }}
         run: node src/packages/sdlc/src/issue-actions.mjs cleanup
+      - name: Request the verified product prerequisite
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/issue-actions.mjs continue-product-gap
+      - name: Observe workflow telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/telemetry-workflow.mjs
+      - name: Preserve workflow telemetry
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-telemetry-${{ github.job }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gh-aw/telemetry/*.jsonl
+            ${{ runner.temp }}/gh-aw/telemetry/????????-????-????-????-????????????.json
+            ${{ runner.temp }}/gh-aw/telemetry/export-health.json
+          if-no-files-found: ignore
+          retention-days: 14
 ---
 
 # Plan and implement the issue

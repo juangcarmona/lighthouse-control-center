@@ -28,6 +28,7 @@ runs-on-slim: ubuntu-24.04
 timeout-minutes: 15
 env:
   LIGHTHOUSE_RECOVERY_ENABLED: ${{ vars.LIGHTHOUSE_RECOVERY_ENABLED }}
+  LIGHTHOUSE_MAINTENANCE_ISSUES: ${{ vars.LIGHTHOUSE_MAINTENANCE_ISSUES }}
   LIGHTHOUSE_STAGE: integrate
   LIGHTHOUSE_DISPATCH_REQUIRED: "true"
 permissions:
@@ -67,8 +68,8 @@ steps:
     uses: actions/checkout@v5
     with:
       repository: juangcarmona/lighthouse
-      ref: 806223d06302628d25791e42e35b609ca6e1d32c
-      path: tools
+      ref: dd1694735391f54241604a1686ccd627de7b2036
+      path: .lighthouse-harness
       persist-credentials: false
   - name: Load the authorized issue context
     uses: actions/download-artifact@v8
@@ -77,7 +78,7 @@ steps:
       path: ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}
 post-steps:
   - name: Validate the Lighthouse result
-    run: node tools/src/packages/sdlc/src/completion-actions.mjs validate
+    run: node .lighthouse-harness/src/packages/sdlc/src/completion-actions.mjs validate
   - name: Preserve the result and runtime receipt
     if: always()
     uses: actions/upload-artifact@v7
@@ -86,6 +87,7 @@ post-steps:
       path: |
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/envelope.json
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/runtime.json
+        ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/engine-error.json
       if-no-files-found: error
       retention-days: 14
   - name: Preserve OpenCode diagnostic events
@@ -115,7 +117,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: juangcarmona/lighthouse
-          ref: 806223d06302628d25791e42e35b609ca6e1d32c
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -137,7 +139,26 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_PREPARE_FAILED: "true"
         run: node src/packages/sdlc/src/completion-actions.mjs cleanup
+      - name: Observe workflow telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/telemetry-workflow.mjs
+      - name: Preserve workflow telemetry
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-telemetry-${{ github.job }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gh-aw/telemetry/*.jsonl
+            ${{ runner.temp }}/gh-aw/telemetry/????????-????-????-????-????????????.json
+            ${{ runner.temp }}/gh-aw/telemetry/export-health.json
+          if-no-files-found: ignore
+          retention-days: 14
   publish:
     concurrency:
       group: lighthouse-process-publication
@@ -158,7 +179,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: juangcarmona/lighthouse
-          ref: 806223d06302628d25791e42e35b609ca6e1d32c
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -198,7 +219,27 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_AGENT_RESULT: ${{ needs.agent.result }}
+          LIGHTHOUSE_PUBLISH_STATUS: ${{ job.status }}
         run: node src/packages/sdlc/src/completion-actions.mjs cleanup
+      - name: Observe workflow telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/telemetry-workflow.mjs
+      - name: Preserve workflow telemetry
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-telemetry-${{ github.job }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gh-aw/telemetry/*.jsonl
+            ${{ runner.temp }}/gh-aw/telemetry/????????-????-????-????-????????????.json
+            ${{ runner.temp }}/gh-aw/telemetry/export-health.json
+          if-no-files-found: ignore
+          retention-days: 14
 ---
 
 # Integrate the accepted delivery

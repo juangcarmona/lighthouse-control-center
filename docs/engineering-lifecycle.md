@@ -1,6 +1,6 @@
 # Engineering lifecycle
 
-**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-10-27
+**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-11-07
 
 ## Definition of Ready
 
@@ -78,6 +78,7 @@ The commands that produce the deterministic lane's evidence. `verify-like-ci` de
 | Markdown lint | `npm run lint:docs` | Markdown conventions pass for repository-owned documents |
 | Product model | `npm run product:validate` | ProductShape validates the model and Product Changes |
 | Managed integrations | `npm run product:integrity` and `npm run product:doctor` | ProductShape-managed files match the checked-in configuration |
+| Delivery specifications | `npm run spec:validate` and `npm run product:citations` | OpenSpec validates current specs/changes; ProductShape verifies document scope and product citations |
 | Architecture docs | `npm run architecture:check` | ArcShape validates all twelve arc42 sections |
 | Secret scanning | `npm run security:check` | Gitleaks scans all refs, staged changes, and the working tree with redacted output |
 | CI | GitHub Actions `verify` workflow | Repository verification passes on the proposed commit |
@@ -132,11 +133,11 @@ Invoke `/agentic-sdlc:ff <work-item-id>` in Claude Code or `ff <work-item-id>` i
 
 | Setting | This project requires |
 | --- | --- |
-| Enabled | Yes when the active harness can attest a distinct reviewer model |
-| Executor and reviewer | Resolve at run time; reviewer must be a different model |
-| Maximum correction rounds | 3 per gate |
+| Enabled | Native FF is enabled with delegated merge for the exact issue #99 override; supervised defaults remain owner-reviewed. See the [bounded grant](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
+| Executor and reviewer | Native project profiles select Sol Medium and Luna High; private operator resolution must attest distinct models and available capabilities before execution |
+| Maximum correction rounds | Native unattended: 1 shared plan/candidate correction; portable FF: 3 per gate |
 | Substitutable judgement items | None by default; owner remains responsible for every Definition of Done judgement item |
-| Durable evidence | `docs/delivery/ff/<work-item-id>/<run-id>/run.json` and `summary.md` |
+| Durable evidence | Portable FF: `docs/delivery/ff/<work-item-id>/<run-id>/run.json` and `summary.md`; native: bound Actions receipts and the adopted protected evidence branch |
 | Human-only or protected gates | Product-scope and accepted-decision changes, owner-only judgements, required forge approvals, deployment, and repository red lines |
 
 `/ff` may prepare and update a PR, push its branch, and merge only when every configured gate passes and the forge permits it. The routine PR review can be performed by the configured independent reviewer; owner-only decisions and deployment still stop automation.
@@ -184,7 +185,7 @@ Project-owned role adaptations are sourced from `.agents/skills/`; `.claude/skil
 
 ## Provided roles
 
-No specification framework is installed. No plan-artifact roles are provided externally; delivery planning uses native plan mode and durable Markdown plans under `docs/delivery/plans/` when a work item needs one.
+OpenSpec 1.15.0 provides the delivery plan artifacts: proposal, design, tasks and applicable specification deltas under `openspec/changes/`. Lighthouse's native proposal and implementation providers invoke the pinned OpenSpec workflow and validate its artifacts. Read the [adopter configuration and current specification inventory](../openspec/README.md) before planning. ProductShape remains the product authority; OpenSpec delivery artifacts consume its scope and citation rules. The shared lifecycle stages, review gates and human-only decisions above remain in force. Existing Markdown plans under `docs/delivery/plans/` remain historical evidence.
 
 ## Amendment log
 
@@ -194,3 +195,7 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 | --- | --- | --- | --- |
 | 2026-10-19 | All | Initial adoption of the shared lifecycle | Align SoFa with the Agentic SDLC practices used across the other repositories |
 | 2026-10-28 | Issue labels, stages, gates and WIP | Use the installed Lighthouse SDLC contract as the workflow authority; remove the parallel `status:*` convention | Lighthouse 0.15.0 supplies request labels, gates, state evidence, reservations and PR projections |
+| 2026-11-06 | Fast Forward | Adopt disabled native FF, narrow scope, verification integrity and distinct reviewer profiles | Owner-authorized #88 adoption; first delivery and merge remain separately authorized |
+| 2026-11-07 | Fast Forward | Enable native FF and merge for issue #90 with two exact test corrections; keep supervised defaults | Owner explicitly authorized autonomous delivery, merge:true and the first read-only operational view |
+| 2026-11-07 | Provided roles and deterministic checks | Install pinned OpenSpec delivery planning and ProductShape citation checks; freeze configuration and schemas as verification inputs | Complete the owner-authorized adoption and resumption after native #90 planning identified missing prerequisites |
+| 2026-11-07 | Fast Forward | Replace the closed #90 grant with the exact #99 observer qualification grant | Owner authorized completing #88 and necessary delivery; preserve supervised defaults, write scope, budgets and all protected gates |

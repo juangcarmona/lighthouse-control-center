@@ -1,0 +1,69 @@
+{
+  "head": "fe481d779fae1f8aacc4aba0d3b131cfeb49e046",
+  "verdict": "accept",
+  "findings": [],
+  "dimensions": [
+    {
+      "name": "Acceptance criteria",
+      "status": "pass",
+      "evidence": "The #90 retrospective is recorded with the missing-effort caveat; the absolute-XDG/unset/relative cache regression has red/green evidence and restricted-container reproduction; the published CLI 0.12.53/SDLC 0.21.4 tuple and exact #99 grant are adopted. The issue and native qualification remain explicitly open."
+    },
+    {
+      "name": "Implementation completeness",
+      "status": "pass",
+      "evidence": "The authorized maintenance slice is complete: cache selection changed without altering scan controls, official installers update owned Lighthouse projections, and the narrowly scoped #99 grant replaces the completed #90 override. Future #99 delivery and #88 qualification are correctly left pending."
+    },
+    {
+      "name": "Tests",
+      "status": "pass",
+      "evidence": "Supplied candidate receipt records npm ci and full verify passing (35 Node, 38 .NET, 12 browser tests); scanner regression is recorded red on old behavior and 17/17 passing in the pinned restricted container, including ignored-secret detection and redaction."
+    },
+    {
+      "name": "Quality checks",
+      "status": "pass",
+      "evidence": "Candidate receipt records successful Lighthouse verify, lighthouse-guard verify, gh-aw compile validation, and actionlint for App preflight and verify workflows. Current-head hosted Verify Lighthouse foundation and verify checks both completed successfully (runs 42367879225 and 42367879103)."
+    },
+    {
+      "name": "Security",
+      "status": "pass",
+      "evidence": "Scanner checksum and binary-version validation, ignored-secret coverage/redaction, lock ownership and scanning inputs are retained. Policy-control evidence covers frozen verification inputs, scope denials, repository-only App token/revocation and owner-only preflight. No authentication or production behavior is introduced; eight existing npm advisories are disclosed."
+    },
+    {
+      "name": "Architecture / design conformance",
+      "status": "pass",
+      "evidence": "Cache placement and published delivery-adapter adoption do not change application trust boundaries. The change preserves ProductShape/architecture authority and does not expand auth, mount, concurrency, or production scope."
+    },
+    {
+      "name": "Documentation",
+      "status": "pass",
+      "evidence": "The approved #90 retrospective, maintenance evidence/limitations, and continuing native qualification gate are documented in docs/reviews/issue-90.md and docs/delivery/evidence/issue-88/."
+    },
+    {
+      "name": "Product / spec consistency",
+      "status": "pass",
+      "evidence": "The maintenance changes no product behavior or accepted ProductShape baseline. Existing OpenSpec/ProductShape verification is included in the successful full verify receipt."
+    },
+    {
+      "name": "Evidence",
+      "status": "pass",
+      "evidence": "Source-bound candidate checks and current-head hosted CI receipts are supplied. Evidence explicitly distinguishes this prerequisite maintenance from native qualification; no unavailable native run or human/provider qualification is claimed."
+    },
+    {
+      "name": "Human review",
+      "status": "pass",
+      "evidence": "Independent review of this exact candidate head completed; the change preserves the owner-approved boundaries and reports no actionable defect."
+    },
+    {
+      "name": "Known limitations",
+      "status": "pass",
+      "evidence": "The original #90 native run remains blocked; default-branch preflight and a fresh #99 native plan-to-post-merge chain remain pending. These are explicitly stated as prerequisites, not passed qualification or grounds to reject this maintenance candidate."
+    }
+  ],
+  "kind": "candidate",
+  "issue": 88,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-07T11:25:52.124Z",
+  "sourceReadOnly": true,
+  "requestPath": "/tmp/sofa-review-88-candidate-fe481d779f-3c00f1c8/context.json"
+}

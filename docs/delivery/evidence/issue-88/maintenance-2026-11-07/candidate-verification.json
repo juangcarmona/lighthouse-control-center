@@ -1,0 +1,51 @@
+{
+  "scope": "PR98 maintenance candidate; not native qualification",
+  "checks": [
+    {
+      "command": "npm ci",
+      "exitCode": 0
+    },
+    {
+      "command": "DOTNET_PROCESSOR_COUNT=2 MSBUILDDISABLENODEREUSE=1 CI=true npm run verify",
+      "exitCode": 0,
+      "nodeTests": 35,
+      "dotnetTests": 38,
+      "browserTests": 12,
+      "logSha256": "0e15e301307b362d8c0bdbb5b243865351539e6a374fa96f2c1c3858b987d970"
+    },
+    {
+      "command": "lighthouse verify --format json",
+      "exitCode": 0
+    },
+    {
+      "command": "node scripts/lighthouse-guard.mjs verify",
+      "exitCode": 0
+    },
+    {
+      "command": "gh aw compile --validate --no-emit --no-check-update",
+      "exitCode": 0
+    },
+    {
+      "command": "actionlint App preflight and verify workflows",
+      "exitCode": 0
+    }
+  ],
+  "requiredCheck": {
+    "context": "verify",
+    "integrationId": 15368,
+    "strict": true,
+    "requiredHumanApprovals": 0
+  },
+  "protection": [
+    {
+      "id": 25811689,
+      "revision": "958e2cada0e7225f46f5b7119b2df20214f3bfaf5f745401e50c3bba55c05578"
+    }
+  ],
+  "limitations": [
+    "Original90 native execution remains blocked; operator completion is not qualification.",
+    "99 actual native chain and default-branch preflight remain pending after98.",
+    "npm reports 8 existing toolchain advisories: 5 low, 3 high.",
+    "This maintenance has no architecture documentation impact: scanner cache placement and published delivery adapters leave application trust boundaries unchanged."
+  ]
+}

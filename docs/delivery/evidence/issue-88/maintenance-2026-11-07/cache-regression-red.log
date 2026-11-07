@@ -1,0 +1,30 @@
+✖ scanner honors only absolute XDG cache roots while retaining platform defaults (88.922262ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 168.992849
+
+✖ failing tests:
+
+test at tests/security/check-secrets.test.mjs:18:1
+✖ scanner honors only absolute XDG cache roots while retaining platform defaults (88.922262ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '/tmp/sofa-cache-home-zPhKjW/.cache/sofa'
+  - '/tmp/sofa-cache-home-zPhKjW/executable-cache/sofa'
+  
+      at TestContext.<anonymous> (file:///home/juan/.codex/worktrees/sofa-autonomous-ops/sofa/tests/security/check-secrets.test.mjs:32:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '/tmp/sofa-cache-home-zPhKjW/.cache/sofa',
+    expected: '/tmp/sofa-cache-home-zPhKjW/executable-cache/sofa',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

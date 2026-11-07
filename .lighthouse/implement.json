@@ -2,7 +2,122 @@
   "defaults": {
     "reviewRequired": true,
     "scope": "Implement only the issue and its acceptance criteria. Preserve SoFa product and architecture authority; owner review and the full host CI suite remain required before integration.",
-    "paths": ["*"],
-    "checks": [["npm", "ci", "--ignore-scripts"], ["env", "CI=true", "npm", "run", "verify:container"]]
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/"
+      ],
+      "corrections": {}
+    }
+  },
+  "99": {
+    "reviewRequired": false,
+    "scope": "Deliver only issue #99: expose source run attempts and triggering events in the existing read-only observer. Independent planning/candidate acceptance and merge are delegated after trusted checks and forge requirements pass. Preserve all existing safety assertions and frozen verification inputs. No authentication, production deployment or broader issue completion.",
+    "paths": [
+      "src/observation/",
+      "src/web/",
+      "tests/observation.test.mjs",
+      "tests/browser/observation.spec.mjs",
+      "README.md"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/",
+        "tests/observation.test.mjs",
+        "tests/browser/observation.spec.mjs"
+      ],
+      "corrections": {
+        "tests/observation.test.mjs": "Issue #99: extend source run attempt/event coverage, including absent and malformed values. Preserve existing source, unavailable-evidence, timestamp and read-only assertions.",
+        "tests/browser/observation.spec.mjs": "Issue #99: exercise known and unknown source attempt/event values in operational cards. Preserve all source-link, stale-evidence, filter, keyboard and accessibility assertions."
+      }
+    }
   }
 }

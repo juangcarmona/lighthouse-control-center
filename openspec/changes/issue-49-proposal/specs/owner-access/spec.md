@@ -2,6 +2,8 @@
 
 ## Purpose
 
+<!-- pdac-scope: cited -->
+
 Protect operational factory content with explicit owner authentication and bounded sessions while supporting desktop and phone use on private networks.
 
 ## ADDED Requirements
@@ -9,6 +11,9 @@ Protect operational factory content with explicit owner authentication and bound
 ### Requirement: Owner-only operational access
 
 SoFa SHALL authenticate operational reads and writes on the server and admit only the configured exact issuer/subject pair. Network location, display name, email or provider sign-in alone MUST NOT grant access.
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 
 #### Scenario: Configured owner enters
 
@@ -28,6 +33,7 @@ SoFa SHALL authenticate operational reads and writes on the server and admit onl
 ### Requirement: Authentication ceremony
 
 SoFa SHALL use authorization-code flow with PKCE S256 and verify issuer, audience, signature, lifetime, state and nonce. The candidate policy requires provider-enforced password plus TOTP, verified through its configured assurance claim and authentication time. No local password bypass SHALL exist.
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
 
 #### Scenario: Fresh sufficiently assured login
 
@@ -47,6 +53,7 @@ SoFa SHALL use authorization-code flow with PKCE S256 and verify issuer, audienc
 ### Requirement: Bounded server sessions
 
 The candidate session policy SHALL expire access after 15 minutes without authenticated user activity or four hours from provider authentication, whichever occurs first. Automated polling MUST NOT renew inactivity. Reauthentication at the absolute limit MUST require a fresh provider ceremony; refresh MUST NOT extend that limit.
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
 
 #### Scenario: Idle and absolute expiry
 
@@ -61,6 +68,7 @@ The candidate session policy SHALL expire access after 15 minutes without authen
 ### Requirement: Revocation and provider failure
 
 SoFa SHALL revalidate provider session authority at least every five minutes during use and block protected requests when due validation cannot succeed. Recognized revocation MUST invalidate local access immediately. Provider failure MUST NOT extend a deadline or grant a bypass.
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
 
 #### Scenario: Provider unavailable
 
@@ -76,6 +84,7 @@ SoFa SHALL revalidate provider session authority at least every five minutes dur
 ### Requirement: Credential containment
 
 Provider and GitHub tokens and session tickets SHALL remain server-side and MUST NOT appear in browser storage, page content, logs or retained evidence. Browser session references MUST use Secure, HttpOnly cookies; protected responses MUST prevent shared caching.
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
 
 #### Scenario: Browser and evidence inspection
 
@@ -86,6 +95,9 @@ Provider and GitHub tokens and session tickets SHALL remain server-side and MUST
 ### Requirement: Protected session mutations
 
 Logout and application/source-connection mutations SHALL require server-enforced anti-CSRF checks. Logout MUST invalidate the server session before attempting provider logout. Session loss MUST NOT cancel independent repository execution.
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
 
 #### Scenario: Cross-site request rejected
 
@@ -101,6 +113,9 @@ Logout and application/source-connection mutations SHALL require server-enforced
 ### Requirement: Authenticated observation successor
 
 The supported workspace SHALL protect observation pages and APIs and obtain repository data only within the connected user's configured source scope. It MUST NOT expose the legacy anonymous listener or fall back to operator GitHub CLI authority.
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 
 #### Scenario: Owner has no source connection
 
@@ -116,6 +131,9 @@ The supported workspace SHALL protect observation pages and APIs and obtain repo
 ### Requirement: Accessible desktop and phone entry
 
 The owner SHALL be able to sign in, sign out and connect GitHub on desktop and a real phone over LAN/VPN. Desktop controls MUST be keyboard-accessible with visible focus, clear identity labels and understandable denial/retry messages.
+<!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->
+
+<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:56eeb8a1f5a920882d473c57262a9c9da1de3c920c812570ae8ef45f4f3bfab8" -->
 
 #### Scenario: Desktop keyboard journey
 

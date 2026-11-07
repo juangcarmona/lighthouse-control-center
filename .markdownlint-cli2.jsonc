@@ -12,6 +12,7 @@
     "**/obj/**",
     ".agents/**",
     ".claude/**",
-    ".product/**"
+    ".product/**",
+    "openspec/schemas/**"
   ]
 }

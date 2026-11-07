@@ -28,6 +28,7 @@ runs-on-slim: ubuntu-24.04
 timeout-minutes: 15
 env:
   LIGHTHOUSE_RECOVERY_ENABLED: ${{ vars.LIGHTHOUSE_RECOVERY_ENABLED }}
+  LIGHTHOUSE_MAINTENANCE_ISSUES: ${{ vars.LIGHTHOUSE_MAINTENANCE_ISSUES }}
   LIGHTHOUSE_STAGE: propose
   LIGHTHOUSE_DISPATCH_REQUIRED: "true"
 permissions:
@@ -67,8 +68,8 @@ steps:
     uses: actions/checkout@v5
     with:
       repository: juangcarmona/lighthouse
-      ref: 806223d06302628d25791e42e35b609ca6e1d32c
-      path: tools
+      ref: dd1694735391f54241604a1686ccd627de7b2036
+      path: .lighthouse-harness
       persist-credentials: false
   - name: Load the authorized issue context
     uses: actions/download-artifact@v8
@@ -77,7 +78,7 @@ steps:
       path: ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}
 post-steps:
   - name: Validate the Lighthouse result
-    run: node tools/src/packages/sdlc/src/issue-actions.mjs validate
+    run: node .lighthouse-harness/src/packages/sdlc/src/issue-actions.mjs validate
   - name: Preserve the result and runtime receipt
     if: always()
     uses: actions/upload-artifact@v7
@@ -86,6 +87,7 @@ post-steps:
       path: |
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/envelope.json
         ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/runtime.json
+        ${{ runner.temp }}/lighthouse-${{ github.run_id }}-${{ github.run_attempt }}/engine-error.json
       if-no-files-found: error
       retention-days: 14
   - name: Preserve OpenCode diagnostic events
@@ -105,6 +107,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       actions: read
+      checks: read
       contents: read
       issues: write
       pull-requests: read
@@ -114,7 +117,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: juangcarmona/lighthouse
-          ref: 806223d06302628d25791e42e35b609ca6e1d32c
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -136,13 +139,33 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_PREPARE_FAILED: "true"
         run: node src/packages/sdlc/src/issue-actions.mjs cleanup
+      - name: Observe workflow telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/telemetry-workflow.mjs
+      - name: Preserve workflow telemetry
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-telemetry-${{ github.job }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gh-aw/telemetry/*.jsonl
+            ${{ runner.temp }}/gh-aw/telemetry/????????-????-????-????-????????????.json
+            ${{ runner.temp }}/gh-aw/telemetry/export-health.json
+          if-no-files-found: ignore
+          retention-days: 14
   publish:
     name: Validate, publish and release
-    needs: [prepare, agent]
+    needs: [prepare, pre_activation, activation, agent]
     if: always() && needs.prepare.result == 'success' && needs.prepare.outputs.eligible == 'true'
     runs-on: ubuntu-24.04
     permissions:
+      actions: write
       contents: write
       issues: write
       pull-requests: write
@@ -152,7 +175,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           repository: juangcarmona/lighthouse
-          ref: 806223d06302628d25791e42e35b609ca6e1d32c
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -182,7 +205,33 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          LIGHTHOUSE_PRE_ACTIVATION_RESULT: ${{ needs.pre_activation.result }}
+          LIGHTHOUSE_ACTIVATION_RESULT: ${{ needs.activation.result }}
+          LIGHTHOUSE_AGENT_RESULT: ${{ needs.agent.result }}
+          LIGHTHOUSE_PUBLISH_STATUS: ${{ job.status }}
         run: node src/packages/sdlc/src/issue-actions.mjs cleanup
+      - name: Request the verified product prerequisite
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/issue-actions.mjs continue-product-gap
+      - name: Observe workflow telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node src/packages/sdlc/src/telemetry-workflow.mjs
+      - name: Preserve workflow telemetry
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-telemetry-${{ github.job }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gh-aw/telemetry/*.jsonl
+            ${{ runner.temp }}/gh-aw/telemetry/????????-????-????-????-????????????.json
+            ${{ runner.temp }}/gh-aw/telemetry/export-health.json
+          if-no-files-found: ignore
+          retention-days: 14
 ---
 
 # Propose the authorized change
@@ -191,6 +240,6 @@ Execute only `propose` using the trusted context in `/input/context.json` and th
 
 Write brief public progress before source inspection and when you choose an approach or find a blocker. Explain the decision and supporting evidence. Keep tool payloads out of progress messages.
 
-Follow `context.proposal.instructions` from the pinned OpenSpec provider, in order: proposal, specifications and design, then tasks. Return the actual Markdown files in `result.output.files`, each with `path` and `content`, under the authorized `context.proposal.root`. Include a concise proposal, design alternatives and trade-offs, testable specification scenarios, dependency-ordered unchecked tasks, validation and visual evidence plans where applicable. Every refined acceptance criterion needs a corresponding task or specification. Preserve existing product authority. Keep unresolved product decisions explicit rather than inventing approval.
+Follow `context.proposal.instructions` from the pinned OpenSpec provider, in order: proposal, specifications and design, then tasks. Return the actual Markdown files in `result.output.files`, each with `path` and `content`, under the authorized `context.proposal.root`. Include a concise proposal, design alternatives and trade-offs, dependency-ordered unchecked tasks, validation and visual evidence plans where applicable. Include testable specification scenarios for behavior changes; for a change without spec-level behavior, return `.openspec.yaml` containing exactly `skip_specs: true` instead. Every refined acceptance criterion needs a corresponding task or specification. Preserve existing product authority. Keep unresolved product decisions explicit rather than inventing approval.
 
 Write `/output/envelope.json` using the supplied schema and identity. A complete proposal returns `passed` with gate `planned`; it is a candidate for owner review, not approved implementation. Return `blocked` with the precise missing decision when the proposal cannot be completed. The separate publisher checks the file boundary, runs OpenSpec strict validation and opens a proposal PR or updates the existing PR identified by `context.proposalReview`. The engine writes no repository files and has no GitHub credentials. End after the envelope; the trusted adapter records gh-aw completion.

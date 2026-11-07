@@ -1,11 +1,13 @@
 # Tasks
 
-All tasks are future work. The candidate is `planned`, not approved implementation. Complete groups in order; Juan must accept the approach and explicitly release the `future` hold before group 2.
+<!-- pdac-scope: cited -->
+
+The owner authorized this development proposal and necessary dependencies on 2026-11-07, explicitly lifting the `future` hold (issue comment 6706085004). Complete groups in order and preserve actual provider/source/device verification; production remains separate. Unchecked tasks are not implemented.
 
 ## 1. Confirm authority and shared contract
 
-- [ ] 1.1 Record the adopted Lighthouse 0.12.0 identity guide revision/hash against the verified owner answer and check its installed copy when dependencies are available; verify a review matrix covers external identity, isolated development provider, code/PKCE, server sessions, issuer/subject, separate GitHub authorization and real-provider evidence (AC6).
-- [ ] 1.2 Record Juan's acceptance of ADR-0007 through `arcshape-adr` (accepted on 2026-10-31 in this PR, pending merge). Record his acceptance of the .NET/Aspire application direction in ADR-0009. Obtain his separate explicit decision on MFA/session/revocation policy and development storage lifetime; verify linked owner decisions and explicit release of the implementation hold before any implementation. ADR-0008 remains Proposed.
+- [x] 1.1 Record the adopted Lighthouse 0.12.53 / SDLC 0.21.4 identity guide revision/hash against the verified owner answer and check its installed copy when dependencies are available; verify a review matrix covers external identity, isolated development provider, code/PKCE, server sessions, issuer/subject, separate GitHub authorization and real-provider evidence (AC6).
+- [x] 1.2 Record Juan's acceptance of ADR-0007 through `arcshape-adr` (accepted on 2026-10-31 in this PR, pending merge). Record his acceptance of the .NET/Aspire application direction in ADR-0009. The 2026-11-07 owner grant covers this reviewed development proposal, including its concrete session/assurance/revalidation and process-local storage choices, and releases the development implementation hold (issue comment 6706085004). Preserve that linked decision; no production authorization is inferred. ADR-0008 remains Proposed.
 
 - [ ] 1.3 Assess the existing application against the selected Lighthouse `dotnet-backend` profile. Adopt its relevant pinned analyzers and CQRS guidance without overwriting SoFa; implement real `npm run verify:dotnet` and applicable .NET tests, connect them to CI, and record any justified differences. The official creator is only for an empty target, not this existing repository. Profile selection alone is not implementation evidence.
 
@@ -37,9 +39,17 @@ All tasks are future work. The candidate is `planned`, not approved implementati
 
 - [ ] 6.1 Wire new .NET build/tests and provider integration coverage into the repository verification/CI path; run `npm run verify` and the real-provider/source/device matrix from design.md, inspect browser storage/logs/errors/retained evidence for token leakage using controlled test values, and deliver an AC1-AC7 evidence index distinguishing mocks, owner probes and actual results. Verify all configured checks pass or stop without claiming completion.
 - [ ] 6.2 Update supported startup/user/runbook documentation, tests documentation and affected arc42 views through their owning skills, preserving ProductShape authority and ADR statuses; verify `npm run lint:docs`, architecture/product checks, documented commands and explicit rollback behavior without anonymous fallback.
-- [ ] 6.3 Present the implementation with CI links, redacted manual evidence, remaining #58 release limitations and a dimension-by-dimension Definition of Done review; verify Juan's human review is recorded and no implementation, integration, merge or release approval is inferred from this proposal.
+- [ ] 6.3 Present the implementation with CI links, redacted runtime evidence, remaining #58 production limitations and an independent dimension-by-dimension Done review under the owner's explicit implementation/merge delegation. Retain the real authorization, never fabricate a human forge vote, and stop at a remaining owner-only or protected gate.
 
 ## Workflow follow-up
 
 - The trusted publisher validates this candidate with OpenSpec 1.15.0 strict validation before opening its proposal PR.
 - Archive only after implementation and the repository's review requirements are satisfied; retain the owner decisions and evidence links.
+
+## Product grounding
+
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+
+<!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->
