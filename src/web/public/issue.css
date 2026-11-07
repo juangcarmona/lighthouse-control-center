@@ -19,3 +19,7 @@ button, summary { cursor: pointer; }
 #issue-status[data-state="error"] { color: #ffbdad; }
 #issue-age, #conversation-coverage, .source-byline { font-size: .9rem; color: var(--lh-color-text-secondary, #bac3d3); }
 @media (max-width: 48rem) { .issue-grid { display: block; } .issue-panel { margin-block: 1rem; } #issue-picker label { width: 100%; } }
+
+#issue-body { max-height: 40rem; overflow-y: auto; }
+
+.issue-panel { overflow-wrap: anywhere; }

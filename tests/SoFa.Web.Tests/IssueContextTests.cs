@@ -34,6 +34,35 @@ public sealed class IssueContextTests
   }
 
   [Fact]
+  public async Task ReconnectingTheSameSourceUserInvalidatesTheEarlierPaginationSnapshot()
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    var first = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    var previous = session.GitHub.Current!;
+    session.GitHub.Current = new(previous.UserId, previous.Login, previous.Tokens, previous.VerifiedAt);
+    session.GitHub.Generation++;
+    var result = await fixture.Query.Handle(new(session, "example/repository", 7, 2, first.Snapshot), CancellationToken.None);
+    Assert.Equal("changed", result.Availability);
+    Assert.Null(result.Issue);
+    Assert.Null(result.Conversation);
+  }
+
+  [Fact]
+  public async Task AFullPageRequiresAnEndObservationRatherThanInferringCompletenessFromTheEarlierCount()
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.Count = 100;
+    var session = await fixture.Session();
+    var first = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.False(first.Conversation!.Complete);
+    Assert.Equal(2, first.Conversation.NextPage);
+    var last = await fixture.Query.Handle(new(session, "example/repository", 7, 2, first.Snapshot), CancellationToken.None);
+    Assert.True(last.Conversation!.Complete);
+    Assert.Empty(last.Conversation.Items);
+  }
+
+  [Fact]
   public async Task UnconfiguredDeniedOrDisconnectedScopesNeverReadIssueContent()
   {
     using var fixture = new Fixture();
@@ -46,7 +75,7 @@ public sealed class IssueContextTests
     Assert.DoesNotContain(fixture.Handler.Paths, path => path.Contains("/issues/", StringComparison.Ordinal));
     fixture.Handler.CanRead = true;
     GitHubAuthorization.Disconnect(session);
-    Assert.Equal("unavailable", (await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None)).Availability);
+    Assert.Equal("disconnected", (await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None)).Availability);
     Assert.DoesNotContain(fixture.Handler.Paths, path => path.Contains("/issues/", StringComparison.Ordinal));
   }
 
@@ -96,6 +125,44 @@ public sealed class IssueContextTests
     Assert.Null(result.Conversation);
   }
 
+  [Fact]
+  public async Task RecognizedSourceRevocationIsAuthorityLossRatherThanAStaleRefreshFailure()
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    fixture.Handler.Revoked = true;
+    fixture.Clock.Advance(TimeSpan.FromMinutes(5));
+    var result = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("disconnected", result.Availability);
+    Assert.Null(result.Issue);
+    Assert.Null(session.GitHub.Current);
+  }
+
+  [Fact]
+  public async Task UnauthorizedIssueReadRemovesTheSourceConnectionAndSignalsAuthorityLoss()
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.Responses["/repos/example/repository/issues/7"] = _ => new(HttpStatusCode.Unauthorized)
+    { Content = new StringContent("{}", Encoding.UTF8, "application/json") };
+    var session = await fixture.Session();
+    var result = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("disconnected", result.Availability);
+    Assert.Null(session.GitHub.Current);
+  }
+
+  [Fact]
+  public async Task TemporaryAccountVerificationFailurePreservesItsConnectionAndReportsUnavailable()
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    var connection = session.GitHub.Current;
+    fixture.Handler.UserUnavailable = true;
+    fixture.Clock.Advance(TimeSpan.FromMinutes(5));
+    var result = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("unavailable", result.Availability);
+    Assert.Same(connection, session.GitHub.Current);
+  }
+
   internal sealed class Fixture : IDisposable
   {
     internal TestClock Clock { get; } = new();
@@ -135,6 +202,9 @@ public sealed class IssueContextTests
   {
     internal List<string> Paths { get; } = [];
     internal bool CanRead { get; set; } = true;
+    internal bool Revoked { get; set; }
+    internal bool UserUnavailable { get; set; }
+    internal string ActionsGrant { get; set; } = "read";
     internal int Count { get; set; } = 101;
     internal bool PullRequest { get; set; }
     internal bool ConversationUnavailable { get; set; }
@@ -157,8 +227,12 @@ public sealed class IssueContextTests
       object value;
       switch (path)
       {
+        case "/user":
+          return Revoked ? Response(new { message = "Revoked" }, HttpStatusCode.Unauthorized)
+              : UserUnavailable ? Response(new { message = "Unavailable" }, HttpStatusCode.ServiceUnavailable)
+              : Response(new { id = 71, login = "verified-user", type = "User" });
         case "/repos/example/repository": value = new { permissions = new { pull = CanRead, push = false } }; break;
-        case "/user/installations": value = new { total_count = 1, installations = new[] { new { id = 9, account = new { login = "example" }, permissions = new { metadata = "read", issues = "read", actions = "read" } } } }; break;
+        case "/user/installations": value = new { total_count = 1, installations = new[] { new { id = 9, account = new { login = "example" }, permissions = new { metadata = "read", issues = "read", actions = ActionsGrant } } } }; break;
         case "/user/installations/9/repositories": value = new { total_count = 1, repositories = new[] { new { full_name = "example/repository" } } }; break;
         case "/repos/example/repository/issues/7":
           if (Wait is not null) await Wait;
@@ -178,8 +252,9 @@ public sealed class IssueContextTests
           break;
         case "/repos/example/repository/issues/7/comments":
           if (ConversationUnavailable) return Response(new { message = "Unavailable" }, HttpStatusCode.ServiceUnavailable);
-          var second = request.RequestUri.Query.Contains("page=2", StringComparison.Ordinal);
-          value = Enumerable.Range(second ? 101 : 1, second ? 1 : 100).Select(id => new { id, body = id == 1 && ReportBody is not null ? ReportBody : "Comment " + id, user = new { login = id == 1 && ReportBody is not null ? "github-actions[bot]" : "participant", type = id == 1 && ReportBody is not null ? "Bot" : "User" }, updated_at = "2026-11-07T10:00:00Z" }).ToArray(); break;
+          var pageText = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(request.RequestUri.Query)["page"];
+          var start = (int.Parse(pageText.ToString(), CultureInfo.InvariantCulture) - 1) * 100 + 1;
+          value = Enumerable.Range(start, Math.Clamp(Count - start + 1, 0, 100)).Select(id => new { id, body = id == 1 && ReportBody is not null ? ReportBody : "Comment " + id, user = new { login = id == 1 && ReportBody is not null ? "github-actions[bot]" : "participant", type = id == 1 && ReportBody is not null ? "Bot" : "User" }, updated_at = "2026-11-07T10:00:00Z" }).ToArray(); break;
         default: throw new InvalidOperationException("Unexpected test source path.");
       }
       return Response(value);

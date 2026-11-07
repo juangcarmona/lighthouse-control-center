@@ -14,4 +14,4 @@ createServer(async (request, response) => {
   response.writeHead(200, { 'Content-Type': extension === 'html' ? 'text/html' : extension === 'js' ? 'text/javascript' : 'text/css',
     'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'", 'Cache-Control': 'no-store' });
   response.end(await readFile(file));
-}).listen(5171, '127.0.0.1');
+}).listen(Number(process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'), '127.0.0.1');

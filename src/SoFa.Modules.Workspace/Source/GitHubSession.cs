@@ -33,6 +33,7 @@ internal sealed class GitHubAuthorizationAttempt(string state, string verifier, 
 
 internal sealed class GitHubConnection(long userId, string login, GitHubTokens tokens, DateTimeOffset verifiedAt)
 {
+  internal string DataScope { get; } = Guid.NewGuid().ToString("N");
   internal long UserId { get; } = userId;
   internal string Login { get; set; } = login;
   internal GitHubTokens Tokens { get; set; } = tokens;

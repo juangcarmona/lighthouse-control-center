@@ -4,22 +4,26 @@ using System.Text.RegularExpressions;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
-internal sealed record SourceCheck(string Name, string? Status, string? Conclusion, string? StartedAt, string? CompletedAt);
+internal sealed record SourceCheck(string Name, string? Status, string? Conclusion, string? StartedAt, string? CompletedAt, long? Id = null, string? SourceUrl = null);
 internal sealed record RelatedPullRequest(int Number, string Availability, string SourceUrl, IReadOnlyList<string> ReferencedBy,
     string? Title = null, string? State = null, bool? Draft = null, string? HeadRevision = null, string? UpdatedAt = null,
     string? ChecksAvailability = null, IReadOnlyList<SourceCheck>? Checks = null, string? Reason = null);
 
 internal sealed partial class GetIssueEvidenceHandler
 {
+  private static string? CheckUrl(string? text, string repository) => Uri.TryCreate(text, UriKind.Absolute, out var url)
+      && url.Scheme == "https" && url.Host == "github.com" && url.UserInfo.Length == 0
+      && url.AbsolutePath.StartsWith("/" + repository + "/", StringComparison.OrdinalIgnoreCase) ? url.AbsoluteUri : null;
+
   private async Task<IReadOnlyList<RelatedPullRequest>> ReadRelatedPullRequests(string repository, IssueContext page,
       GitHubConnection connection, CancellationToken cancellationToken)
   {
     var references = new Dictionary<int, List<string>>();
     var rows = new[] { (Body: page.Issue!.Body, Url: page.Issue.SourceUrl) }
         .Concat(page.Conversation!.Items.Select(comment => (comment.Body, Url: comment.SourceUrl)));
-    var pattern = @"https://github\.com/" + Regex.Escape(repository) + @"/pull/([1-9][0-9]*)(?=[^0-9]|$)";
+    var pattern = @"https://github\.com/" + Regex.Escape(repository) + @"/pull/([1-9][0-9]*)(?=[\s)\]}>.,;!?/#]|$)";
     foreach (var row in rows)
-      foreach (Match match in Regex.Matches(row.Body, pattern))
+      foreach (Match match in Regex.Matches(row.Body, pattern, RegexOptions.IgnoreCase))
         if (int.TryParse(match.Groups[1].Value, out var number))
         {
           if (!references.TryGetValue(number, out var sources))
@@ -55,7 +59,8 @@ internal sealed partial class GetIssueEvidenceHandler
             && checks.Value.TryGetProperty("check_runs", out var checkRows) && checkRows.ValueKind == JsonValueKind.Array && checkRows.GetArrayLength() <= 100;
         var mapped = available ? checks.Value.GetProperty("check_runs").EnumerateArray().Select(row => new SourceCheck(
             SourceJson.Text(row, "name") ?? "Unnamed source check", SourceJson.Text(row, "status"), SourceJson.Text(row, "conclusion"),
-            SourceJson.Text(row, "started_at"), SourceJson.Text(row, "completed_at"))).ToArray() : [];
+            SourceJson.Text(row, "started_at"), SourceJson.Text(row, "completed_at"),
+            SourceJson.Number(row, "id"), CheckUrl(SourceJson.Text(row, "html_url"), repository))).ToArray() : [];
         var complete = available && SourceJson.Number(checks.Value, "total_count") == mapped.Length;
         related.Add(new(number, "available", source, sources, title, state, draft, revision, SourceJson.Text(pull.Value, "updated_at"),
             available ? complete ? "available" : "partial" : "unavailable", mapped,

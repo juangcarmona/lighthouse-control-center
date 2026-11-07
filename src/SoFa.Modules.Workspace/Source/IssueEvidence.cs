@@ -8,30 +8,44 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal sealed record GetIssueEvidence(GetIssueContext Context);
+internal sealed record SourceArtifact(string Name, long? Id, bool? Expired, long? CompressedBytes, string Availability);
 internal sealed record StageEvidence(long CommentId, string SourceUrl, string Availability, string? Stage = null,
     string? Result = null, string? Gate = null, string? SourceRevision = null, long? RunId = null, int? Attempt = null,
     string? ExecutionStatus = null, string? ExecutionConclusion = null, string? Reason = null,
-    IReadOnlyList<string>? MissingEvidence = null, IReadOnlyList<string>? PendingReview = null);
+    IReadOnlyList<string>? MissingEvidence = null, IReadOnlyList<string>? PendingReview = null,
+    string? ExecutionRequestId = null, string? Question = null, IReadOnlyList<SourceArtifact>? Artifacts = null);
 internal sealed record IssueEvidence(string Availability, DateTimeOffset ObservedAt, IReadOnlyList<StageEvidence> Reports,
-    string Scope, string? Reason = null, IReadOnlyList<RelatedPullRequest>? PullRequests = null);
+    string Scope, string? Reason = null, IReadOnlyList<RelatedPullRequest>? PullRequests = null, string? DataScope = null);
 
 internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, GetIssueContextHandler context,
     GitHubAuthorization authorization, RepositoryAccess access, GitHubTransport transport, TimeProvider clock) : IQueryHandler<GetIssueEvidence, IssueEvidence>
 {
-  private const string Scope = "At most 10 Lighthouse reports from this conversation page. Other pages may contain more evidence; this read does not decide command eligibility.";
+  private static readonly string[] ArtifactKinds = ["input", "result"];
+  private const string Scope = "At most 10 Lighthouse reports and 10 explicitly referenced PRs from this conversation page. Additional references and other pages may contain more evidence; current command eligibility remains a separate source decision.";
   public async Task<IssueEvidence> Handle(GetIssueEvidence query, CancellationToken cancellationToken)
   {
     var page = await context.Handle(query.Context, cancellationToken).ConfigureAwait(false);
     if (page.Availability != "available" || page.Conversation?.Availability is not ("available" or "partial"))
-      return new(page.Availability, clock.GetUtcNow(), [], Scope, page.Reason ?? page.Conversation?.Reason);
+      return new(page.Availability, clock.GetUtcNow(), [], Scope, page.Reason ?? page.Conversation?.Reason, DataScope: page.DataScope);
     var record = query.Context.Session;
     var authority = await access.CheckAsync(record, query.Context.Repository, cancellationToken).ConfigureAwait(false);
-    if (authority.Availability != SourceAvailability.Available || !authority.ActionsRead)
-      return new("unavailable", clock.GetUtcNow(), [], Scope, "Current Actions-read authority is unavailable; issue context remains separate.");
+    if (authority.Availability == SourceAvailability.Denied
+        || authority.Availability == SourceAvailability.Available && !authority.IssuesRead)
+      return new("denied", clock.GetUtcNow(), [], Scope, "Current repository issue authority was denied.");
+    if (authority.Availability != SourceAvailability.Available)
+    {
+      lock (record.Sync)
+        return new(record.GitHub.Current is null ? "disconnected" : "unavailable", clock.GetUtcNow(), [], Scope,
+            "Current source authority could not be verified.");
+    }
+    if (!authority.ActionsRead)
+      return new("restricted", clock.GetUtcNow(), [], Scope, "Actions-read access is unavailable; previous execution evidence was removed. Issue context remains available.", DataScope: page.DataScope);
     var connection = await authorization.CurrentAsync(record, cancellationToken).ConfigureAwait(false);
     if (connection is null) return new("disconnected", clock.GetUtcNow(), [], Scope, "The acting account is unavailable.");
     long generation;
     lock (record.Sync) generation = record.GitHub.Generation;
+    if (page.DataScope != connection.DataScope)
+      return new("disconnected", clock.GetUtcNow(), [], Scope, "The acting account changed during the evidence read.");
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     budget.CancelAfter(TimeSpan.FromSeconds(20));
     var reports = new List<StageEvidence>();
@@ -61,17 +75,18 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
       if (!ReferenceEquals(sessions.Get(record.Id), record) || !ReferenceEquals(record.GitHub.Current, connection) || record.GitHub.Generation != generation)
         return new("disconnected", clock.GetUtcNow(), [], Scope, "The source identity or authority changed.");
     return new("available", clock.GetUtcNow(), reports, Scope,
-        "Published source results and GitHub execution are distinct. Current eligibility, live host leases and absent work are not inferred from this bounded page.", related);
+        "Published source results and GitHub execution are distinct. Current eligibility, live host leases and absent work are not inferred from this bounded page.", related, connection.DataScope);
   }
 
   private async Task<StageEvidence> ReadReport(string repository, int number, IssueComment comment,
       GitHubConnection connection, CancellationToken cancellationToken)
   {
+    IReadOnlyList<SourceArtifact>? references = null;
     StageEvidence Unknown(string reason, long? run = null, int? attempt = null, string? execution = null, string? conclusion = null) =>
-        new(comment.Id, comment.SourceUrl, "unavailable", RunId: run, Attempt: attempt, ExecutionStatus: execution, ExecutionConclusion: conclusion, Reason: reason);
+        new(comment.Id, comment.SourceUrl, "unavailable", RunId: run, Attempt: attempt, ExecutionStatus: execution, ExecutionConclusion: conclusion, Reason: reason, Artifacts: references);
     var marker = Regex.Matches(comment.Body, @"<!-- lighthouse-actions:([a-f0-9]{64}) -->");
     var stages = Regex.Matches(comment.Body, @"<!-- lighthouse-stage:([a-z]+):(passed|blocked) -->");
-    var links = Regex.Matches(comment.Body, @"\[Workflow run\]\(https://github\.com/" + Regex.Escape(repository) + @"/actions/runs/([1-9][0-9]*)\)");
+    var links = Regex.Matches(comment.Body, @"\[Workflow run\]\(https://github\.com/" + Regex.Escape(repository) + @"/actions/runs/([1-9][0-9]*)\)", RegexOptions.IgnoreCase);
     if (marker.Count != 1 || stages.Count != 1 || links.Count != 1
         || !long.TryParse(links[0].Groups[1].Value, out var id) || id > 9_007_199_254_740_991)
       return Unknown("Source report markers or repository-local run association are missing or ambiguous.");
@@ -88,6 +103,16 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
         || artifacts.GetArrayLength() > 100 || SourceJson.Number(inventory.Value, "total_count") != artifacts.GetArrayLength())
       return Unknown("Artifact inventory is unavailable or incomplete; no absence or result is inferred.", id, (int)attempt, status, conclusion);
     var prefix = stages[0].Groups[1].Value == "implement" ? "implement-" : "";
+    references = ArtifactKinds.Select(kind =>
+    {
+      var name = "lighthouse-" + prefix + kind + "-" + number.ToString(CultureInfo.InvariantCulture) + "-" + attempt.Value.ToString(CultureInfo.InvariantCulture);
+      var matches = artifacts.EnumerateArray().Where(row => SourceJson.Text(row, "name") == name).ToArray();
+      if (matches.Length != 1) return new SourceArtifact(name, null, null, null, matches.Length == 0 ? "missing" : "ambiguous");
+      bool? expired = matches[0].TryGetProperty("expired", out var flag) && flag.ValueKind is JsonValueKind.True or JsonValueKind.False ? flag.GetBoolean() : null;
+      var size = SourceJson.Number(matches[0], "size_in_bytes");
+      return new(name, SourceJson.Number(matches[0], "id"), expired, size,
+          expired == true ? "expired" : size > 2 * 1024 * 1024 ? "oversized" : expired is null || size is null ? "unknown" : "available");
+    }).ToArray();
     async Task<ArtifactJson> Read(string kind, string member)
     {
       var name = "lighthouse-" + prefix + kind + "-" + number.ToString(CultureInfo.InvariantCulture) + "-" + attempt.Value.ToString(CultureInfo.InvariantCulture);
@@ -110,9 +135,12 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
     var workflowRevision = SourceJson.Text(request, "workflowRevision") ?? revision;
     var expectedPath = request.TryGetProperty("dispatch", out _) ? ".github/workflows/lighthouse-sdlc-" + (SourceJson.Text(request, "worker") ?? stage) + ".lock.yml" : ".github/workflows/lighthouse-sdlc-router.yml";
     if (request.ValueKind != JsonValueKind.Object || envelope.ValueKind != JsonValueKind.Object
-        || SourceJson.Number(request, "schemaVersion") is not (1 or 2) || SourceJson.Number(envelope, "schemaVersion") != 1
-        || SourceJson.Number(request, "attempt") != attempt
-        || SourceJson.Text(request, "repository") != repository || SourceJson.Number(request, "issue") != number
+        || request.TryGetProperty("schemaVersion", out _) && SourceJson.Number(request, "schemaVersion") is not (1 or 2)
+        || SourceJson.Number(envelope, "schemaVersion") != 1
+        || request.TryGetProperty("attempt", out _) && SourceJson.Number(request, "attempt") != attempt
+        || request.TryGetProperty("repository", out _) && !string.Equals(SourceJson.Text(request, "repository"), repository, StringComparison.OrdinalIgnoreCase)
+        || !run.Value.TryGetProperty("repository", out var runRepository)
+        || !string.Equals(SourceJson.Text(runRepository, "full_name"), repository, StringComparison.OrdinalIgnoreCase) || SourceJson.Number(request, "issue") != number
         || SourceJson.Text(request, "stage") != stage || SourceJson.Text(request, "runId") != marker[0].Groups[1].Value
         || NumberText(request, "workflowRunId") != id.ToString(CultureInfo.InvariantCulture)
         || !Regex.IsMatch(revision ?? "", "^[a-f0-9]{40}$") || SourceJson.Text(run.Value, "head_sha") != workflowRevision
@@ -125,8 +153,13 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
       return Unknown("The installed shared Lighthouse validator rejected the source result or is unavailable; no stage result is inferred.", id, (int)attempt, status, conclusion);
     return new(comment.Id, comment.SourceUrl, "available", stage, outcome, SourceJson.Text(result, "gate"), revision, id, (int)attempt,
         status, conclusion, "Published source result; this read does not validate current admission, continuation authority or live host reservation.",
-        TextArray(result, "missingEvidence"), TextArray(result, "pendingReview"));
+        TextArray(result, "missingEvidence"), TextArray(result, "pendingReview"),
+        ExecutionRequestId: SourceJson.Text(request, "runId"), Question: Question(result), Artifacts: references);
   }
+
+  private static string? Question(JsonElement result) => result.TryGetProperty("output", out var output)
+      && output.ValueKind == JsonValueKind.Object && output.TryGetProperty("handoff", out var handoff)
+      ? SourceJson.Text(handoff, "question") : null;
 
   private static string? NumberText(JsonElement value, string name) => SourceJson.Text(value, name) ?? SourceJson.Number(value, name)?.ToString(CultureInfo.InvariantCulture);
   private static string[] TextArray(JsonElement value, string name) => value.TryGetProperty(name, out var array) && array.ValueKind == JsonValueKind.Array
