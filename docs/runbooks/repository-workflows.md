@@ -26,9 +26,11 @@ The current gh-aw gateway uses host port 8080. Only one gateway job may occupy t
 
 Enable `LIGHTHOUSE_AUTOMATION_ENABLED` after installing and checking the workflows. Keep default token permissions read-only. GitHub's setting allowing Actions to create and approve PRs is required for publication; the bot does not approve its own work.
 
-The workflows pin published Lighthouse commit `9b165b590b415dcdb25de5a2f843c6fb30e9e445` and use gh-aw 0.93.2. The installed packages are CLI 0.12.42 and SDLC 0.20.9. Update them through the official upgrade and workflow installer; npm installation alone does not update workflows. [Issue #88 evidence](../delivery/evidence/issue-88/README.md) records release and validation evidence.
+The workflows pin published Lighthouse commit `c4c61c8eecc02e216252ed396e11593d163c2c13` and use gh-aw 0.93.2. The installed packages are CLI 0.12.48 and SDLC 0.20.15. Update them through the official upgrade and workflow installer; npm installation alone does not update workflows. [Issue #88 evidence](../delivery/evidence/issue-88/README.md) records release and validation evidence.
 
-The installed workers are `triage`, `refine`, `propose`, `implement`, `integrate`, `review` and `apply-review`. Optional unattended and maintenance workflows are installed. Unattended execution and merge are disabled in project policy; maintenance, recovery and report publication require separate operator opt-ins and remain disabled. GitHub Actions executes work and issues retain receipts and reservations. The [adoption evidence](../delivery/evidence/issue-74/README.md) records validation and live-acceptance limits.
+The first [issue #90 attempt](https://github.com/juangcarmona/sofa/actions/runs/42346379566) stopped before reservation or candidate creation because the previous harness rejected committed skill links. [Lighthouse #525](https://github.com/juangcarmona/lighthouse/pull/525) authenticates their metadata and omits them without following targets; changed or new links remain rejected. The owner approved the [0.12.48 / 0.20.15 release](https://github.com/juangcarmona/lighthouse/actions/runs/42348320774), adoption and resumption. Both npm packages identify the immutable commit above. This update preserves the exact #90 grant; native delivery still requires its own run, reviews and CI evidence.
+
+The installed workers are `triage`, `refine`, `propose`, `implement`, `integrate`, `review` and `apply-review`. Optional unattended and maintenance workflows are installed. Unattended FF and delegated merge are enabled only for the exact issue #90 grant in the [bounded delivery runbook](lighthouse-unattended.md). Other issues retain default owner review. Maintenance, recovery and report publication require separate operator opt-ins and remain disabled. GitHub Actions executes work and issues retain receipts and reservations. The [adoption evidence](../delivery/evidence/issue-74/README.md) records validation and live-acceptance limits.
 
 The router projects implementation PR state after supported events and on a five-minute GitHub Actions schedule, gated by `LIGHTHOUSE_AUTOMATION_ENABLED`. It rechecks bounded candidates and required evidence, including when GitHub suppresses a chained completion event. This reconciliation can return a PR to draft or make a fully checked candidate ready; it does not approve or merge it. Issues show `pr-draft` or `pr-ready` and stay open until post-merge review. This PR-state projection is separate from the optional maintenance workflow and does not establish reconciliation of every canonical `status:*` label.
 
@@ -36,7 +38,7 @@ After publishing refinement, the worker explicitly requests verified implementat
 
 ## Reproducible application checks
 
-`.lighthouse/environment.json` selects the official `dotnet` profile with disposable PostgreSQL 17. `.lighthouse/implement.json` installs locked npm dependencies and runs `verify:container` with CI browser settings. Candidate acceptance remains subject to owner review. The full `verify` CI suite and `test:runtime:host` retain the two Docker engine tests; container verification alone is insufficient for integration.
+`.lighthouse/environment.json` selects the official `dotnet` profile with disposable PostgreSQL 17. `.lighthouse/implement.json` installs locked npm dependencies and runs `verify:container` with CI browser settings. Candidate acceptance retains owner review by default; only the exact issue #90 grant permits independent acceptance. The full `verify` CI suite and `test:runtime:host` retain the two Docker engine tests; container verification alone is insufficient for integration.
 
 The operator configuration must map `environments.dotnet.image` and `environments.dotnet.postgresImage` to installed immutable image IDs from the official builder receipt. Keep the existing read-only image, legacy implementation image, provider volume, UID, model and lock. Use Lighthouse's pinned `src/examples/opencode-engine/build-environments.mjs` and its `ENVIRONMENTS.md` procedure when rebuilding. Never pass a host Docker socket into an agent or validation container.
 
@@ -45,8 +47,8 @@ Preflight verifies Node 24, npm, Git, Chromium, OpenCode 2.1.0 and .NET SDK 10.0
 To regenerate the existing workflow set from a verified Lighthouse checkout, first preview and review differences, then apply:
 
 ```sh
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 9b165b590b415dcdb25de5a2f843c6fb30e9e445 --with-unattended --with-maintenance --replace-reviewed
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 9b165b590b415dcdb25de5a2f843c6fb30e9e445 --with-unattended --with-maintenance --replace-reviewed --apply
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . c4c61c8eecc02e216252ed396e11593d163c2c13 --with-unattended --with-maintenance --replace-reviewed
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . c4c61c8eecc02e216252ed396e11593d163c2c13 --with-unattended --with-maintenance --replace-reviewed --apply
 ```
 
 Commit generated locks with their sources. The host authenticates product revision separately from workflow revision: a manual router dispatch can test this PR's workflow branch, while implementation policy and environment still come from the current default branch. Such a pre-merge run cannot prove activation of an unmerged environment declaration. Use isolated consumer acceptance for the candidate and retain this live-acceptance limitation until post-merge verification.
