@@ -5,18 +5,18 @@
 ## 1. Plan and source contract
 
 - [x] 1.1 Record Ready evaluation and owner-authorized scope; independently review this plan before implementation.
-- [ ] 1.2 Inspect the installed Lighthouse report/dispatch/artifact contracts and real source examples; record supported versions and unavailable evidence boundaries.
+- [x] 1.2 Inspect the installed Lighthouse report/dispatch/artifact contracts and real source examples; record supported versions and unavailable evidence boundaries.
 
 ## 2. Read adapter
 
-- [ ] 2.1 Add a permission-gated issue query and bounded conversation paging, source identity/time/coverage and validation of ordinary issue identity.
-- [ ] 2.2 Add exactly correlated stage/run/PR/check evidence, revision/attempt preservation and safe bounded artifact summaries; expose unsupported, missing and expired evidence.
-- [ ] 2.3 Test failed permission checks, identity changes, spoofing, pagination, source mutation and blocked-result/successful-workflow separation.
+- [x] 2.1 Add a permission-gated issue query and bounded conversation paging, source identity/time/coverage and validation of ordinary issue identity.
+- [x] 2.2 Add exactly correlated stage/run/PR/check evidence, revision/attempt preservation and safe bounded artifact summaries; expose unsupported, missing and expired evidence.
+- [x] 2.3 Test failed permission checks, identity changes, spoofing, pagination, source mutation and blocked-result/successful-workflow separation.
 
 ## 3. Presentation
 
-- [ ] 3.1 Add shared issue navigation and direct entry with readable body, conversation, separate source facts and evidence.
-- [ ] 3.2 Add safe Markdown subset/source disclosure, explicit load more, honest stale/partial states and authority-loss removal.
+- [x] 3.1 Add shared issue navigation and direct entry with readable body, conversation, separate source facts and evidence.
+- [x] 3.2 Add safe Markdown subset/source disclosure, explicit load more, honest stale/partial states and authority-loss removal.
 - [ ] 3.3 Verify keyboard, phone-width, accessibility, long conversation, active reservation, blocked proposal and unavailable artifacts.
 
 ## 4. Evidence and integration
@@ -24,6 +24,8 @@
 - [ ] 4.1 Observe a real issue and paginated conversation through the explicitly connected GitHub user; record source and coverage without credentials.
 - [ ] 4.2 Update affected arc42 views, reader docs and current ProductShape citations; run full deterministic checks and applicable host runtime evidence.
 - [ ] 4.3 Pass current-head CI, independent eleven-dimension Done review, synchronize/archive specs and merge after #49; record retrospective.
+
+Implementation checkpoint: connected-user source acceptance and the active-reservation/physical-device demonstration remain open. The independent audit found a source-read race; four regression cases reproduced the extra requests before the fix and stop at the interrupted request after the fix. Final current-head CI and the independent Done gate remain required.
 
 ## Product grounding
 
