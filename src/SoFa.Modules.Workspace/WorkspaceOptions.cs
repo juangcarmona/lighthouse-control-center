@@ -53,7 +53,7 @@ internal sealed class WorkspaceOptions
     {
       Origin = origin,
       IdentityMode = mode,
-      Identity = new IdentityProfile { Issuer = issuer, ClientId = client, ClientSecret = secret, OwnerSubject = subject },
+      Identity = new IdentityProfile { Issuer = issuer, ClientId = client, ClientSecret = secret, OwnerSubject = subject, RequiredAssurance = mode == "Development" ? "1" : "2" },
       Repositories = repositories,
       GitHubClientId = githubClient,
       GitHubClientSecret = githubSecret,

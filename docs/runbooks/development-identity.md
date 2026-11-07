@@ -23,7 +23,7 @@ For LAN/VPN use, replace the loopback addresses with stable reachable hostnames 
 
 Trust the generated public `ca.crt` only in the designated development browser/device, checking its fingerprint out of band. Keep `ca.key`, TLS keys, `provider.env`, `development.json`, account passwords and TOTP secrets private. The automated host test creates its own browser HOME/NSS database and removes its setup afterwards. It never disables HTTPS validation.
 
-The first sign-in uses the synthetic owner from `test-accounts.json` and enrolls TOTP in the actual provider. The configured `(issuer, subject)` admits that owner only. Recreating the disposable provider discards enrolled factors; re-enroll rather than mapping a new account by email. A setup without synthetic accounts requires an explicit `--owner-subject` and operator-provisioned account in that development realm.
+The first development sign-in uses the synthetic owner and password from `test-accounts.json`. Development requests assurance1 and does not require OTP enrollment. External mode retains assurance2/MFA. Existing enrolled factors need not be removed. The configured `(issuer, subject)` admits that owner only. Recreating the disposable provider discards its accounts and credentials; preserve the exact owner subject rather than mapping an account by email. A setup without synthetic accounts requires an explicit `--owner-subject` and operator-provisioned account in that development realm.
 
 ## Connect the real GitHub user
 
@@ -56,7 +56,7 @@ Never paste credentials into an issue, PR, chat, screenshot or tracked file. The
 
 The browser holds an opaque Secure/HttpOnly owner cookie. Provider and source tokens stay server-side. The development session expires after fifteen idle minutes or four hours from the original provider authentication, whichever comes first. Observation/account polling does not extend it. Identity-provider authority is checked online at least every five minutes; a due failure blocks protected access, and recognized revocation destroys local authority.
 
-Local sign-out and disconnect require CSRF-protected POSTs and remove local credentials even during provider outage. The provider may retain its own browser SSO session; the next SoFa sign-in still requires fresh password/TOTP. GitHub's separate grant can be revoked in [authorized GitHub Apps](https://github.com/settings/apps/authorizations). Restart loses process-local sessions/connections and requires fresh login/linking.
+Local sign-out and disconnect require CSRF-protected POSTs and remove local credentials even during provider outage. The provider may retain its own browser SSO session; the next SoFa sign-in still requires a fresh password in development; the external profile still requires MFA. GitHub's separate grant can be revoked in [authorized GitHub Apps](https://github.com/settings/apps/authorizations). Restart loses process-local sessions/connections and requires fresh login/linking.
 
 `npm start` restores/builds the pinned Release AppHost, then executes that exact assembly. Its application dashboard is disabled. Calling `dotnet run` directly can invoke Aspire's CLI setup/run hook and select another configuration; the launcher avoids that path. AppHost starts the workspace and development provider, with no execution database, supervisor or anonymous legacy listener. Aspire's stopped project-rebuilder helper is development tooling.
 
@@ -68,12 +68,12 @@ npm run verify
 npm run verify:identity:host
 ```
 
-The deterministic lane checks real middleware with signed synthetic issuer responses, callback forgery/replay, session deadlines, permission/callback isolation, no source fallback and module/compiler gates. The host lane composes the actual pinned provider through Aspire, validates TLS, MFA, logout, online refresh, revocation, provider outage, keyboard operation and axe checks. Linked/insufficient source UI states are explicitly browser fixtures. Safe screenshots and summary receipts go to `test-results/identity`; no HARs, traces, callback screenshots or raw browser call logs are retained.
+The deterministic lane checks real middleware with signed synthetic issuer responses, callback forgery/replay, session deadlines, permission/callback isolation, no source fallback and module/compiler gates. The host lane composes the actual pinned provider through Aspire, validates TLS, password-only development login, wrong-password rejection, logout, online refresh, revocation, provider outage, keyboard operation and axe checks. Linked/insufficient source UI states are explicitly browser fixtures. Safe screenshots and summary receipts go to `test-results/identity`; no HARs, traces, callback screenshots or raw browser call logs are retained.
 
-For final #49 acceptance, record the real GitHub acting account and designated repository success/insufficient/revoked behavior, then use an actual phone on LAN/VPN to:
+The owner confirmed actual GitHub connection and operations data on a computer on2026-11-07 and deferred additional physical-phone rehearsal. Insufficient/revoked source states have deterministic transport coverage; no actual owner grant-revocation rehearsal is claimed. For optional future device verification, use a phone on LAN/VPN to:
 
 1. Reach both trusted HTTPS application and issuer addresses.
-2. Complete fresh MFA, inspect the separate GitHub acting account and permissions, and finish source linking.
+2. Complete development password sign-in, inspect the separate GitHub acting account and permissions, and finish source linking.
 3. Sign out and confirm direct workspace/API access is denied.
 4. Record device/browser, time and safe post-callback outcomes. Keep codes, secrets and provider-setup screens out of evidence.
 

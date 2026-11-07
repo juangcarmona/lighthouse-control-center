@@ -20,6 +20,12 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     if (connection is null) return Unknown(SourceAvailability.Unavailable);
     long generation;
     lock (record.Sync) generation = record.GitHub.Generation;
+    bool Live()
+    {
+      lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
+          && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
+    }
+    if (!Live()) return Unknown(SourceAvailability.Unavailable);
     using var repo = await transport.GetAsync("/repos/" + repository, connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
     if (!repo.Successful)
     {
@@ -35,6 +41,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     // Explicit bounds produce unknown coverage, never a false permission denial.
     for (var page = 1; page <= 10; page++)
     {
+      if (!Live()) return Unknown(SourceAvailability.Unavailable);
       using var installations = await transport.GetAsync("/user/installations?per_page=100&page="
           + page.ToString(System.Globalization.CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
       if (!installations.Successful || !Array(installations.Value, "installations", out var rows))
@@ -53,6 +60,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
         var id = SourceJson.Number(installation, "id")!.Value;
         for (var repoPage = 1; repoPage <= 50; repoPage++)
         {
+          if (!Live()) return Unknown(SourceAvailability.Unavailable);
           using var accessible = await transport.GetAsync("/user/installations/" + id.ToString(System.Globalization.CultureInfo.InvariantCulture)
               + "/repositories?per_page=100&page=" + repoPage.ToString(System.Globalization.CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
           if (!accessible.Successful || !Array(accessible.Value, "repositories", out var repositories))

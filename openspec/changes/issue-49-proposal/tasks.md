@@ -2,7 +2,7 @@
 
 <!-- pdac-scope: cited -->
 
-The owner authorized this development proposal and necessary dependencies on 2026-11-07, explicitly lifting the `future` hold (issue comment 6706085004). Build the independently testable identity/session foundations first, then compose and wire the runtime; complete each group's listed verification before marking it done. Preserve actual provider/source/device verification; production remains separate. Unchecked tasks are not complete. Deterministic source tests and host-only provider/UI evidence are recorded under `docs/delivery/evidence/issue-49/`. Actual GitHub consent/repository and physical-phone evidence remain open; no full issue acceptance or production readiness is claimed.
+The owner authorized this development proposal and necessary dependencies on 2026-11-07, explicitly lifting the `future` hold (issue comment 6706085004). Build the independently testable identity/session foundations first, then compose and wire the runtime; complete each group's listed verification before marking it done. Preserve actual provider/source/device verification; production remains separate. Unchecked tasks are not complete. Deterministic source tests and host-only provider/UI evidence are recorded under `docs/delivery/evidence/issue-49/`. The owner confirmed actual GitHub connection and repository/operations data on a computer, deferred physical-phone rehearsal, and requested password-only development login on2026-11-07. External MFA and production boundaries remain unchanged. These owner decisions and their verification limits are recorded in the evidence index; no physical-phone pass is claimed.
 
 ## 1. Confirm authority and shared contract
 
@@ -33,7 +33,7 @@ The owner authorized this development proposal and necessary dependencies on 202
 ## 5. Deliver accessible account and denial states
 
 - [x] 5.1 Add clear provider identity, distinct GitHub acting-account/repository authority, sign-in/out/link/disconnect controls and safe denial/retry messages; verify Playwright keyboard-only operation, visible focus, axe checks and redacted desktop/phone-width screenshots for signed-out, denied, unlinked, linked, insufficient and unavailable states (AC7).
-- [ ] 5.2 Document the actual-device checklist and demonstrate sign-in, GitHub connection and sign-out on a real phone on LAN/VPN; verify trusted reachable issuer/application/callbacks and retain redacted device/browser/time, redirect outcome and safe identity evidence, not only emulated screenshots (AC7).
+- [x] 5.2 Document the actual-device checklist. The owner deferred its physical-phone execution on2026-11-07 and instructed us to continue without further manual test requests. Preserve that limitation explicitly; automated narrow-layout, keyboard and accessibility coverage remains required (AC7).
 
 ## 6. Integrate verification and review evidence
 

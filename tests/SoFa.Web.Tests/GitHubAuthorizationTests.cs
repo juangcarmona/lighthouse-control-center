@@ -133,6 +133,67 @@ public sealed class GitHubAuthorizationTests
     Assert.Equal(calls, fixture.Handler.Calls.Count);
   }
 
+  [Theory]
+  [InlineData("/repos/example/repository", false)]
+  [InlineData("/user/installations?per_page=100&page=1", false)]
+  [InlineData("/user/installations/9/repositories?per_page=100&page=1", false)]
+  [InlineData("/repos/example/repository", true)]
+  [InlineData("/user/installations?per_page=100&page=1", true)]
+  [InlineData("/user/installations/9/repositories?per_page=100&page=1", true)]
+  public async Task AuthorityEnumerationStopsAfterDisconnectOrAccountReplacement(string boundary, bool replace)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    fixture.Handler.Paginated = true;
+    var stoppedAt = 0;
+    GitHubConnection? replacement = null;
+    fixture.Handler.OnRequest = request =>
+    {
+      if (request.RequestUri!.PathAndQuery != boundary) return;
+      stoppedAt = fixture.Handler.Calls.Count;
+      lock (record.Sync)
+      {
+        if (replace)
+        {
+          replacement = new GitHubConnection(72, "replacement", record.GitHub.Current!.Tokens, fixture.Clock.GetUtcNow());
+          record.GitHub.Current = replacement;
+          record.GitHub.Generation++;
+        }
+        else GitHubAuthorization.Disconnect(record);
+      }
+    };
+    var authority = await fixture.Access.CheckAsync(record, "example/repository", CancellationToken.None);
+    Assert.True(stoppedAt > 0);
+    Assert.Equal(stoppedAt, fixture.Handler.Calls.Count);
+    Assert.Equal(SourceAvailability.Unavailable, authority.Availability);
+    Assert.Same(replacement, record.GitHub.Current);
+  }
+
+  [Theory]
+  [InlineData(true)]
+  [InlineData(false)]
+  public async Task DueCredentialVerificationDoesNotStartAfterCapturedConnectionWasDisconnected(bool refresh)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    if (!refresh) record.GitHub.Current!.Tokens = new GitHubTokens("isolated-user-access", "isolated-user-refresh",
+        fixture.Clock.GetUtcNow().AddHours(1), fixture.Clock.GetUtcNow().AddHours(2));
+    fixture.Clock.Advance(TimeSpan.FromMinutes(5));
+    var calls = fixture.Handler.Calls.Count;
+    var reads = 0;
+    fixture.Clock.BeforeRead = () =>
+    {
+      if (++reads != (refresh ? 2 : 3)) return;
+      fixture.Clock.BeforeRead = null;
+      GitHubAuthorization.Disconnect(record);
+    };
+    Assert.Null(await fixture.Authorization.CurrentAsync(record, CancellationToken.None));
+    Assert.Equal(calls, fixture.Handler.Calls.Count);
+    Assert.Null(record.GitHub.Current);
+  }
+
   [Fact]
   public async Task ObservationReadsCoalesceButRecheckAuthorityBeforeUsingTheCache()
   {
@@ -257,10 +318,12 @@ public sealed class GitHubAuthorizationTests
     internal Task? ExchangeWait { get; set; }
     internal Task? DataWait { get; set; }
     internal bool DataUnavailable { get; set; }
+    internal Action<HttpRequestMessage>? OnRequest { get; set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
       Calls.Add(request.Method + " " + request.RequestUri!.AbsolutePath);
+      OnRequest?.Invoke(request);
       if (request.RequestUri.Host == "github.com")
       {
         Assert.Equal(HttpMethod.Post, request.Method);

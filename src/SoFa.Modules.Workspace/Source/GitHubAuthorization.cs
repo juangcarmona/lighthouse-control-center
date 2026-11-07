@@ -106,15 +106,18 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
     try
     {
       GitHubConnection connection;
+      long generation;
       lock (record.Sync)
       {
         if (!Live(record) || record.GitHub.Current is not { } current) return null;
         connection = current;
+        generation = record.GitHub.Generation;
       }
       var refreshed = false;
       if (clock.GetUtcNow() >= connection.Tokens.AccessDeadline.AddMinutes(-1))
       {
         if (clock.GetUtcNow() >= connection.Tokens.RefreshDeadline) { Invalidate(record, connection); return null; }
+        lock (record.Sync) if (!Current(record, connection, generation)) return null;
         using var refresh = await transport.ExchangeAsync(new Dictionary<string, string>
         {
           ["client_id"] = settings.GitHubClientId!,
@@ -132,13 +135,14 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
         }
         lock (record.Sync)
         {
-          if (!Current(record, connection)) return null;
+          if (!Current(record, connection, generation)) return null;
           connection.Tokens = tokens;
           refreshed = true;
         }
       }
       if (refreshed || clock.GetUtcNow() >= connection.VerifiedAt.AddMinutes(5))
       {
+        lock (record.Sync) if (!Current(record, connection, generation)) return null;
         using var user = await transport.GetAsync("/user", connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
         var login = SourceJson.Text(user.Value, "login");
         if (!user.Successful || SourceJson.Number(user.Value, "id") != connection.UserId
@@ -150,12 +154,12 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
         }
         lock (record.Sync)
         {
-          if (!Current(record, connection)) return null;
+          if (!Current(record, connection, generation)) return null;
           connection.VerifiedAt = clock.GetUtcNow();
           connection.Login = login;
         }
       }
-      lock (record.Sync) return Current(record, connection) ? connection : null;
+      lock (record.Sync) return Current(record, connection, generation) ? connection : null;
     }
     finally { record.GitHub.RefreshLock.Release(); }
   }
@@ -165,7 +169,8 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
     lock (record.Sync) if (ReferenceEquals(record.GitHub.Current, connection)) record.GitHub.Clear();
   }
 
-  private bool Current(OwnerSession record, GitHubConnection connection) => Live(record) && ReferenceEquals(record.GitHub.Current, connection);
+  private bool Current(OwnerSession record, GitHubConnection connection, long generation) => Live(record)
+      && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
   private bool Live(OwnerSession record) => ReferenceEquals(sessions.Get(record.Id), record);
   private string Callback => new Uri(settings.Origin, "/connections/github/callback").AbsoluteUri;
   private static string Random() => WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));

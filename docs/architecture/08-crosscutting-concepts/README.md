@@ -27,7 +27,7 @@ These facts coexist and are not flattened into one progress label. A successfull
 
 ## Implemented identity and source-authority mechanisms
 
-ASP.NET cookie/OIDC middleware validates code/S256 transactions, issuer, audience, state and nonce. Owner admission additionally requires the exact configured issuer/subject, the development assurance policy and fresh authentication time. The browser cookie protects an opaque server reference; provider/source tokens remain in bounded process-memory records. Process restart invalidates all local authority and requires fresh linking.
+ASP.NET cookie/OIDC middleware validates code/S256 transactions, issuer, audience, state and nonce. Owner admission additionally requires the exact configured issuer/subject, verified password assurance in development (external mode retains MFA) and fresh authentication time. The browser cookie protects an opaque server reference; provider/source tokens remain in bounded process-memory records. Process restart invalidates all local authority and requires fresh linking.
 
 The authorized development policy uses fifteen-minute idle and four-hour original-authentication limits, with five-minute online provider revalidation. Polling cannot renew idle time; explicit validated navigation/interaction can, within the absolute cap. Reference rotation and provider refresh are atomic with respect to the stored credentials and cannot move the original limits. These are development implementation choices under the reviewed proposal, not production policy constants.
 

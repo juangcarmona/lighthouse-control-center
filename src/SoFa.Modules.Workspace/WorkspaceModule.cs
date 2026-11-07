@@ -68,7 +68,7 @@ public static class WorkspaceModule
     {
       var token = antiforgery.GetAndStoreTokens(context).RequestToken!;
       return Html("SoFa", "<p>Sign in with your configured identity provider. Factory data requires an owner session.</p>"
-              + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required MFA.</p>" : "")
+              + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required sign-in.</p>" : "")
               + Form("/auth/login", token, "Sign in")
               + (context.User.Identity?.IsAuthenticated == true
                   ? Form("/auth/logout", token, "Sign out locally") + Form("/connections/github/disconnect", token, "Disconnect GitHub") : ""));
