@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: juangcarmona/lighthouse
-          ref: c4c61c8eecc02e216252ed396e11593d163c2c13
+          ref: dd1694735391f54241604a1686ccd627de7b2036
           path: harness
           persist-credentials: false
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

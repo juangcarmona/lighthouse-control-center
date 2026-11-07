@@ -20,13 +20,13 @@ test('native FF delegates only the authorized operational slice and retains supe
   assert.equal(policy.merge, true);
   assert.throws(() => validateUnattendedPolicy({ ...policy, enabled: false }, 'ff'), /disabled/);
   const entries = json('.lighthouse/implement.json');
-  assert.deepEqual(Object.keys(entries).sort(), ['90', 'defaults']);
-  assert.equal(entries['90'].reviewRequired, false);
-  assert.deepEqual(entries['90'].paths, policy.paths);
-  assert.deepEqual(entries['90'].checks, implementation.checks);
-  assert.deepEqual(entries['90'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs']);
-  assert.deepEqual(Object.keys(entries['90'].verification.corrections).sort(), ['tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
-  validateImplementationPolicy(entries['90'], 90);
+  assert.deepEqual(Object.keys(entries).sort(), ['99', 'defaults']);
+  assert.equal(entries['99'].reviewRequired, false);
+  assert.deepEqual(entries['99'].paths, policy.paths);
+  assert.deepEqual(entries['99'].checks, implementation.checks);
+  assert.deepEqual(entries['99'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs']);
+  assert.deepEqual(Object.keys(entries['99'].verification.corrections).sort(), ['tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
+  validateImplementationPolicy(entries['99'], 99);
   const enabled = policy;
   validateUnattendedPolicy(enabled, 'ff');
   assert.throws(() => validateUnattendedPolicy(enabled, 'hotfix'));
@@ -64,19 +64,19 @@ test('verification integrity freezes Node, browser, .NET and CI inputs including
 
 
 test('the exact operational test corrections remain required and cannot open other verification inputs', () => {
-  const granted = json('.lighthouse/implement.json')['90'];
+  const granted = json('.lighthouse/implement.json')['99'];
   const exact = ['tests/observation.test.mjs', 'tests/browser/observation.spec.mjs'];
   const files = [...granted.verification.paths.filter(path => !path.endsWith('/')), 'tests/web.test.mjs'];
   const before = new Map(files.map(path => [path, { mode: '100644', content: read(path) }]));
   for (const path of exact) {
     const extended = new Map(before).set(path, { mode: '100644', content: Buffer.concat([read(path), Buffer.from('\n// new behavior coverage\n')]) });
-    assert.equal(verificationIntegrity(before, extended, granted, 90).corrections[0].path, path);
+    assert.equal(verificationIntegrity(before, extended, granted, 99).corrections[0].path, path);
     const removed = new Map(before); removed.delete(path);
-    assert.throws(() => verificationIntegrity(before, removed, granted, 90), /Required verification input is absent/);
+    assert.throws(() => verificationIntegrity(before, removed, granted, 99), /Required verification input is absent/);
   }
   for (const path of ['tests/web.test.mjs', 'package.json', '.lighthouse/unattended.json']) {
     const changed = new Map(before).set(path, { mode: '100644', content: Buffer.from('changed') });
-    assert.throws(() => verificationIntegrity(before, changed, granted, 90), /Verification inputs changed/);
+    assert.throws(() => verificationIntegrity(before, changed, granted, 99), /Verification inputs changed/);
   }
 });
 
@@ -129,7 +129,7 @@ test('credential preflight is owner-triggered on the default branch and uses onl
   assert.match(workflow, /github\.actor == github\.repository_owner/);
   assert.match(workflow, /github\.triggering_actor == github\.repository_owner/);
   assert.match(workflow, /github\.event\.repository\.default_branch/);
-  assert.match(workflow, /repository: juangcarmona\/lighthouse\n          ref: c4c61c8eecc02e216252ed396e11593d163c2c13/);
+  assert.match(workflow, /repository: juangcarmona\/lighthouse\n          ref: dd1694735391f54241604a1686ccd627de7b2036/);
   assert.match(workflow, /assert\.equal\(receipt\.tokenRevoked, true/);
   const verify = read('.github/workflows/verify.yml').toString();
   assert.match(verify, /branches: \[main, 'lighthouse\/verification-\*'\]/);

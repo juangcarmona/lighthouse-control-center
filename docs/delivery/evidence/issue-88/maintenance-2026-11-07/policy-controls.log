@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: native FF delegates only the authorized operational slice and retains supervised defaults
+ok 1 - native FF delegates only the authorized operational slice and retains supervised defaults
+  ---
+  duration_ms: 6.13834
+  type: 'test'
+  ...
+# Subtest: verification integrity freezes Node, browser, .NET and CI inputs including newly added tests
+ok 2 - verification integrity freezes Node, browser, .NET and CI inputs including newly added tests
+  ---
+  duration_ms: 65.515725
+  type: 'test'
+  ...
+# Subtest: the exact operational test corrections remain required and cannot open other verification inputs
+ok 3 - the exact operational test corrections remain required and cannot open other verification inputs
+  ---
+  duration_ms: 21.526318
+  type: 'test'
+  ...
+# Subtest: project profiles resolve distinct models and unavailable review capabilities cannot fall back
+ok 4 - project profiles resolve distinct models and unavailable review capabilities cannot fall back
+  ---
+  duration_ms: 1.404829
+  type: 'test'
+  ...
+# Subtest: App preflight mints only a repository-scoped token, revokes it and creates no ref
+ok 5 - App preflight mints only a repository-scoped token, revokes it and creates no ref
+  ---
+  duration_ms: 80.237269
+  type: 'test'
+  ...
+# Subtest: credential preflight is owner-triggered on the default branch and uses only pinned trusted code
+ok 6 - credential preflight is owner-triggered on the default branch and uses only pinned trusted code
+  ---
+  duration_ms: 0.566619
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 377.837007

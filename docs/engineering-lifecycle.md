@@ -133,7 +133,7 @@ Invoke `/agentic-sdlc:ff <work-item-id>` in Claude Code or `ff <work-item-id>` i
 
 | Setting | This project requires |
 | --- | --- |
-| Enabled | Native FF is enabled with delegated merge for the exact issue #90 override; supervised defaults remain owner-reviewed. See the [bounded grant](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
+| Enabled | Native FF is enabled with delegated merge for the exact issue #99 override; supervised defaults remain owner-reviewed. See the [bounded grant](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
 | Executor and reviewer | Native project profiles select Sol Medium and Luna High; private operator resolution must attest distinct models and available capabilities before execution |
 | Maximum correction rounds | Native unattended: 1 shared plan/candidate correction; portable FF: 3 per gate |
 | Substitutable judgement items | None by default; owner remains responsible for every Definition of Done judgement item |
@@ -198,3 +198,4 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 | 2026-11-06 | Fast Forward | Adopt disabled native FF, narrow scope, verification integrity and distinct reviewer profiles | Owner-authorized #88 adoption; first delivery and merge remain separately authorized |
 | 2026-11-07 | Fast Forward | Enable native FF and merge for issue #90 with two exact test corrections; keep supervised defaults | Owner explicitly authorized autonomous delivery, merge:true and the first read-only operational view |
 | 2026-11-07 | Provided roles and deterministic checks | Install pinned OpenSpec delivery planning and ProductShape citation checks; freeze configuration and schemas as verification inputs | Complete the owner-authorized adoption and resumption after native #90 planning identified missing prerequisites |
+| 2026-11-07 | Fast Forward | Replace the closed #90 grant with the exact #99 observer qualification grant | Owner authorized completing #88 and necessary delivery; preserve supervised defaults, write scope, budgets and all protected gates |
