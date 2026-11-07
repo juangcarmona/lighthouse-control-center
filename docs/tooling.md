@@ -2,7 +2,7 @@
 
 ## Lighthouse
 
-The exact installed CLI version is pinned in `package.json` and `package-lock.json`; `lighthouse.json` selects the SDLC package. Preview updates with `npx lighthouse upgrade --scope all`, then apply reviewed changes and run `npx lighthouse verify --format json`. `.lighthouse/upgrade.json` tracks managed-file ownership. The current adoption uses CLI 0.12.53 and SDLC 0.21.4.
+The exact installed CLI version is pinned in `package.json` and `package-lock.json`; `lighthouse.json` selects the SDLC package. Preview updates with `npx lighthouse upgrade --scope all`, then apply reviewed changes and run `npx lighthouse verify --format json`. `.lighthouse/upgrade.json` tracks managed-file ownership. The current adoption uses CLI 0.12.55 and SDLC 0.21.6.
 
 The Lighthouse `dotnet-backend` profile is selected for the future application. Its guidance is installed, but selecting it does not create the application or install its analyzer/CQRS checks. `npm run verify:dotnet` is not yet configured; the #49 plan must implement and verify the applicable profile checks.
 

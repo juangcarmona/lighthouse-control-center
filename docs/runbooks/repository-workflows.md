@@ -26,9 +26,9 @@ The current gh-aw gateway uses host port 8080. Only one gateway job may occupy t
 
 Enable `LIGHTHOUSE_AUTOMATION_ENABLED` after installing and checking the workflows. Keep default token permissions read-only. GitHub's setting allowing Actions to create and approve PRs is required for publication; the bot does not approve its own work.
 
-The workflows pin published Lighthouse commit `c4c61c8eecc02e216252ed396e11593d163c2c13` and use gh-aw 0.93.2. The installed packages are CLI 0.12.48 and SDLC 0.20.15. Update them through the official upgrade and workflow installer; npm installation alone does not update workflows. [Issue #88 evidence](../delivery/evidence/issue-88/README.md) records release and validation evidence.
+The workflows pin published Lighthouse commit `83a7796e254f897f40074d6d1bed3d733fc59e32` with CLI 0.12.55 and SDLC 0.21.6, using gh-aw 0.93.2. Update packages through the official upgrade and regenerate workflows with the installed workflow installer; npm installation alone does not update workflows. The [release adoption evidence](../delivery/evidence/issue-88/release-055/README.md) records the approved source, registry metadata and release-tag recovery.
 
-The first [issue #90 attempt](https://github.com/juangcarmona/sofa/actions/runs/42346379566) stopped before reservation or candidate creation because the previous harness rejected committed skill links. [Lighthouse #525](https://github.com/juangcarmona/lighthouse/pull/525) authenticates their metadata and omits them without following targets; changed or new links remain rejected. The owner approved the [0.12.48 / 0.20.15 release](https://github.com/juangcarmona/lighthouse/actions/runs/42348320774), adoption and resumption. Both npm packages identify the immutable commit above. This update preserves the exact #90 grant; native delivery still requires its own run, reviews and CI evidence.
+The previous #99 native attempt stopped during refinement because the producer emitted an estimate outside the canonical contract. The shared producer fix is now published. The failed attempt remains historical evidence; a new request after adoption must establish actual native planning, implementation, App-push CI, integration and post-merge review. The exact #99 grant and supervised defaults are unchanged.
 
 Native planning also requires the adopter's [OpenSpec configuration and inventory](../../openspec/README.md). OpenSpec 1.15.0 and the ProductShape-generated integration are installed locally; `npm run verify` checks both specification validity and product citations. Configuration and schemas are protected verification inputs. A containerized runner must persistently mount the private `<engine lock>.resources` directory at its host path alongside the shared lock. Confirm that its actual runner UID can write there before starting work; mounting only the lock file leaves execution preparation blocked.
 
@@ -49,8 +49,8 @@ Preflight verifies Node 24, npm, Git, Chromium, OpenCode 2.1.0 and .NET SDK 10.0
 To regenerate the existing workflow set from a verified Lighthouse checkout, first preview and review differences, then apply:
 
 ```sh
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . c4c61c8eecc02e216252ed396e11593d163c2c13 --with-unattended --with-maintenance --replace-reviewed
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . c4c61c8eecc02e216252ed396e11593d163c2c13 --with-unattended --with-maintenance --replace-reviewed --apply
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 83a7796e254f897f40074d6d1bed3d733fc59e32 --with-unattended --with-maintenance --replace-reviewed
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 83a7796e254f897f40074d6d1bed3d733fc59e32 --with-unattended --with-maintenance --replace-reviewed --apply
 ```
 
 Commit generated locks with their sources. The host authenticates product revision separately from workflow revision: a manual router dispatch can test this PR's workflow branch, while implementation policy and environment still come from the current default branch. Such a pre-merge run cannot prove activation of an unmerged environment declaration. Use isolated consumer acceptance for the candidate and retain this live-acceptance limitation until post-merge verification.
