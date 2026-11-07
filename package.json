@@ -1,7 +1,7 @@
 {
   "name": "sofa",
   "version": "0.0.0",
-  "description": "SoFa — my software factory.",
+  "description": "SoFa \u2014 my software factory.",
   "scripts": {
     "prepare": "husky",
     "test": "node --test",
@@ -42,7 +42,7 @@
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "@fission-ai/openspec": "1.15.0",
-    "@juangcarmona/lighthouse": "0.12.53",
+    "@juangcarmona/lighthouse": "0.12.55",
     "@playwright/test": "1.64.1",
     "@prodshape/cli": "0.23.0",
     "fflate": "0.8.3",

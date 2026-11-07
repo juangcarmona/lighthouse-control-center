@@ -1,0 +1,51 @@
+{
+  "scope": "Prerequisite release adoption only; not native issue99 qualification",
+  "sourceRevision": "83a7796e254f897f40074d6d1bed3d733fc59e32",
+  "ownerApproval": "Explicit approval in this chat for CLI 0.12.55 / SDLC 0.21.6 from this exact SHA",
+  "releaseRun": "https://github.com/juangcarmona/lighthouse/actions/runs/42372897175",
+  "releaseRecovery": "npm publication succeeded; GITHUB_TOKEN tag push failed for absent workflows permission. Operator created only the two annotated release tags at the approved SHA, then retried the same failed release job. Final outcome verified separately.",
+  "packages": [
+    {
+      "name": "@juangcarmona/lighthouse",
+      "version": "0.12.55",
+      "gitHead": "83a7796e254f897f40074d6d1bed3d733fc59e32",
+      "dist.integrity": "sha512-cEd7/aS3TXupCPrv6Xctmged90+rR0g4zcqk83jR6trpUEs64Vv6i9ENNjqJ2BbTBFh34xRrtCymCFJ3pKdn8A==",
+      "tagObject": "afbb4391e0cfeec3ad5f53250b680eb10f40b3c8"
+    },
+    {
+      "name": "@juangcarmona/lighthouse-sdlc",
+      "version": "0.21.6",
+      "gitHead": "83a7796e254f897f40074d6d1bed3d733fc59e32",
+      "dist.integrity": "sha512-P6QhnxXgkMRJVf6wQgZ5bwxDMiR28DjAkL1JGXDhFdUxs8bd4TLholEp6hRCVEPJpQeFvjnm2Ov6u5iA52LJWw==",
+      "tagObject": "c9fdf2f7f2b087797bc5a165080490dec6e67602"
+    }
+  ],
+  "unchangedAuthority": [
+    {
+      "path": ".lighthouse/unattended.json",
+      "sha256": "1b354f85bc3f3d349343dae23d2016433ffb446a16c4b8f43357cff70158a46e"
+    },
+    {
+      "path": ".lighthouse/implement.json",
+      "sha256": "00237688b0c28a9a3b3c334678aebfa40040284b56a6c1fea9f2bc4b895dd6e9"
+    },
+    {
+      "path": ".lighthouse/models.json",
+      "sha256": "09b3bc90beac5eccf9ebb78a654b814cb84caa3243ec61bb20bcbf297036ecf9"
+    },
+    {
+      "path": ".lighthouse/environment.json",
+      "sha256": "78594724bb1d8f8a27f6745179c9320b4606747a2cd34fa102ea44b6369bcdde"
+    },
+    {
+      "path": "docs/runbooks/lighthouse-unattended.md",
+      "sha256": "bf37bd3a32f2c35467d6c99e09b69fd51040482988369cce3a343d027758efd6"
+    }
+  ],
+  "releaseOutcome": {
+    "conclusion": "success",
+    "headSha": "83a7796e254f897f40074d6d1bed3d733fc59e32",
+    "status": "completed",
+    "updatedAt": "2026-11-07T16:52:11Z"
+  }
+}

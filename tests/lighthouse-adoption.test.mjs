@@ -129,7 +129,7 @@ test('credential preflight is owner-triggered on the default branch and uses onl
   assert.match(workflow, /github\.actor == github\.repository_owner/);
   assert.match(workflow, /github\.triggering_actor == github\.repository_owner/);
   assert.match(workflow, /github\.event\.repository\.default_branch/);
-  assert.match(workflow, /repository: juangcarmona\/lighthouse\n          ref: dd1694735391f54241604a1686ccd627de7b2036/);
+  assert.match(workflow, /repository: juangcarmona\/lighthouse\n          ref: 83a7796e254f897f40074d6d1bed3d733fc59e32/);
   assert.match(workflow, /assert\.equal\(receipt\.tokenRevoked, true/);
   const verify = read('.github/workflows/verify.yml').toString();
   assert.match(verify, /branches: \[main, 'lighthouse\/verification-\*'\]/);
