@@ -1,16 +1,19 @@
 {
   "schemaVersion": 1,
-  "enabled": false,
+  "enabled": true,
   "routes": [
     "ff"
   ],
   "paths": [
     "src/observation/",
-    "src/web/"
+    "src/web/",
+    "tests/observation.test.mjs",
+    "tests/browser/observation.spec.mjs",
+    "README.md"
   ],
   "reviewerProfile": "plan",
   "allowFivePoint": false,
-  "merge": false,
+  "merge": true,
   "maxCorrections": 1,
   "timeoutSeconds": 3600
 }

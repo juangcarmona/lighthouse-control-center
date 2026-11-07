@@ -51,5 +51,67 @@
       ],
       "corrections": {}
     }
+  },
+  "90": {
+    "reviewRequired": false,
+    "scope": "Deliver only issue #90, the owner-authorized read-only operational overview. Independent planning/candidate acceptance and merge are delegated only after trusted checks and forge rules pass. Retain existing safety assertions and all other verification inputs. No production deployment or broader issue completion.",
+    "paths": [
+      "src/observation/",
+      "src/web/",
+      "tests/observation.test.mjs",
+      "tests/browser/observation.spec.mjs",
+      "README.md"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "tests/observation.test.mjs",
+        "tests/browser/observation.spec.mjs"
+      ],
+      "corrections": {
+        "tests/observation.test.mjs": "Issue #90: extend behavioral coverage for source timestamps and distinct work/wait states; preserve existing source, unavailable-evidence and read-only assertions.",
+        "tests/browser/observation.spec.mjs": "Issue #90: exercise operational cards, human waits, repository filter persistence, source ages and phone/keyboard behavior; retain link safety, stale evidence and accessibility assertions."
+      }
+    }
   }
 }

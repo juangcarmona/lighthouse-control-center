@@ -132,7 +132,7 @@ Invoke `/agentic-sdlc:ff <work-item-id>` in Claude Code or `ff <work-item-id>` i
 
 | Setting | This project requires |
 | --- | --- |
-| Enabled | Native unattended delivery is disabled by default in `.lighthouse/unattended.json`; activation requires the [owner procedure](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
+| Enabled | Native FF is enabled with delegated merge for the exact issue #90 override; supervised defaults remain owner-reviewed. See the [bounded grant](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
 | Executor and reviewer | Native project profiles select Sol Medium and Luna High; private operator resolution must attest distinct models and available capabilities before execution |
 | Maximum correction rounds | Native unattended: 1 shared plan/candidate correction; portable FF: 3 per gate |
 | Substitutable judgement items | None by default; owner remains responsible for every Definition of Done judgement item |
@@ -195,3 +195,4 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 | 2026-10-19 | All | Initial adoption of the shared lifecycle | Align SoFa with the Agentic SDLC practices used across the other repositories |
 | 2026-10-28 | Issue labels, stages, gates and WIP | Use the installed Lighthouse SDLC contract as the workflow authority; remove the parallel `status:*` convention | Lighthouse 0.15.0 supplies request labels, gates, state evidence, reservations and PR projections |
 | 2026-11-06 | Fast Forward | Adopt disabled native FF, narrow scope, verification integrity and distinct reviewer profiles | Owner-authorized #88 adoption; first delivery and merge remain separately authorized |
+| 2026-11-07 | Fast Forward | Enable native FF and merge for issue #90 with two exact test corrections; keep supervised defaults | Owner explicitly authorized autonomous delivery, merge:true and the first read-only operational view |
