@@ -4,32 +4,34 @@ This is the activation procedure for the adoption in [#88](https://github.com/ju
 
 ## Installed policy
 
-On 2026-11-07 the owner explicitly authorized autonomous delivery with `merge:true` and the first read-only operational view. This supersedes the original rollout sequence requiring a `merge:false` qualification before a separate merge grant. The grant is limited to [issue #90](https://github.com/juangcarmona/sofa/issues/90), a bounded slice of #52, #51 and #57; it does not authorize those entire backlog items.
+On 2026-11-07 the owner authorized autonomous delivery with `merge:true`, then completion of #88/#51/#52/#57 and necessary dependencies. The owner separately authorized lifting #49's `future` hold for development Keycloak and the GitHub user connection; production remains separate. These grants are recorded in the issues. They do not expand unattended agent write scope.
+
+The original read-only slice [#90](https://github.com/juangcarmona/sofa/issues/90) was delivered by the operator in [#97](https://github.com/juangcarmona/sofa/pull/97) after native execution blocked. Its native run remains blocked and does not qualify #88. The current exact native grant is [#99](https://github.com/juangcarmona/sofa/issues/99): source workflow attempts and triggering events. Its reviewed prerequisite is [#98](https://github.com/juangcarmona/sofa/pull/98). All broader delivery continues through the shared lifecycle.
 
 | Boundary | Adopted setting |
 | --- | --- |
-| Execution / merge | `enabled: true`, `merge: true`; exact issue #90 candidate acceptance override only |
+| Execution / merge | `enabled: true`, `merge: true`; exact issue #99 candidate acceptance override only |
 | Route / estimate | Only `ff`; low risk, reversible, dependencies resolved, 1–3 points; no five-point opt-in |
 | Writable modules | `src/observation/`, `src/web/`, `README.md` and the two exact tests below; Lighthouse adds only its issue-specific OpenSpec planning root |
 | Corrections / deadline | One shared planning/candidate correction, 3,600 seconds |
 | Implementation | `build`: `openai/gpt-6.1-sol`, `medium` |
 | Independent review | `plan`: `openai/gpt-6-luna`, `high`; planning and candidate review run separately with read-only source |
 | Default acceptance | `.lighthouse/implement.json` retains `reviewRequired: true` and the existing supervised scope and commands |
-| Trusted verification | Complete defaults inventory stays frozen. Only issue #90 may extend `tests/observation.test.mjs` and `tests/browser/observation.spec.mjs` with admitted reasons and independent review; existing safety assertions remain required |
+| Trusted verification | Complete defaults inventory stays frozen. Only issue #99 may extend `tests/observation.test.mjs` and `tests/browser/observation.spec.mjs` with admitted reasons and independent review; existing safety assertions remain required |
 | Required GitHub CI | Existing `verify` check, integration ID 15368, including browser and full host .NET/Docker suites |
 | Recovery | Maintenance installed; maintenance, automatic recovery, CI repair and report publication require separate opt-ins |
 
-Hotfix, authentication, .NET runtime, ProductShape, ArcShape, credentials, workflow changes and policy changes are outside this unattended write scope. Other tests and all verification entrypoints remain frozen. Only the two reviewed issue #90 corrections above are allowed; the agent cannot grant itself another exception. Owner-only product/security decisions and `future` remain binding, including #49. All other issues retain `defaults.reviewRequired:true` and cannot enter unattended delivery without another exact reviewed grant.
+Hotfix, authentication, .NET runtime, ProductShape, ArcShape, credentials, workflow changes and policy changes are outside this unattended write scope. Other tests and all verification entrypoints remain frozen. Only the two reviewed issue #99 corrections above are allowed; the agent cannot grant itself another exception. Owner-only product/security decisions and other `future` holds remain binding, except the separately recorded development authorization for #49. All other issues retain `defaults.reviewRequired:true` and cannot enter unattended delivery without another exact reviewed grant.
 
 ## Current authorized delivery
 
 1. Verify the App preflight, distinct provider access, pinned environment, required checks and evidence protection below. The default-branch App preflight [42345617735](https://github.com/juangcarmona/sofa/actions/runs/42345617735) passed with repository-only scope and confirmed token revocation.
 2. Review and merge this activation through the existing required `verify` check and independent review. Do not dispatch from an unmerged policy branch.
-3. Dispatch `lighthouse-sdlc-unattended.yml` exactly once from current `main` with `issue=90` and `route=ff`. Lost responses require reconciliation rather than blind redispatch.
+3. Dispatch `lighthouse-sdlc-unattended.yml` exactly once from current `main` with `issue=99` and `route=ff`. Lost responses require reconciliation rather than blind redispatch.
 4. Require source-bound refinement, planning review, implementation, trusted container checks, candidate review, App-created verification ref and full native `verify` before delegated integration. Retain the actual PR/head, merge and post-merge verification and review evidence. No required forge approval may be bypassed.
 5. Inspect desktop/mobile browser artifacts and the live read-only view. This delivery does not introduce privileged UI controls, local sessions, runner provisioning, release or deployment. Broader issues #51/#52/#57 stay open.
 
-The activation remains bounded by the exact numeric issue override. To stop new unattended deliveries, restore `enabled:false` and `merge:false` and remove only the `90` override through a reviewed change. Do not alter credentials, protections or supervised defaults. Do not add maintenance/recovery opt-ins as part of this grant.
+The activation remains bounded by the exact numeric issue override. To stop new unattended deliveries, restore `enabled:false` and `merge:false` and remove only the `99` override through a reviewed change. Do not alter credentials, protections or supervised defaults. Do not add maintenance/recovery opt-ins as part of this grant.
 
 Project profiles are declarations. Operator overrides have precedence; a different profile name alone proves no independence. The currently inspected operator permits both selected combinations. Live provider access, model identity and effort must be checked on the actual runner before activation; configuration-derived selection does not establish provider-authenticated identity or billing. Missing capabilities fail without fallback. The project does not alter private operator configuration.
 
@@ -57,7 +59,7 @@ The new App preflight must first reach the default branch; a PR test cannot esta
 
 ## Original rollout procedure (historical)
 
-The owner replaced the staged first-delivery/merge sequence below with the current explicit issue #90 grant. These steps preserve the adoption rationale and are not additional approval gates for that grant.
+The owner replaced the staged first-delivery/merge sequence below with the original #90 grant and then the current #99 grant. These steps preserve the adoption rationale and are not additional approval gates for that grant.
 
 1. Obtain a new explicit owner grant for one open owner-authored issue. It must describe a small, reversible observer improvement within accepted product intent and the declared paths. Resolve dependencies and questions; retain existing holds and pending proposal PRs. Do not reuse #49 or dispatch #88 as a delivery pilot.
 2. Prepare a reviewed activation change. Set `.lighthouse/unattended.json` `enabled` to `true`, retaining `merge: false`, `routes: ["ff"]`, scope and budgets. Native admission also rejects `reviewRequired: true`: copy `defaults` into an exact numeric issue entry in `.lighthouse/implement.json`, set **only that issue's** `reviewRequired` to `false` and narrow its `paths` to the unattended paths. Retain its complete verification inventory and checks. Leave `defaults.reviewRequired: true`. This permits independent candidate acceptance for that one grant; owner merge remains required. Review and merge the activation change before dispatch. The disabled adoption itself contains no such override.
@@ -76,4 +78,4 @@ Delegated merge requires a later, separate owner grant for another bounded issue
 
 ## Roll back to supervised delivery
 
-Keep `merge: false`; restore `enabled: false` and remove only the qualification issue's override. Supervised defaults and workers remain installed. For an urgent stop of all new work, the owner can set `LIGHTHOUSE_AUTOMATION_ENABLED=false`; inspect active runs before cancellation or reservation cleanup. Do not unset the existing App credentials or alter repository protections. Do not enable `LIGHTHOUSE_MAINTENANCE_ENABLED`, `LIGHTHOUSE_RECOVERY_ENABLED`, a report index or CI repair as part of this adoption. Installing their workflows does not grant their execution.
+Set `merge: false`; restore `enabled: false` and remove only the qualification issue's override. Supervised defaults and workers remain installed. For an urgent stop of all new work, the owner can set `LIGHTHOUSE_AUTOMATION_ENABLED=false`; inspect active runs before cancellation or reservation cleanup. Do not unset the existing App credentials or alter repository protections. Do not enable `LIGHTHOUSE_MAINTENANCE_ENABLED`, `LIGHTHOUSE_RECOVERY_ENABLED`, a report index or CI repair as part of this adoption. Installing their workflows does not grant their execution.

@@ -55,9 +55,9 @@
       "corrections": {}
     }
   },
-  "90": {
+  "99": {
     "reviewRequired": false,
-    "scope": "Deliver only issue #90, the owner-authorized read-only operational overview. Independent planning/candidate acceptance and merge are delegated only after trusted checks and forge rules pass. Retain existing safety assertions and all other verification inputs. No production deployment or broader issue completion.",
+    "scope": "Deliver only issue #99: expose source run attempts and triggering events in the existing read-only observer. Independent planning/candidate acceptance and merge are delegated after trusted checks and forge requirements pass. Preserve all existing safety assertions and frozen verification inputs. No authentication, production deployment or broader issue completion.",
     "paths": [
       "src/observation/",
       "src/web/",
@@ -115,8 +115,8 @@
         "tests/browser/observation.spec.mjs"
       ],
       "corrections": {
-        "tests/observation.test.mjs": "Issue #90: extend behavioral coverage for source timestamps and distinct work/wait states; preserve existing source, unavailable-evidence and read-only assertions.",
-        "tests/browser/observation.spec.mjs": "Issue #90: exercise operational cards, human waits, repository filter persistence, source ages and phone/keyboard behavior; retain link safety, stale evidence and accessibility assertions."
+        "tests/observation.test.mjs": "Issue #99: extend source run attempt/event coverage, including absent and malformed values. Preserve existing source, unavailable-evidence, timestamp and read-only assertions.",
+        "tests/browser/observation.spec.mjs": "Issue #99: exercise known and unknown source attempt/event values in operational cards. Preserve all source-link, stale-evidence, filter, keyboard and accessibility assertions."
       }
     }
   }

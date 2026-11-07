@@ -9,10 +9,10 @@ Preserve repository-owned execution and independent runtime. No SoFa service bec
 
 ## Maintenance implementation
 
-- [ ] 1. Record the approved #90 retrospective once, using post-merge evidence and explicitly unavailable session-bound effort figures.
-- [ ] 2. Add and run the scanner cache regression RED, honor the absolute XDG cache without changing other scanner trust/scan behavior, then run GREEN and the real scanner test in the unchanged pinned editing environment.
-- [ ] 3. Preview and officially adopt the published CLI/SDLC/workflow tuple; preserve project-owned policies and human/security holds; retain ownership and integrity evidence.
-- [ ] 4. Create/refine the real small observer qualification issue and add only its exact reviewed grant and two necessary test corrections; preserve full frozen checks, scope/budgets and supervised defaults. Exercise a local negative control and document operation/rollback.
+- [x] 1. Record the approved #90 retrospective once, using post-merge evidence and explicitly unavailable session-bound effort figures.
+- [x] 2. Add and run the scanner cache regression RED, honor the absolute XDG cache without changing other scanner trust/scan behavior, then run GREEN and the real scanner test in the unchanged pinned editing environment.
+- [x] 3. Preview and officially adopt the published CLI/SDLC/workflow tuple; preserve project-owned policies and human/security holds; retain ownership and integrity evidence.
+- [x] 4. Create/refine the real small observer qualification issue and add only its exact reviewed grant and two necessary test corrections; preserve full frozen checks, scope/budgets and supervised defaults. Exercise a local negative control and document operation/rollback.
 - [ ] 5. Run full local verification and generated/provider checks; reconcile this maintenance spec and citations. Retain source-bound evidence and fold/archive this maintenance change.
 
 ## Host integration and later qualification

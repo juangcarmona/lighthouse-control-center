@@ -15,6 +15,25 @@ test('scanner verifies archive bytes and rejects a changed download', () => {
   assert.throws(() => verifyArchive(Buffer.from('changed archive'), expected), /checksum mismatch/);
 });
 
+test('scanner honors only absolute XDG cache roots while retaining platform defaults', async () => {
+  const home = await mkdtemp(join(tmpdir(), 'sofa-cache-home-'));
+  const cache = join(home, 'executable-cache');
+  const moduleUrl = new URL('../../src/tooling/security/check-secrets.mjs', import.meta.url).href;
+  const script = `import { cacheRoot } from ${JSON.stringify(moduleUrl)}; process.stdout.write(cacheRoot);`;
+  try {
+    for (const value of [cache, undefined, 'relative-cache']) {
+      const env = { ...scannerEnvironment(), HOME: home, USERPROFILE: home, LOCALAPPDATA: join(home, 'local-appdata') };
+      if (value !== undefined) env.XDG_CACHE_HOME = value;
+      const result = spawnSync(process.execPath, ['--input-type=module', '--eval', script], { encoding: 'utf8', env });
+      assert.equal(result.status, 0, result.stderr);
+      const expected = process.platform === 'win32'
+        ? join(env.LOCALAPPDATA, 'SoFa', 'Cache')
+        : join(value === cache ? cache : join(home, '.cache'), 'sofa');
+      assert.equal(result.stdout, expected);
+    }
+  } finally { await rm(home, { recursive: true, force: true }); }
+});
+
 test('scanner subprocesses receive OS paths but no credentials or scanner overrides', () => {
   const environment = scannerEnvironment({ Path: '/bin', SystemRoot: '/system', HOME: '/home',
     GITHUB_TOKEN: 'synthetic', CLOUDFLARE_API_TOKEN: 'synthetic', FIREBASE_TOKEN: 'synthetic',

@@ -1,0 +1,25 @@
+✔ scanner verifies archive bytes and rejects a changed download (3.186181ms)
+✔ scanner honors only absolute XDG cache roots while retaining platform defaults (255.094229ms)
+✔ scanner subprocesses receive OS paths but no credentials or scanner overrides (2.732202ms)
+✔ unborn repository still scans the working tree with redaction (1.371357ms)
+✔ all-ref history failure blocks success but still scans the working tree (1.293107ms)
+✔ staged changes are scanned without printing their content (0.729261ms)
+✔ scanner execution errors and unknown history fail closed (1.219806ms)
+✔ real scanner detects an ignored synthetic secret and redacts reports (10262.966456ms)
+✔ corrupted archive is rejected with the underlying ZIP extraction error (15.968981ms)
+✔ official checksum mismatch stops installation before extraction (7.342681ms)
+✔ valid cached binary is version-checked and reused without downloading (9.165349ms)
+✔ incomplete and corrupt previous installs are safely replaced (7.748696ms)
+✔ cached or downloaded wrong-version binaries cannot be accepted (10.93815ms)
+✔ simultaneous installers publish only one verified cache (55.388301ms)
+✔ extraction failure retains process exit and stderr diagnostics (2.987242ms)
+✔ failed installation never runs or reports a successful security scan (2.477242ms)
+✔ a busy installation lock fails closed without deleting another owner (2.403004ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10746.383317

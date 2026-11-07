@@ -28,4 +28,4 @@ None. Existing observation behavior is unchanged by this maintenance increment.
 
 Touches tooling cache selection and its regression, officially generated lifecycle/workflow projections, ownership metadata, exact per-issue grants, runbooks and delivery evidence. No ProductShape baseline or architecture behavior changes. No source credentials, App changes, production deployment, security weakening or global concurrency change.
 
-The maintenance PR does not close #88: actual native issue→candidate→App CI→merge→post-merge acceptance remains required after it lands. The #49 future hold remains binding pending its separately requested owner decision.
+The maintenance PR does not close #88: actual native issue→candidate→App CI→merge→post-merge acceptance remains required after it lands. The owner separately lifted the #49 development identity hold during this maintenance cycle; that work remains outside this PR and must reconcile its existing proposal and security gates.

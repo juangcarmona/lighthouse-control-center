@@ -1,0 +1,13 @@
+{
+  "head": "6e1f37da3e94e1c9ba5342f16aac656816beb10f",
+  "verdict": "accept",
+  "findings": [],
+  "dimensions": [],
+  "kind": "plan",
+  "issue": 88,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-07T11:11:48.558Z",
+  "sourceReadOnly": true,
+  "requestPath": "/tmp/sofa-review-88-plan-6e1f37da3e-8b07623b/context.json"
+}
