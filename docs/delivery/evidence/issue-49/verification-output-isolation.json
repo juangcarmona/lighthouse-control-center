@@ -1,0 +1,19 @@
+{
+  "observedFailure": {
+    "command": "npm run verify:identity:host",
+    "logSha256": "ed081441ab2049c760a35afe258ebfdc4837f97abc78e5f72606157f59b31435",
+    "lastSourceLocation": "verify-identity-provider.mjs:206:3",
+    "outcome": "failed while writing the final safe receipt; not recorded as a passed verification",
+    "cause": "Concurrent root Playwright cleanup owned all of test-results and removed the provider evidence directory. The host failure handler subsequently recreated it with only host-failure.json."
+  },
+  "processGap": "The browser verification output cleanup overlapped independently owned provider artifacts.",
+  "owner": "playwright.config.mjs now scopes browser cleanup to test-results/browser; identity keeps test-results/identity.",
+  "counterfactual": {
+    "regression": "tests/verification-output.test.mjs asserts cleanup and provider evidence directories are disjoint.",
+    "redExit": 1,
+    "greenExit": 0,
+    "redLogSha256": "a00b90e14ad4184daa239982377593618e4a54f0380380a9a831853f7d80de20",
+    "greenLogSha256": "4aa8a510ad269cf5cae4257e2d5827cceeb357cab8bb63273b4a80eba0231c72"
+  },
+  "remaining": "Repeat the full repository command and actual provider lane after this correction. Build phases remain serialized within one checkout."
+}
