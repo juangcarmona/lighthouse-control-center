@@ -178,11 +178,11 @@ try {
   await signIn(page, accounts[0], 'owner-totp.json');
   proofs.freshMfaDespiteProviderSso = true;
   await accountUi(page);
+  await externalWorkspaceNavigation(page, 200);
   const original = await session(page);
   const ownerCookies = await desktop.cookies(origin + '/workspace');
   assert.ok(ownerCookies.some(cookie => cookie.name === '__Host-SoFa.Owner' && cookie.secure && cookie.httpOnly && cookie.sameSite === 'Lax'));
   assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length), 0);
-  await externalWorkspaceNavigation(page, 200);
   await page.screenshot({ path: resolve(evidenceDirectory, 'owner-desktop.png'), fullPage: true });
   proofs.opaqueSecureCookie = proofs.browserStorageEmpty = proofs.trustedHttps = true;
 
@@ -240,7 +240,7 @@ try {
 } catch (error) {
   // Browser error call logs can include live cookies and callback queries. Never publish them.
   await writeFile(resolve(directory, 'provider-verification-error.txt'), JSON.stringify({ errorType: error.name, stage, assertion: error.code === 'ERR_ASSERTION', sourceLocations: String(error.stack).split('\n').filter(line => /verify-identity-provider\.mjs:\d+:\d+/.test(line)).map(line => line.match(/verify-identity-provider\.mjs:\d+:\d+/)[0]) }), { mode: 0o600 });
-  console.log(JSON.stringify({ status: 'failed', stage, location: activePage ? new URL(activePage.url()).origin + new URL(activePage.url()).pathname : null, fields: activePage ? await activePage.locator('input').evaluateAll(elements => elements.map(element => ({ id: element.id, name: element.name, type: element.type }))) : [], diagnostic: 'Private provider-verification-error.txt; redact credentials before inspection.' }));
+  console.log(JSON.stringify({ status: 'failed', stage, errorType: error.name, assertion: error.code === 'ERR_ASSERTION', sourceLocations: String(error.stack).split('\n').filter(line => /verify-identity-provider\.mjs:\d+:\d+/.test(line)).map(line => line.match(/verify-identity-provider\.mjs:\d+:\d+/)[0]) }));
   process.exitCode = 1;
 } finally {
   if (paused) execFileSync('docker', ['unpause', container], { stdio: 'ignore' });
