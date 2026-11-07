@@ -99,8 +99,10 @@ public static class WorkspaceModule
         _ => "",
       };
       string account;
+      bool canDisconnect;
       lock (record.Sync)
       {
+        canDisconnect = record.GitHub.Current is not null;
         account = connection is not null ? "<p id=\"github-account\">GitHub acting account: " + Encode(connection.Login) + " · User ID "
                 + connection.UserId.ToString(System.Globalization.CultureInfo.InvariantCulture) + ". Verified at "
                 + Encode(connection.VerifiedAt.ToString("o", System.Globalization.CultureInfo.InvariantCulture)) + ".</p>"
@@ -114,9 +116,10 @@ public static class WorkspaceModule
           + (feedback.Length == 0 ? "" : "<p role=\"status\">" + feedback + "</p>")
               + "<p>Identity provider: " + Encode(settings.Identity.Issuer.AbsoluteUri) + ".</p>" + account
               + "<p id=\"account-status\" role=\"status\" aria-live=\"polite\">Checking current repository authority…</p><ul id=\"repository-authority\" aria-label=\"Configured repository permissions\"></ul>"
-              + (string.IsNullOrEmpty(settings.GitHubClientId) ? "<p>The development GitHub App is not configured.</p>"
+              + (string.IsNullOrEmpty(settings.GitHubClientId) ? "<h2>GitHub setup required</h2><p>Register the development GitHub App, then connect your GitHub account to load repository operations.</p>"
                   : Form("/connections/github/start", token, "Connect GitHub account"))
-              + Form("/connections/github/disconnect", token, "Disconnect GitHub")
+              + "<div id=\"github-disconnect\"" + (canDisconnect ? "" : " hidden") + ">"
+              + Form("/connections/github/disconnect", token, "Disconnect GitHub") + "</div>"
               + "<p><a href=\"/workspace/operations\">Open factory operations</a></p>"
               + "<p>Local disconnect removes this session's source credentials. To revoke the separate GitHub grant, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
               + "<p>Sessions expire after 15 minutes without user activity, or four hours after authentication. Provider authority is checked at least every five minutes; a failed due check blocks access.</p>"
@@ -177,7 +180,13 @@ public static class WorkspaceModule
     {
       var record = sessions.Get(context.User)!;
       var snapshot = await observations.Handle(new GetObservations(record), context.RequestAborted).ConfigureAwait(false);
-      return snapshot is null ? Results.StatusCode(409) : Results.Json(snapshot);
+      if (snapshot is not null) return Results.Json(snapshot);
+      lock (record.Sync)
+        return Results.Json(new
+        {
+          state = string.IsNullOrEmpty(settings.GitHubClientId) ? "unconfigured"
+            : record.GitHub.Current is null ? "unlinked" : "unavailable"
+        }, statusCode: 409);
     });
     app.MapGet("/api/connections/github", async (HttpContext context, OwnerSessions sessions, GetAccountStatusHandler status) =>
         Results.Json(await status.Handle(new GetAccountStatus(sessions.Get(context.User)!), context.RequestAborted).ConfigureAwait(false)));

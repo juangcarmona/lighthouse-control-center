@@ -1,5 +1,8 @@
 const $ = id => document.getElementById(id);
 const node = (tag, text, className) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (className) n.className = className; return n; };
+function showObservationControls(visible) {
+  document.querySelectorAll('.metrics, .repository-filter, .scope, .boundary').forEach(element => { element.hidden = !visible; });
+}
 const active = run => ['queued', 'in_progress', 'waiting', 'pending', 'requested'].includes(run.status);
 const humanWait = issue => issue.labels.some(label => ['needs-info', 'waiting-review'].includes(label));
 const sourceKey = (repository, kind, id) => JSON.stringify([repository, kind, id]);
@@ -116,22 +119,30 @@ async function refresh() {
   try {
     const response = await fetch('/api/observations', { signal: AbortSignal.timeout(35000) });
     if ([401, 403, 409].includes(response.status)) {
+      const failure = await response.json().catch(() => null);
+      const setupRequired = response.status === 409 && failure?.state === 'unconfigured';
       const heldFocus = $('repositories').contains(document.activeElement);
+      showObservationControls(false);
       snapshot = undefined;
       $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
       for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
       $('count-scope').textContent = 'No authorized observation is available.';
-      $('connection').textContent = response.status === 409 ? 'Connect or verify your GitHub account to view observations.'
+      $('connection').textContent = setupRequired ? 'GitHub setup required before operations can load.'
+        : response.status === 409 ? 'Connect or verify your GitHub account to view observations.'
         : response.status === 401 ? 'Your owner session has ended. Sign in again to view observations.' : 'Access to this workspace is denied.';
       const account = node('a', 'Open account'); account.href = '/workspace';
-      $('repositories').replaceChildren(account);
+      const heading = node('h2', setupRequired ? 'Complete the GitHub connection' : 'Account verification required');
+      const explanation = node('p', setupRequired
+        ? 'Your SoFa sign-in is verified. Register the development GitHub App, install it on the selected repositories, then connect your account.'
+        : 'Open your account to check the connection and repository access.');
+      $('repositories').replaceChildren(heading, explanation, account);
       if (heldFocus) account.focus({ preventScroll: true });
       return;
     }
     if (!response.ok) throw Error();
     const data = await response.json();
     if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (r.availability === 'available' && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
-    render(data); snapshot = data;
+    showObservationControls(true); render(data); snapshot = data;
     $('connection').textContent = `Observation received ${new Date().toISOString()}. Refreshes every 30 seconds; source observation times are shown below.`;
   } catch {
     $('connection').textContent = snapshot ? 'Refresh failed. Previously shown observations may be stale. Try refreshing again.' : 'Refresh failed. No observation is available. Try refreshing again.';
