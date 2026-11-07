@@ -53,7 +53,7 @@ Commit generated locks with their sources. The host authenticates product revisi
 
 ## Bounded unattended adoption
 
-See [activation and rollback](lighthouse-unattended.md). `.lighthouse/unattended.json` permits only the `ff` route and the observer modules `src/observation/` and `src/web/`, with execution and merge disabled. Hotfix and five-point changes are excluded. The default implementation policy still requires owner review. The verification inventory freezes tests, wrappers, manifests, lockfiles, provider inputs and CI configuration with no correction exceptions. The existing required `verify` job also runs on App-created `lighthouse/verification-*` pushes.
+See [activation and rollback](lighthouse-unattended.md). Native `ff` and delegated merge are enabled for the exact issue #90 override. Scope covers the read-only observer modules, README and two specifically reviewed tests; all other verification inputs remain frozen. Hotfix and five-point changes are excluded. Default implementation policy still requires owner review for every other issue. The existing required `verify` job also runs on App-created `lighthouse/verification-*` pushes.
 
 The owner-only **Lighthouse CI App preflight** workflow uses the pinned trusted harness to check the existing App installation, mint a repository-only `contents: write` token, and require confirmed revocation. It creates no verification ref or delivery. It is available for dispatch on the default branch after adoption merges.
 

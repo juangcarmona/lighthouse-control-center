@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-11-07T06:11:33.191Z",
+  "environment": {
+    "profile": "dotnet",
+    "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+    "services": [
+      {
+        "type": "postgresql",
+        "image": "sha256:858bb5e98eed02eb8cafbcdc007f9a65d1b613972028944a8ec2133ccaf80d27"
+      }
+    ],
+    "status": "passed"
+  },
+  "models": [
+    {
+      "worker": "implement",
+      "requestedModel": "openai/gpt-6.1-sol",
+      "requestedEffort": "medium",
+      "status": "passed",
+      "reply": "OK",
+      "providerReportedSettings": "unverified: adapter has no authenticated provider-settings receipt"
+    },
+    {
+      "worker": "independent-review",
+      "requestedModel": "openai/gpt-6-luna",
+      "requestedEffort": "high",
+      "status": "passed",
+      "reply": "OK",
+      "providerReportedSettings": "unverified: adapter has no authenticated provider-settings receipt"
+    }
+  ],
+  "cleanup": true,
+  "schemaVersion": 1,
+  "issue": 90,
+  "activationIssue": 88,
+  "baseRevision": "e54ff638f21e1aea335e9c9718ff1b1b27c2405e",
+  "appPreflight": "https://github.com/juangcarmona/sofa/actions/runs/42345617735",
+  "appTokenRevoked": true,
+  "protectionObservation": {
+    "id": 25811689,
+    "revision": "958e2cada0e7225f46f5b7119b2df20214f3bfaf5f745401e50c3bba55c05578"
+  },
+  "requiredCheck": {
+    "context": "verify",
+    "integrationId": 15368
+  },
+  "nativeDelivery": "not dispatched before activation merge"
+}

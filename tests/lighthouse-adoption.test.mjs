@@ -14,12 +14,20 @@ const json = path => JSON.parse(read(path));
 const policy = json('.lighthouse/unattended.json');
 const implementation = json('.lighthouse/implement.json').defaults;
 
-test('native FF stays disabled, bounded, reviewable and excludes hotfix and five points', () => {
+test('native FF delegates only the authorized operational slice and retains supervised defaults', () => {
   assert.equal(implementation.reviewRequired, true);
-  assert.equal(policy.enabled, false);
-  assert.equal(policy.merge, false);
-  assert.throws(() => validateUnattendedPolicy(policy, 'ff'), /disabled/);
-  const enabled = { ...policy, enabled: true };
+  assert.equal(policy.enabled, true);
+  assert.equal(policy.merge, true);
+  assert.throws(() => validateUnattendedPolicy({ ...policy, enabled: false }, 'ff'), /disabled/);
+  const entries = json('.lighthouse/implement.json');
+  assert.deepEqual(Object.keys(entries).sort(), ['90', 'defaults']);
+  assert.equal(entries['90'].reviewRequired, false);
+  assert.deepEqual(entries['90'].paths, policy.paths);
+  assert.deepEqual(entries['90'].checks, implementation.checks);
+  assert.deepEqual(entries['90'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs']);
+  assert.deepEqual(Object.keys(entries['90'].verification.corrections).sort(), ['tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
+  validateImplementationPolicy(entries['90'], 90);
+  const enabled = policy;
   validateUnattendedPolicy(enabled, 'ff');
   assert.throws(() => validateUnattendedPolicy(enabled, 'hotfix'));
   const eligibility = { risk: 'low', reversible: true, dependenciesResolved: true, scopeKnown: true,
@@ -49,6 +57,24 @@ test('verification integrity freezes Node, browser, .NET and CI inputs including
   }
   const added = new Map(before).set('tests/new.test.mjs', { mode: '100644', content: Buffer.from('new assertion') });
   assert.throws(() => verificationIntegrity(before, added, implementation, 88), /Verification inputs changed/);
+});
+
+
+test('the exact operational test corrections remain required and cannot open other verification inputs', () => {
+  const granted = json('.lighthouse/implement.json')['90'];
+  const exact = ['tests/observation.test.mjs', 'tests/browser/observation.spec.mjs'];
+  const files = [...granted.verification.paths.filter(path => !path.endsWith('/')), 'tests/web.test.mjs'];
+  const before = new Map(files.map(path => [path, { mode: '100644', content: read(path) }]));
+  for (const path of exact) {
+    const extended = new Map(before).set(path, { mode: '100644', content: Buffer.concat([read(path), Buffer.from('\n// new behavior coverage\n')]) });
+    assert.equal(verificationIntegrity(before, extended, granted, 90).corrections[0].path, path);
+    const removed = new Map(before); removed.delete(path);
+    assert.throws(() => verificationIntegrity(before, removed, granted, 90), /Required verification input is absent/);
+  }
+  for (const path of ['tests/web.test.mjs', 'package.json', '.lighthouse/unattended.json']) {
+    const changed = new Map(before).set(path, { mode: '100644', content: Buffer.from('changed') });
+    assert.throws(() => verificationIntegrity(before, changed, granted, 90), /Verification inputs changed/);
+  }
 });
 
 test('project profiles resolve distinct models and unavailable review capabilities cannot fall back', () => {
