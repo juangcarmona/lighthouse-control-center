@@ -1,0 +1,104 @@
+{
+  "head": "b9d33e2fd1633df3e4a7023165d46e275779c7a2",
+  "verdict": "request-changes",
+  "findings": [
+    {
+      "type": "missing-mandatory-acceptance",
+      "severity": "high",
+      "source": "openspec/changes/issue-50-proposal/design.md:33-35; tasks.md:24-28",
+      "criterion": "Observe a real configured issue and paginated conversation through the explicitly connected GitHub user.",
+      "consequence": "No connected-user issue50 conversation/report rehearsal is established. The owner-confirmed desktop GitHub/operations use applies to #49, not #50; tests and validator results do not establish this acceptance.",
+      "minimal_fix": "Keep issue50 acceptance open until qualifying source evidence exists. Do not claim this evidence or request another physical-phone rehearsal."
+    },
+    {
+      "type": "incomplete-required-work",
+      "severity": "medium",
+      "source": "openspec/changes/issue-50-proposal/tasks.md:20, 24-26",
+      "criterion": "Complete presentation verification, affected architecture/reader documentation and current-head CI before integration.",
+      "consequence": "Tasks 3.3 and 4.1-4.3 remain unchecked; hosted CI for this exact head is still required. The reported root verification does not replace those gates.",
+      "minimal_fix": "Record qualifying presentation/documentation evidence and settle hosted CI for this exact head before integration; preserve the stated acceptance limits."
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "acceptance",
+      "status": "unmet",
+      "note": "Issue50 connected-user conversation/report rehearsal is not established. #49 desktop use is owner-confirmed; no physical-phone result is claimed."
+    },
+    {
+      "name": "completeness",
+      "status": "unmet",
+      "note": "Required tasks 3.3 and 4.1-4.3 remain open, including source acceptance and integration gates."
+    },
+    {
+      "name": "tests",
+      "status": "reported-pass",
+      "note": "Context reports final root verification passed 39 Node, 115 web, 38 legacy and 25 browser tests. The earlier CLR startup abort was preserved; a full rerun passed. This read-only audit did not execute tests."
+    },
+    {
+      "name": "quality-checks",
+      "status": "pending",
+      "note": "Root verification is reported passed. Hosted CI for the exact head remains required and unresolved."
+    },
+    {
+      "name": "security",
+      "status": "pass",
+      "note": "The prior check-to-send finding is corrected: outbound source reads use SourceRequestGuard, which serializes the final live check and request initiation with session invalidation; disconnect/replacement cancels connection I/O. This includes refresh, authority pagination and signed-asset sends."
+    },
+    {
+      "name": "conformance",
+      "status": "pass",
+      "note": "The evidence handoff consumes one validated current-connection/generation page once within 30 seconds; displayed-page evidence does not refetch conversation. Bounds, ordinary-issue validation, stale-versus-revoked handling, account scoping/clearing (including title), and unknown source states were reviewed."
+    },
+    {
+      "name": "docs",
+      "status": "unmet",
+      "note": "Task 4.2 remains unchecked for affected architecture views and reader documentation; README states the issue-reader acceptance limits."
+    },
+    {
+      "name": "product/spec-consistency",
+      "status": "pass",
+      "note": "The implementation remains read-only and keeps issue identity separate from PR evidence, source facts separate from authority, and lifecycle results separate from workflow execution. No commands, admission policy, live leases or journal are claimed."
+    },
+    {
+      "name": "evidence",
+      "status": "unmet",
+      "note": "No issue50 connected-user conversation/report rehearsal or live-lease evidence is established. No physical-phone result is claimed."
+    },
+    {
+      "name": "independent-PR-review",
+      "status": "unmet",
+      "note": "The previous high-severity request-initiation race is corrected and covered by SourceRequestGateTests; this final review still finds mandatory acceptance and integration gates outstanding."
+    },
+    {
+      "name": "stated-limits",
+      "status": "pass",
+      "note": "The implementation and handoff do not invent issue50 manual proof, physical-phone results, live leases, commands, admission policy or journal. Hosted CI is correctly still required."
+    }
+  ],
+  "hostDisposition": {
+    "code": "The final audit reports the prior transport/handoff findings corrected; no remaining code defect was identified.",
+    "openAcceptance": [
+      "Actual connected-user issue and paginated conversation proof.",
+      "Active source reservation coverage requires a supported public source contract; unknown is not a demonstrated live lease."
+    ],
+    "documentation": "Corrected implemented-versus-target headings, recorded completed fixture presentation/reader documentation and split the unfulfilled reservation demonstration explicitly.",
+    "verification": {
+      "command": "npm run verify",
+      "exitCode": 0,
+      "tests": {
+        "node": 39,
+        "web": 115,
+        "legacyDotnet": 38,
+        "browser": 25
+      },
+      "logSha256": "64c4975d398a509c196108806cb3d5de83bead3bff1327b1a0812e9a14dd422a"
+    },
+    "previousFailure": {
+      "exitCode": 1,
+      "reason": "Internal CLR error0x80131506 during profile build startup; full command stopped and was not called green. Same-source full rerun passed without suppression or code workaround.",
+      "logSha256": "21e9434ad8c8b914ef36f61825a1c955cfbad3e6dc2213a7d5be7952ff12e303"
+    },
+    "status": "PR remains draft, issue remains open; no Done verdict or actual source proof invented."
+  }
+}
