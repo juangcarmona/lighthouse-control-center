@@ -39,7 +39,7 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
     var authority = await access.CheckAsync(record, query.Repository, cancellationToken).ConfigureAwait(false);
     if (authority.Availability != SourceAvailability.Available || !authority.IssuesRead)
     {
-      if (authority.Availability == SourceAvailability.Denied) return Failure("denied", "Current connected-user repository authority was denied.");
+      if (authority.Availability == SourceAvailability.Denied || authority.Availability == SourceAvailability.Available && !authority.IssuesRead) return Failure("denied", "Current connected-user repository authority was denied.");
       lock (record.Sync)
         return Failure(record.GitHub.Current is null ? "disconnected" : "unavailable",
             "Current connected-user repository authority could not be verified.");
