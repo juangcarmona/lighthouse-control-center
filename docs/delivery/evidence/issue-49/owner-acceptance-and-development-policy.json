@@ -1,0 +1,54 @@
+{
+  "ownerReportedDesktopAcceptance": {
+    "source": "Current conversation on2026-11-07",
+    "result": "The owner confirmed GitHub connection and repository/operations data were visible, then identified the device as a computer using his GitHub account.",
+    "browser": "not supplied",
+    "exactSourceGrantFailureRehearsal": "not performed by owner; deterministic grant-loss/revocation tests remain separate"
+  },
+  "manualDeviceDisposition": {
+    "source": "Owner instruction in the current conversation to stop requesting a physical phone rehearsal",
+    "status": "owner-deferred; not executed and not claimed as a physical-device pass",
+    "automatedCoverage": "Real Chromium at desktop and narrow viewport; trusted HTTPS and accessibility checked by host provider lane"
+  },
+  "developmentAuthenticationDecision": {
+    "source": "Owner request in current conversation to stop requiring one-time passwords on each login",
+    "implementation": "Development requests verified password assurance1 for the exact configured owner. External retains assurance2. Session deadlines, issuer/subject/signature, PKCE, CSRF, provider revocation and source grants remain enforced.",
+    "production": "outside scope"
+  },
+  "authorityReadStop": {
+    "red": {
+      "failed": 8,
+      "logSha256": "7154cac0fd542a0272ba1116daee02abe67bd2c6feefb3e05f5c8a2cc007b713"
+    },
+    "green": {
+      "webTests": 66,
+      "failed": 0,
+      "logSha256": "4db2f3132cbf4ae4bccf292c3d823ad4a123b2d1b0fbd442674f4b9b45947722"
+    }
+  },
+  "developmentPasswordPolicy": {
+    "red": "Development password admission failed while External password rejection passed.",
+    "green": "68 web tests passed, including Development password admission, External password rejection and all8 authority-read-stop cases."
+  },
+  "qualification": "Current full verification and new password-policy real-provider run remain separate; no production or physical-phone pass claimed.",
+  "liveDevelopmentPolicy": {
+    "liveDevelopmentLoginReachable": true,
+    "clientMinimumAssuranceVerifiedByPrivateAdminUpdate": "1",
+    "configuredDevelopmentAssurance": "1; unit and isolated real-provider coverage",
+    "providerPreserved": true,
+    "ownerPasswordReset": false,
+    "actualUserPasswordEnteredByAgent": false,
+    "verifiedAt": "2026-11-07T18:02:17Z"
+  },
+  "fullVerification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "tests": {
+      "node": 38,
+      "web": 68,
+      "legacyDotnet": 38,
+      "browser": 16
+    },
+    "logSha256": "89babe56c6a54efedc7ce61287a0a5cd9444282219a7ba29343611b5a4a88e9c"
+  }
+}

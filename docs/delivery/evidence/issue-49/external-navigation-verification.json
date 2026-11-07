@@ -1,0 +1,60 @@
+{
+  "scope": "Actual trusted-browser external navigation to live development workspace; no owner/source account used",
+  "status": 401,
+  "fetchSite": "cross-site",
+  "friendlySignIn": true,
+  "httpsValidationDisabled": false,
+  "verifiedAt": "2026-11-07T17:23:20.156Z",
+  "regression": {
+    "before": "External GET document navigation returned bare403 before reaching the owner gate",
+    "after": "Anonymous external document navigation reaches the friendly401 sign-in page; authenticated navigation is allowed by the middleware regression test",
+    "preservedDenials": [
+      "Cross-site API fetch",
+      "Cross-site framed document",
+      "Cross-site POST even with a valid antiforgery token"
+    ]
+  },
+  "localRootVerification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "nodeTests": 38,
+    "dotnetTests": 96,
+    "browserTests": 16,
+    "logSha256": "b5e90f01cd2c506a26b6a8580959ee0bd13c81a71dbe63ee7111f422c3f61009"
+  },
+  "realProviderHostProof": {
+    "testedRevision": "7f6e627d5bcb54dd8980a094b9a1c63bd52b0ac2",
+    "status": "passed",
+    "startedAt": "2026-11-07T17:34:54.376Z",
+    "completedAt": "2026-11-07T17:46:11.490Z",
+    "proofs": {
+      "externalDocumentNavigation": true,
+      "wrongTotpDenied": true,
+      "passwordOnlyDenied": true,
+      "csrfRejected": true,
+      "localLogout": true,
+      "freshMfaDespiteProviderSso": true,
+      "keyboardNavigation": true,
+      "accountAccessibility": true,
+      "sourceUiFixtures": true,
+      "trustedHttps": true,
+      "browserStorageEmpty": true,
+      "opaqueSecureCookie": true,
+      "wrongOwnerDenied": true,
+      "pollingDoesNotRenew": true,
+      "onlineRefresh": true,
+      "providerRevocationDenied": true,
+      "localLogoutDuringOutage": true,
+      "outageDenied": true
+    },
+    "provider": "Keycloak 26.8.1",
+    "syntheticAccounts": true,
+    "physicalPhone": false,
+    "githubUserConsentVerified": false
+  },
+  "hostedCI": {
+    "testedRevision": "7f6e627d5bcb54dd8980a094b9a1c63bd52b0ac2",
+    "conclusion": "success",
+    "url": "https://github.com/juangcarmona/sofa/actions/runs/42397043597"
+  }
+}

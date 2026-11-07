@@ -205,6 +205,23 @@ test('initial refresh failure does not fabricate observations', async ({ page })
   await expect(page.locator('#active-count')).toHaveText('—');
 });
 
+for (const status of [401, 403, 409]) test(`authority loss ${status} clears previous source data and filter counts`, async ({ page }) => {
+  let allowed = true;
+  await page.route('**/api/observations', route => route.fulfill(allowed ? { json: payload } : { status }));
+  await page.goto('/');
+  const issue = page.getByRole('link', { name: '#45 Initialize the factory view' });
+  await expect(issue).toBeVisible();
+  await issue.focus();
+  allowed = false;
+  await page.evaluate(() => document.getElementById('refresh').click());
+  await expect(issue).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Open account' })).toBeFocused();
+  await expect(page.locator('#active-count')).toHaveText('—');
+  await expect(page.locator('#attention-count')).toHaveText('—');
+  await expect(page.locator('#repository-filter option')).toHaveCount(1);
+  await expect(page.getByText('No authorized observation is available.')).toBeVisible();
+});
+
 test('empty evidence is not a claim of delivery success', async ({ page }) => {
   await page.route('**/api/observations', route => route.fulfill({ json: { repositories: [{ ...payload.repositories[0], runs: [], attention: [] }] } }));
   await page.goto('/');
@@ -244,4 +261,32 @@ test('refresh preserves a focused collapsed history disclosure', async ({ page }
   await page.waitForFunction(() => !window.previousSummary.isConnected);
   await expect(summary).toBeFocused();
   await expect(summary.locator('..')).not.toHaveAttribute('open', '');
+});
+
+test('unconfigured GitHub explains the setup step and hides unavailable dashboard controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('**/api/observations', route => route.fulfill({ status: 409, json: { state: 'unconfigured' } }));
+  await page.goto('/');
+  await expect(page.getByRole('status')).toHaveText('GitHub setup required before operations can load.');
+  await expect(page.getByRole('heading', { name: 'Complete the GitHub connection' })).toBeVisible();
+  await expect(page.locator('.metrics')).toBeHidden();
+  await expect(page.locator('.repository-filter')).toBeHidden();
+  await expect(page.getByRole('link', { name: 'Open account' })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+
+
+test('stale repository evidence keeps original source times outside current counts', async ({ page }) => {
+  const repo = structuredClone(payload.repositories[0]);
+  repo.availability = 'stale';
+  await page.route('**/api/observations', route => route.fulfill({ json: { repositories: [repo] } }));
+  await page.goto('/');
+  await expect(page.getByText('Stale evidence', { exact: true })).toBeVisible();
+  await expect(page.getByText('Last known workflow runs', { exact: true })).toBeVisible();
+  await expect(page.getByText('Last known source labels', { exact: true })).toBeVisible();
+  await expect(page.getByText('Initialize the factory view', { exact: false })).toBeVisible();
+  await expect(page.locator('#active-count')).toHaveText('Unavailable');
+  await expect(page.locator('#attention-count')).toHaveText('Unavailable');
+  await expect(page.locator('.repository .timestamp').first()).toContainText('2026');
+  await expect(page.locator('.repository')).toContainText('current activity is unknown');
 });

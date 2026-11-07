@@ -1,5 +1,8 @@
 const $ = id => document.getElementById(id);
 const node = (tag, text, className) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (className) n.className = className; return n; };
+function showObservationControls(visible) {
+  document.querySelectorAll('.metrics, .repository-filter, .scope, .boundary').forEach(element => { element.hidden = !visible; });
+}
 const active = run => ['queued', 'in_progress', 'waiting', 'pending', 'requested'].includes(run.status);
 const humanWait = issue => issue.labels.some(label => ['needs-info', 'waiting-review'].includes(label));
 const sourceKey = (repository, kind, id) => JSON.stringify([repository, kind, id]);
@@ -80,12 +83,16 @@ function render(data) {
   for (const repo of rows) {
     const card = node('article', undefined, 'repository'); card.dataset.repository = repo.repository;
     const heading = node('div', undefined, 'repo-heading');
-    heading.append(node('h3', repo.repository), badge(repo.availability === 'available' ? 'Observed' : 'Evidence unavailable', repo.availability === 'available' ? 'positive' : 'caution'));
+    heading.append(node('h3', repo.repository), badge(repo.availability === 'available' ? 'Observed' : repo.availability === 'stale' ? 'Stale evidence' : 'Evidence unavailable', repo.availability === 'available' ? 'positive' : 'caution'));
     card.append(heading, node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp'));
     const actions = node('nav', undefined, 'repo-actions'); actions.setAttribute('aria-label', `${repo.repository} actions`);
     actions.append(link('Open workflow actions ↗', `https://github.com/${repo.repository}/actions/workflows/lighthouse-sdlc-router.yml`, repo.repository, 'actions/', sourceKey(repo.repository, 'actions', '')), link('Issues ↗', `https://github.com/${repo.repository}/issues`, repo.repository, undefined, sourceKey(repo.repository, 'issues', '')));
     card.append(actions);
-    if (repo.availability !== 'available') card.append(node('p', 'GitHub evidence could not be collected. Activity and backlog are unknown; this does not mean the repository is idle.', 'notice'));
+    if (repo.availability === 'stale') {
+      card.append(node('p', 'Temporary GitHub collection failure. Last known evidence is shown below; current activity is unknown. These records are excluded from current counts.', 'notice'),
+        node('h4', 'Last known workflow runs'), list(repo.runs.map(run => runCard(repo, run))),
+        node('h4', 'Last known source labels'), list(uniqueIssues(repo).map(issue => issueCard(repo, issue))));
+    } else if (repo.availability !== 'available') card.append(node('p', 'GitHub evidence could not be collected. Activity and backlog are unknown; this does not mean the repository is idle.', 'notice'));
     else {
       const other = uniqueIssues(repo).filter(issue => !humanWait(issue));
       card.append(node('h4', 'Other collected source labels'), other.length ? list(other.map(issue => issueCard(repo, issue))) : node('p', 'No other attention labels in the collected issues.', 'empty'));
@@ -115,10 +122,31 @@ async function refresh() {
   busy = true; $('refresh').disabled = true; $('repositories').setAttribute('aria-busy', 'true');
   try {
     const response = await fetch('/api/observations', { signal: AbortSignal.timeout(35000) });
+    if ([401, 403, 409].includes(response.status)) {
+      const failure = await response.json().catch(() => null);
+      const setupRequired = response.status === 409 && failure?.state === 'unconfigured';
+      const heldFocus = $('repositories').contains(document.activeElement);
+      showObservationControls(false);
+      snapshot = undefined;
+      $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
+      for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
+      $('count-scope').textContent = 'No authorized observation is available.';
+      $('connection').textContent = setupRequired ? 'GitHub setup required before operations can load.'
+        : response.status === 409 ? 'Connect or verify your GitHub account to view observations.'
+        : response.status === 401 ? 'Your owner session has ended. Sign in again to view observations.' : 'Access to this workspace is denied.';
+      const account = node('a', 'Open account'); account.href = '/workspace';
+      const heading = node('h2', setupRequired ? 'Complete the GitHub connection' : 'Account verification required');
+      const explanation = node('p', setupRequired
+        ? 'Your SoFa sign-in is verified. Register the development GitHub App, install it on the selected repositories, then connect your account.'
+        : 'Open your account to check the connection and repository access.');
+      $('repositories').replaceChildren(heading, explanation, account);
+      if (heldFocus) account.focus({ preventScroll: true });
+      return;
+    }
     if (!response.ok) throw Error();
     const data = await response.json();
-    if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (r.availability === 'available' && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
-    render(data); snapshot = data;
+    if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (['available', 'stale'].includes(r.availability) && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
+    showObservationControls(true); render(data); snapshot = data;
     $('connection').textContent = `Observation received ${new Date().toISOString()}. Refreshes every 30 seconds; source observation times are shown below.`;
   } catch {
     $('connection').textContent = snapshot ? 'Refresh failed. Previously shown observations may be stale. Try refreshing again.' : 'Refresh failed. No observation is available. Try refreshing again.';
@@ -130,5 +158,9 @@ async function refresh() {
 $('refresh').addEventListener('click', refresh);
 $('repository-filter').addEventListener('change', () => { if (snapshot) render(snapshot); });
 $('appearance').addEventListener('change', event => { document.documentElement.dataset.lhTheme = event.target.value; });
+if (location.pathname === '/workspace/operations') {
+  const account = node('a', 'Account'); account.href = '/workspace';
+  document.querySelector('.topbar').append(account);
+}
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);
