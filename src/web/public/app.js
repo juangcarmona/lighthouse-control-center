@@ -33,6 +33,9 @@ function issueCard(repo, issue) {
   li.append(node('p', repo.repository, 'muted'), link(`#${issue.number} ${issue.title}`, issue.url, repo.repository, 'issues/', sourceKey(repo.repository, 'issue', issue.number)));
   const labels = node('div', undefined, 'labels');
   for (const label of issue.labels) labels.append(badge(label, ['waiting-review', 'needs-info'].includes(label) ? 'caution' : label === 'agent-working' ? 'activity' : ''));
+  if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
+    const local = node('a', 'Read issue in SoFa'); local.href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number; li.append(local);
+  }
   li.append(labels, timing('Since source update (not wait duration)', issue.updatedAt, repo.observedAt));
   return li;
 }
@@ -145,7 +148,8 @@ $('repository-filter').addEventListener('change', () => { if (snapshot) render(s
 $('appearance').addEventListener('change', event => { document.documentElement.dataset.lhTheme = event.target.value; });
 if (location.pathname === '/workspace/operations') {
   const account = node('a', 'Account'); account.href = '/workspace';
-  document.querySelector('.topbar').append(account);
+  const issues = node('a', 'Issues'); issues.href = '/workspace/issues';
+  document.querySelector('.topbar').append(account, issues);
 }
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);

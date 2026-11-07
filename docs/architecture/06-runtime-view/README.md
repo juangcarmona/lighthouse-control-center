@@ -26,6 +26,14 @@ GitHub callback state is single-use and bound to the owner session and connectio
 
 See [ADR-0006](../09-architecture-decisions/0006-observe-repository-owned-workflows.md) for the accepted boundary and superseded design.
 
+## Implemented issue reads
+
+A configured ordinary issue is read only after owner and effective GitHub issue-read authority pass. Explicit conversation pages retain source identity/time, observation time and coverage. A changed issue snapshot interrupts paging; incomplete or failed collections never establish emptiness. Optional evidence reads recheck Actions authority and follow exact report/run/artifact or issue/PR references, preserving workflow status separately from a stage result.
+
+The source artifacts are streamed within ZIP/member bounds, kept in memory and passed as JSON to the installed Lighthouse validator through a tokenless offline process. This validates the shared result format; it does not decide current command eligibility or assert a live host lease. Source account loss destroys the applicable connection and removes displayed context. Temporary failure retains explicitly stale readable data. See [issue evidence tests](../../../tests/SoFa.Web.Tests/IssueEvidenceTests.cs).
+
+<!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
+
 ## Proposed issue operation
 
 1. The browser loads issue context through the authenticated query adapter. The response includes source revision, observation age and the shared capability decision, including denial reasons.

@@ -21,6 +21,8 @@ public static class WorkspaceModule
     services.AddSingleton<RepositoryAccess>();
     services.AddSingleton<GetObservationsHandler>();
     services.AddSingleton<GetAccountStatusHandler>();
+    services.AddSingleton<GetIssueContextHandler>();
+    services.AddSingleton<GetIssueEvidenceHandler>();
     return services;
   }
 
@@ -181,6 +183,46 @@ public static class WorkspaceModule
     });
     app.MapGet("/api/connections/github", async (HttpContext context, OwnerSessions sessions, GetAccountStatusHandler status) =>
         Results.Json(await status.Handle(new GetAccountStatus(sessions.Get(context.User)!), context.RequestAborted).ConfigureAwait(false)));
+    app.MapGet("/api/issues/{owner}/{repository}/{number:int}", async (string owner, string repository, int number,
+        HttpContext context, OwnerSessions sessions, GetIssueContextHandler issues) =>
+    {
+      var page = context.Request.Query["page"].Count == 0 ? 1
+          : context.Request.Query["page"].Count == 1 && int.TryParse(context.Request.Query["page"], out var selected) ? selected : 0;
+      var result = await issues.Handle(new GetIssueContext(sessions.Get(context.User)!, owner + "/" + repository,
+          number, page, context.Request.Query["snapshot"]), context.RequestAborted).ConfigureAwait(false);
+      if (System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result).Length > 2 * 1024 * 1024)
+        result = result with
+        {
+          Conversation = new("unavailable", [], page, 100, result.Conversation?.SourceCount, null, false,
+          "Conversation projection exceeds the 2 MiB response bound; no empty collection is inferred.")
+        };
+      if (System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result).Length > 2 * 1024 * 1024) return Results.StatusCode(503);
+      return Results.Json(result, statusCode: result.Availability switch
+      { "denied" => 403, "disconnected" => 409, "unavailable" => 503, "invalid" => 400, "changed" => 409, _ => 200 });
+    });
+    app.MapGet("/api/issues/{owner}/{repository}/{number:int}/evidence", async (string owner, string repository, int number,
+        HttpContext context, OwnerSessions sessions, GetIssueEvidenceHandler evidence) =>
+    {
+      var page = context.Request.Query["page"].Count == 0 ? 1
+          : context.Request.Query["page"].Count == 1 && int.TryParse(context.Request.Query["page"], out var selected) ? selected : 0;
+      var result = await evidence.Handle(new(new(sessions.Get(context.User)!, owner + "/" + repository,
+          number, page, context.Request.Query["snapshot"])), context.RequestAborted).ConfigureAwait(false);
+      if (System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result).Length > 2 * 1024 * 1024)
+        result = new("available", result.ObservedAt, [], result.Scope,
+          "Evidence projection exceeds the 2 MiB response bound; source reports remain readable and this is not evidence of absent work.");
+      return Results.Json(result, statusCode: result.Availability switch
+      { "denied" => 403, "disconnected" => 409, "unavailable" => 503, "changed" => 409, _ => 200 });
+    });
+    app.MapGet("/workspace/issues", async (HttpContext context, OwnerSessions sessions) =>
+    {
+      sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
+      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "issue.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+    });
+    app.MapGet("/workspace/issues/{owner}/{repository}/{number:int}", async (HttpContext context, OwnerSessions sessions) =>
+    {
+      sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
+      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "issue.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+    });
     app.MapGet("/workspace/operations", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
@@ -188,6 +230,8 @@ public static class WorkspaceModule
     });
     foreach (var asset in new[] { (Path: "/app.js", File: "app.js", Type: "text/javascript"),
             (Path: "/app.css", File: "app.css", Type: "text/css"), (Path: "/tokens.css", File: "tokens.css", Type: "text/css"),
+            (Path: "/issue.js", File: "issue.js", Type: "text/javascript"),
+            (Path: "/markdown.js", File: "markdown.js", Type: "text/javascript"), (Path: "/issue.css", File: "issue.css", Type: "text/css"),
             (Path: "/account.css", File: "account.css", Type: "text/css"), (Path: "/account.js", File: "account.js", Type: "text/javascript") })
       app.MapGet(asset.Path, async (HttpContext context, CancellationToken cancellationToken) => Results.Content(
           await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", asset.File), cancellationToken).ConfigureAwait(false), asset.Type)).AllowAnonymous();
@@ -198,7 +242,7 @@ public static class WorkspaceModule
       "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>SoFa · "
       + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
       + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
-      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
+      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/issues\">Issues</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
   private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action
       + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token)

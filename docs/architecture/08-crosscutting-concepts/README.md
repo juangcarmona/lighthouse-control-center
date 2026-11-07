@@ -50,3 +50,11 @@ Store source identity/revision, collected time, source time when available, pagi
 ## Proposed health evidence
 
 A signal definition identifies purpose, source adapter, calculation/version, unit, window, coverage, applicability and baseline. The detail view exposes contributing records. Candidate signals are source workflow duration/outcome for investigation; proposal/PR/check state for delivery decisions; installed-versus-selected baseline for maintenance; measured duration/tokens/storage for resource decisions. Missing tokens do not imply zero consumption, a run duration is not user attention time and a merged PR is not a production deployment. Additional metrics require a source definition before UI claims.
+
+## Implemented issue-content boundary
+
+The issue reader has no global issue cache. Its browser view stops at ten conversation pages / 1,000 comments and eight MiB of retained text; source and response reads have separate two-MiB bounds. ZIP handling permits only bounded JSON/text members, rejects unsafe/duplicate paths, limits compressed/expanded/member sizes and never extracts source artifacts. User credentials stay on fixed GitHub API requests and are absent from signed asset downloads and the offline shared validator. Validator input/output and process lifetime are bounded; missing validation stays unavailable.
+
+The Markdown subset builds DOM text nodes and explicit HTTPS links. Raw HTML, scripts, forms and images remain inert. Original Markdown remains readable. The browser preserves stale source timestamps after temporary failure and erases prior context after authority loss. These implemented mechanics do not supply command admission or the proposed durable journal.
+
+<!-- pdac:cite id="FR-ISSUE-CONTEXT" digest="sha256:11f4c196c15675fa20c05bb320f02a2bab4bdbf96cf275a408c849924faed270" -->

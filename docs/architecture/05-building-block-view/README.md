@@ -21,4 +21,6 @@ The workspace module is an application library, not an independently deployed se
 
 ## Target blocks not yet implemented
 
-Full paginated issue/conversation context, source capability/receipt adapters, a durable application command journal and signal projections remain target work. A future receipt reconciler observes exact source acknowledgments and does not schedule or automatically resubmit work. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) owns the proposed durability decision.
+The issue reader now implements bounded conversation pages and optional source-associated stage/PR/check summaries in the Workspace module. Its [query](../../../src/SoFa.Modules.Workspace/Source/GetIssueContextHandler.cs), [evidence adapter](../../../src/SoFa.Modules.Workspace/Source/IssueEvidence.cs) and [shared contract bridge](../../../src/SoFa.Modules.Workspace/Source/SourceContract.cs) are implementation evidence; real connected-user acceptance and live reservation coverage remain open. Source command/capability adapters, a durable application command journal and broader signal projections remain target work. A future receipt reconciler observes exact source acknowledgments and does not schedule or automatically resubmit work. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) owns the proposed durability decision.
+
+<!-- pdac:cite id="FR-ISSUE-CONTEXT" digest="sha256:11f4c196c15675fa20c05bb320f02a2bab4bdbf96cf275a408c849924faed270" -->

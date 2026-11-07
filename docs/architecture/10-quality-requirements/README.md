@@ -35,3 +35,11 @@ Phone-width browser automation remains distinct from a physical device. Actual G
 | Later capabilities | Inbox resolution uses source evidence; search includes non-attention issues; boards preserve scope; signal inputs reproduce a calculation; idea promotion reconciles a lost response |
 
 Fixtures establish deterministic behavior but do not substitute for the real source/mobile acceptance. Run the repository's verify pipeline and preserve relevant screenshots, source identities, run attempts and outcome limitations in the delivery PR. Production recovery is checked independently from the local development demonstration.
+
+## Issue-reader checkpoint
+
+The source tests cover ordinary/unlabelled issues, a second conversation page, hard page bounds, source changes, PR-shaped issue rejection, unavailable conversation, permission loss and logout during collection. Artifact tests exercise path/type/size/member rejection and credential-free asset downloads. Shared-contract tests preserve a blocked proposal separately from its successful workflow and reject mismatched issue, attempt, revision, result identity or format version. Browser fixtures exercise 101 comments, inert hostile Markdown, keyboard, 390px layout, accessibility and stale/authority-loss behavior.
+
+These deterministic fixtures establish implementation behavior, not actual GitHub user consent or a physical-phone journey. Source reservation coverage and final acceptance remain open under #50 and #49.
+
+<!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->

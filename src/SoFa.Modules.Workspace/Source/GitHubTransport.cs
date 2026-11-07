@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
-internal sealed class GitHubTransport : IDisposable
+internal sealed partial class GitHubTransport : IDisposable
 {
   private readonly HttpClient client;
   internal GitHubTransport() : this(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false }) { }
