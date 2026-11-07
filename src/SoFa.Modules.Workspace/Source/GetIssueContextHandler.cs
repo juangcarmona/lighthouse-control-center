@@ -53,9 +53,10 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
     var path = "/repos/" + query.Repository + "/issues/" + query.Number.ToString(CultureInfo.InvariantCulture);
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");
-    using var issue = await transport.GetAsync(path, connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
+    using var issue = await transport.GetAsync(path, connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     if (issue.Status == HttpStatusCode.Unauthorized)
     {
@@ -81,7 +82,7 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
         Time(value, "created_at"), updated, Labels(value), source, SourceLabelCatalog.Describe(Labels(value)));
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     using var response = await transport.GetAsync(path + "/comments?per_page=100&page="
-        + query.Page.ToString(CultureInfo.InvariantCulture), connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
+        + query.Page.ToString(CultureInfo.InvariantCulture), connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     if (response.Status == HttpStatusCode.Forbidden) return Failure("denied", "Source conversation authority was denied.");
     if (response.Status == HttpStatusCode.Unauthorized)

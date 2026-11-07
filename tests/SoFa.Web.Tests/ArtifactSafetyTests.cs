@@ -46,7 +46,7 @@ public sealed class ArtifactSafetyTests
   public async Task SignedAssetDownloadNeverReceivesTheGitHubUserCredential()
   {
     using var transport = new GitHubTransport(new AssetHandler());
-    var result = await transport.ReadArtifactAsync("example/repository", 9, "isolated-user-access", "envelope.json", CancellationToken.None);
+    var result = await transport.ReadArtifactAsync("example/repository", 9, "isolated-user-access", "envelope.json", new(new object(), () => true), CancellationToken.None);
     Assert.Equal("available", result.Availability);
   }
 

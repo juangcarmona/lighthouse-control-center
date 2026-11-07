@@ -1,0 +1,39 @@
+{
+  "scope": "Release adoption prerequisite, not native qualification",
+  "checks": [
+    {
+      "command": "CI=true npm run verify",
+      "exitCode": 0,
+      "logSha256": "d172dbbc0b061fbfaed777731a75ece06aa8531b7ebc78c3b751443bcbe986f5"
+    },
+    {
+      "command": "lighthouse verify --format json",
+      "exitCode": 0,
+      "logSha256": "324bb6c71be8cb1cd7b143e2c73f18fffe91d566196d3eb7ef94802213ab0c29"
+    },
+    {
+      "command": "node scripts/lighthouse-guard.mjs verify",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "gh aw compile --validate --no-emit --no-check-update",
+      "exitCode": 0,
+      "logSha256": "a45bc5a2678bd05ca21e3ee64cb0050f181935af8d23de07f5fbb6f277539dde"
+    },
+    {
+      "command": "actionlint App preflight and verify workflows",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "tests": {
+    "node": 35,
+    "dotnet": 38,
+    "browser": 12
+  },
+  "limitations": [
+    "Existing npm audit toolchain advisories:5low,3high",
+    "Actual99 native execution/merge/post-merge qualification remains separate"
+  ]
+}

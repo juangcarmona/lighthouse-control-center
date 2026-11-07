@@ -47,6 +47,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
         return ConnectionOutcome.Rejected;
       attempt = pending;
     }
+    var guard = new SourceRequestGuard(record.Sync, () => Live(record) && record.GitHub.Attempt == attempt.Attempt);
     using var exchange = await transport.ExchangeAsync(new Dictionary<string, string>
     {
       ["client_id"] = settings.GitHubClientId!,
@@ -54,11 +55,11 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
       ["code"] = code,
       ["redirect_uri"] = Callback,
       ["code_verifier"] = attempt.Verifier,
-    }, cancellationToken).ConfigureAwait(false);
+    }, guard, cancellationToken).ConfigureAwait(false);
     var tokens = exchange.Successful ? ParseTokens(exchange.Value) : null;
     if (tokens is null) return ConnectionOutcome.Unavailable;
     lock (record.Sync) if (!Live(record) || record.GitHub.Attempt != attempt.Attempt) return ConnectionOutcome.Rejected;
-    using var user = await transport.GetAsync("/user", tokens.Access, cancellationToken).ConfigureAwait(false);
+    using var user = await transport.GetAsync("/user", tokens.Access, guard, cancellationToken).ConfigureAwait(false);
     var id = SourceJson.Number(user.Value, "id");
     var login = SourceJson.Text(user.Value, "login");
     if (!user.Successful || id is not > 0 || SourceJson.Text(user.Value, "type") != "User"
@@ -75,6 +76,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
         record.GitHub.ReplacementDeadline = clock.GetUtcNow().AddMinutes(5);
         return ConnectionOutcome.ConfirmationRequired;
       }
+      record.GitHub.Current?.Stopped.Cancel();
       record.GitHub.Current = connection;
       record.GitHub.Observations.Clear();
       record.GitHub.Generation++;
@@ -89,6 +91,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
       if (!Live(record) || record.GitHub.Replacement is not { } replacement) return false;
       record.GitHub.Replacement = null;
       if (clock.GetUtcNow() >= record.GitHub.ReplacementDeadline) return false;
+      record.GitHub.Current?.Stopped.Cancel();
       record.GitHub.Current = replacement;
       record.GitHub.Observations.Clear();
       record.GitHub.Generation++;
@@ -113,6 +116,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
         connection = current;
         generation = record.GitHub.Generation;
       }
+      var guard = new SourceRequestGuard(record.Sync, () => Current(record, connection, generation), connection.Stopped.Token);
       var refreshed = false;
       if (clock.GetUtcNow() >= connection.Tokens.AccessDeadline.AddMinutes(-1))
       {
@@ -124,7 +128,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
           ["client_secret"] = settings.GitHubClientSecret!,
           ["grant_type"] = "refresh_token",
           ["refresh_token"] = connection.Tokens.Refresh,
-        }, cancellationToken).ConfigureAwait(false);
+        }, guard, cancellationToken).ConfigureAwait(false);
         var tokens = refresh.Successful ? ParseTokens(refresh.Value) : null;
         if (tokens is null)
         {
@@ -143,7 +147,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
       if (refreshed || clock.GetUtcNow() >= connection.VerifiedAt.AddMinutes(5))
       {
         lock (record.Sync) if (!Current(record, connection, generation)) return null;
-        using var user = await transport.GetAsync("/user", connection.Tokens.Access, cancellationToken).ConfigureAwait(false);
+        using var user = await transport.GetAsync("/user", connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
         var login = SourceJson.Text(user.Value, "login");
         if (!user.Successful || SourceJson.Number(user.Value, "id") != connection.UserId
             || SourceJson.Text(user.Value, "type") != "User" || login is null

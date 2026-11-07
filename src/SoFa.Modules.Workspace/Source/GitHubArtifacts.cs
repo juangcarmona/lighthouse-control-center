@@ -10,7 +10,7 @@ internal sealed record ArtifactJson(string Availability, string? Reason = null, 
 internal sealed partial class GitHubTransport
 {
   internal async Task<ArtifactJson> ReadArtifactAsync(string repository, long artifactId, string token, string member,
-      CancellationToken cancellationToken, Func<bool>? live = null)
+      SourceRequestGuard guard, CancellationToken cancellationToken)
   {
     if (artifactId <= 0 || member is not ("request.json" or "envelope.json"))
       return new("unavailable", "Unsupported artifact identity or member.");
@@ -21,8 +21,11 @@ internal sealed partial class GitHubTransport
     request.Headers.Add("X-GitHub-Api-Version", "2026-03-10");
     try
     {
-      if (live?.Invoke() == false) return new("disconnected", "The acting account changed.");
-      using var source = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+      using var linked = guard.Stopped.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, guard.Stopped) : null;
+      var readToken = linked?.Token ?? cancellationToken;
+      var pendingSource = BeginRequest(guard, () => client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, readToken));
+      if (pendingSource is null) return new("disconnected", "The acting account changed.");
+      using var source = await pendingSource.ConfigureAwait(false);
       if (source.StatusCode == HttpStatusCode.Unauthorized) return new("disconnected", "GitHub rejected the connected-user credential.");
       if (source.StatusCode != HttpStatusCode.Found || source.Headers.Location is not { IsAbsoluteUri: true } location
           || location.Scheme != "https" || location.UserInfo.Length != 0
@@ -31,21 +34,22 @@ internal sealed partial class GitHubTransport
         return new("unavailable", "The source artifact is inaccessible or its download destination is unsupported.");
       // A signed asset URL is never returned or logged, and receives no user credential.
       using var download = new HttpRequestMessage(HttpMethod.Get, location);
-      if (live?.Invoke() == false) return new("disconnected", "The acting account changed.");
-      using var response = await client.SendAsync(download, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+      var pendingDownload = BeginRequest(guard, () => client.SendAsync(download, HttpCompletionOption.ResponseHeadersRead, readToken));
+      if (pendingDownload is null) return new("disconnected", "The acting account changed.");
+      using var response = await pendingDownload.ConfigureAwait(false);
       if (response.StatusCode != HttpStatusCode.OK) return new("unavailable", "Artifact download failed or redirected again.");
       if (response.Content.Headers.ContentLength > 2 * 1024 * 1024) return new("unavailable", "Artifact exceeds 2 MiB compressed.");
-      await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+      await using var stream = await response.Content.ReadAsStreamAsync(readToken).ConfigureAwait(false);
       using var compressed = new MemoryStream();
       var buffer = new byte[16 * 1024];
       int read;
-      while ((read = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0)
+      while ((read = await stream.ReadAsync(buffer, readToken).ConfigureAwait(false)) > 0)
       {
         if (compressed.Length + read > 2 * 1024 * 1024) return new("unavailable", "Artifact exceeds 2 MiB compressed.");
         compressed.Write(buffer, 0, read);
       }
       compressed.Position = 0;
-      return live?.Invoke() == false ? new("disconnected", "The acting account changed.") : ParseArtifact(compressed, member);
+      return !guard.IsLive() ? new("disconnected", "The acting account changed.") : ParseArtifact(compressed, member);
     }
     catch (Exception error) when (error is HttpRequestException or InvalidDataException or JsonException or IOException)
     { return new("unavailable", "Artifact is malformed, inaccessible or outside the supported JSON/ZIP bounds."); }
