@@ -1,0 +1,50 @@
+{
+  "observedAt": "2026-11-07T08:33:17.844Z",
+  "url": "http://192.168.0.3:5170",
+  "mocked": false,
+  "repositories": [
+    {
+      "repository": "juangcarmona/lighthouse",
+      "availability": "available",
+      "observedAt": "2026-11-07T08:33:11.524Z",
+      "collectedRuns": 20,
+      "collectedAttention": 1
+    },
+    {
+      "repository": "juangcarmona/sofa",
+      "availability": "available",
+      "observedAt": "2026-11-07T08:33:11.531Z",
+      "collectedRuns": 20,
+      "collectedAttention": 1
+    }
+  ],
+  "checks": [
+    {
+      "theme": "dark",
+      "size": "desktop",
+      "axeViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "theme": "dark",
+      "size": "mobile",
+      "axeViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "theme": "light",
+      "size": "desktop",
+      "axeViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "theme": "light",
+      "size": "mobile",
+      "axeViolations": 0,
+      "horizontalOverflow": false
+    }
+  ],
+  "filterPreserved": true,
+  "postStatus": 405,
+  "pageErrors": []
+}

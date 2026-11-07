@@ -1,0 +1,110 @@
+{
+  "runId": "operator-90-955bc5eebf",
+  "sourceRevision": "955bc5eebf7a2eb416577297734c3c3c8f5f75dc",
+  "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+  "limits": {
+    "cpus": 2,
+    "memory": "4g",
+    "pids": 1024
+  },
+  "environment": {
+    "profile": "dotnet",
+    "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+    "services": [
+      {
+        "type": "postgresql",
+        "image": "sha256:858bb5e98eed02eb8cafbcdc007f9a65d1b613972028944a8ec2133ccaf80d27"
+      }
+    ]
+  },
+  "serviceCleanup": true,
+  "lane": "operator",
+  "meaning": "Fresh manual verification of this committed snapshot; not a replacement native FF receipt.",
+  "checks": [
+    {
+      "command": [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      "exitCode": 0,
+      "execution": {
+        "status": "passed",
+        "exitCode": 0,
+        "signal": null,
+        "resources": {
+          "pidsLimit": 1024,
+          "pidsPeak": 21,
+          "pidsDenied": 0,
+          "memoryPeakBytes": 1102700544,
+          "oomKills": 0
+        }
+      },
+      "logSha256": "33d7e336c5a9ce72cca5c5fe334541a58258a8821bf3604a908f30811386feeb"
+    },
+    {
+      "command": [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ],
+      "exitCode": 0,
+      "execution": {
+        "status": "passed",
+        "exitCode": 0,
+        "signal": null,
+        "resources": {
+          "pidsLimit": 1024,
+          "pidsPeak": 267,
+          "pidsDenied": 0,
+          "memoryPeakBytes": 1720836096,
+          "oomKills": 0
+        }
+      },
+      "logSha256": "909f89ad0b84bc560147a65d2dca76e4022267e823eee2d38fc9a7c8bbfb1232"
+    },
+    {
+      "command": [
+        "npx",
+        "--yes",
+        "--package=@fission-ai/openspec@1.15.0",
+        "openspec",
+        "validate",
+        "issue-90-proposal",
+        "--strict",
+        "--no-interactive"
+      ],
+      "exitCode": 0,
+      "execution": {
+        "status": "passed",
+        "exitCode": 0,
+        "signal": null,
+        "resources": {
+          "pidsLimit": 1024,
+          "pidsPeak": 32,
+          "pidsDenied": 0,
+          "memoryPeakBytes": 101896192,
+          "oomKills": 0
+        }
+      },
+      "logSha256": "72c94283def65bb31eb8d2486df30785f54fe374e06c47636b8fb48b4c2d50bc"
+    }
+  ],
+  "host": {
+    "command": "DOTNET_PROCESSOR_COUNT=2 MSBUILDDISABLENODEREUSE=1 CI=true npm run verify",
+    "exitCode": 0,
+    "nodePassed": 34,
+    "dotnetPassed": 38,
+    "browserPassed": 12,
+    "logSha256": "771c953fa243a531dcf4a0bdf063074b5cdff665f69d9e116b09f7c9465fa571",
+    "diagnostic": "The preceding unbounded local run hit an internal CLR fatal error during dotnet execution. The full bounded rerun passed without removing tests; no root cause is asserted."
+  },
+  "hosted": {
+    "head": "955bc5eebf7a2eb416577297734c3c3c8f5f75dc",
+    "verify": "https://github.com/juangcarmona/sofa/actions/runs/42355830363",
+    "foundation": "https://github.com/juangcarmona/sofa/actions/runs/42355830396",
+    "conclusion": "success"
+  }
+}

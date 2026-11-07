@@ -1,0 +1,67 @@
+{
+  "head": "955bc5eebf7a2eb416577297734c3c3c8f5f75dc",
+  "verdict": "accept",
+  "findings": [],
+  "dimensions": [
+    {
+      "id": "1",
+      "status": "pass",
+      "evidence": "The issue-90 spec defines the slice's observable criteria. Browser and collector tests cover active states, waits, scoped counts, timing, unavailable/stale cases, safety and read-only behavior; reviewed code matches them. Candidate review only, not final integration acceptance."
+    },
+    {
+      "id": "2",
+      "status": "pass",
+      "evidence": "Implementation is additive: startedAt is mapped from run_started_at; original attention facts, labels, bounds and unavailable contract remain. UI preserves completed/unclassified history and other labels. No TODO/scope loss observed in reviewed implementation."
+    },
+    {
+      "id": "3",
+      "status": "pass",
+      "evidence": "Collector and browser cases cover mixed labels, >8 runs, source identity/focus transitions, malformed times and refresh failures. Browser tests assert Axe and 390px overflow across themes; submitted runtime evidence reports zero violations/no overflow. Test adequacy is for this bounded read-only slice."
+    },
+    {
+      "id": "4",
+      "status": "pass",
+      "evidence": "User-supplied exact-head hosted checks are reported passing; full local host and fresh official-container checks are supplied as passing evidence. The initial no-env host CLR fatal was followed by the supplied successful bounded-process full rerun without removing tests. I did not execute repository code."
+    },
+    {
+      "id": "5",
+      "status": "pass",
+      "evidence": "Reviewed rendering uses textContent and accepts only HTTPS github.com URLs within the configured repository path; unsafe links have no href. Server keeps allowlist, GET/HEAD-only methods, host/cross-site checks, CSP and shared bounded cache. Frozen server tests cover these boundaries; runtime evidence records POST 405."
+    },
+    {
+      "id": "6",
+      "status": "pass",
+      "evidence": "Design follows accepted ProductShape and ADR-0006: GitHub remains source/execution authority; SoFa adds only read-only client projection and optional source timing. No new endpoint, auth, mutation, pagination, policy or authority is introduced."
+    },
+    {
+      "id": "7",
+      "status": "pass",
+      "evidence": "README documents grouping, wait semantics, limits, stale/unavailable timing and scope. Proposal/design/spec/tasks are reconciled with the implementation. Screenshots and runtime.json are explicitly fixture/live evidence; candidate plan remains unarchived by design."
+    },
+    {
+      "id": "8",
+      "status": "pass",
+      "evidence": "Cited OpenSpec spec consumes accepted product intent without changing ProductShape or expanding scope. Scope remains issue #90 only; #51/#52/#57 and native #88 remain open. Current-head evidence reports strict OpenSpec validation passing."
+    },
+    {
+      "id": "9",
+      "status": "pass",
+      "evidence": "Exact-current-head hosted status is supplied as passing, alongside supplied full host/container checks and actual unmocked GitHub runtime evidence (two repositories observed, limits recorded, POST rejected, no page errors). Original native blocked result remains preserved and is not represented as qualification. Task 3.3/final integration receipts remain host-owned future gates."
+    },
+    {
+      "id": "10",
+      "status": "pass",
+      "evidence": "This is the distinct configured Luna High candidate review requested. I find no concrete actionable defect. This is not human approval, a merge decision, final integration review, or native qualification."
+    },
+    {
+      "id": "11",
+      "status": "pass",
+      "evidence": "README, proposal and design state bounded collection, unknown remainder, source-update-not-wait-duration, read-only boundary, and excluded session/runner/authenticated journeys and broader issues. Remaining candidate integration/archive gates are explicitly not claimed complete."
+    }
+  ],
+  "reviewKind": "candidate",
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-07T08:46:16.584Z",
+  "sourceReadOnly": true
+}

@@ -1,0 +1,89 @@
+{
+  "runId": "ff9962bed5402c5196491624662b430eb3a191d56d63df3f953ecf1ca6d59f50",
+  "sourceRevision": "20e879bb617830bbafc3f784c33a76211b9ffb78",
+  "changesDigest": "2826c49572660bd705e084007fb741fac083af0f89f714617f1410c9f23411cb",
+  "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+  "environment": {
+    "profile": "dotnet",
+    "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+    "services": [
+      {
+        "type": "postgresql",
+        "image": "sha256:858bb5e98eed02eb8cafbcdc007f9a65d1b613972028944a8ec2133ccaf80d27"
+      }
+    ]
+  },
+  "serviceCleanup": true,
+  "workflow": "https://github.com/juangcarmona/sofa/actions/runs/42351913300",
+  "nativeControllerResult": "blocked",
+  "meaning": "Original trusted checks passed; these receipts do not qualify the later operator changes or complete native FF.",
+  "checks": [
+    {
+      "command": [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      "exitCode": 0,
+      "execution": {
+        "status": "passed",
+        "exitCode": 0,
+        "signal": null,
+        "resources": {
+          "pidsLimit": 1024,
+          "pidsPeak": 21,
+          "pidsDenied": 0,
+          "memoryPeakBytes": 1169776640,
+          "oomKills": 0
+        }
+      }
+    },
+    {
+      "command": [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ],
+      "exitCode": 0,
+      "execution": {
+        "status": "passed",
+        "exitCode": 0,
+        "signal": null,
+        "resources": {
+          "pidsLimit": 1024,
+          "pidsPeak": 264,
+          "pidsDenied": 0,
+          "memoryPeakBytes": 1755537408,
+          "oomKills": 0
+        }
+      }
+    },
+    {
+      "command": [
+        "npx",
+        "--yes",
+        "--package=@fission-ai/openspec@1.15.0",
+        "openspec",
+        "validate",
+        "issue-90-proposal",
+        "--strict",
+        "--no-interactive"
+      ],
+      "exitCode": 0,
+      "execution": {
+        "status": "passed",
+        "exitCode": 0,
+        "signal": null,
+        "resources": {
+          "pidsLimit": 1024,
+          "pidsPeak": 32,
+          "pidsDenied": 0,
+          "memoryPeakBytes": 101629952,
+          "oomKills": 0
+        }
+      }
+    }
+  ]
+}
