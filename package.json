@@ -12,13 +12,15 @@
     "product:doctor": "prodshape doctor",
     "product:integrity": "prodshape integration update --check",
     "architecture:check": "arcshape validate --links",
-    "verify": "npm run lint:docs && npm run test && npm run security:check && npm run product:validate && npm run product:integrity && npm run product:doctor && npm run architecture:check && npm run test:runtime && npm run test:browser",
+    "verify": "npm run lint:docs && npm run test && npm run security:check && npm run product:validate && npm run product:integrity && npm run product:doctor && npm run spec:validate && npm run product:citations && npm run architecture:check && npm run test:runtime && npm run test:browser",
     "test:runtime": "node scripts/verify-runtime.mjs",
     "observe": "node src/observation/github.mjs",
     "start": "node src/web/server.mjs",
     "test:browser": "playwright test",
     "verify:container": "node scripts/verify-container.mjs",
-    "test:runtime:host": "node scripts/verify-runtime.mjs --host"
+    "test:runtime:host": "node scripts/verify-runtime.mjs --host",
+    "spec:validate": "openspec validate --all --strict --no-interactive",
+    "product:citations": "prodshape citations verify --provider openspec"
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
     "@axe-core/playwright": "4.14.0",
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
+    "@fission-ai/openspec": "1.15.0",
     "@juangcarmona/lighthouse": "0.12.48",
     "@playwright/test": "1.64.1",
     "@prodshape/cli": "0.23.0",

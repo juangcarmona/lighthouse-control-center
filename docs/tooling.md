@@ -2,11 +2,11 @@
 
 ## Lighthouse
 
-The exact installed CLI version is pinned in `package.json` and `package-lock.json`; `lighthouse.json` selects the SDLC package. Preview updates with `npx lighthouse upgrade --scope all`, then apply reviewed changes and run `npx lighthouse verify --format json`. `.lighthouse/upgrade.json` tracks managed-file ownership. The current adoption uses CLI 0.12.42 and SDLC 0.20.9.
+The exact installed CLI version is pinned in `package.json` and `package-lock.json`; `lighthouse.json` selects the SDLC package. Preview updates with `npx lighthouse upgrade --scope all`, then apply reviewed changes and run `npx lighthouse verify --format json`. `.lighthouse/upgrade.json` tracks managed-file ownership. The current adoption uses CLI 0.12.48 and SDLC 0.20.15.
 
 Workflow installation is separate and opt-in. Foundation upgrades preserve existing workflows; SoFa remains an observer of independently executed repository workflows. The labels and recommended GitHub profile capabilities are already adopted. No `visual-theme` profile is selected.
 
-The workflow source is pinned to published Lighthouse commit `9b165b590b415dcdb25de5a2f843c6fb30e9e445`. The labels capability is reconciled at version 4, preserving existing labels, descriptions and issue decisions. Completion, unattended and maintenance workflows are installed; unattended execution and merge remain disabled. Product Change and epic workers are not selected. Project model declarations require distinct implementation and read-only review models, subject to the private operator capability inventory and live provider preflight. See the [workflow runbook](runbooks/repository-workflows.md), [activation procedure](runbooks/lighthouse-unattended.md) and [adoption evidence](delivery/evidence/issue-88/README.md).
+The workflow source is pinned to published Lighthouse commit `c4c61c8eecc02e216252ed396e11593d163c2c13`. The labels capability is reconciled at version 4, preserving existing labels, descriptions and issue decisions. Completion, unattended and maintenance workflows are installed; unattended FF and merge are enabled only for the exact issue #90 grant, with supervised defaults retained for other issues. Product Change and epic workers are not selected. Project model declarations require distinct implementation and read-only review models, subject to the private operator capability inventory and live provider preflight. See the [workflow runbook](runbooks/repository-workflows.md), [activation procedure](runbooks/lighthouse-unattended.md) and [adoption evidence](delivery/evidence/issue-88/README.md).
 
 ## ProductShape
 
@@ -34,9 +34,13 @@ See the root README for the current Node.js, .NET and Docker verification requir
 
 Conventional Commit messages are checked locally by Husky and commitlint. The pre-push hook checks the issue-linked branch name. Pull request CI repeats both checks so bypassing a local hook does not skip validation. See `docs/engineering-lifecycle.md` for the branch format and allowed prefixes.
 
+## Delivery specifications
+
+OpenSpec 1.15.0 is pinned as a local development dependency. Its official initializer and `prodshape integration add openspec` generate the adopter configuration, integration metadata and product schemas. `npm run spec:validate` and `npm run product:citations` are part of the full `verify` chain. They validate delivery artifacts and their product bindings; installing these tools grants no product approval or additional execution authority. See the [OpenSpec entrypoint](../openspec/README.md) for the initial empty specification inventory and planning commands.
+
 ## Secret scanning
 
-`npm run lint:docs` uses `markdownlint-cli2@0.23.3` on repository-owned Markdown, excluding generated skills and ProductShape files. `npm run security:check` installs Gitleaks 8.29.1 into a user cache, verifies the official release checksum, and scans all Git history, staged changes, and the working tree with full redaction. CI fetches full history for the scan. The narrow allowlist in `.gitleaks.toml` exempts only the ArcShape validator's literal `arc42-section` metadata comparison; generated caches and Git internals are excluded. The scanner tests include an ignored synthetic secret and verify that its value is never printed. The scan requires network access to the official Gitleaks release for a first-time installation and supports Linux x64 and Windows x64.
+`npm run lint:docs` uses `markdownlint-cli2@0.24.0` on repository-owned Markdown, excluding generated skills, ProductShape files and provider-owned OpenSpec schemas. `npm run security:check` installs Gitleaks 8.29.1 into a user cache, verifies the official release checksum, and scans all Git history, staged changes, and the working tree with full redaction. CI fetches full history for the scan. The narrow allowlist in `.gitleaks.toml` exempts only the ArcShape validator's literal `arc42-section` metadata comparison; generated caches and Git internals are excluded. The scanner tests include an ignored synthetic secret and verify that its value is never printed. The scan requires network access to the official Gitleaks release for a first-time installation and supports Linux x64 and Windows x64.
 
 ## Dependency audit
 

@@ -41,7 +41,8 @@ jobs:
           npx --no -- commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
       - name: Install Chromium for browser checks
         run: npx --no -- playwright install --with-deps chromium
-      - run: npm run verify
+      - name: Verify repository, specifications and product citations
+        run: npm run verify
       - name: Retain browser evidence
         if: always()
         uses: actions/upload-artifact@v7
