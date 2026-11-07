@@ -1,0 +1,35 @@
+{
+  "head": "72d7efde3a962c66f0269291a6a0c58cd6d2c194",
+  "verdict": "accept",
+  "findings": [],
+  "dimensions": {
+    "Behavior and regression": {
+      "status": "pass",
+      "assessment": "FF discovery precedes the read-only proposal worker and is supplied with its admitted source revision. Regression tests cover existing and absent baseline specifications. Scaffolding precedes inventory, so an adopter without initialized OpenSpec files has a prepared provider root rather than requiring model-side initialization."
+    },
+    "Implementation completeness": {
+      "status": "pass",
+      "assessment": "Preparation seeds only committed OpenSpec configuration, specifications and schemas. Discovery rejects missing/non-array inventory, invalid diagnostic containers, severity:error diagnostics and a mismatched provider root; parsing and command failures propagate. Returned artifacts are materialized and strictly validated against the same source baseline before independent review."
+    },
+    "Security and boundaries": {
+      "status": "pass",
+      "assessment": "Selected baseline paths reject traversal, backslashes and unsupported modes/content. committedSource authenticates bytes and modes and omits authenticated symlinks without following targets. Provider preparation uses a fresh host-owned temporary directory with finally cleanup, excluding adopter npm settings and unrelated changes. The bounded unattended provider isolates its environment and retains cancellation/deadline enforcement. No new identity, review or authority bypass was found."
+    },
+    "Tests and package consumer": {
+      "status": "pass",
+      "assessment": "Inspected behavioral adapter regressions, unsafe-path and discovery-failure cases, and real locally installed OpenSpec 1.15.0 discovery/scaffolding/strict-validation tests. Adapter transport is explicitly synthetic, not native qualification. Context reports full verification, focused tests and packaged-consumer success; these were not independently executed during this read-only audit."
+    },
+    "Documentation and changeset": {
+      "status": "pass",
+      "assessment": "unattended.md accurately describes host discovery, read-only planning and same-baseline validation. The patch changeset covers both the SDLC package and aggregate Lighthouse package without claiming broader qualification or new authority. No adopter engineering-lifecycle.md is required."
+    },
+    "Source/contract consistency": {
+      "status": "pass",
+      "assessment": "Provider instructions and discovery remain host evidence, not claimed model commands. Proposal file boundaries and provider-owned metadata are preserved. Rejected validation retains bounded correction handling; accepted revised artifacts require fresh bound independent review. Source, issue intent, model independence, correction limits, publication and merge checks remain enforced."
+    },
+    "Limitations and exact-head hosted CI": {
+      "status": "pass",
+      "assessment": "Verdict is limited to the source correction at the supplied exact head, not issue414's broader native lifecycle qualification. Context reports repository, package-contents and clean-consumer hosted CI passed; this audit did not query CI or independently authenticate the run's head. The host must enforce exact-head deterministic hosted CI before merge; acceptance does not bypass it. No commands, agents, secrets or repository edits were used."
+    }
+  }
+}

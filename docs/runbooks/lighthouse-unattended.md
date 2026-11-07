@@ -6,7 +6,7 @@ This is the activation procedure for the adoption in [#88](https://github.com/ju
 
 On 2026-11-07 the owner authorized autonomous delivery with `merge:true`, then completion of #88/#51/#52/#57 and necessary dependencies. The owner separately authorized lifting #49's `future` hold for development Keycloak and the GitHub user connection; production remains separate. These grants are recorded in the issues. They do not expand unattended agent write scope.
 
-The original read-only slice [#90](https://github.com/juangcarmona/sofa/issues/90) was delivered by the operator in [#97](https://github.com/juangcarmona/sofa/pull/97) after native execution blocked. Its native run remains blocked and does not qualify #88. The current exact native grant is [#99](https://github.com/juangcarmona/sofa/issues/99): source workflow attempts and triggering events. Its reviewed prerequisite is [#98](https://github.com/juangcarmona/sofa/pull/98). All broader delivery continues through the shared lifecycle.
+The original read-only slice [#90](https://github.com/juangcarmona/sofa/issues/90) was delivered by the operator in [#97](https://github.com/juangcarmona/sofa/pull/97) after native execution blocked. Its native run remains blocked and does not qualify #88. The current exact native grant is [#99](https://github.com/juangcarmona/sofa/issues/99): source workflow attempts and triggering events. Its initial reviewed prerequisite is [#98](https://github.com/juangcarmona/sofa/pull/98). All broader delivery continues through the shared lifecycle.
 
 | Boundary | Adopted setting |
 | --- | --- |
@@ -79,3 +79,5 @@ Delegated merge requires a later, separate owner grant for another bounded issue
 ## Roll back to supervised delivery
 
 Set `merge: false`; restore `enabled: false` and remove only the qualification issue's override. Supervised defaults and workers remain installed. For an urgent stop of all new work, the owner can set `LIGHTHOUSE_AUTOMATION_ENABLED=false`; inspect active runs before cancellation or reservation cleanup. Do not unset the existing App credentials or alter repository protections. Do not enable `LIGHTHOUSE_MAINTENANCE_ENABLED`, `LIGHTHOUSE_RECOVERY_ENABLED`, a report index or CI repair as part of this adoption. Installing their workflows does not grant their execution.
+
+After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The workflow source pin7815b7c supplies host-prepared OpenSpec discovery to read-only planning; package versions and the single correction budget are unchanged.
