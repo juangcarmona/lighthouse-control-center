@@ -1,0 +1,27 @@
+{
+  "scope": "Development identity and separate connected GitHub user access, #49. Production remains #58.",
+  "ownerDecisions": "Implementation, necessary dependencies and merges explicitly delegated in the current conversation; development OTP removed at the owner request; physical-phone rehearsal deferred at the owner request.",
+  "acceptanceEvidence": {
+    "AC1": "Pinned actual Keycloak/TLS/Aspire composition passed in password-provider-verification.json; no execution supervisor/database started.",
+    "AC2": "Private HTTPS setup and profile-isolation tests, real trusted provider/browser flow and existing live provider preserved.",
+    "AC3": "Exact issuer/subject, fresh profile assurance, protected HTTP routes and actual owner/wrong-owner browser results.",
+    "AC4": "Unit boundary/race tests and actual provider refresh, revocation, outage, logout and unchanged deadlines.",
+    "AC5": "Owner confirmed actual desktop GitHub connection and repository/operations data. Deterministic source tests cover PKCE/state/replay, account confirmation, missing/insufficient/revoked grants, expiring tokens and atomic read-stop. No actual owner grant-revocation rehearsal is claimed.",
+    "AC6": "npm run verify passed39Node/70web/38legacy.NET/16browser; actual provider lane passed. Current-head hosted CI is still required before integration.",
+    "AC7": "Actual trusted Chromium desktop/narrow layouts, keyboard/axe and clear account states passed. Physical-phone rehearsal was deferred, not reported as tested."
+  },
+  "evidence": [
+    "owner-acceptance-and-development-policy.json",
+    "atomic-source-request-verification.json",
+    "password-provider-verification.json",
+    "external-navigation-verification.json",
+    "verification-output-isolation.json"
+  ],
+  "knownLimits": [
+    "Physical phone not executed by owner.",
+    "Actual insufficient/revoked GitHub grant transitions use deterministic transport coverage rather than new owner manual actions.",
+    "Process-local source credentials/sessions do not survive restart.",
+    "Production identity, persistence and deployment remain separate."
+  ],
+  "completion": "Independent judgement audit and current-head hosted CI must pass before merge."
+}
