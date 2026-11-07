@@ -172,6 +172,21 @@ public sealed class OwnerBoundaryTests
   }
 
   [Fact]
+  public async Task MissingGitHubAppExplainsSetupAndDoesNotOfferDisconnect()
+  {
+    await using var app = new OwnerApplication { GitHubConfigured = false };
+    using var client = app.Client();
+    await client.GetAsync(await app.Begin(client));
+    var page = await client.GetStringAsync("/workspace");
+    Assert.Contains("GitHub setup required", page, StringComparison.Ordinal);
+    Assert.Contains("id=\"github-disconnect\" hidden", page, StringComparison.Ordinal);
+    var response = await client.GetAsync("/api/observations");
+    Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    using var state = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+    Assert.Equal("unconfigured", state.RootElement.GetProperty("state").GetString());
+  }
+
+  [Fact]
   public async Task LogoutRequiresCsrfAndDestroysTheServerTicketEvenWhenTheProviderIsUnavailable()
   {
     await using var app = new OwnerApplication();
@@ -304,6 +319,7 @@ public sealed class OwnerBoundaryTests
     private string nonce = "";
     internal string? Invalid { get; init; }
     internal int TokenExchanges;
+    internal bool GitHubConfigured { get; init; } = true;
     internal TimeSpan? NonceLifetime { get; init; }
     internal Action? BeforeIssue { get; set; }
     internal Func<CookieValidatePrincipalContext, Task>? OnValidated { get; set; }
@@ -324,8 +340,8 @@ public sealed class OwnerBoundaryTests
         ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
         ["SoFa:Identity:Development:OwnerSubject"] = "owner-subject",
         ["SoFa:Repositories:0"] = "example/repository",
-        ["SoFa:GitHub:ClientId"] = "development-user-app",
-        ["SoFa:GitHub:ClientSecret"] = "isolated-user-app-value",
+        ["SoFa:GitHub:ClientId"] = GitHubConfigured ? "development-user-app" : null,
+        ["SoFa:GitHub:ClientSecret"] = GitHubConfigured ? "isolated-user-app-value" : null,
       }));
       builder.ConfigureServices(services =>
       {

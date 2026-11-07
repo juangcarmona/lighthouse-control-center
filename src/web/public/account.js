@@ -1,6 +1,7 @@
 const status = document.getElementById('account-status');
 const identity = document.getElementById('github-account');
 const repositories = document.getElementById('repository-authority');
+const disconnect = document.getElementById('github-disconnect');
 let busy = false;
 async function refresh() {
   if (busy || document.hidden) return;
@@ -9,17 +10,21 @@ async function refresh() {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
     if ([401, 403].includes(response.status)) {
       identity.textContent = 'No verified acting account is available.';
+      if (disconnect) disconnect.hidden = true;
       repositories.replaceChildren();
       status.textContent = 'Your owner session has ended or access is denied. Sign in again to continue.';
       return;
     }
     if (!response.ok) throw Error();
     const account = await response.json();
+    if (disconnect && ['linked', 'unlinked', 'unconfigured'].includes(account.state)) disconnect.hidden = account.state !== 'linked';
     if (account.state !== 'linked') {
       identity.textContent = account.state === 'unconfigured' ? 'GitHub connection is not configured.'
         : account.state === 'unlinked' ? 'GitHub is not connected.' : 'GitHub verification is unavailable.';
       repositories.replaceChildren();
-      status.textContent = 'Source operations require a verified acting account and sufficient repository permissions.';
+      status.textContent = account.state === 'unconfigured'
+        ? 'GitHub setup is required before operations can load. Register the development App, then connect your account.'
+        : 'Connect and verify your GitHub account to load repository operations.';
       return;
     }
     if (typeof account.login !== 'string' || !Number.isSafeInteger(account.userId) || !Array.isArray(account.repositories)) throw Error();

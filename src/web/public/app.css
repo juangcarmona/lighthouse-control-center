@@ -334,3 +334,5 @@ footer {
 .run-heading {
   gap:.5rem}
 }
+
+[hidden] { display: none !important; }

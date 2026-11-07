@@ -262,3 +262,15 @@ test('refresh preserves a focused collapsed history disclosure', async ({ page }
   await expect(summary).toBeFocused();
   await expect(summary.locator('..')).not.toHaveAttribute('open', '');
 });
+
+test('unconfigured GitHub explains the setup step and hides unavailable dashboard controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route('**/api/observations', route => route.fulfill({ status: 409, json: { state: 'unconfigured' } }));
+  await page.goto('/');
+  await expect(page.getByRole('status')).toHaveText('GitHub setup required before operations can load.');
+  await expect(page.getByRole('heading', { name: 'Complete the GitHub connection' })).toBeVisible();
+  await expect(page.locator('.metrics')).toBeHidden();
+  await expect(page.locator('.repository-filter')).toBeHidden();
+  await expect(page.getByRole('link', { name: 'Open account' })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
