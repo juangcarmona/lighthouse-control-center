@@ -274,3 +274,19 @@ test('unconfigured GitHub explains the setup step and hides unavailable dashboar
   await expect(page.getByRole('link', { name: 'Open account' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
+
+
+test('stale repository evidence keeps original source times outside current counts', async ({ page }) => {
+  const repo = structuredClone(payload.repositories[0]);
+  repo.availability = 'stale';
+  await page.route('**/api/observations', route => route.fulfill({ json: { repositories: [repo] } }));
+  await page.goto('/');
+  await expect(page.getByText('Stale evidence', { exact: true })).toBeVisible();
+  await expect(page.getByText('Last known workflow runs', { exact: true })).toBeVisible();
+  await expect(page.getByText('Last known source labels', { exact: true })).toBeVisible();
+  await expect(page.getByText('Initialize the factory view', { exact: false })).toBeVisible();
+  await expect(page.locator('#active-count')).toHaveText('Unavailable');
+  await expect(page.locator('#attention-count')).toHaveText('Unavailable');
+  await expect(page.locator('.repository .timestamp').first()).toContainText('2026');
+  await expect(page.locator('.repository')).toContainText('current activity is unknown');
+});

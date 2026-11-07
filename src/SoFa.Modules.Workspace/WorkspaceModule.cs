@@ -106,7 +106,8 @@ public static class WorkspaceModule
       lock (record.Sync)
       {
         canDisconnect = record.GitHub.Current is not null;
-        account = connection is not null ? "<p id=\"github-account\">GitHub acting account: " + Encode(connection.Login) + " · User ID "
+        account = connection is not null ? "<p id=\"github-account\">GitHub acting account: <a href=\"https://github.com/"
+                + Encode(Uri.EscapeDataString(connection.Login)) + "\" rel=\"noreferrer noopener\">" + Encode(connection.Login) + "</a> · User ID "
                 + connection.UserId.ToString(System.Globalization.CultureInfo.InvariantCulture) + ". Verified at "
                 + Encode(connection.VerifiedAt.ToString("o", System.Globalization.CultureInfo.InvariantCulture)) + ".</p>"
                 : "<p id=\"github-account\">" + (record.GitHub.Current is null ? "GitHub is not connected." : "GitHub account verification is unavailable. Source operations are blocked.") + "</p>";

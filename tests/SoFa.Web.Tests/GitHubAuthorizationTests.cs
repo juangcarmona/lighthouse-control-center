@@ -227,6 +227,43 @@ public sealed class GitHubAuthorizationTests
     Assert.Null(unavailable.Attention);
   }
 
+  [Theory]
+  [InlineData(503, true)]
+  [InlineData(429, true)]
+  [InlineData(403, false)]
+  [InlineData(404, false)]
+  public async Task TemporaryCollectionFailureRetainsOnlySameScopeEvidenceAfterFreshAuthority(int status, bool retained)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var first = Assert.Single((await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None))!.Repositories);
+    fixture.Handler.DataStatus = (HttpStatusCode)status;
+    for (var attempt = 0; attempt < 2; attempt++)
+    {
+      fixture.Clock.Advance(TimeSpan.FromSeconds(16));
+      var result = Assert.Single((await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None))!.Repositories);
+      Assert.Equal(retained ? "stale" : "unavailable", result.Availability);
+      if (retained)
+      {
+        Assert.Equal(first.ObservedAt, result.ObservedAt);
+        Assert.Equal(first.Runs, result.Runs);
+        Assert.Equal(first.Attention, result.Attention);
+      }
+      else Assert.Null(result.Runs);
+    }
+    fixture.Handler.CanRead = false;
+    var denied = Assert.Single((await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None))!.Repositories);
+    Assert.Equal("unavailable", denied.Availability);
+    Assert.Null(denied.Runs);
+    Assert.Empty(record.GitHub.Observations);
+    fixture.Handler.CanRead = true;
+    fixture.Handler.DataStatus = HttpStatusCode.ServiceUnavailable;
+    var afterDenial = Assert.Single((await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None))!.Repositories);
+    Assert.Equal("unavailable", afterDenial.Availability);
+    Assert.Null(afterDenial.Runs);
+  }
+
   [Fact]
   public async Task InFlightObservationCannotSurviveDisconnectAndSessionCachesAreIndependent()
   {
@@ -318,6 +355,7 @@ public sealed class GitHubAuthorizationTests
     internal Task? ExchangeWait { get; set; }
     internal Task? DataWait { get; set; }
     internal bool DataUnavailable { get; set; }
+    internal HttpStatusCode? DataStatus { get; set; }
     internal Action<HttpRequestMessage>? OnRequest { get; set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -349,6 +387,7 @@ public sealed class GitHubAuthorizationTests
       if (request.RequestUri.AbsolutePath == "/repos/example/repository/actions/runs")
       {
         if (DataWait is not null) await DataWait;
+        if (DataStatus is { } status) return Response(status, new { message = "Unavailable" });
         return DataUnavailable ? Response(HttpStatusCode.ServiceUnavailable, new { message = "Unavailable" })
             : Response(HttpStatusCode.OK, new { workflow_runs = new[] { new { id = UserId, name = "CI", status = "in_progress", head_sha = "observed-revision", html_url = "https://github.com/example/repository/actions/runs/71", updated_at = "2026-11-07T12:00:00Z" } } });
       }

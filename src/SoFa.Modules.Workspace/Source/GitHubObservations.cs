@@ -51,7 +51,10 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
           || !ReferenceEquals(cached.Connection, connection) || cached.Generation != generation || clock.GetUtcNow() >= cached.ExpiresAt)
       {
         // Collection has its own short budget: one cancelled browser cannot cancel another browser's shared read.
-        collection = CollectAsync(record, connection, generation, repository);
+        var previous = cached is not null && ReferenceEquals(cached.Connection, connection) && cached.Generation == generation
+            && cached.Collection.IsCompletedSuccessfully && cached.Collection.Result.Availability is "available" or "stale"
+                ? cached.Collection.Result : null;
+        collection = CollectAsync(record, connection, generation, repository, previous);
         record.GitHub.Observations[repository] = new CachedObservation(connection, generation, collection, clock.GetUtcNow().AddSeconds(15));
       }
       else collection = cached.Collection;
@@ -60,11 +63,13 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
     lock (record.Sync) return Live(record, connection, generation) ? observed : Unavailable(repository);
   }
 
-  private async Task<ObservedRepository> CollectAsync(OwnerSession record, GitHubConnection connection, long generation, string repository)
+  private async Task<ObservedRepository> CollectAsync(OwnerSession record, GitHubConnection connection, long generation, string repository, ObservedRepository? previous)
   {
     using var budget = new CancellationTokenSource(TimeSpan.FromSeconds(20));
     var observedAt = clock.GetUtcNow();
     var guard = new SourceRequestGuard(record.Sync, () => Live(record, connection, generation), connection.Stopped.Token);
+    ObservedRepository TemporaryFailure() => previous is null ? Unavailable(repository) : previous with
+    { Availability = "stale", Reason = "Temporary GitHub collection failure; last known evidence is shown with its original timestamps. Current activity is unknown." };
     try
     {
       lock (record.Sync) if (!Live(record, connection, generation)) return Unavailable(repository);
@@ -73,7 +78,9 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
       using var issues = await transport.GetAsync("/repos/" + repository + "/issues?state=open&per_page=100", connection.Tokens.Access, guard, budget.Token).ConfigureAwait(false);
       if (runs.Status == System.Net.HttpStatusCode.Unauthorized || issues.Status == System.Net.HttpStatusCode.Unauthorized)
         GitHubAuthorization.Invalidate(record, connection);
-      if (!runs.Successful || !issues.Successful || runs.Value.ValueKind != JsonValueKind.Object
+      if (!runs.Successful || !issues.Successful)
+        return (runs.Successful || Transient(runs)) && (issues.Successful || Transient(issues)) ? TemporaryFailure() : Unavailable(repository);
+      if (runs.Value.ValueKind != JsonValueKind.Object
           || !runs.Value.TryGetProperty("workflow_runs", out var runRows) || runRows.ValueKind != JsonValueKind.Array
           || issues.Value.ValueKind != JsonValueKind.Array) return Unavailable(repository);
       var mappedRuns = runRows.EnumerateArray().Take(20).Where(r => SourceJson.Number(r, "id") is > 0 and <= 9_007_199_254_740_991)
@@ -86,8 +93,10 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
           .Where(i => i.Labels.Any(l => l is "needs-info" or "agent-working" or "ready" or "waiting-review")).ToArray();
       return new ObservedRepository(repository, observedAt, "available", Scope, mappedRuns, mappedIssues);
     }
-    catch (OperationCanceledException) { return Unavailable(repository); }
+    catch (OperationCanceledException) { return TemporaryFailure(); }
   }
+
+  private static bool Transient(GitHubResponse response) => response.Status == 0 || (int)response.Status == 429 || (int)response.Status >= 500;
 
   private bool Live(OwnerSession record, GitHubConnection connection, long generation) => ReferenceEquals(sessions.Get(record.Id), record)
       && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
