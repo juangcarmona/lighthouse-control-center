@@ -21,4 +21,4 @@ The application serves the existing HTML/CSS/JavaScript presentation through a .
 
 ## Remaining extension strategy
 
-Paginated issue context, discovery, intervention requests and boards must share source identities and the same authorized adapters. Issue mutations, durable command receipts, explicit continuation and signal projections are not implemented by the identity slice. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) remains Proposed; no application journal or execution database is introduced here.
+The implemented paginated issue reader uses the same source identities and authorized adapters. Discovery, intervention requests and boards remain extensions of that boundary. Issue mutations, durable command receipts, explicit continuation and signal projections are not implemented by the identity slice. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) remains Proposed; no application journal or execution database is introduced here.

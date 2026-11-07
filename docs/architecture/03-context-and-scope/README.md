@@ -33,4 +33,4 @@ flowchart LR
 
 <!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 
-The implemented blocks are in [section 05](../05-building-block-view/README.md); environment mapping is in [section 07](../07-deployment-view/README.md). Actual GitHub consent and physical-device acceptance are evidence gaps, not inferred from test fixtures.
+The implemented blocks are in [section 05](../05-building-block-view/README.md); environment mapping is in [section 07](../07-deployment-view/README.md). The owner confirmed actual desktop GitHub connection and operational data for #49. Actual connected-user issue-reader acceptance remains open; physical-device rehearsal was owner-deferred and is not inferred from narrow browser tests.

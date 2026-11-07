@@ -110,6 +110,20 @@ public sealed class IssueContextTests
   }
 
   [Fact]
+  public async Task KnownLossOfIssueGrantIsDeniedAndCannotRetainEarlierContextAsATransientOutage()
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    Assert.Equal("available", (await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None)).Availability);
+    fixture.Handler.IssueGrant = "none";
+    var calls = fixture.Handler.Paths.Count;
+    var denied = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("denied", denied.Availability);
+    Assert.Null(denied.Issue);
+    Assert.DoesNotContain(fixture.Handler.Paths.Skip(calls), path => path == "/repos/example/repository/issues/7");
+  }
+
+  [Fact]
   public async Task LogoutDuringSourceReadCannotReturnTheOldAccountsIssue()
   {
     using var fixture = new Fixture();
@@ -206,6 +220,7 @@ public sealed class IssueContextTests
     internal bool Revoked { get; set; }
     internal bool UserUnavailable { get; set; }
     internal string ActionsGrant { get; set; } = "read";
+    internal string IssueGrant { get; set; } = "read";
     internal int Count { get; set; } = 101;
     internal bool PullRequest { get; set; }
     internal bool ConversationUnavailable { get; set; }
@@ -234,7 +249,7 @@ public sealed class IssueContextTests
               : UserUnavailable ? Response(new { message = "Unavailable" }, HttpStatusCode.ServiceUnavailable)
               : Response(new { id = 71, login = "verified-user", type = "User" });
         case "/repos/example/repository": value = new { permissions = new { pull = CanRead, push = false } }; break;
-        case "/user/installations": value = new { total_count = 1, installations = new[] { new { id = 9, account = new { login = "example" }, permissions = new { metadata = "read", issues = "read", actions = ActionsGrant } } } }; break;
+        case "/user/installations": value = new { total_count = 1, installations = new[] { new { id = 9, account = new { login = "example" }, permissions = new { metadata = "read", issues = IssueGrant, actions = ActionsGrant } } } }; break;
         case "/user/installations/9/repositories": value = new { total_count = 1, repositories = new[] { new { full_name = "example/repository" } } }; break;
         case "/repos/example/repository/issues/7":
           if (Wait is not null) await Wait;

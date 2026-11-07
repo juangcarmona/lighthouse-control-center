@@ -17,15 +17,16 @@
 
 - [x] 3.1 Add shared issue navigation and direct entry with readable body, conversation, separate source facts and evidence.
 - [x] 3.2 Add safe Markdown subset/source disclosure, explicit load more, honest stale/partial states and authority-loss removal.
-- [ ] 3.3 Verify keyboard, phone-width, accessibility, long conversation, active reservation, blocked proposal and unavailable artifacts.
+- [x] 3.3 Verify keyboard, phone-width, accessibility, long conversation, blocked proposal and unavailable artifacts through the browser/source fixtures.
+- [ ] 3.4 Demonstrate active source reservation when Lighthouse exposes a supported public contract; current lease coverage is explicitly unknown, not simulated as a live reservation.
 
 ## 4. Evidence and integration
 
 - [ ] 4.1 Observe a real issue and paginated conversation through the explicitly connected GitHub user; record source and coverage without credentials.
-- [ ] 4.2 Update affected arc42 views, reader docs and current ProductShape citations; run full deterministic checks and applicable host runtime evidence.
+- [x] 4.2 Update affected arc42 views, reader docs and current ProductShape citations; run full deterministic checks and browser runtime evidence. Actual connected-user proof is tracked separately in4.1.
 - [ ] 4.3 Pass current-head CI, independent eleven-dimension Done review, synchronize/archive specs and merge after #49; record retrospective.
 
-Implementation checkpoint: connected-user source acceptance and the active-reservation/physical-device demonstration remain open. The independent audit found a source-read race; four regression cases reproduced the extra requests before the fix and stop at the interrupted request after the fix. Final current-head CI and the independent Done gate remain required.
+Implementation checkpoint: connected-user source acceptance and active-reservation demonstration remain open. Physical-device rehearsal was owner-deferred and is not claimed. The independent audit found a source-read race; four regression cases reproduced the extra requests before the fix and stop at the interrupted request after the fix. Final current-head CI and the independent Done gate remain required.
 
 ## Product grounding
 
