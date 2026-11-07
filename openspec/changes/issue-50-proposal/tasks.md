@@ -4,7 +4,7 @@
 
 ## 1. Plan and source contract
 
-- [ ] 1.1 Record Ready evaluation and owner-authorized scope; independently review this plan before implementation.
+- [x] 1.1 Record Ready evaluation and owner-authorized scope; independently review this plan before implementation.
 - [ ] 1.2 Inspect the installed Lighthouse report/dispatch/artifact contracts and real source examples; record supported versions and unavailable evidence boundaries.
 
 ## 2. Read adapter
