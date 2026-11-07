@@ -32,5 +32,19 @@
     "Current prerequisite50 source acceptance and active reservation limitation.",
     "Independent implementation audit and exact-head hosted CI.",
     "Actual connected-user discovery/source evidence."
-  ]
+  ],
+  "checkedBeforeDependencyMerge": "1332076",
+  "currentDependencyVerification": {
+    "implementationRevision": "8ad419b",
+    "command": "npm run verify with two-CPU affinity",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 121,
+      "retainedRuntime": 38,
+      "browser": 29
+    },
+    "logSha256": "9e055036c69d7f4ed8fe118bcea0d734a479143b816d2e1bbc9e2a2cd2d80399",
+    "sourceCorrection": "Includes50d30699b: known issue-read grant loss is denied and clears old context; existing final50 acceptance gate remains open."
+  }
 }
