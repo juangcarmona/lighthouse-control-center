@@ -32,7 +32,7 @@ SoFa SHALL authenticate operational reads and writes on the server and admit onl
 
 ### Requirement: Authentication ceremony
 
-SoFa SHALL use authorization-code flow with PKCE S256 and verify issuer, audience, signature, lifetime, state and nonce. The candidate policy requires provider-enforced password plus TOTP, verified through its configured assurance claim and authentication time. No local password bypass SHALL exist.
+SoFa SHALL use authorization-code flow with PKCE S256 and verify issuer, audience, signature, lifetime, state and nonce. The owner-revised development policy requires provider-verified password assurance1 without OTP; external mode retains MFA assurance2. Both verify their configured assurance claim and authentication time. No local password bypass SHALL exist.
 <!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
 
 #### Scenario: Fresh sufficiently assured login

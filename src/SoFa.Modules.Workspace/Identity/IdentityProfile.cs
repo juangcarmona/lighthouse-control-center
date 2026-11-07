@@ -9,6 +9,7 @@ internal sealed class IdentityProfile
   [JsonIgnore]
   public string ClientSecret { get; init; } = string.Empty;
   public required string OwnerSubject { get; init; }
+  public string RequiredAssurance { get; init; } = "2";
 
   public override string ToString() => "IdentityProfile (credentials withheld)";
 }

@@ -23,6 +23,9 @@ test('development setup keeps credentials private, emits trusted certificates an
     const configuration = JSON.parse(original);
     const accounts = JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8'));
     assert.equal(accounts.length, 2);
+    const realm = JSON.parse(await readFile(join(directory, "import/sofa-dev-realm.json"), "utf8"));
+    assert.equal(realm.clients[0].attributes["minimum.acr.value"], "1");
+    assert.ok(realm.users.every(user => !user.requiredActions.includes("CONFIGURE_TOTP")));
     assert.equal(configuration.SoFa.Identity.Development.ProviderUser, `${process.getuid()}:0`);
     assert.equal(configuration.SoFa.Identity.Development.OwnerSubject, accounts[0].subject);
     assert.ok(!result.stdout.includes(configuration.SoFa.Identity.Development.ClientSecret));

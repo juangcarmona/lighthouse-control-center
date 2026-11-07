@@ -45,7 +45,7 @@ const accounts = testAccounts ? [
 if (testAccounts) realm.users = accounts.map(account => ({
   id: account.subject, username: account.username, enabled: true,
   firstName: 'Development', lastName: 'Account', email: `${account.username}@example.invalid`,
-  credentials: [{ type: 'password', value: account.password, temporary: false }], requiredActions: ['CONFIGURE_TOTP'],
+  credentials: [{ type: 'password', value: account.password, temporary: false }], requiredActions: [],
 }));
 await mkdir(resolve(directory, 'import'), { mode: 0o700 });
 await privateWrite(resolve(directory, 'import', 'sofa-dev-realm.json'), JSON.stringify(realm));

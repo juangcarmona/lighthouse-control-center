@@ -102,7 +102,7 @@ internal static class OwnerIdentity
           {
             OnRedirectToIdentityProvider = context =>
                 {
-                  context.ProtocolMessage.AcrValues = "2";
+                  context.ProtocolMessage.AcrValues = profile.RequiredAssurance;
                   return Task.CompletedTask;
                 },
             OnTokenValidated = context =>

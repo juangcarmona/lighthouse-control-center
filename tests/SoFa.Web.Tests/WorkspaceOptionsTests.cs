@@ -18,6 +18,21 @@ public sealed class WorkspaceOptionsTests
     Assert.Null(options.GitHubClientId);
   }
 
+  [Theory]
+  [InlineData("Development", true)]
+  [InlineData("External", false)]
+  public void DevelopmentUsesVerifiedPasswordWhileExternalStillRequiresMfa(string mode, bool passwordAccepted)
+  {
+    var options = WorkspaceOptions.Load(Configuration(Values(mode)));
+    var now = new TestClock().GetUtcNow();
+    Assert.Equal(passwordAccepted, IdentityAdmission(OwnerAdmissionTests.Principal(assurance: "1")));
+    Assert.False(IdentityAdmission(OwnerAdmissionTests.Principal(assurance: "0")));
+    Assert.False(IdentityAdmission(OwnerAdmissionTests.Principal(subject: "another-owner", assurance: "1")));
+    Assert.False(IdentityAdmission(OwnerAdmissionTests.Principal(assurance: "1", authenticationTime: now.AddMinutes(-6).ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture))));
+    bool IdentityAdmission(System.Security.Claims.ClaimsPrincipal principal) =>
+        JuanGCarmona.SoFa.Modules.Workspace.Identity.OwnerAdmission.Validate(principal, options.Identity, now, true) is not null;
+  }
+
   [Fact]
   public void MissingMixedAndUnsafeConfigurationHasNoFallback()
   {

@@ -12,13 +12,13 @@ The supported entrypoint is the .NET workspace composed by Aspire with an isolat
 SOFA_CONFIG_FILE="$HOME/.config/sofa-dev/development.json" npm start
 ```
 
-Open the exact HTTPS address configured in that private file. Owner admission uses the configured issuer/subject and password/TOTP assurance. Connect a GitHub account separately; repository observations use that user's effective app/repository authority. Credentials remain server-side. A restart ends local sessions and source connections.
+Open the exact HTTPS address configured in that private file. Owner admission uses the configured issuer/subject and verified password in development; the external identity profile retains MFA. Connect a GitHub account separately; repository observations use that user's effective app/repository authority. Credentials remain server-side. A restart ends local sessions and source connections.
 
 The account view shows the acting account, source-check times and configured repository permissions. The operations view retains the first bounded observation slice: active workflow groups, source revisions, human-wait labels, repository filtering and safe GitHub links. Source-update age is separate from observation time; unavailable evidence stays unknown. Workflow waiting does not identify an approver. Counts cover the latest twenty runs and first hundred open issue records per configured repository, with PR records excluded from attention.
 
 Observation data is coalesced within the owner/session connection scope for fifteen seconds. Permission checks precede cache reuse. Background polling does not renew the session; authority loss clears displayed records and counts. Temporary transport failure retains old source times with a stale warning. The issue reader at `/workspace/issues` opens ordinary configured issues and bounded conversation pages. Optional evidence reads preserve exact source associations and use the installed Lighthouse result validator; unavailable or expired artifacts remain explicit. Source consent, live reservation coverage and final issue-reader acceptance remain open under #50. Commands, discovery/boards/inbox and runtime/capacity metrics remain #47/#48/#51/#52/#57 work.
 
-Development Keycloak protocol, revocation and outage behavior have a host-only verification lane. Actual GitHub user consent and a physical phone remain separate acceptance evidence; browser fixtures do not establish either. Production custody, persistence and deployment remain #58 work.
+Development Keycloak protocol, revocation and outage behavior have a host-only verification lane. The owner confirmed actual GitHub connection and operational data on a computer. Physical-phone rehearsal was deferred by the owner; narrow browser tests do not establish physical-device acceptance. Production custody, persistence and deployment remain #58 work.
 
 Install browser prerequisites with `npx playwright install --with-deps chromium` before verification. CI retains safe post-callback screenshots and reports. Its identity-provider test requires `libnss3-tools` for an isolated browser trust database.
 

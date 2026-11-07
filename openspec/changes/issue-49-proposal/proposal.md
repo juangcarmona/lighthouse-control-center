@@ -10,7 +10,7 @@ The owner needs authenticated access to the operational workspace and a separate
 
 - Compose a dedicated, pinned development Keycloak and the SoFa workspace in the existing Aspire solution, with separated test configuration and phone-reachable HTTPS endpoints.
 - **BREAKING**: the operational workspace and observation API require an authenticated configured owner. The new workspace replaces anonymous operational serving in the supported development composition; it does not upgrade the legacy server with privileges.
-- Add external-provider sign-in, an explicit MFA/session policy, server-held credentials, sign-out and fail-closed access explanations.
+- Add external-provider sign-in, an explicit profile-specific assurance/session policy, server-held credentials, sign-out and fail-closed access explanations.
 - Add an explicit GitHub user connection, visible acting account and server-side configured-repository permission checks. Connecting or reconnecting never requests repository work.
 - Use the adopted Lighthouse identity guidance and retain actual provider, source-identity and real-device evidence during implementation.
 
@@ -36,7 +36,7 @@ Juan accepted .NET and Aspire for SoFa; ADR-0009 records that direction in this 
 
 Product basis: UC-ACCESS-FACTORY, FR-AUTHORIZED-ENTRY, QR-EXECUTION-SECURITY, QR-MOBILE-OPERATIONS, BR-LAN-PRIVILEGE-BOUNDARY and CON-TRUSTED-LAN under `docs/product/model/`, as applied by CHG-AUTHENTICATED-OPERATIONS-001. Preserve accepted ADR-0006. Juan accepted ADR-0007 on 2026-10-31; its status is recorded in this PR pending merge. ADR-0008 remains Proposed.
 
-Issue: <https://github.com/juangcarmona/sofa/issues/49>. The owner explicitly authorized implementing #49 and necessary dependencies on 2026-11-07, including lifting its development `future` hold, based on this reviewed proposal. The authorization is recorded in issue comment 6706085004. Production remains separate; actual provider/source/phone evidence and protected gates are still required.
+Issue: <https://github.com/juangcarmona/sofa/issues/49>. The owner explicitly authorized implementing #49 and necessary dependencies on 2026-11-07, including lifting its development `future` hold, based on this reviewed proposal. The authorization is recorded in issue comment 6706085004. Production remains separate; actual provider/source evidence and protected gates remain separate. The owner subsequently confirmed desktop source observations, deferred physical-phone rehearsal and requested password-only development login; the design and evidence index record those decisions and limits.
 
 ## Product grounding
 

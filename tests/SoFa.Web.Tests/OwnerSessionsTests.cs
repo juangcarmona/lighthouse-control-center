@@ -92,6 +92,7 @@ internal sealed class TestClock(DateTimeOffset? start = null) : TimeProvider
 {
   public DateTimeOffset Start { get; } = start ?? DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
   private TimeSpan elapsed;
-  public override DateTimeOffset GetUtcNow() => Start + elapsed;
+  internal Action? BeforeRead { get; set; }
+  public override DateTimeOffset GetUtcNow() { BeforeRead?.Invoke(); return Start + elapsed; }
   public void Advance(TimeSpan duration) => elapsed += duration;
 }

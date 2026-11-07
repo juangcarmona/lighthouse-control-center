@@ -22,5 +22,39 @@
     "browserTests": 16,
     "logSha256": "b5e90f01cd2c506a26b6a8580959ee0bd13c81a71dbe63ee7111f422c3f61009"
   },
-  "realProviderHostProof": "Full current-head provider lane remains pending; its browser now tests actual external arrivals before and after owner MFA."
+  "realProviderHostProof": {
+    "testedRevision": "7f6e627d5bcb54dd8980a094b9a1c63bd52b0ac2",
+    "status": "passed",
+    "startedAt": "2026-11-07T17:34:54.376Z",
+    "completedAt": "2026-11-07T17:46:11.490Z",
+    "proofs": {
+      "externalDocumentNavigation": true,
+      "wrongTotpDenied": true,
+      "passwordOnlyDenied": true,
+      "csrfRejected": true,
+      "localLogout": true,
+      "freshMfaDespiteProviderSso": true,
+      "keyboardNavigation": true,
+      "accountAccessibility": true,
+      "sourceUiFixtures": true,
+      "trustedHttps": true,
+      "browserStorageEmpty": true,
+      "opaqueSecureCookie": true,
+      "wrongOwnerDenied": true,
+      "pollingDoesNotRenew": true,
+      "onlineRefresh": true,
+      "providerRevocationDenied": true,
+      "localLogoutDuringOutage": true,
+      "outageDenied": true
+    },
+    "provider": "Keycloak 26.8.1",
+    "syntheticAccounts": true,
+    "physicalPhone": false,
+    "githubUserConsentVerified": false
+  },
+  "hostedCI": {
+    "testedRevision": "7f6e627d5bcb54dd8980a094b9a1c63bd52b0ac2",
+    "conclusion": "success",
+    "url": "https://github.com/juangcarmona/sofa/actions/runs/42397043597"
+  }
 }

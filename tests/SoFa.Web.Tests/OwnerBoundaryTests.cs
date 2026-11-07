@@ -58,7 +58,7 @@ public sealed class OwnerBoundaryTests
   }
 
   [Fact]
-  public async Task RealMiddlewareRequiresPkceFreshMfaAndAValidSingleUseCallbackBeforeCreatingAnOpaqueCookie()
+  public async Task RealMiddlewareRequiresPkceFreshAuthenticationAndAValidSingleUseCallbackBeforeCreatingAnOpaqueCookie()
   {
     await using var app = new OwnerApplication();
     using var client = app.Client();
@@ -415,7 +415,7 @@ public sealed class OwnerBoundaryTests
       var query = QueryHelpers.ParseQuery(response.Headers.Location!.Query);
       Assert.Equal("S256", query["code_challenge_method"]);
       Assert.False(string.IsNullOrEmpty(query["code_challenge"]));
-      Assert.Equal("2", query["acr_values"]);
+      Assert.Equal("1", query["acr_values"]);
       Assert.Equal("0", query["max_age"]);
       Assert.Equal("code", query["response_type"]);
       nonce = query["nonce"].ToString();
@@ -443,7 +443,7 @@ public sealed class OwnerBoundaryTests
           Subject = new ClaimsIdentity(new[]
             {
                         new Claim("sub", app.Invalid == "subject" ? "different-owner" : "owner-subject"),
-                        new Claim("acr", app.Invalid == "assurance" ? "1" : "2"),
+                        new Claim("acr", app.Invalid == "assurance" ? "0" : "1"),
                         new Claim("nonce", app.Invalid == "nonce" ? "wrong-nonce" : app.nonce),
                         new Claim("auth_time", (app.Invalid == "old-ceremony" ? DateTimeOffset.UtcNow.AddMinutes(-6) : DateTimeOffset.UtcNow).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)),
                     }),
