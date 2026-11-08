@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-11-08T20:55:08.748063+00:00",
+  "limits": [
+    "No complete pre-cutover snapshot exists. This verifies current registration and access, not historical absence of lost work.",
+    "Absent registered directories are recorded, not removed or recreated. No reset, clean, prune or branch mutation was performed."
+  ],
+  "summary": {
+    "registeredCount": 45,
+    "existingCount": 45,
+    "gitStatusSuccessCount": 45,
+    "movedCommonDirectoryMatchCount": 45,
+    "checkoutsWithChanges": 4,
+    "missingCount": 0
+  },
+  "publication": "Aggregate only. Absolute paths, branch names and individual worktree revisions are intentionally omitted from the public receipt; the local diagnostic is retained outside the repository."
+}
