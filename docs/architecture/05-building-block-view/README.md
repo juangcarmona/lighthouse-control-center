@@ -22,3 +22,37 @@ The workspace module is an application library, not an independently deployed se
 ## Target blocks not yet implemented
 
 Full paginated issue/conversation context, source capability/receipt adapters, a durable application command journal and signal projections remain target work. A future receipt reconciler observes exact source acknowledgments and does not schedule or automatically resubmit work. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) owns the proposed durability decision.
+
+## Proposed Control Center components
+
+These are extensions under [Proposed ADR-0010](../09-architecture-decisions/0010-administer-independent-runtime-providers.md), not deployed components.
+
+| Component | Reuse / proposed responsibility | External authority |
+| --- | --- | --- |
+| Workspace and session boundary | Reuse current OIDC, connected-user checks, source scopes, CSRF and safe browser assets | Configured identity provider |
+| Fleet and mission queries | Reuse active #50/#52 handlers, normalize stable repository/issue identities and explained adoption facts | GitHub records and installed Lighthouse capability/verify evidence |
+| Source command adapter | Reuse #48 SDK bridge and accepted journal design after candidate integration | Lighthouse public issue-control contract, actual connected GitHub user and repository admission |
+| Provider registry and adapters | New capability-based interfaces around #57 reads; explicit provider instance and resource scope | Runtime provider identity/API and grants |
+| Runtime command handler | New preview/confirm/intent/provider outcome flow with distinct grant | Provider limits, expected state and receipt |
+| Evidence and health projections | Reuse source evidence, ingest public telemetry with cursors and retain defined historical samples | Source producer schema/version, exact run/revision, provider usage reports |
+
+### Proposed provider contract
+
+A language-neutral contract is specified here before selecting .NET interface signatures. Its owner is the provider adapter boundary; no shared Lighthouse lifecycle schema is copied.
+
+| Contract element | Required semantics |
+| --- | --- |
+| Provider instance | Stable configured instance ID, kind, contract version, resource scope and supported capability versions; no credential value in projections |
+| Inventory | Provider/pool/host/runner/runtime/model-provider entities have separate scoped IDs, source revision or ETag when available, source time, observed time, completeness/cursor and limitations |
+| Relationships | Explicit typed edges such as pool-member, runner-host, job-runner, execution-runtime and runtime-model-provider; unknown edges remain absent; names/labels are not identity |
+| Capabilities | Independently advertise inventory, telemetry, diagnostics, start-inactive-service, drain, maintenance, restart or set-capacity. Describe target kinds, parameter bounds, grant and confirmation needs, consistency and outcome support. Missing/unsupported capability cannot fall back to shell |
+| Observe | Bounded paged reads; availability, completeness and freshness are independent. Report denied, unsupported, stale, failed and unavailable distinctly |
+| Prepare operation | Exact provider/resource ID, command/capability version, validated parameters, expected revision/state, impact and required scope; read only |
+| Confirm/submit | Explicit actor/grant, target/payload digest, short-lived confirmation and durable unique operation key; atomic send claim; fresh grant and expected-state recheck at provider boundary |
+| Receipt/reconcile | Provider operation ID when available, immutable request/payload identity, source link, timestamps, actual state and outcome evidence. Accepted/pending/uncertain/failed/completed/independently-verified remain distinct |
+| Retry/recovery | Capability declares provider idempotency and receipt lookup. Unknown response means reconcile without resending; unsupported lookup remains uncertain and needs operator investigation |
+| Resource limits | Provider-enforced min/max capacity, permitted services and command bounds. LCC neither allocates jobs nor owns a scaling reconciliation loop |
+
+A local host provider exposes one explicitly configured host/pool and wraps the reviewed registration/helper observations. A GitHub read adapter supplies source runner/job identity without pretending to own the host. Docker, Kubernetes/ARC and VMSS can expose additional inventory and asynchronous capacity operations. Model services are distinct from host administration; model diagnostics require declared endpoints and grants.
+
+Contract probes must model Kubernetes desired-versus-ready replicas and VMSS requested capacity versus provisioned instances. Neither desired state nor HTTP success establishes usable capacity. This validates extensibility without implementing either platform.

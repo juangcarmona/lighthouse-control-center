@@ -50,3 +50,23 @@ Store source identity/revision, collected time, source time when available, pagi
 ## Proposed health evidence
 
 A signal definition identifies purpose, source adapter, calculation/version, unit, window, coverage, applicability and baseline. The detail view exposes contributing records. Candidate signals are source workflow duration/outcome for investigation; proposal/PR/check state for delivery decisions; installed-versus-selected baseline for maintenance; measured duration/tokens/storage for resource decisions. Missing tokens do not imply zero consumption, a run duration is not user attention time and a merged PR is not a production deployment. Additional metrics require a source definition before UI claims.
+
+## Proposed Control Center mechanisms
+
+### Independent authority checks
+
+Authentication admits a configured application identity. Source operations additionally require actual GitHub user authority and Lighthouse eligibility/admission. Provider operations additionally require an explicit provider/resource/action grant and provider enforcement. None implies the other. Team access must isolate caches, observations, intentions and receipts by admitted identity and source/provider scope, including after logout, connection replacement and permission loss. The source SDK v1 owner-only restriction stays explicit until upstream extends it.
+
+### Stable evidence and history
+
+Keep immutable numeric/node repository and issue IDs with observed names/URLs as aliases. Preserve workflow run, attempt, job, worker, runner, runtime/session, request and provider-operation IDs independently; provider/entity IDs include their scope. Repository rename changes an alias, not historical mission identity. Store source time separately from observed and calculated time, and schema/calculation version separately from software package version.
+
+Availability, freshness, completeness, applicability, outcome and verification are independent fields. Unavailable is not zero; pending/blocked/failed is not completed; a completed result may still lack independent verification. Reconciliation does not erase failed attempts or manufacture a total ordering across telemetry streams. Retention policies and explicit gaps accompany historical calculations. Existing public telemetry excludes prompt/source/credential content; LCC does not expand that collection by default.
+
+### Audited infrastructure effects
+
+Reuse durable storage techniques only after reviewing repository-versus-provider key spaces and restore behavior. An operation intent carries actor, grant, capability version, target, payload digest, expected state and confirmation. Audit records denied as well as sent actions with sanitized explanations. No secret enters an audit record. Restore cannot make a past uncertain intention eligible to send. Provider acknowledgements and later actual-state evidence remain separate; independent verification is a recorded check, not a synonym for provider completion.
+
+### Measurement provenance
+
+The [research catalog](../../roadmap/lighthouse-control-center-research.md) proposes metric inputs and limitations. LCC implements explainable analytical projections; shared definitions and evidence contracts stay with Lighthouse. Each result retains definition/version, unit, window, numerator/denominator, source records/revisions, timestamps, coverage and limitations. Ratios from incompatible cohorts are not compared. Deployment and cost claims require their actual producers.

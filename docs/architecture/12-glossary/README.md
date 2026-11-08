@@ -15,3 +15,9 @@ See [ADR-0006](../09-architecture-decisions/0006-observe-repository-owned-workfl
 ## Proposed operational terminology
 
 ProductShape TERM-WORK-COMMAND owns command meaning. An application receipt records submission and source acknowledgment, not stage completion. Reconciliation reads source evidence to resolve uncertainty; it does not rerun a stage. A capability decision is a versioned source/shared rule assessment against a snapshot; it is not an execution reservation. An intervention is a source-backed human request; its type is not an extra lifecycle stage. A signal is an explained observation or calculation, not an implicit health score.
+
+## Proposed LCC architectural terms
+
+Product definitions for mission, runtime provider/pool, execution host, runner, agent runtime, model provider and runtime operation are in the [Product Change](../../product/changes/active/chg-lcc-evolution-001/change.md). They are proposed, not accepted-baseline citations. Existing work-unit and execution IDs are retained.
+
+Product/delivery plane names the Lighthouse/repository lifecycle authority. Control plane names authenticated projections, command intentions and provider administration in LCC. Execution plane names actual compute, runner and engine processes plus inference dependencies. Observability plane names evidence/telemetry ingestion and analytical projections. These architectural responsibilities do not imply deployment units. A provider capability describes an available interface; a grant authorizes a particular actor/effect; neither establishes a completed operation.

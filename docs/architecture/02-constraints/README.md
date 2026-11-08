@@ -19,3 +19,9 @@ The server enforces the configured owner and separately verifies source authorit
 <!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 
 The six stages remain triage → refine → propose → implement → integrate → review. A proposed durable journal under ADR-0008 would record application requests, without owning agent scheduling. Production provisioning and protected persistence remain separate release work.
+
+## Proposed LCC extension boundaries
+
+[Proposed ADR-0010](../09-architecture-decisions/0010-administer-independent-runtime-providers.md) extends infrastructure administration without altering ADR-0006 delivery ownership. The [Product Change](../../product/changes/active/chg-lcc-evolution-001/change.md) proposes `CON-DEPLOYMENT-INDEPENDENCE`, modified `CON-FACTORY-RUNTIME` and `BR-PROVIDER-OPERATIONS`; these proposed IDs have no accepted-baseline citation payload yet. Apply and acceptance must precede implementation claims and generated citations. Existing accepted citations above are retained.
+
+The first deployment remains one .NET application with optional development Keycloak composition. No scheduler, event broker, extra database or cloud provider is required. Runtime control cannot grant Lighthouse stage, merge or deployment authority. Infrastructure credentials do not enter repository code, agent containers or browser content. Protected configuration supplies identity, origin, callback, source and provider scope; no personal host or network constant becomes an API contract.

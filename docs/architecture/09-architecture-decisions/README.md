@@ -20,3 +20,11 @@ This directory is the canonical ADR collection for SoFa. It owns the decision re
 | Use .NET and Aspire for SoFa | Accepted | 2026-10-31 | [ADR-0009](0009-dotnet-and-aspire.md) |
 
 ADR-0006 governs the current product boundary; earlier records retain their historical rationale.
+
+## Proposals under review
+
+| Proposed record | Scope |
+| --- | --- |
+| [ADR-0010](0010-administer-independent-runtime-providers.md) | Separately authorized provider administration; extends ADR-0006 without moving delivery orchestration |
+
+This is a proposal inventory, not the accepted-decision table. ADR-0006 remains accepted. ADR-0008's owner acceptance and candidate integration are preserved in #48/#112 and must be reconciled through that existing delivery rather than changed here.

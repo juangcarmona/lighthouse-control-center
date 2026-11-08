@@ -1,5 +1,7 @@
 # Software factory delivery roadmap
 
+Current delivery entrypoint: [Lighthouse Control Center evolution roadmap](lighthouse-control-center.md). The material below is preserved historical evidence of the superseded supervisor design; do not schedule it as current implementation.
+
 Historical runtime plan. [ADR-0006](../architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md) supersedes SoFa execution ownership; consult the current architecture before using this plan.
 
 The reconciled direction was accepted by Juan on 2026-10-24 and revised the same day to distinguish requester intake, engineer entry and per-run autonomy. Supervised triage/refine is implemented; the two-entry runtime and complete delivery loop remain pending.

@@ -35,3 +35,20 @@ Phone-width browser automation remains distinct from a physical device. Actual G
 | Later capabilities | Inbox resolution uses source evidence; search includes non-attention issues; boards preserve scope; signal inputs reproduce a calculation; idea promotion reconciles a lost response |
 
 Fixtures establish deterministic behavior but do not substitute for the real source/mobile acceptance. Run the repository's verify pipeline and preserve relevant screenshots, source identities, run attempts and outcome limitations in the delivery PR. Production recovery is checked independently from the local development demonstration.
+
+## Proposed provider and portability acceptance
+
+These checks realize the [proposed product overlay](../../product/changes/active/chg-lcc-evolution-001/change.md); none is claimed passed by this architecture document.
+
+| Boundary | Independent evidence required |
+| --- | --- |
+| Identity/source/provider separation | Direct API probes with anonymous, admitted read-only, wrong-project and wrong-provider actors; no dependent mutation and no cross-scope cached data |
+| Current-state and occupancy race | Change resource/grant after preview; revoke before provider mutation; busy or unknown work blocks disruption; provider-side fence proven independently |
+| Durable effects | Double confirm, two tabs/processes, timeout after provider acceptance, LCC restart and restored audit retain one request or explicit uncertainty without resend |
+| Actual provider outcome | Start one allowlisted inactive service and independently read its exact unit/provider state; pending and failed startup stay distinct; no job or mission result inferred |
+| Portable configuration | Fresh installation with different owner, origin, paths and provider ID; no original host prerequisite; repository delivery continues while LCC is stopped |
+| Capability extensibility | Local actual provider plus Kubernetes/VMSS doubles with asynchronous scaling, unavailable telemetry and unsupported drain; no change in mission/lifecycle semantics |
+| Metrics and telemetry | Duplicate events, partial token fields, cursor loss, expired artifact, malformed producer, missing incident/deployment/cost data and incomparable windows retain explicit coverage |
+| Fleet scale | Pagination/rate-limit/failure-isolation checks at a declared repository/sample count and collection budget before any scale claim |
+
+The first real source journey and per-gate evidence are in the [vertical slice](../../delivery/plans/116-lcc-first-vertical-slice.md). Existing recorded physical-phone waivers remain valid; responsive browser evidence cannot be described as a device rehearsal.

@@ -1,8 +1,8 @@
 # SoFa
 
-SoFa — my software factory.
+SoFa is evolving into Lighthouse Control Center.
 
-SoFa observes and verifies Juan's software factory across repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
+SoFa observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
 
 ## Open the authenticated workspace
 
