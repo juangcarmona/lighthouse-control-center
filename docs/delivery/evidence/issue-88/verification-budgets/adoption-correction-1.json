@@ -1,0 +1,77 @@
+{
+  "round": 1,
+  "reportedVerdict": "reject",
+  "workflowInterpretation": "request-changes: one concrete documentation finding; unsupported verdict spelling was retained rather than converted to acceptance",
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "review": {
+    "head": "71246ecdf54e81990adfdf1c84080565b9e5ba59",
+    "verdict": "reject",
+    "findings": [
+      {
+        "id": "F1",
+        "severity": "major",
+        "dimension": "Documentation",
+        "message": "The runbook is internally stale about the adopted scope and source pin: docs/runbooks/repository-workflows.md:35 still says the exact grant is #90, and docs/runbooks/lighthouse-unattended.md:83 says the workflow pin is 7815b7c and describes it as the source for OpenSpec discovery, while the current pin is 860624fcca7eeb676a8d1945088452a6d321061d. This conflicts with the current #99 scope and PR558 explanation at line 87; correct the runbook before accepting truthful documentation."
+      }
+    ],
+    "dimensions": [
+      {
+        "dimension": "Acceptance criteria",
+        "assessment": "pass",
+        "evidence": "The requested source pin, preflight guard, per-command deadline semantics, and unchanged policy boundaries are reflected in the inspected files and context."
+      },
+      {
+        "dimension": "Implementation completeness",
+        "assessment": "pass",
+        "evidence": "The required harness pin appears in the preflight and generated worker source; the exact pin guard metadata changed with the expected frontmatter hash."
+      },
+      {
+        "dimension": "Tests",
+        "assessment": "pass",
+        "evidence": "Context records successful full local verification and operator replay with all three admitted checks passing and clean resource cleanup."
+      },
+      {
+        "dimension": "Quality checks",
+        "assessment": "pass",
+        "evidence": "Context records successful local verification, foundation validation, official compile, and successful hosted Verify foundation and verify checks at this head."
+      },
+      {
+        "dimension": "Security",
+        "assessment": "pass",
+        "evidence": "Preflight remains owner/default-branch gated, checkout credentials are disabled, and the workflow requires confirmed token revocation; evidence makes no claim that native #99 is qualified."
+      },
+      {
+        "dimension": "Architecture / design conformance",
+        "assessment": "pass",
+        "evidence": "Adoption uses the already-pinned official source harness while keeping it distinct from installed public CLI 0.12.55 and SDLC 0.21.6."
+      },
+      {
+        "dimension": "Documentation",
+        "assessment": "fail",
+        "evidence": "Finding F1: inspected runbook statements still name #90 as the exact grant and 7815b7c as the current source pin, contradicting the current #99 grant and 860624f pin."
+      },
+      {
+        "dimension": "Product / spec consistency",
+        "assessment": "pass",
+        "evidence": "No product behavior or accepted product scope change is represented by the adoption; the record explicitly keeps native #99 qualification open."
+      },
+      {
+        "dimension": "Evidence",
+        "assessment": "pass",
+        "evidence": "The supplied exact-head evidence contains local and hosted results and distinguishes source merge/operator replay from native delivery qualification."
+      },
+      {
+        "dimension": "Human review",
+        "assessment": "pass",
+        "evidence": "Owner authorization covers routine implementation, technical acceptance, and necessary integrations; it does not claim a human forge vote or waive protected gates."
+      },
+      {
+        "dimension": "Known limitations",
+        "assessment": "pass",
+        "evidence": "The docs/context state no increased per-command limit or resource capacity, preserve the one-correction setting, and explicitly leave native #99 qualification open."
+      }
+    ]
+  },
+  "resolution": "Reconcile every current #90 grant, release/workflow pin and test-scope statement in both operator runbooks. Historical #90 facts remain explicitly historical. Re-run full applicable checks and exact-head independent audit."
+}

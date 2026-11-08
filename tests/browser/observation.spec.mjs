@@ -36,7 +36,7 @@ for (const theme of ['dark', 'light']) test(`${theme}: evidence, safe links, key
 function operationalPayload() {
   const repo = structuredClone(payload.repositories[0]);
   repo.runs = ['in_progress', 'queued', 'pending', 'requested', 'waiting', 'completed', 'mystery', 'in_progress', 'queued', 'waiting', 'requested', 'in_progress'].map((status, id) => ({
-    id, name: `Workflow ${id}`, status, sourceRevision: `revision-${id}`, startedAt: '2026-10-26T05:00:00Z', updatedAt: '2026-10-26T06:00:00Z', url: `https://github.com/${repo.repository}/actions/runs/${id}`,
+    id, name: `Workflow ${id}`, status, runAttempt: id % 2 ? null : 2, event: id % 2 ? null : 'workflow_dispatch', sourceRevision: `revision-${id}`, startedAt: '2026-10-26T05:00:00Z', updatedAt: '2026-10-26T06:00:00Z', url: `https://github.com/${repo.repository}/actions/runs/${id}`,
   }));
   repo.attention = [
     { number: 1, title: 'Information', labels: ['needs-info'], updatedAt: '2026-10-25T07:00:00Z' },
@@ -105,11 +105,16 @@ test('source-keyed focus survives same titles, changed href, reorder, history an
   repo.runs.reverse();
   const run = repo.runs.find(run => run.id === 0);
   run.name = 'Changed title'; run.url += '?check=updated';
+  run.runAttempt = 1; run.event = 'push';
   await refreshInPlace(page);
   await expect(page.getByRole('link', { name: 'Changed title' })).toBeFocused();
+  await expect(page.getByRole('link', { name: 'Changed title' }).locator('..').locator('..')).toContainText('Source attempt: 1');
+  run.runAttempt = 2; run.event = 'workflow_dispatch';
   run.status = 'completed';
   await refreshInPlace(page);
   await expect(page.getByRole('link', { name: 'Changed title' })).toBeFocused();
+  await expect(page.getByRole('link', { name: 'Changed title' }).locator('..').locator('..')).toContainText('Source attempt: 2');
+  await expect(page.getByRole('link', { name: 'Changed title' }).locator('..').locator('..')).toContainText('Triggering event: workflow_dispatch');
   await expect(page.getByRole('link', { name: 'Changed title' })).toBeVisible();
   await refreshInPlace(page);
   await expect(page.getByRole('link', { name: 'Changed title' })).toBeVisible();
@@ -160,12 +165,14 @@ for (const theme of ['dark', 'light']) test(`${theme}: operational fixture phone
   const repo = current.repositories[0];
   repo.runs[0].name = '<img src=x onerror=alert(1)>' + 'long-title'.repeat(20);
   repo.runs[0].sourceRevision = 'revision'.repeat(30);
+  repo.runs[0].event = '<img src=x onerror=alert(1)>' + 'long-event'.repeat(40);
   repo.runs[0].url = 'https://github.com/owner/elsewhere/actions/runs/1';
   repo.attention[0].labels.push('long-label'.repeat(30));
   repo.attention[0].url = 'javascript:alert(1)';
   await page.route('**/api/observations', route => route.fulfill({ json: current }));
   await page.goto('/'); await page.selectOption('#appearance', theme);
   await expect(page.locator('img, a[href^="javascript:"], a[href*="elsewhere"]')).toHaveCount(0);
+  await expect(page.getByText(`Triggering event: ${repo.runs[0].event}`, { exact: true })).toBeVisible();
   await page.locator('article').first().getByText('Recent completed runs', { exact: true }).click();
   const evidence = process.env.SOFA_BROWSER_EVIDENCE;
   if (evidence) await mkdir(evidence, { recursive: true });
@@ -196,6 +203,43 @@ test('unavailable observation timestamps and missing revisions are explicit', as
   await expect(page.getByText('Source revision: unavailable', { exact: true })).toBeVisible();
   await expect(page.getByText('Elapsed from source start: unavailable', { exact: true })).toBeVisible();
   await expect(page.getByText('Since source update: unavailable', { exact: true })).toBeVisible();
+});
+
+test('known, null and legacy source metadata agree across every run category and retained stale evidence', async ({ page }) => {
+  const current = operationalPayload();
+  const repo = current.repositories[0];
+  current.repositories = [repo];
+  repo.runs = ['in_progress', 'queued', 'pending', 'requested', 'waiting', 'completed', 'mystery'].flatMap((status, index) =>
+    [1, 2, null, undefined].map((attempt, variant) => {
+      const run = { ...repo.runs[0], id: index * 4 + variant + 1, name: `${status} metadata ${variant}`, status };
+      run.url = `https://github.com/${repo.repository}/actions/runs/${run.id}`;
+      if (attempt === undefined) { delete run.runAttempt; delete run.event; }
+      else { run.runAttempt = attempt; run.event = attempt === null ? null : 'workflow_dispatch'; }
+      return run;
+    }));
+  await page.route('**/api/observations', route => route.fulfill({ json: current }));
+  await page.goto('/');
+  await page.getByText('Recent completed runs', { exact: true }).click();
+  await page.getByText('Unclassified source statuses', { exact: true }).click();
+  const assertMetadata = async () => {
+    for (const run of repo.runs) {
+      const link = page.getByRole('link', { name: run.name, exact: true });
+      const card = link.locator('..').locator('..');
+      await expect(link).toHaveAttribute('href', run.url);
+      await expect(card.getByText(`Source attempt: ${run.runAttempt ?? 'unknown'}`, { exact: true })).toBeVisible();
+      await expect(card.getByText(`Triggering event: ${run.event ?? 'unknown'}`, { exact: true })).toBeVisible();
+      await expect(card).toContainText('Source revision: revision-0');
+    }
+  };
+  await assertMetadata();
+  await page.selectOption('#repository-filter', repo.repository);
+  await expect(page.locator('#active-count')).toHaveText('20');
+  repo.availability = 'stale';
+  await refreshInPlace(page);
+  await expect(page.getByText('Stale evidence', { exact: true })).toBeVisible();
+  await expect(page.locator('#active-count')).toHaveText('Unavailable');
+  await expect(page.locator('#repository-filter')).toHaveValue(repo.repository);
+  await assertMetadata();
 });
 
 test('initial refresh failure does not fabricate observations', async ({ page }) => {

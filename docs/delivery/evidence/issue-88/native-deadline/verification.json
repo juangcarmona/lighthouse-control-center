@@ -1,0 +1,22 @@
+{
+  "base": "bb3c2aef11951937a9203a6abc861ae9483791b2",
+  "recordedAt": "2026-11-08T02:09:02.254550+00:00",
+  "phase": "local implementation verification before candidate push",
+  "local": {
+    "command": "taskset -c 0,1 env CI=true npm run verify",
+    "exitCode": 0,
+    "nodeTests": 39,
+    "webTests": 74,
+    "runtimeTests": 38,
+    "browserTests": 17
+  },
+  "foundationRequiredChecks": "passed or legitimately not-applicable",
+  "officialWorkflowCompilation": {
+    "version": "0.93.2",
+    "workers": 7,
+    "exitCode": 0
+  },
+  "policyScope": "Only timeoutSeconds changes from3600 to6600; one correction, exact99 grant, trusted checks/models/environment/package tuple unchanged",
+  "externalGates": "Read exact-head hostedCI and eleven-dimension independent review on PR108; this pre-push receipt is not their live state.",
+  "nativeQualification": "Not complete. Require a fresh native chain after merged-source preflight."
+}

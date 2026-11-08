@@ -1,0 +1,24 @@
+{
+  "base": "14849002fdf3a5612e0c4daf69cc3073f0032e42",
+  "local": {
+    "command": "taskset -c 0,1 env CI=true npm run verify",
+    "exitCode": 0,
+    "nodeTests": 39,
+    "webTests": 74,
+    "runtimeTests": 38,
+    "browserTests": 17
+  },
+  "foundationRequiredChecks": "passed or legitimately not-applicable",
+  "officialWorkflowCompilation": {
+    "version": "0.93.2",
+    "workers": 7,
+    "exitCode": 0
+  },
+  "installedPackagesAndBoundedIssue99Policy": "byte-identical to base",
+  "adoptionGuard": "Existing exact expected CI-preflight source pin updated to the new reviewed immutable revision; all other assertions preserved. The first run rejected the former pin expectation; the full suite passed after updating that literal.",
+  "hostedCI": "pending",
+  "independentAdoptionReview": "pending",
+  "nativeQualification": "pending; prior diagnostics do not qualify native delivery",
+  "externalGateFieldsRecordedBeforePush": true,
+  "currentHostedResults": "Read the PR checks for the exact head; pre-push pending fields are historical, not a live status cache."
+}
