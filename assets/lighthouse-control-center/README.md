@@ -27,7 +27,7 @@
 | `bench-banner.svg` | 1280 × 640 | Rejected first reconstruction, retained for history only |
 | `social-preview.png` | 1200 × 630 | GitHub social preview, centered cover crop |
 
-The 2:1 and 1200:630 crops retain the name, left lighthouse, boats and bench. Only about 30.5 source pixels are removed from each horizontal edge for social output. No arbitrary square or ultrawide crop is promised. Review small favicon samples at native size; automated dimension checks do not establish recognizable detail.
+The 2:1 and 1200:630 crops retain the name, left lighthouse, boats and bench. The centered social crop removes about 2.38% of the raster source width from each horizontal edge. No arbitrary square or ultrawide crop is promised. Review small favicon samples at native size; automated dimension checks do not establish recognizable detail.
 
 ## Existing surfaces and activation boundary
 
