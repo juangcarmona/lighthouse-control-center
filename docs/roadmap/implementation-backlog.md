@@ -1,5 +1,7 @@
 # Factory implementation backlog
 
+Current delivery entrypoint: [Lighthouse Control Center evolution roadmap](lighthouse-control-center.md). The material below is preserved historical evidence of the superseded supervisor design; do not schedule it as current implementation.
+
 Historical runtime plan. [ADR-0006](../architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md) supersedes SoFa execution ownership; consult the current architecture before using this plan.
 
 These are proposed delivery slices for the [roadmap](software-factory.md), not claims of created issues or completed implementation. The existing architecture work remains linked to issue #14. Plan future implementation in separate work items so its validation and scope remain clear.

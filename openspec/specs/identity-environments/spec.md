@@ -13,7 +13,7 @@ Keep isolated password-based development identity and external multi-factor iden
 ### Requirement: Isolated development composition
 
 The development startup SHALL compose SoFa and a dedicated version-pinned identity provider with non-secret test realm/client configuration. It MUST NOT start production identity connectivity, the retired supervisor or an execution database.
-<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:a1636b3cd8f0bce9d58c51beca3b349491e8e1f50de2cd10366f9effc9ce46a7" -->
 
 #### Scenario: Development startup
 
@@ -29,7 +29,7 @@ The development startup SHALL compose SoFa and a dedicated version-pinned identi
 ### Requirement: Reachable protected endpoints
 
 The application and selected issuer SHALL expose stable HTTPS addresses reachable by the desktop and real phone on the permitted LAN/VPN. Redirects MUST use exact registered callback addresses and trusted certificates without disabling certificate validation.
-<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:56eeb8a1f5a920882d473c57262a9c9da1de3c920c812570ae8ef45f4f3bfab8" -->
+<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:e9cb07b2f01016597b13223fa0f517b9be7f56b26354042f99fc79591e124edd" -->
 
 #### Scenario: Phone follows redirects
 
@@ -45,7 +45,7 @@ The application and selected issuer SHALL expose stable HTTPS addresses reachabl
 ### Requirement: External issuer configuration
 
 The same application boundary SHALL accept an externally configured production issuer and client without provisioning that provider. Development accounts, clients, callbacks and credentials MUST remain separate; configuration validation MUST reject mixed environment settings.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 #### Scenario: Alternate external issuer configuration
 
@@ -61,7 +61,7 @@ The same application boundary SHALL accept an externally configured production i
 ### Requirement: Shared identity guidance and runtime proof
 
 Delivery SHALL record the adopted Lighthouse package and matching identity guidance, and verify the implemented boundary against that contract. Documentation, package restoration and provider discovery MUST NOT substitute for actual sign-in and source-identity evidence.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 #### Scenario: Delivery evidence review
 

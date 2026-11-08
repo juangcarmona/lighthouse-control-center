@@ -14,15 +14,26 @@ const json = path => JSON.parse(read(path));
 const policy = json('.lighthouse/unattended.json');
 const implementation = json('.lighthouse/implement.json').defaults;
 
-test('native FF delegates only the authorized operational slice and retains supervised defaults', () => {
-  assert.equal(implementation.reviewRequired, true);
+test('native FF delegates routine work while retaining supervised decisions and protected paths', () => {
+  assert.equal(implementation.reviewRequired, false);
   assert.equal(policy.enabled, true);
   assert.equal(policy.merge, true);
   assert.throws(() => validateUnattendedPolicy({ ...policy, enabled: false }, 'ff'), /disabled/);
   const entries = json('.lighthouse/implement.json');
-  assert.deepEqual(Object.keys(entries).sort(), ['99', 'defaults']);
+  assert.deepEqual(Object.keys(entries).sort(), ['47', '48', '50', '51', '52', '57', '58', '99', 'defaults']);
+  for (const issue of [47, 48, 50, 51, 52, 57, 58]) {
+    assert.equal(entries[issue].reviewRequired, true, String(issue));
+    assert.deepEqual(entries[issue].verification.corrections, {}, String(issue));
+    validateImplementationPolicy(entries[issue], issue);
+  }
   assert.equal(entries['99'].reviewRequired, false);
-  assert.deepEqual(entries['99'].paths, policy.paths);
+  assert.deepEqual(entries['99'].paths, [
+    'src/observation/github.mjs', 'src/web/public/app.js', 'src/web/public/app.css',
+    'src/web/public/index.html', 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs',
+    'README.md', 'src/SoFa.Modules.Workspace/Source/GitHubObservations.cs',
+    'tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs',
+  ]);
+  for (const path of entries['99'].paths) assert.ok(policy.paths.includes(path), path);
   assert.deepEqual(entries['99'].checks, implementation.checks);
   assert.deepEqual(entries['99'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs', 'tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs']);
   assert.deepEqual(Object.keys(entries['99'].verification.corrections).sort(), ['tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs', 'tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
@@ -38,6 +49,8 @@ test('native FF delegates only the authorized operational slice and retains supe
   }
   const scoped = unattendedImplementationPolicy(implementation, enabled, 88, 'ff');
   assert.equal(withinScope('src/web/public/app.js', scoped), true);
+  assert.equal(withinScope('assets/lcc-banner.svg', scoped), true);
+  assert.equal(withinScope('docs/runbooks/operator.md', scoped), true);
   assert.equal(withinScope('src/SoFa.Modules.Workspace/Source/GitHubObservations.cs', scoped), true);
   for (const path of ['src/SoFa.Runtime/Program.cs', 'docs/product/model/README.md', '.github/workflows/verify.yml', '.lighthouse/unattended.json', 'src/web/public/account.js', 'src/SoFa.Modules.Workspace/Identity/OwnerSessions.cs', 'src/SoFa.Modules.Workspace/Source/GitHubTransport.cs']) {
     assert.equal(withinScope(path, scoped), false, path);

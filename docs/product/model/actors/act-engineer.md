@@ -20,4 +20,4 @@ Provide scope and decisions within the actor's verified authority and inspect qu
 
 ## Boundaries
 
-Repository capabilities are verified. Engineering authority does not imply policy administration, unlimited execution or permission to merge. Juan may fill this role without introducing a team or an organization.
+Repository capabilities are verified. Engineering authority does not imply policy administration, unlimited execution or permission to merge. An operator may fill this role in a personal or team deployment; admission remains repository-specific.

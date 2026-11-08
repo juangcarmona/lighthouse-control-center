@@ -15,9 +15,9 @@ The supported application entrypoint builds and directly launches the pinned Rel
 | Application state | Bounded process-memory authentication/observations; optional protected SQLite command journal and separate key ring | Protected durable custody/recovery remains unresolved release work |
 | Repository delivery | Independently operated workflows and executor | Independent of either workspace or development provider |
 
-<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
+<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 
-[Composition source](../../../src/SoFa.AppHost/WorkspaceComposition.cs) is the infrastructure truth. AppHost provisions no supervisor, execution database or anonymous Node listener. Aspire's project-rebuilder helper is development tooling, not a factory worker. The application dashboard is disabled for this entrypoint.
+[Composition source](../../../src/SoFa.AppHost/WorkspaceComposition.cs) is the infrastructure truth. AppHost provisions no supervisor, execution database or anonymous Node listener. Aspire's project-rebuilder helper is development tooling, not a delivery worker. The application dashboard is disabled for this entrypoint.
 
 ## Operational boundary
 
@@ -28,3 +28,15 @@ The external profile is configuration/composition coverage, not evidence of prod
 ## Optional command persistence
 
 Explicit issue controls require two pre-created private Linux directories configured by `SoFa:Controls:JournalDirectory` and `SoFa:Controls:KeyDirectory`. SQLite files and the separate persistent protector ring live outside the checkout and published application. The single application instance owns them; the identity provider and repository runners do not. Missing/unsafe paths disable submission without blocking source observation. Deployments must retain both directories, preserve 0700/0600 ownership/modes and account for WAL/key storage independently of the logical database cap. See the [operating and recovery procedure](../../runbooks/issue-controls.md). This checkpoint does not establish production backup/custody readiness.
+
+## Proposed portable deployment evolution
+
+Retain one configured .NET application and its current native frontend. Aspire composes development dependencies; it does not provision personal production infrastructure by implication. Runtime adapters use independent provider credentials and protected endpoints. The local provider can be colocated for the first acceptance; privileged operations use a reviewed bounded provider API/helper, not elevated web-process permissions. Existing operator-owned runner and model services remain independently managed.
+
+| Deployment | Same application configuration | Evidence before a readiness claim |
+| --- | --- | --- |
+| Personal | One admitted operator, explicit repository list, external/development identity, one local provider, protected application state | New-operator install, source action, one safe provider operation, backup/recovery and independent-workflow test |
+| Small team | Multiple explicitly scoped identities, several hosts/providers and shared pools | Cross-user cache isolation, revocation and provider grants; current owner-only source SDK cannot authorize additional actors |
+| Enterprise target | Bounded fleet pagination, teams, provider instances and separately managed Kubernetes/VMSS/GPU capacity | Representative load, identity/group changes, rate limits, data isolation and provider-specific acceptance; not implied by local contract doubles |
+
+No broker, separate analytics service or database server is required by this proposal. Storage choice and replication depend on accepted retention/availability needs. Start single-instance; the #48 private SQLite/key custody is not a multi-instance write guarantee. Distribution and identity/custody acceptance follow the [roadmap](../../roadmap/lighthouse-control-center.md); renaming infrastructure identifiers is separately gated by the [rename plan](../../roadmap/lighthouse-control-center-rename.md).

@@ -16,7 +16,7 @@ See [ADR-0006](../09-architecture-decisions/0006-observe-repository-owned-workfl
 
 Owner admission, real middleware callbacks, deadlines, concurrent refresh, source-state isolation and CSRF have deterministic coverage. The host-only provider harness exercises the exact pinned Keycloak image through trusted HTTPS, development password login without OTP, wrong-password/wrong-owner denial, fresh password despite provider SSO, online refresh, revocation and provider outage. Full host CI also checks account UI accessibility using explicitly identified source fixtures. The [provider harness](../../../scripts/verify-identity-provider.mjs) and [tests](../../../tests/SoFa.Web.Tests/) are the evidence owners.
 
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 Phone-width browser automation remains distinct from a physical device. Actual GitHub App user consent/repository permission and actual-phone reachability/login/link/logout are open delivery acceptance; neither synthetic source fixtures nor issuer discovery satisfy them.
 
@@ -43,3 +43,20 @@ The source tests cover ordinary/unlabelled issues, a second conversation page, h
 These deterministic fixtures establish implementation behavior, not actual GitHub user consent or a physical-phone journey. Source reservation coverage and final acceptance remain open under #50 and #49.
 
 <!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->
+
+## Proposed provider and portability acceptance
+
+These checks realize the [approved Product Change](../../product/changes/completed/chg-lcc-evolution-001/change.md); none is claimed passed by this architecture document.
+
+| Boundary | Independent evidence required |
+| --- | --- |
+| Identity/source/provider separation | Direct API probes with anonymous, admitted read-only, wrong-project and wrong-provider actors; no dependent mutation and no cross-scope cached data |
+| Current-state and occupancy race | Change resource/grant after preview; revoke before provider mutation; busy or unknown work blocks disruption; provider-side fence proven independently |
+| Durable effects | Double confirm, two tabs/processes, timeout after provider acceptance, LCC restart and restored audit retain one request or explicit uncertainty without resend |
+| Actual provider outcome | Start one allowlisted inactive service and independently read its exact unit/provider state; pending and failed startup stay distinct; no job or mission result inferred |
+| Portable configuration | Fresh installation with different owner, origin, paths and provider ID; no original host prerequisite; repository delivery continues while LCC is stopped |
+| Capability extensibility | Local actual provider plus Kubernetes/VMSS doubles with asynchronous scaling, unavailable telemetry and unsupported drain; no change in mission/lifecycle semantics |
+| Metrics and telemetry | Duplicate events, partial token fields, cursor loss, expired artifact, malformed producer, missing incident/deployment/cost data and incomparable windows retain explicit coverage |
+| Fleet scale | Pagination/rate-limit/failure-isolation checks at a declared repository/sample count and collection budget before any scale claim |
+
+The first real source journey and per-gate evidence are in the [vertical slice](../../delivery/plans/116-lcc-first-vertical-slice.md). Existing recorded physical-phone waivers remain valid; responsive browser evidence cannot be described as a device rehearsal.
