@@ -1,0 +1,54 @@
+{
+  "nativeRun": 42440808113,
+  "sourceRevision": "9c95f25ae81f44b21e4525b6bcb1f76f1408efa2",
+  "workflowHarness": "ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c",
+  "status": "failed",
+  "nativeReport": {
+    "status": "blocked",
+    "evidence": [
+      {
+        "kind": "planning",
+        "round": 0,
+        "review": {
+          "accepted": true,
+          "verdict": "accept",
+          "findings": []
+        }
+      },
+      {
+        "kind": "candidate",
+        "round": 0,
+        "review": {
+          "accepted": true,
+          "verdict": "accept",
+          "findings": []
+        }
+      }
+    ],
+    "reason": "Command evidence does not bind the tested and published trees",
+    "nextAction": "Inspect execution evidence and resolve the identified blocker"
+  },
+  "draft": {
+    "number": 109,
+    "head": "1c04a3e3f893342b96461835eda23f118681b910"
+  },
+  "checkedTree": "b117c7ef52e1fe0c7e2fe1863bf94542b20cc0bc",
+  "publishedTree": "0327fa5f3814898a86ea1ba2be5bf0fa7c6ca6b2",
+  "opaqueEntriesOmitted": 33,
+  "reconciliation": "The Git tree computed from all published blob entries matches publishedTree. Excluding exactly its 33 mode120000 entries computes checkedTree. No code/content difference remains in that comparison.",
+  "hostCommands": {
+    "count": 3,
+    "exitCodes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "sourceFix": {
+    "pullRequest": "https://github.com/juangcarmona/lighthouse/pull/572",
+    "merge": "59ded863109b045e399931dbad61e6cfdb698107",
+    "postMergeRepository": 42446337107,
+    "postMergePackages": 42446337068
+  },
+  "qualification": "This failed run and its draft remain negative evidence. A fresh native delivery is required."
+}
