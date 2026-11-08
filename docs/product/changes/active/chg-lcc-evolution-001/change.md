@@ -2,7 +2,7 @@
 id: CHG-LCC-EVOLUTION-001
 type: product-change
 title: Evolve SoFa into Lighthouse Control Center
-status: draft
+status: approved
 base-revision: 4c457c337640795a31492f7219cb0e497df9e232
 operations:
   add:
@@ -92,6 +92,8 @@ Neutral operator and runtime-administrator actors; fleet/adoption, mission langu
 No operational or authority questions remain for this semantic scope. Harbor/bay imagery and a label such as Loop Point remain optional naming suggestions, not selected product entities or navigation labels. Provider-specific command sets, team admission design, measurement sources and retention windows require reviewed delivery proposals within these boundaries; this change grants no default destructive operation, composite score, retention period or enterprise readiness.
 
 ## Product Acceptance
+
+The maintainer explicitly approved this Product Change on 2026-11-08: “OK, I accept the Product Change now...” This records human approval of the semantic delta. CLI apply, human merge, architecture acceptance and implementation delivery remain separate.
 
 A reviewer can understand every role without knowing the original operator. Visible product prose uses fleet, mission, operations and feedback rather than an industrial-production identity. A reviewer can identify all six domains and distinguish repository authority from runtime authority. A single operator and a scoped team use the same product roles without personal host assumptions. A non-adopted repository remains visible; lack of telemetry is unknown. An agent or workflow success cannot close a mission by inference. Runtime commands require explicit provider authority and confirmed outcomes; stopping Control Center leaves repository delivery operating. Lighthouse, GitHub, ProductShape, ArcShape, identity and model providers retain their stated authorities.
 

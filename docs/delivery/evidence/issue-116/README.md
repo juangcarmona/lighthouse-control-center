@@ -16,7 +16,7 @@ Inspected 2026-11-08 UTC. This is preparation evidence, not product acceptance, 
 | --- | --- |
 | `npm run verify` | Passed: Markdown, 48 Node tests, redacted secret scan, ProductShape baseline/integrity/doctor, strict OpenSpec, provider citations, ArcShape, .NET build/format/profile checks, 112 workspace tests, 38 retained-runtime tests and 18 Playwright browser tests |
 | Product baseline | 71 accepted artifacts, zero errors/warnings; no diff under `docs/product/model/` |
-| Product overlay | 18 additions / 35 modifications / 2 actor removals; zero errors/warnings; draft |
+| Product overlay | 18 additions / 35 modifications / 2 actor removals; zero errors/warnings; maintainer-approved on 2026-11-08 |
 | Architecture | All twelve sections validate with links; 19 accepted citations current, no stale/tampered/unresolved entries |
 | OpenSpec provider citations | 5 current documents, 59 current citations; no new parallel delivery specification introduced |
 | Changed prose after full verification | Markdown, product/overlay, ArcShape links/citations, secret scan and whitespace/source-link checks rerun; application code unchanged |
@@ -29,7 +29,7 @@ The ArcShape local session records selected represented source anchors and leave
 
 The installed personal observer and bounded native #99 qualification are retained. New provider/multi-user/analytics/distribution capabilities remain plans. Actual App-user effects and final workspace acceptance remain with #50/#48/#51/#52/#57. The current physical-phone waivers persist. No external production issuer, real provider administration, new-operator installation or rename probe was performed in this preparation. #58/#120/#121 own those receipts.
 
-The initial slice completes the existing #50/#48 journey; it is already candidate implementation, not a request for a new UI or engine. Product/architecture review precedes future behavior expansion. The repository's ProductShape process requires an explicitly approved change before apply and human merge acceptance; this increment leaves the overlay draft, ADR-0010 Proposed and ADR-0006 accepted.
+The initial slice completes the existing #50/#48 journey; it is already candidate implementation, not a request for a new UI or engine. Product/architecture review precedes future behavior expansion. The repository's ProductShape process requires an explicitly approved change before apply and human merge acceptance; the maintainer explicitly approved the overlay on 2026-11-08. CLI apply/human merge remain pending, ADR-0010 Proposed and ADR-0006 accepted.
 
 ## Terminology correction
 

@@ -28,7 +28,7 @@ The operational vocabulary below is proposed for review. Optional imagery remain
 
 ## Review boundary
 
-The overlay is draft. The maintainer reviews the complete delta and Proposed ADR-0010. No artifact is active by agent declaration; no apply, accepted-baseline mutation or operational effect is performed. Existing approved workspace delivery continues through its own authority. Validation and implementation evidence are recorded in the delivery evidence, outside this semantic change.
+The maintainer approved the Product Change on 2026-11-08: “OK, I accept the Product Change now...” The overlay is approved; ADR-0010 remains Proposed. No artifact is active by agent declaration; no apply, accepted-baseline mutation or operational effect is performed. Existing approved workspace delivery continues through its own authority. Validation and implementation evidence are recorded in the delivery evidence, outside this semantic change.
 
 ## Terminology review
 
