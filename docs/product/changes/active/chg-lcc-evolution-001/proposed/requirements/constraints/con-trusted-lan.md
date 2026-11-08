@@ -14,7 +14,7 @@ Privileged operations MUST pass a separately defined and verified server authori
 
 ## Rationale
 
-The factory must be operable from a phone without extending trust to every device on the network or every account at an identity provider.
+The fleet must be operable from a phone without extending trust to every device on the network or every account at an identity provider.
 
 ## Consequences
 

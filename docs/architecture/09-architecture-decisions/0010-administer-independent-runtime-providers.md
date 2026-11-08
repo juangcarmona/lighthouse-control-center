@@ -3,7 +3,7 @@ name: administer-independent-runtime-providers
 description: Add scoped runtime-provider administration while preserving repository-owned delivery orchestration.
 status: Proposed
 date: 2026-11-08
-deciders: [Juan García Carmona]
+deciders: []
 tags: [control-plane, providers, authorization]
 ---
 

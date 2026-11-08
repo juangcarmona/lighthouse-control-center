@@ -1,23 +1,23 @@
 ---
 id: JRN-DAILY-FACTORY-OPERATIONS
 type: journey
-title: Understand and operate the factory from one workspace
+title: Understand and operate the fleet from one workspace
 status: draft
-primary-actor: ACT-FACTORY-OWNER
+primary-actor: ACT-OPERATOR
 steps: [{use-case: UC-ACCESS-FACTORY}, {use-case: UC-EXPLORE-FACTORY}, {use-case: UC-RESOLVE-INTERVENTION}, {use-case: UC-OPERATE-ISSUE}, {use-case: UC-INSPECT-PROJECT-SIGNAL}]
 ---
 
 ## Intended Outcome
 
-An admitted operator understands what is happening across the authorized fleet, what needs his intervention and what he can do next, and follows the effect through Lighthouse Control Center for routine operations.
+An admitted operator understands what is happening across the authorized fleet, what needs their intervention and what they can do next, and follows the effect through Lighthouse Control Center for routine operations.
 
 ## Entry Conditions
 
-The owner has a configured factory and can authenticate. Every repository may have different capabilities and availability.
+The operator has a configured fleet and can authenticate. Every repository may have different capabilities and availability.
 
 ## Journey Narrative
 
-From desktop or phone, the operator signs in, finds an issue through search, a project or the intervention inbox, reads its context and evidence, requests eligible work or contributes information, and follows the source-confirmed outcome. He can then inspect project signals to decide where to invest effort. This complements JRN-ENGINEERING-EXECUTION; it does not require a full delivery cycle on every visit.
+From desktop or phone, the operator signs in, finds an issue through search, a project or the intervention inbox, reads its context and evidence, requests eligible work or contributes information, and follows the source-confirmed outcome. The operator can then inspect project signals to decide where to invest effort. This complements JRN-ENGINEERING-EXECUTION; it does not require a full delivery cycle on every visit.
 
 ## Variants and Branches
 
@@ -25,6 +25,6 @@ An idea can be explored and explicitly promoted or linked through UC-TRIAGE-BACK
 
 ## Completion Conditions
 
-The operator can identify active work, outstanding human decisions, the effect and status of his own actions, and the source and limitations behind a project finding. A visit can end while admitted work continues independently.
+The operator can identify active work, outstanding human decisions, the effect and status of their own actions, and the source and limitations behind a project finding. A visit can end while admitted work continues independently.
 
-Runtime administrators may branch into UC-MAINTAIN-RUNTIME to inspect pools and request supported provider actions under separate grants. A personal operator can hold both roles; deployment size does not change the authority model.
+Runtime administrators may branch into UC-MAINTAIN-RUNTIME to inspect pools and request supported provider actions under separate grants. A single-user deployment operator can hold both roles; deployment size does not change the authority model.

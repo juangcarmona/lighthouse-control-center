@@ -17,7 +17,7 @@ The supported application entrypoint builds and directly launches the pinned Rel
 
 <!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
 
-[Composition source](../../../src/SoFa.AppHost/WorkspaceComposition.cs) is the infrastructure truth. AppHost provisions no supervisor, execution database or anonymous Node listener. Aspire's project-rebuilder helper is development tooling, not a factory worker. The application dashboard is disabled for this entrypoint.
+[Composition source](../../../src/SoFa.AppHost/WorkspaceComposition.cs) is the infrastructure truth. AppHost provisions no supervisor, execution database or anonymous Node listener. Aspire's project-rebuilder helper is development tooling, not a delivery worker. The application dashboard is disabled for this entrypoint.
 
 ## Operational boundary
 

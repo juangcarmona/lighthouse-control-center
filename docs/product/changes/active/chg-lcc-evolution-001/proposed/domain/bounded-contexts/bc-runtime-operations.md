@@ -19,4 +19,4 @@ Providers own actual resources and enforce limits. Repository workflows retain j
 
 ## External Relationships
 
-Consumes ACT-RUNTIME-PROVIDER evidence, serves ACT-FACTORY-OWNER and ACT-RUNTIME-ADMINISTRATOR, and correlates infrastructure observations with BC-EXECUTION and BC-DELIVERY.
+Consumes ACT-RUNTIME-PROVIDER evidence, serves ACT-OPERATOR and ACT-RUNTIME-ADMINISTRATOR, and correlates infrastructure observations with BC-EXECUTION and BC-DELIVERY.

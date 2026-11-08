@@ -1,5 +1,5 @@
 ---
-id: ACT-FACTORY-OWNER
+id: ACT-OPERATOR
 type: actor
 title: Control Center operator
 status: draft
@@ -20,4 +20,4 @@ Inspect evidence, configure permitted project scope and request actions within e
 
 ## Boundaries
 
-A personal deployment may admit one operator. Team and enterprise deployments admit several identities with explicit project and provider scope. Sign-in and fleet visibility grant neither repository writes nor runtime administration.
+A single-user deployment may admit one operator. Team deployments admit identities with explicit project and provider scope. Operator is an application role; repository ownership, product authority and runtime administration require their own grants. No person's name or personal-deployment instance defines this role.

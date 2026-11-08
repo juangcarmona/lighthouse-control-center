@@ -15,8 +15,8 @@ Missions, ideas, backlog items, project priority, work units, dependency edges, 
 
 ## Boundaries
 
-SoFa may own an idea before promotion, but GitHub becomes the backlog source of truth when the idea becomes or links to an issue. This context does not execute work, approve product intent, or replace repository issue state.
+Lighthouse Control Center may own an idea before promotion, but GitHub becomes the backlog source of truth when the idea becomes or links to an issue. This context does not execute work, approve product intent, or replace repository issue state.
 
 ## External Relationships
 
-Reads from ACT-GITHUB-BACKLOG and presents decisions and proposed work units to ACT-FACTORY-OWNER.
+Reads from ACT-GITHUB-BACKLOG and presents decisions and proposed work units to ACT-OPERATOR.

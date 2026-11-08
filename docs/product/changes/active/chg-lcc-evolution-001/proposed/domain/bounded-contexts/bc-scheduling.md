@@ -19,4 +19,4 @@ This context never owns a queue, dispatches agents or imposes workflow gates.
 
 ## External Relationships
 
-Reads BC-BACKLOG-TRIAGE and source capacity evidence for ACT-FACTORY-OWNER.
+Reads BC-BACKLOG-TRIAGE and source capacity evidence for ACT-OPERATOR.

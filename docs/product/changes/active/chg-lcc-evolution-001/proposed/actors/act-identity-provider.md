@@ -1,18 +1,18 @@
 ---
 id: ACT-IDENTITY-PROVIDER
 type: actor
-title: External factory identity provider
+title: External Control Center identity provider
 status: draft
 actor-kind: external-system
 ---
 
 ## Purpose
 
-Authenticate the person accessing the factory through the configured external identity authority.
+Authenticate the person accessing Control Center through the configured external identity authority.
 
 ## Goals
 
-Provide a verifiable identity without SoFa operating its own password directory.
+Provide a verifiable identity without Lighthouse Control Center operating its own password directory.
 
 ## Responsibilities
 

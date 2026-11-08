@@ -4,9 +4,9 @@ arc42-section: "01"
 description: System purpose, stakeholders, and architecture goals.
 ---
 
-# 01. Observe the factory across repositories
+# 01. Observe engineering activity across repositories
 
-SoFa gives the owner a source-backed view of work, execution and delivery across repositories. Repository workflows orchestrate the lifecycle; an independent runtime executes agents. SoFa remains optional.
+SoFa gives the operator a source-backed view of work, execution and delivery across repositories. Repository workflows orchestrate the lifecycle; an independent runtime executes agents. SoFa remains optional.
 
 <!-- pdac:cite id="FR-AUTHORIZED-ENTRY" digest="sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463" -->
 

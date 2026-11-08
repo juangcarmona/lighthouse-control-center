@@ -6,7 +6,7 @@ status: draft
 primary-actor: ACT-RUNTIME-ADMINISTRATOR
 supporting-actors:
 - ACT-RUNTIME-PROVIDER
-- ACT-FACTORY-OWNER
+- ACT-OPERATOR
 bounded-context: BC-RUNTIME-OPERATIONS
 governed-by:
 - BR-PROVIDER-OPERATIONS
