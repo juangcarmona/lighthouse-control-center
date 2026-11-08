@@ -1,0 +1,11 @@
+# Public source-control prerequisite
+
+The owner accepted #48 Plan PR #112 and the compatible shared contract. Before its application controls can be qualified, the default branch must carry the official source capability. This prerequisite adopts public CLI 0.12.61 / SDLC 0.22.0 from released commit `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`, regenerates owned SDLC/harness projections and all seven gh-aw workers through their installers, and enables the official typed client entry. Existing native #99 policy, verification integrity, models, secrets and repository rules are preserved. No application controls, persistent journal, production deployment or new delivery are included.
+
+The public consumer tests verify actual generated router/manifest content through the released public SDK using controlled source responses. They prepare only a stage-scoped Refine intent, perform no effect and require an absent contract to remain unsupported. Real App-user acceptance belongs to the separately reviewed application candidate.
+
+## Observed download failure and repair
+
+Hosted [verify 42464489291](https://github.com/juangcarmona/sofa/actions/runs/42464489291) failed on a Gitleaks release CDN HTTP 504. A fresh Node 22 download reproduced HTTP 504 for the pinned checksum asset. GitHub's official release API returned both exact assets; the repaired installer downloaded fresh bytes, verified the existing official checksum and exact binary version successfully. It uses one fallback only for HTTP 502/503/504, the original 120-second download deadline, bounded bodies and verified release identity/name/size. No credential, alternate version, mirror or scan bypass is introduced. Regression tests reject changed releases/bytes and nontransient denial.
+
+The existing deterministic gate correctly refused unavailable verification. Applying harden-process found no missing lifecycle guard: no lifecycle or generated skill change is warranted. The repair is owned by the scanner installer and its meaningful regression tests. Full local verification passed: 48 Node, 112 web, 38 runtime and 18 browser tests. Required hosted checks and an independent final integration audit remain binding before merge.
