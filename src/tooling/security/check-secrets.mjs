@@ -29,10 +29,46 @@ export function scannerEnvironment(source = process.env) {
   return Object.fromEntries(Object.entries(source).filter(([name]) => allowed.has(name.toUpperCase())));
 }
 
+async function boundedBytes(response, limit) {
+  let count = 0; const chunks = [];
+  if (response.body) {
+    for await (const chunk of response.body) {
+      count += chunk.length;
+      if (count > limit) throw Error('Gitleaks download exceeds its bound');
+      chunks.push(Buffer.from(chunk));
+    }
+  } else {
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (bytes.length > limit) throw Error('Gitleaks download exceeds its bound');
+    chunks.push(bytes);
+  }
+  return Buffer.concat(chunks);
+}
+
 async function download(url, fetcher) {
-  const response = await fetcher(url, { signal: AbortSignal.timeout(120_000) });
-  if (!response.ok) throw new Error(`Gitleaks download failed: HTTP ${response.status} (${url})`);
-  return Buffer.from(await response.arrayBuffer());
+  const signal = AbortSignal.timeout(120_000);
+  const response = await fetcher(url, { signal });
+  const limit = url.endsWith('_checksums.txt') ? 65536 : 32 * 1024 * 1024;
+  if (response.ok) return boundedBytes(response, limit);
+  if (![502, 503, 504].includes(response.status)) throw new Error(`Gitleaks download failed: HTTP ${response.status} (${url})`);
+  await response.body?.cancel();
+  // The release CDN can fail while the same official release remains available via its API.
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'SoFa-Scanner-Installer' };
+  const metadata = await fetcher(`https://api.github.com/repos/gitleaks/gitleaks/releases/tags/v${version}`, { signal, headers });
+  if (!metadata.ok) throw Error(`Gitleaks release metadata failed: HTTP ${metadata.status}`);
+  const release = JSON.parse((await boundedBytes(metadata, 2 * 1024 * 1024)).toString('utf8'));
+  if (release.tag_name !== 'v' + version || !Array.isArray(release.assets) || release.assets.length > 128) throw Error('Gitleaks release identity is unavailable');
+  const name = new URL(url).pathname.split('/').at(-1);
+  const matches = release.assets.filter(asset => asset.name === name);
+  if (matches.length !== 1 || !Number.isSafeInteger(matches[0].id) || matches[0].id <= 0
+      || !Number.isSafeInteger(matches[0].size) || matches[0].size <= 0 || matches[0].size > limit) throw Error('Gitleaks release asset identity is unavailable');
+  const asset = matches[0];
+  const recovered = await fetcher(`https://api.github.com/repos/gitleaks/gitleaks/releases/assets/${asset.id}`,
+    { signal, headers: { ...headers, Accept: 'application/octet-stream' } });
+  if (!recovered.ok) throw Error(`Gitleaks release asset failed: HTTP ${recovered.status}`);
+  const bytes = await boundedBytes(recovered, limit);
+  if (bytes.length !== asset.size) throw Error('Gitleaks release asset size mismatch');
+  return bytes;
 }
 
 export async function extractScanner(path, directory, platform = process.platform, run = spawnSync) {

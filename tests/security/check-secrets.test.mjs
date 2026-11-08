@@ -205,3 +205,54 @@ test('a busy installation lock fails closed without deleting another owner', asy
   await assert.rejects(installScanner(directory, { ...options, lockTimeout: 0 }), /install lock timed out/);
   assert.deepEqual(await readdir(join(directory, 'gitleaks', version)), ['win32-x64.lock']);
 });
+
+test('a release CDN 504 can recover only the same official asset through the GitHub API', async t => {
+  const { directory, options } = await fixture(t);
+  const original = options.fetcher, calls = [];
+  options.fetcher = async (url, request) => {
+    calls.push({ url, headers: request.headers });
+    assert.ok(!request.headers?.Authorization && !request.headers?.authorization);
+    if (url.startsWith('https://github.com/')) return { ok: false, status: 504 };
+    if (url.endsWith('/releases/tags/v' + version)) return Response.json({ tag_name: 'v' + version, assets: [
+      { id: 11, name: `gitleaks_${version}_checksums.txt`, size: (await (await original(`gitleaks_${version}_checksums.txt`)).arrayBuffer()).length },
+      { id: 12, name: `gitleaks_${version}_windows_x64.zip`, size: (await (await original('archive')).arrayBuffer()).length }
+    ] });
+    assert.ok(url === 'https://api.github.com/repos/gitleaks/gitleaks/releases/assets/11' || url === 'https://api.github.com/repos/gitleaks/gitleaks/releases/assets/12');
+    assert.equal(request.headers.Accept, 'application/octet-stream');
+    return new Response(await (await original(url.endsWith('/11') ? `gitleaks_${version}_checksums.txt` : 'archive')).arrayBuffer());
+  };
+  assert.ok((await installScanner(directory, options)).endsWith('gitleaks.exe'));
+  assert.equal(calls.length, 6);
+});
+
+test('official API recovery cannot change the release identity or bypass archive integrity', async t => {
+  const { directory, options } = await fixture(t);
+  options.fetcher = async url => url.startsWith('https://github.com/') ? { ok: false, status: 504 }
+    : Response.json({ tag_name: 'v99.0.0', assets: [] });
+  await assert.rejects(installScanner(directory, options), /release identity/);
+});
+
+test('official API recovery still rejects altered archive bytes before extraction', async t => {
+  const { directory, options } = await fixture(t);
+  const original = options.fetcher;
+  const checksums = Buffer.from(await (await original(`gitleaks_${version}_checksums.txt`)).arrayBuffer());
+  const altered = Buffer.from(await (await original('archive')).arrayBuffer()); altered[0] ^= 1;
+  options.fetcher = async url => {
+    if (url.startsWith('https://github.com/')) return { ok: false, status: 503 };
+    if (url.endsWith('/releases/tags/v' + version)) return Response.json({ tag_name: 'v' + version, assets: [
+      { id: 11, name: `gitleaks_${version}_checksums.txt`, size: checksums.length },
+      { id: 12, name: `gitleaks_${version}_windows_x64.zip`, size: altered.length }
+    ] });
+    return new Response(url.endsWith('/11') ? checksums : altered);
+  };
+  let extracted = false; options.extract = async () => { extracted = true; };
+  await assert.rejects(installScanner(directory, options), /checksum mismatch/);
+  assert.equal(extracted, false);
+});
+
+test('a nontransient download denial does not switch sources or retry', async t => {
+  const { directory, options } = await fixture(t); let calls = 0;
+  options.fetcher = async () => { calls++; return { ok: false, status: 404 }; };
+  await assert.rejects(installScanner(directory, options), /HTTP 404/);
+  assert.equal(calls, 1);
+});
