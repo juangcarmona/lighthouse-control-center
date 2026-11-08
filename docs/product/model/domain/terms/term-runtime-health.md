@@ -10,7 +10,7 @@ uses-terms: [TERM-EXECUTION-RUN, TERM-RETENTION-POLICY]
 
 ## Definition
 
-An observation of the factory's workers, leases, checkpoints, storage, execution engine, evidence, or maintenance posture, with an explicit known, unhealthy, or unknown result.
+An observation of independent execution hosts, runners, agent runtimes, storage, evidence retention or maintenance posture, with an explicit known, unhealthy, or unknown result.
 
 ## Distinguish From
 
@@ -18,4 +18,4 @@ Runtime health describes operation; it is not proof that repository work or deli
 
 ## Usage
 
-UC-MAINTAIN-RUNTIME presents it to ACT-FACTORY-OWNER.
+UC-MAINTAIN-RUNTIME presents it to ACT-OPERATOR.

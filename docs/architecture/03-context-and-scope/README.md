@@ -31,7 +31,7 @@ flowchart LR
 | Lighthouse | Installed repository lifecycle and evidence contract | Shared command eligibility, correlation and continuation integration remain future work |
 | Runtime and infrastructure | Repository-operated execution and published evidence | No dependency on the workspace or its development provider |
 
-<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
 
 The implemented blocks are in [section 05](../05-building-block-view/README.md); environment mapping is in [section 07](../07-deployment-view/README.md). Actual GitHub consent and physical-device acceptance are evidence gaps, not inferred from test fixtures.
 

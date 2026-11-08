@@ -2,7 +2,7 @@
 id: CHG-LCC-EVOLUTION-001
 type: product-change
 title: Evolve SoFa into Lighthouse Control Center
-status: approved
+status: applied
 base-revision: 4c457c337640795a31492f7219cb0e497df9e232
 operations:
   add:

@@ -1,6 +1,6 @@
 # Engineering lifecycle
 
-**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-11-07
+**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-11-08
 
 ## Definition of Ready
 
@@ -135,10 +135,10 @@ Invoke `/agentic-sdlc:ff <work-item-id>` in Claude Code or `ff <work-item-id>` i
 
 | Setting | This project requires |
 | --- | --- |
-| Enabled | Native FF is enabled with delegated merge for the exact issue #99 override; supervised defaults remain owner-reviewed. See the [bounded grant](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
+| Enabled | The maintainer requested continuing autonomously on 2026-11-08. Native FF delegates eligible low-risk routine work under the current bounded policy; the existing active stack and identity work retain explicit supervised overrides. See the [bounded grant](runbooks/lighthouse-unattended.md). Portable FF retains its existing human gates |
 | Executor and reviewer | Native project profiles select Sol Medium and Luna High; private operator resolution must attest distinct models and available capabilities before execution |
 | Maximum correction rounds | Native unattended: 1 shared plan/candidate correction; portable FF: 3 per gate |
-| Substitutable judgement items | None by default; owner remains responsible for every Definition of Done judgement item |
+| Substitutable judgement items | For eligible native FF only, the configured independent reviewer may decide routine engineering acceptance, completeness, test adequacy, conformance to already-accepted architecture, documentation, evidence and PR review. New product/architecture/security decisions, identity/permissions, provider effects, visual publication acceptance, credentials, release/deployment and forge-required human approvals remain owner decisions. Active stack/identity overrides remain supervised |
 | Durable evidence | Portable FF: `docs/delivery/ff/<work-item-id>/<run-id>/run.json` and `summary.md`; native: bound Actions receipts and the adopted protected evidence branch |
 | Human-only or protected gates | Product-scope and accepted-decision changes, owner-only judgements, required forge approvals, deployment, and repository red lines |
 
@@ -189,6 +189,12 @@ Project-owned role adaptations are sourced from `.agents/skills/`; `.claude/skil
 
 OpenSpec 1.15.0 provides the delivery plan artifacts: proposal, design, tasks and applicable specification deltas under `openspec/changes/`. Lighthouse's native proposal and implementation providers invoke the pinned OpenSpec workflow and validate its artifacts. Read the [adopter configuration and current specification inventory](../openspec/README.md) before planning. ProductShape remains the product authority; OpenSpec delivery artifacts consume its scope and citation rules. The shared lifecycle stages, review gates and human-only decisions above remain in force. Existing Markdown plans under `docs/delivery/plans/` remain historical evidence.
 
+## Autonomous continuation authorization — 2026-11-08
+
+The maintainer explicitly requested: “And I want this repo to continue autonomously...” This authorizes routine issue progression and bounded native FF integration through the existing Lighthouse contracts; it does not approve new product or architecture decisions. The current grant extends the delivered #99 pilot to low-risk reversible observation, frontend, asset and operational-documentation work within `.lighthouse/unattended.json`. Existing #47/#48/#50/#51/#52/#57/#58 retain their supervised policies and previous correction limits. Native admission, distinct independent reviewers, exact-head CI and forge checks remain mandatory. No automatic release/deployment or independent provider command is admitted.
+
+The operator enables the existing maintenance/recovery mechanism only for #116/#121/#123/#124 initially. It reconciles supported technical interruptions under Lighthouse limits; substantive blockers and uncertain source effects are not retried. Selection of new issues still uses existing owner request labels/FF entrypoints. No new scheduler or claim of automatic epic decomposition is introduced.
+
 ## Amendment log
 
 The `review` capability proposes changes to this file from delivery evidence. Every amendment is shown as a diff and confirmed by a human; nothing edits this file silently.
@@ -201,3 +207,5 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 | 2026-11-07 | Fast Forward | Enable native FF and merge for issue #90 with two exact test corrections; keep supervised defaults | Owner explicitly authorized autonomous delivery, merge:true and the first read-only operational view |
 | 2026-11-07 | Provided roles and deterministic checks | Install pinned OpenSpec delivery planning and ProductShape citation checks; freeze configuration and schemas as verification inputs | Complete the owner-authorized adoption and resumption after native #90 planning identified missing prerequisites |
 | 2026-11-07 | Fast Forward | Replace the closed #90 grant with the exact #99 observer qualification grant | Owner authorized completing #88 and necessary delivery; preserve supervised defaults, write scope, budgets and all protected gates |
+
+| 2026-11-08 | Fast Forward and autonomous continuation | Extend bounded native FF to eligible routine work after the maintainer explicitly requested autonomous continuation; preserve active-stack and identity review overrides | Independent review and required CI govern delegated integration; protected decisions remain human-owned |

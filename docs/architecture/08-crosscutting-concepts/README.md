@@ -31,11 +31,11 @@ ASP.NET cookie/OIDC middleware validates code/S256 transactions, issuer, audienc
 
 The authorized development policy uses fifteen-minute idle and four-hour original-authentication limits, with five-minute online provider revalidation. Polling cannot renew idle time; explicit validated navigation/interaction can, within the absolute cap. Reference rotation and provider refresh are atomic with respect to the stored credentials and cannot move the original limits. These are development implementation choices under the reviewed proposal, not production policy constants.
 
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 Identity-provider admission and GitHub acting-account authority are separate. The source adapter verifies numeric user identity and intersects repository/user permission with app installation grants before protected reads or cache reuse. Connection generation and session ownership scope observations. Incomplete permission enumeration is unavailable authority, never a sufficient grant. Source tokens have no operator CLI or installation-token fallback.
 
-<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
 
 CSRF protects local authentication/connection POSTs. Exact HTTPS host validation, no-store responses and restrictive CSP apply to the application boundary. CSP permits only self and the configured authentication redirect origins for form navigation. Hosting/authentication diagnostics do not log callback queries or credentials; provider-test artifacts contain safe post-callback screenshots and summary receipts rather than HARs or browser call logs. See the [identity implementation](../../../src/SoFa.Modules.Workspace/Identity/) and [boundary tests](../../../tests/SoFa.Web.Tests/OwnerBoundaryTests.cs).
 

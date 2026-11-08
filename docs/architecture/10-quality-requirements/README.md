@@ -16,7 +16,7 @@ See [ADR-0006](../09-architecture-decisions/0006-observe-repository-owned-workfl
 
 Owner admission, real middleware callbacks, deadlines, concurrent refresh, source-state isolation and CSRF have deterministic coverage. The host-only provider harness exercises the exact pinned Keycloak image through trusted HTTPS, development password login without OTP, wrong-password/wrong-owner denial, fresh password despite provider SSO, online refresh, revocation and provider outage. Full host CI also checks account UI accessibility using explicitly identified source fixtures. The [provider harness](../../../scripts/verify-identity-provider.mjs) and [tests](../../../tests/SoFa.Web.Tests/) are the evidence owners.
 
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 Phone-width browser automation remains distinct from a physical device. Actual GitHub App user consent/repository permission and actual-phone reachability/login/link/logout are open delivery acceptance; neither synthetic source fixtures nor issuer discovery satisfy them.
 
@@ -38,7 +38,7 @@ Fixtures establish deterministic behavior but do not substitute for the real sou
 
 ## Proposed provider and portability acceptance
 
-These checks realize the [proposed product overlay](../../product/changes/active/chg-lcc-evolution-001/change.md); none is claimed passed by this architecture document.
+These checks realize the [approved Product Change](../../product/changes/completed/chg-lcc-evolution-001/change.md); none is claimed passed by this architecture document.
 
 | Boundary | Independent evidence required |
 | --- | --- |

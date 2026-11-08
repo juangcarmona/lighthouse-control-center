@@ -5,7 +5,7 @@
 <!-- pdac-scope: cited -->
 
 Define engineering verification behavior for the independent repository delivery toolchain, preserving the accepted boundary that SoFa is an optional observer and verifier.
-<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
+<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 
 ## Requirements
 
@@ -26,7 +26,7 @@ On non-Windows systems the scanner SHALL use an absolute XDG_CACHE_HOME when sup
 ### Requirement: Independent delivery acceptance
 
 SoFa qualification SHALL retain repository-owned orchestration, independent execution and source-bound verification without depending on the SoFa application service.
-<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
+<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 
 #### Scenario: Blocked native result and operator delivery
 

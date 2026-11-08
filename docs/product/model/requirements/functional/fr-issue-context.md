@@ -13,10 +13,12 @@ verification:
 
 ## Requirement
 
-SoFa MUST show issue description and conversation, open or closed state, lifecycle stage and prior results, requesting and working identities when evidenced, execution progress or reservation, pending human information or decisions, and related proposals, PRs, checks and evidence. It MUST present source identities, observation time and collection limitations.
+Lighthouse Control Center MUST show issue description and conversation, open or closed state, lifecycle stage and prior results, requesting and working identities when evidenced, execution progress or reservation, pending human information or decisions, and related proposals, PRs, checks and evidence. It MUST present source identities, observation time and collection limitations.
 
-The issue view MUST explain a recommended action and other permitted actions, including Refine and Propose where supported. Unavailable actions MUST have understandable reasons. Results and material evidence summaries MUST be readable within SoFa; source links support inspection and exceptional recovery rather than the routine action journey.
+The issue view MUST explain a recommended action and other permitted actions, including Refine and Propose where supported. Unavailable actions MUST have understandable reasons. Results and material evidence summaries MUST be readable within Lighthouse Control Center; source links support inspection and exceptional recovery rather than the routine action journey.
+
+Mission history MUST correlate the stable repository and issue with available requests, workflows, attempts, workers, runner/runtime evidence, PRs, independent verification and accepted outcomes. Missing links MUST remain missing; recency and matching names MUST NOT establish correlation. Repeated attempts preserve earlier failures and human decisions.
 
 ## Rationale
 
-The owner should not have to reconstruct a decision by navigating disconnected repository pages or interpreting labels.
+The operator should not have to reconstruct a decision by navigating disconnected repository pages or interpreting labels.
