@@ -5,7 +5,7 @@
 ## 1. Plan
 
 - [x] 1.1 Read accepted product intent, architecture, shared lifecycle, issue and existing collection/evidence implementations.
-- [ ] 1.2 Reconcile stale tracker traceability and obtain independent planning acceptance before implementation.
+- [x] 1.2 Reconcile stale tracker traceability and obtain independent planning acceptance before implementation.
 
 ## 2. Read-only inbox
 
