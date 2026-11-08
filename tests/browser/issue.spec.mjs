@@ -168,7 +168,7 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
       observedAt: '2026-11-08T08:00:00Z', id: 'a'.repeat(32), journalState: 'prepared',
       intent: { action: input.action, body: input.body }, effect: { kind: 'comment' } };
     if (input.operation === 'submit') { entry = { ...entry, journalState: 'claimed' }; return route.fulfill({ status: 503, json: { reason: 'Response lost; recover the same confirmation.' } }); }
-    if (input.operation === 'reconcile') entry = { ...entry, receipt: { state: 'comment-published', questionResolved: false,
+    if (input.operation === 'reconcile') entry = { ...entry, receiptObservedAt: '2026-11-08T08:00:00Z', receipt: { state: 'comment-published', questionResolved: false,
       source: 'https://github.com/example/repository/issues/7#issuecomment-91' } };
     return route.fulfill({ json: entry });
   });
@@ -187,7 +187,9 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('a'.repeat(32));
   await page.getByRole('button', { name: 'Reconcile source result' }).click();
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('comment-published');
-  await expect(page.locator('#control-actions')).toContainText('Question resolved: unconfirmed');
+  await expect(page.locator('#control-actions')).toContainText('Comment published.');
+  await expect(page.locator('#control-actions')).toContainText('Receipt observed: 2026-11-08T08:00:00Z');
+  await expect(page.locator('#control-actions')).not.toContainText('Question resolved:');
   expect(operations.filter(item => item === 'submit')).toHaveLength(1);
   expect(await page.evaluate(() => window.replyExecuted)).toBeUndefined();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

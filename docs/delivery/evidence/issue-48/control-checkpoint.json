@@ -36,6 +36,7 @@
     "baselineProjection": "Regenerated with the official harness upgrade after the existing GitHub guardrail rejected SDK version drift; guardrails must pass at the repaired head.",
     "receiptFreshness": "Protected source receipts retain their original observation time independently of a later recovery request.",
     "readFallback": "Missing intended App configuration preserves the authorized read scope and reports unsupported controls; it does not discard readable issue context.",
-    "independentReview": "control-checkpoint-review.json accepts prior code head1c9356031673861ccdf1a8e42c29111b6c3bc7c0; fresh review required for these follow-up changes."
+    "independentReview": "control-qualified-review.json accepts head159be4ccc16b8be1aabac4678b75428b28fd4483; the subsequent presentation adjustment is covered by the next candidate review.",
+    "interface": "Observed narrow layout: result text uses user-facing states; raw journal/receipt IDs are inside Request details; ordinary comments do not display workflow admission or question-resolution claims."
   }
 }

@@ -13,17 +13,25 @@ export function renderActions(area, facts, target, scope, live, clear) {
   function display(data) {
     preparation = data; confirmation.replaceChildren();
     if (!data.id) { message.textContent = 'No previous action was found in this source scope.'; return; }
-    confirmation.append(text('Action: ' + (data.intent?.action ?? 'unknown')),
-      text('Confirmation ID: ' + data.id), text('Journal: ' + data.journalState));
+    const action = data.intent?.action;
+    confirmation.append(text('Action: ' + ({ comment: 'Ordinary comment', continue: 'Continue', refine: 'Refine', propose: 'Propose' }[action] ?? 'unknown')),
+      text(data.journalState === 'prepared' ? 'Ready for your confirmation.' : 'Request recorded. Reconcile to check its source result.'));
+    const details = document.createElement('details'), summary = document.createElement('summary'); summary.textContent = 'Request details';
+    details.append(summary, text('Confirmation ID: ' + data.id), text('Journal: ' + data.journalState));
     if (data.intent?.body) confirmation.append(text(data.intent.body));
     if (data.effect?.kind === 'comment') confirmation.append(text(data.intent?.action === 'continue'
       ? 'Publishes an explicit Continue answer for the verified question under its original grant. Source acknowledgement is checked separately.'
       : 'Publishes an ordinary comment. It does not resume work. The new input can make an earlier result stale.'));
     else confirmation.append(text('Requests ' + data.intent?.action + ' for this issue in GitHub. Admission, worker execution and stage outcome are verified separately.'));
     if (data.receipt) {
-      confirmation.append(text('Source receipt: ' + data.receipt.state), text('Receipt observed: ' + (data.receiptObservedAt ?? 'unknown')), text(data.receipt.reason ?? ''),
-        text('Source acknowledged: ' + (data.receipt.sourceAcknowledged === true ? 'yes' : 'unconfirmed')),
-        text('Question resolved: ' + (data.receipt.questionResolved === true ? 'yes' : 'unconfirmed')));
+            const states = { 'comment-published': 'Comment published.', submitted: 'Request sent. Source admission is unconfirmed.',
+        'source-admitted': 'Source admitted the request.', 'source-alias': 'Source reused an existing request.',
+        'equivalent-observed': 'An equivalent source request was found. Admission is unconfirmed.', unknown: 'Source result is not yet confirmed.',
+        rejected: 'The source declined this request.', conflict: 'The source reports a conflict.' };
+      confirmation.append(text(states[data.receipt.state] ?? 'Source result is unavailable.'), text('Receipt observed: ' + (data.receiptObservedAt ?? 'unknown')));
+      details.append(text('Source receipt: ' + data.receipt.state), text(data.receipt.reason ?? ''));
+      if (action !== 'comment') confirmation.append(text('Source admission: ' + (data.receipt.sourceAcknowledged === true ? 'confirmed' : 'unconfirmed')));
+      if (action === 'continue') confirmation.append(text('Question resolved: ' + (data.receipt.questionResolved === true ? 'yes' : 'unconfirmed')));
       if (data.receipt.execution) confirmation.append(text('Execution: ' + (data.receipt.execution.availability ?? 'unknown')
         + ' · Worker: ' + (data.receipt.execution.workerRunId ?? 'unconfirmed') + ' · Stage result: ' + (data.receipt.execution.result ?? 'unconfirmed')
         + ' · ' + (data.receipt.execution.reason ?? '')));
@@ -31,6 +39,7 @@ export function renderActions(area, facts, target, scope, live, clear) {
         const link = document.createElement('a'); link.href = data.receipt.source; link.textContent = 'Inspect source receipt'; link.rel = 'noreferrer noopener'; confirmation.append(link);
       }
     }
+    confirmation.append(details);
     if (data.journalState === 'prepared') button('Confirm and send', () => command({ operation: 'submit', id: preparation.id }), confirmation);
     button('Reconcile source result', () => command({ operation: 'reconcile', id: preparation.id }), confirmation);
   }
