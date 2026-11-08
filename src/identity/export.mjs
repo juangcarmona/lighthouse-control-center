@@ -10,7 +10,7 @@ for (const theme of ['dark', 'light']) {
 }
 
 const preview = await startPreview();
-const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', headless: true });
+const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ deviceScaleFactor: 1 });
   const outputs = [
@@ -22,8 +22,8 @@ try {
     ['lighthouse-icon.svg', 'apple-touch-icon.png', 180, 180],
     ['lighthouse-icon.svg', 'icon-192.png', 192, 192],
     ['lighthouse-icon.svg', 'icon-512.png', 512, 512],
-    ['bench-banner.svg', 'readme-banner.png', 1280, 640],
-    ['bench-banner.svg', 'social-preview.png', 1200, 630],
+    ['bench-banner-edited-v2.png', 'readme-banner.png', 1280, 640],
+    ['bench-banner-edited-v2.png', 'social-preview.png', 1200, 630],
   ];
   for (const [source, output, width, height] of outputs) {
     await page.setViewportSize({ width, height });

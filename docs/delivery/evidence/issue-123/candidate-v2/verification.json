@@ -1,0 +1,40 @@
+{
+  "observedAt": "2026-11-08T21:02:26.732990+00:00",
+  "commands": [
+    {
+      "command": "npm ci --ignore-scripts",
+      "exitCode": 0
+    },
+    {
+      "command": "npx playwright install chromium",
+      "exitCode": 0
+    },
+    {
+      "command": "node src/identity/export.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "node --test src/identity/identity.test.mjs",
+      "exitCode": 0,
+      "passed": 3
+    },
+    {
+      "command": "node src/identity/check-browser.mjs /tmp/lcc-123-browser-v2",
+      "exitCode": 0,
+      "themeViewportCombinations": 6
+    },
+    {
+      "command": "npm run verify",
+      "exitCode": 0,
+      "nodeTests": 51,
+      "workspaceTests": 112,
+      "retainedRuntimeTests": 38,
+      "browserTests": 18
+    }
+  ],
+  "limits": [
+    "Automated checks do not constitute maintainer visual acceptance.",
+    "No production/authentication or provider behavior was changed.",
+    "The separate real-provider nightly/manual E2E suite was not run and is not a merge check."
+  ]
+}

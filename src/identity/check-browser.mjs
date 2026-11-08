@@ -8,7 +8,7 @@ const evidence = process.argv[2];
 if (!evidence) throw new Error('Provide an evidence output directory');
 await mkdir(evidence, { recursive: true });
 const server = await startPreview();
-const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', headless: true });
+const browser = await chromium.launch({ headless: true });
 const results = [];
 try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
@@ -56,6 +56,6 @@ try {
   });
   assert.equal(alpha, 0, 'rounded canonical tile retains transparent outside corners');
   assert.deepEqual(failures, []);
-  await writeFile(`${evidence}/identity-browser.json`, JSON.stringify({ status: 'passed', galleryAxeViolations: 0, transparentCornerAlpha: alpha, results, visualAcceptance: 'pending maintainer', photoReference: 'not supplied' }, null, 2));
+  await writeFile(`${evidence}/identity-browser.json`, JSON.stringify({ status: 'passed', galleryAxeViolations: 0, transparentCornerAlpha: alpha, results, visualAcceptance: 'pending maintainer', photoReference: 'supplied Loira bench photograph', artwork: 'bench-banner-edited-v2.png' }, null, 2));
   console.log('Gallery and six shell theme/viewport combinations passed accessibility, focus, status-label and overflow checks. Visual acceptance remains pending.');
 } finally { await browser.close(); await server.close(); }

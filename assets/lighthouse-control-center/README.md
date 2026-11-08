@@ -1,14 +1,14 @@
 # Lighthouse Control Center identity candidate
 
-**Unpublished draft for issue #123.** No existing artwork, README banner or application reference has been replaced. The maintainer must accept the exact rendered candidate before activation. The Loira photograph mentioned by the issue was not included in this run; the rear-view slatted bench is a composition proposal, not a verified match to that photograph.
+**Unpublished draft for issue #123.** No existing artwork, README banner or application reference has been replaced. The maintainer must accept the exact rendered candidate before activation. The maintainer rejected the first reconstructed banner because it lost the original illustration style. The corrected `bench-banner-edited-v2.png` edits the preserved original using the supplied Loira photograph as a bench-shape reference. It is still awaiting acceptance.
 
 ## Provenance and editable sources
 
 - Selected composition: `../socialpreview_1.png`, owner-selected in issue #123, preserved by PR #125 at `ba4228f67deb943bb91cab9cbbe252de3d1ee048`. SHA-256: `65784f3108c66c9121c7a25e8746087ec72712db4a30fc514bdfe440a67e4f26`.
 - Canonical marks: [dark-surface source](https://github.com/juangcarmona/lighthouse/blob/e6ea62ab0184f517ab2653d3a91c3a90a1d8b567/assets/lighthouse-icon.svg) and [light-surface source](https://github.com/juangcarmona/lighthouse/blob/e6ea62ab0184f517ab2653d3a91c3a90a1d8b567/assets/lighthouse-icon-light.svg), Juan García Carmona / Lighthouse, revision `e6ea62ab0184f517ab2653d3a91c3a90a1d8b567`. Local files retain upstream bytes; their hashes are asserted in `src/identity/identity.test.mjs`. Reuse follows the maintainer's issue brief; this document grants no new trademark or asset license.
-- `bench-banner.svg` is the editable illustration source authored for this issue. It reconstructs the selected coastal viewpoint rather than modifying or obscuring the original raster. Wood is rendered as open horizontal slats with no sofa upholstery. The illustrated coastal lighthouse is scenery, not a substitute application mark.
+- `bench-banner-edited-v2.png` is the corrected raster edit source. Its image-generation prompt and provenance are in `banner-edit-v2.md`. The original raster remains intact. `bench-banner.svg` is retained only as the rejected first reconstruction; it is no longer an export or preview input. The illustrated coastal lighthouse is scenery, not a substitute application mark.
 - `wordmark-dark.svg` / `wordmark-light.svg` embed the complete canonical source as a data URI, preserving geometry and proportions. Export code owns the text composition. System fonts are retained as editable text; font rasterization can differ by platform.
-- UI styling consumes installed `@juangcarmona/lighthouse-ui` 0.2.1 and its DESIGN.md/tokens.css unchanged. No package/profile update or alternate color system. Artwork colors use the upstream night/navy/blue palette, plus wood tones confined to illustration.
+- UI styling consumes installed `@juangcarmona/lighthouse-ui` 0.2.1 and its DESIGN.md/tokens.css unchanged. No package/profile update or alternate color system. Artwork colors use the upstream night/navy/blue palette, with the bench rendered in the same blue illustrated style as the original scene.
 
 ## Asset inventory
 
@@ -22,7 +22,9 @@
 | `apple-touch-icon.png` | 180 × 180 | Touch icon candidate |
 | `icon-192.png`, `icon-512.png` | Named pixel sizes | App icons, purpose `any`, not maskable |
 | `site.webmanifest` | JSON | Candidate name/icon inventory only, not an installed PWA |
-| `bench-banner.svg`, `readme-banner.png` | 1280 × 640 | Editable banner and README export |
+| `bench-banner-edited-v2.png` | 1774 × 887 | Corrected raster source; original composition edit |
+| `readme-banner.png` | 1280 × 640 | README export of the corrected source |
+| `bench-banner.svg` | 1280 × 640 | Rejected first reconstruction, retained for history only |
 | `social-preview.png` | 1200 × 630 | GitHub social preview, centered cover crop |
 
 The 2:1 and 1200:630 crops retain the name, left lighthouse, boats and bench. Only about 30.5 source pixels are removed from each horizontal edge for social output. No arbitrary square or ultrawide crop is promised. Review small favicon samples at native size; automated dimension checks do not establish recognizable detail.
@@ -48,6 +50,7 @@ Repository/package/namespace renaming and generated Lighthouse/ProductShape/ArcS
 From repository root after `npm ci --ignore-scripts`:
 
 ```sh
+npx playwright install chromium
 node src/identity/export.mjs
 node --test src/identity/identity.test.mjs
 node src/identity/check-browser.mjs /output/evidence/identity
@@ -58,4 +61,4 @@ Open the printed loopback URL for the review board and `/shell` for the shell fi
 
 ## Required maintainer decision
 
-Supply or identify the Loira reference photograph and accept/reject the exact bench composition, coastal atmosphere, wordmarks, native-size favicon and supported crops shown in the evidence board. Record accepted filenames/revision. Until then, tasks for visual acceptance and live reference activation remain unfinished, and this delivery is blocked rather than publication-ready.
+The supplied Loira reference is already available. Accept/reject the exact bench composition, coastal atmosphere, wordmarks, native-size favicon and supported crops shown in the evidence board. Record accepted filenames/revision. Until then, tasks for visual acceptance and live reference activation remain unfinished, and this delivery is blocked rather than publication-ready.
