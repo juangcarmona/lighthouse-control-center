@@ -6,7 +6,7 @@ The maintainer rejected the first reconstruction on 2026-11-08 because it lost t
 
 Preserve the original wide SoFa banner's coastal bay, lighthouse, beam, buildings, boats, mountains, framing, dark border, blue/cyan palette, stylized faceted geometry, perspective, light and shadows. Replace the couch in its foreground position with a simple slatted bench facing the sea, seen from behind at the same three-quarter angle. Render the bench in the same angular blue illustration style, with blue rim lighting, dark navy surfaces and simplified slats and supports. Use the Loira photograph only for the bench shape, never its photographic style, brown wood or background. Replace SOFA lettering with “Lighthouse” and “Control Center” within the original upper-right title area; retain “A clear course from backlog to production.” Do not redesign or simplify the illustration or add objects.
 
-The corrected candidate has been shown to the maintainer but has not yet been accepted. The canonical Lighthouse mark remains a separate upstream SVG, never a generated replacement.
+The maintainer accepted the corrected banner at `084436060f9ac820ad6c278fefc1b1c3fe79e77b` on 2026-11-08 and requested its use in the README and ArcShape/ProductShape documentation entrypoints. The canonical Lighthouse mark remains a separate upstream SVG, never a generated replacement.
 
 ## Exact tool prompt
 

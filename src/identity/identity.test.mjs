@@ -43,7 +43,7 @@ test('raster exports have documented dimensions and ICO contains three PNG sizes
   }
 });
 
-test('candidate copy and composite mark are correct; publication remains unchanged', async () => {
+test('candidate copy and composite mark are correct; application remains unchanged', async () => {
   const shell = await shellPreview();
   assert.match(shell, /Lighthouse Control Center/);
   assert.doesNotMatch(shell, /SoFa|Software factory|Factory operations|FACTORY OVERVIEW/);
@@ -53,8 +53,6 @@ test('candidate copy and composite mark are correct; publication remains unchang
     const canonical = await readFile(new URL(theme === 'dark' ? 'lighthouse-icon.svg' : 'lighthouse-icon-light.svg', assetRoot));
     assert.deepEqual(Buffer.from(encoded, 'base64'), canonical);
   }
-  const readme = await readFile(new URL('../../README.md', import.meta.url), 'utf8');
-  assert.match(readme, /\]\(assets\/socialpreview_1.png\)/);
   const production = await readFile(new URL('../web/public/index.html', import.meta.url), 'utf8');
   assert.doesNotMatch(production, /lighthouse-control-center|identity\.css/);
   const manifest = JSON.parse(await readFile(new URL('site.webmanifest', assetRoot), 'utf8'));

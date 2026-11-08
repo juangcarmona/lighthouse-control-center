@@ -1,6 +1,6 @@
-# SoFa
+# Lighthouse Control Center
 
-![SoFa: a sofa overlooking the bay, boats and lighthouse.](assets/socialpreview_1.png)
+![Lighthouse Control Center: a bench overlooking the blue bay, sailboats and lighthouse.](assets/lighthouse-control-center/readme-banner.png)
 
 SoFa is evolving into Lighthouse Control Center.
 

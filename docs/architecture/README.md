@@ -1,5 +1,7 @@
 # Architecture documentation
 
+![Lighthouse Control Center: a bench overlooking the blue bay, sailboats and lighthouse.](../../assets/lighthouse-control-center/readme-banner.png)
+
 This directory contains the system's canonical architecture documentation in Markdown. It follows the twelve sections of [arc42](https://arc42.org/). Each section has one directory named `NN-slug`; its `README.md` is the canonical section document and any other Markdown files in that directory are supporting architecture material.
 
 ## Sections

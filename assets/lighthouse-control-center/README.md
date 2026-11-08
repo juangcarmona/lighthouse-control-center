@@ -1,6 +1,6 @@
 # Lighthouse Control Center identity candidate
 
-**Unpublished draft for issue #123.** No existing artwork, README banner or application reference has been replaced. The maintainer must accept the exact rendered candidate before activation. The maintainer rejected the first reconstructed banner because it lost the original illustration style. The corrected `bench-banner-edited-v2.png` edits the preserved original using the supplied Loira photograph as a bench-shape reference. It is still awaiting acceptance.
+**Banner approved; application identity remains a draft for issue #123.** On 2026-11-08, the maintainer accepted the corrected banner at `084436060f9ac820ad6c278fefc1b1c3fe79e77b` and requested it in the root README and the ArcShape/ProductShape documentation entrypoints. Those three Markdown pages now reference the same `readme-banner.png`; the original artwork remains intact. Application references are unchanged. The maintainer rejected the first reconstructed banner because it lost the original illustration style. The corrected `bench-banner-edited-v2.png` edits the preserved original using the supplied Loira photograph as a bench-shape reference.
 
 ## Provenance and editable sources
 
@@ -33,7 +33,7 @@ The 2:1 and 1200:630 crops retain the name, left lighthouse, boats and bench. Th
 
 | Existing surface | Current location | Candidate / activation after acceptance |
 | --- | --- | --- |
-| Repository banner | Root README references `assets/socialpreview_1.png` | Switch reference to accepted `readme-banner.png`; keep original |
+| Documentation banners | Root, `docs/architecture/` and `docs/product/` READMEs | Approved `readme-banner.png` is referenced; original retained |
 | GitHub social preview | Repository setting, not controlled by tracked source | Maintainer uploads accepted `social-preview.png`; no setting changed here |
 | Observation shell | `src/web/public/index.html`, `app.css`, `app.js` | Local rehearsal uses these exact sources with identity copy/mark substitutions |
 | Historical Node host | `src/web/server.mjs` explicit route map | Register accepted icon routes only in reviewed activation |
@@ -43,7 +43,7 @@ The 2:1 and 1200:630 crops retain the name, left lighthouse, boats and bench. Th
 | Web manifest / favicon / touch references | None currently registered by these shells | Candidate files only; no PWA, start URL, scope or installability claim |
 | Legacy artwork | Other files under `assets/` | All preserved; no local candidate selected by filename |
 
-Repository/package/namespace renaming and generated Lighthouse/ProductShape/ArcShape projections are outside this visual increment. The rehearsal intentionally does not activate candidate assets in either host, including authenticated pages.
+Repository/package/namespace renaming and generated Lighthouse/ProductShape/ArcShape projections are outside this visual increment. The installed ArcShape reader does not embed Markdown images, and the installed ProductShape CLI has no snapshot command; this change adds banners to the canonical Markdown entrypoints without patching generated readers or installed tools. The rehearsal intentionally does not activate candidate assets in either host, including authenticated pages.
 
 ## Reproduce and review
 
@@ -59,6 +59,8 @@ node src/identity/preview.mjs
 
 Open the printed loopback URL for the review board and `/shell` for the shell fixture. Stop the local preview with Ctrl+C. The renderer binds only loopback on an allocated port, reads an explicit asset map, and uses fixed fictitious observations. It never contacts GitHub or an identity provider. The export/check commands start and stop their own preview servers and browser workers. In the harness, run each through its managed-command wrapper.
 
-## Required maintainer decision
+The earlier `docs/delivery/evidence/issue-123/candidate-v2/identity-browser.json` is a historical pre-acceptance receipt. Its pending status is superseded for the banner by the explicit owner decision recorded above; it does not describe current banner acceptance.
 
-The supplied Loira reference is already available. Accept/reject the exact bench composition, coastal atmosphere, wordmarks, native-size favicon and supported crops shown in the evidence board. Record accepted filenames/revision. Until then, tasks for visual acceptance and live reference activation remain unfinished, and this delivery is blocked rather than publication-ready.
+## Remaining application identity acceptance
+
+The bench banner is accepted for documentation. Wordmarks, native-size favicon, application icon activation and the GitHub social-preview setting remain separate work under #123. Banner acceptance does not establish acceptance of those surfaces.
