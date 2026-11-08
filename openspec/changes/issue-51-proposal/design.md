@@ -34,7 +34,7 @@ Cover new/repeated requests, two contexts on one issue, label-only unknown quest
 
 Run `npm run verify`, configured CI and independent review of all eleven Done dimensions. Use the existing real-identity host lane; actual connected-user inbox/current-question/continuation proof remains separate from browser fixtures. The owner deferred physical-phone rehearsal; do not request it again or claim it ran. A read-only code checkpoint can be previewed and reviewed while controls remain unavailable, but complete #51 acceptance needs #50/#48 dependencies and the real pending/resolved source trace. Rollback removes the new view/navigation and preserves repository execution, source records and existing issue controls.
 
-<!-- pdac:cite id="UC-RESOLVE-INTERVENTION" digest="sha256:c431ce770ce77f9212138e76558d6bd99641231a54ecc39231a673d1dc929b2b" -->
+<!-- pdac:cite id="UC-RESOLVE-INTERVENTION" digest="sha256:03ccd559e108d41bf3e5c9a324370b0bbd9ef3a4d914d68305f7144769be32ef" -->
 <!-- pdac:cite id="FR-INTERVENTION-INBOX" digest="sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8" -->
 <!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
 <!-- pdac:cite id="BR-EXPLICIT-WORK-COMMANDS" digest="sha256:5d2f308b670bdf6e577d2205ebc246ec56505253d81d6a5a5efe0b92b55d735e" -->

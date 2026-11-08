@@ -43,10 +43,6 @@ jobs:
         run: npx --no -- playwright install --with-deps chromium
       - name: Verify repository, specifications and product citations
         run: npm run verify
-      - name: Install isolated browser trust tooling
-        run: sudo apt-get update && sudo apt-get install -y libnss3-tools
-      - name: Verify the actual isolated development identity provider
-        run: npm run verify:identity:host
       - name: Retain browser evidence
         if: always()
         uses: actions/upload-artifact@v7

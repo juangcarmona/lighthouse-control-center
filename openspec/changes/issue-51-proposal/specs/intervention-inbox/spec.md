@@ -28,7 +28,7 @@ The inbox SHALL identify bounded source-backed waits by stable source context, s
 - **WHEN** account/repository authority is denied, old-scope data arrives late, or collection is incomplete/unavailable
 - **THEN** revoked context cannot reappear and missing local rows cannot establish source resolution
 
-<!-- pdac:cite id="UC-RESOLVE-INTERVENTION" digest="sha256:c431ce770ce77f9212138e76558d6bd99641231a54ecc39231a673d1dc929b2b" -->
+<!-- pdac:cite id="UC-RESOLVE-INTERVENTION" digest="sha256:03ccd559e108d41bf3e5c9a324370b0bbd9ef3a4d914d68305f7144769be32ef" -->
 <!-- pdac:cite id="FR-INTERVENTION-INBOX" digest="sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8" -->
 <!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
 <!-- pdac:cite id="BR-EXPLICIT-WORK-COMMANDS" digest="sha256:5d2f308b670bdf6e577d2205ebc246ec56505253d81d6a5a5efe0b92b55d735e" -->
