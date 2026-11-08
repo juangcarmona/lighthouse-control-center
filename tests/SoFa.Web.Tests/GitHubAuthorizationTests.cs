@@ -289,6 +289,83 @@ public sealed class GitHubAuthorizationTests
     Assert.Single(other.GitHub.Observations);
   }
 
+  [Theory]
+  [InlineData("1", 1L)]
+  [InlineData("2", 2L)]
+  [InlineData("1.0", 1L)]
+  [InlineData("1e0", 1L)]
+  [InlineData("20e-1", 2L)]
+  [InlineData("0.02e2", 2L)]
+  [InlineData("1.00000000000000000", 1L)]
+  [InlineData("9007199254740991", 9007199254740991L)]
+  [InlineData("90071992547409910e-1", 9007199254740991L)]
+  [InlineData("1e+0000000000000000000000000000000", 1L)]
+  [InlineData(null, null)]
+  [InlineData("null", null)]
+  [InlineData("\"2\"", null)]
+  [InlineData("true", null)]
+  [InlineData("{}", null)]
+  [InlineData("[]", null)]
+  [InlineData("0", null)]
+  [InlineData("-0", null)]
+  [InlineData("-1", null)]
+  [InlineData("1.5", null)]
+  [InlineData("1.00000000000000001", null)]
+  [InlineData("9007199254740991.00000000000000001", null)]
+  [InlineData("9007199254740992", null)]
+  [InlineData("1e999999999999999999999999999", null)]
+  [InlineData("1e-999999999999999999999999999", null)]
+  [InlineData("1e309", null)]
+  [InlineData("1e-309", null)]
+  [InlineData("100e-3", null)]
+  public async Task ObservationAttemptsUseExactRawTransportNumbers(string? token, long? expected)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    fixture.Handler.RunMetadata = (token is null ? "" : ",\"run_attempt\":" + token) + ",\"event\":\"workflow_dispatch\"";
+    var snapshot = await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None);
+    var run = Assert.Single(Assert.Single(snapshot!.Repositories).Runs!);
+    Assert.Equal(71, run.Id);
+    Assert.Equal(expected, run.RunAttempt);
+    Assert.Equal("workflow_dispatch", run.Event);
+    using var serialized = JsonDocument.Parse(JsonSerializer.Serialize(snapshot, JsonSerializerOptions.Web));
+    var json = serialized.RootElement.GetProperty("repositories")[0].GetProperty("runs")[0];
+    if (expected is { } known) Assert.Equal(known, json.GetProperty("runAttempt").GetInt64());
+    else Assert.Equal(JsonValueKind.Null, json.GetProperty("runAttempt").ValueKind);
+    Assert.Equal("workflow_dispatch", json.GetProperty("event").GetString());
+    Assert.Equal("observed-revision", run.SourceRevision);
+    Assert.Equal("https://github.com/example/repository/actions/runs/71", run.Url);
+  }
+
+  [Theory]
+  [InlineData(null, null)]
+  [InlineData("null", null)]
+  [InlineData("\"\"", null)]
+  [InlineData("\" \\t\\n\"", null)]
+  [InlineData("false", null)]
+  [InlineData("2", null)]
+  [InlineData("{}", null)]
+  [InlineData("\"push\"", "push")]
+  [InlineData("\" workflow_dispatch \"", " workflow_dispatch ")]
+  [InlineData("\"<img src=x onerror=alert(1)>\"", "<img src=x onerror=alert(1)>")]
+  public async Task ObservationEventsPreserveOnlyNonblankSourceText(string? token, string? expected)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    fixture.Handler.RunMetadata = token is null ? "" : ",\"event\":" + token;
+    var snapshot = await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None);
+    var run = Assert.Single(Assert.Single(snapshot!.Repositories).Runs!);
+    Assert.Null(run.RunAttempt);
+    Assert.Equal(expected, run.Event);
+    using var serialized = JsonDocument.Parse(JsonSerializer.Serialize(snapshot, JsonSerializerOptions.Web));
+    var json = serialized.RootElement.GetProperty("repositories")[0].GetProperty("runs")[0];
+    Assert.Equal(JsonValueKind.Null, json.GetProperty("runAttempt").ValueKind);
+    if (expected is null) Assert.Equal(JsonValueKind.Null, json.GetProperty("event").ValueKind);
+    else Assert.Equal(expected, json.GetProperty("event").GetString());
+  }
+
   private sealed class SourceFixture : IDisposable
   {
     private readonly GitHubTransport transport;
@@ -356,6 +433,7 @@ public sealed class GitHubAuthorizationTests
     internal Task? DataWait { get; set; }
     internal bool DataUnavailable { get; set; }
     internal HttpStatusCode? DataStatus { get; set; }
+    internal string? RunMetadata { get; set; }
     internal Action<HttpRequestMessage>? OnRequest { get; set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -388,6 +466,11 @@ public sealed class GitHubAuthorizationTests
       {
         if (DataWait is not null) await DataWait;
         if (DataStatus is { } status) return Response(status, new { message = "Unavailable" });
+        if (!DataUnavailable && RunMetadata is not null)
+          return new HttpResponseMessage(HttpStatusCode.OK)
+          {
+            Content = new StringContent("{\"workflow_runs\":[{\"id\":71,\"name\":\"CI\",\"status\":\"in_progress\",\"head_sha\":\"observed-revision\",\"html_url\":\"https://github.com/example/repository/actions/runs/71\",\"updated_at\":\"2026-11-07T12:00:00Z\"" + RunMetadata + "}]}", Encoding.UTF8, "application/json")
+          };
         return DataUnavailable ? Response(HttpStatusCode.ServiceUnavailable, new { message = "Unavailable" })
             : Response(HttpStatusCode.OK, new { workflow_runs = new[] { new { id = UserId, name = "CI", status = "in_progress", head_sha = "observed-revision", html_url = "https://github.com/example/repository/actions/runs/71", updated_at = "2026-11-07T12:00:00Z" } } });
       }
