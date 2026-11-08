@@ -1,0 +1,279 @@
+{
+  "binding": "c864fcecba1d5efc5747e619cf8766490e5e89e8d673c5ea496590727f76bb7f",
+  "runId": "42452259718",
+  "attempt": "1",
+  "sourceRevision": "dba2886abb761c07b03cd33e1b09844db352413e",
+  "intent": "2e308a29f984c440d34422f8e7fe541d050241c7bbab6f6d08627571f4dd6512",
+  "policyDigest": "4ad9dd78864380529a681de7936678b44cbd78eb2d867ab16defae5197e704bf",
+  "details": {
+    "refined": {
+      "problem": "Factory owners and authorized engineers inspecting bounded operational evidence cannot distinguish a workflow's retry attempt or triggering event. Extend the existing source projection and run cards so CLI, authenticated .NET output and browser agree, without changing run identity or execution authority.",
+      "estimate": {
+        "points": 2,
+        "status": "confirmed",
+        "rationale": {
+          "scope": "Small additive observation behavior: two source fields in the existing Node collector, .NET projection and shared run-card renderer, plus focused tests and documentation. Existing endpoint and serialization paths remain intact; no new subsystem, migration or contract ownership is introduced. This fits the intake guide's small-component-behavior anchor, not a legacy-label conversion.",
+          "dependencies": "Issue #99 records #98/#101/#102/#104/#107 merged. Mounted policy contains the #108 6600-second deadline adoption, and the supported .NET observation boundary already exists. #52/#57 are related future work; #88 tracks qualification rather than implementation. No new package, credential or product decision is needed.",
+          "verification": "Reuse the admitted npm installation, complete container verification and pinned strict issue-specific OpenSpec validation. Add known/missing/malformed metadata cases across Node, .NET and browser, including the raw fractional JSON lexeme through both actual parsers. Existing authority, stale, unavailable, safe-link, keyboard and accessibility assertions stay frozen. Trusted hosted CI and publication remain later host responsibilities."
+        },
+        "confidence": "medium",
+        "uncertainty": [
+          "Exact source-number validation must reject 1.00000000000000001 before floating-point rounding can erase its fractional value; implementation and independent review must prove this through both parsing paths.",
+          "Implementation command success and fresh host environment/App/model preflights are not established by this refinement or by earlier failed native attempts."
+        ]
+      },
+      "eligibility": {
+        "points": 2,
+        "risk": "low",
+        "reversible": true,
+        "dependenciesResolved": true,
+        "scopeKnown": true,
+        "productChangeNeeded": false,
+        "humanDecisionRequired": false,
+        "reason": "FF assessment meets low risk and numeric 1–3 points without five-point opt-in. Source inspection shows additive read-only fields on existing projection and rendering paths; reverting these additions needs no migration or source mutation. Applied CHG-OBSERVE-REPOSITORY-WORKFLOWS-001, FR-RECOVERABLE-EXECUTION and ADR-0006 already supply the product meaning. Issue #99 resolves known/unknown behavior and bounds files; mounted .lighthouse/unattended.json supplies the 6600-second route. No unresolved refinement decision remains. Host authority/preflight checks and later independent review, CI and merge protections remain binding."
+      },
+      "acceptanceCriteria": [
+        "Collect GitHub run_attempt and event as source evidence in both existing collectors; preserve known positive integral attempts and distinguish 2 from 1. Missing or malformed attempt and missing event are explicitly unknown, never inferred.",
+        "Validate exact numeric integrality before projecting a known attempt. Raw JSON run_attempt: 1.00000000000000001 remains unknown through the actual Node and .NET parsing paths, even if a floating-point parser rounds it to 1.",
+        "Serialize both fields in the CLI and authenticated .NET projection with consistent semantics; show both in every existing run-card category using safe text and the unchanged source link.",
+        "Preserve repository/run identities, source revisions, timestamps, status/work/wait grouping, bounded counts, filters, stale/unavailable behavior, keyboard focus and accessibility. Preserve all .NET authority/session/token/cache behavior and every existing safety assertion.",
+        "Add focused Node, permitted .NET metadata and browser tests for known and missing values, malformed attempts and hostile event text; complete all admitted checks against the candidate.",
+        "Before closure obtain native independent reviews, trusted full hosted CI, actual PR/head/merge evidence and post-merge acceptance. Failed runs 42410198253 and 42429047634 remain negative evidence, not planning or delivery acceptance."
+      ],
+      "scope": {
+        "allowedFiles": [
+          "src/observation/github.mjs",
+          "src/web/public/app.js",
+          "src/web/public/app.css",
+          "src/web/public/index.html",
+          "src/SoFa.Modules.Workspace/Source/GitHubObservations.cs",
+          "README.md",
+          "tests/observation.test.mjs",
+          "tests/browser/observation.spec.mjs",
+          "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs"
+        ],
+        "planning": "Only the harness-owned issue-specific OpenSpec planning root; host materializes and independently validates returned proposal artifacts.",
+        "restrictions": "Only additive .NET observation mapping and the exact reviewed metadata-test exceptions. Preserve all existing assertions and other frozen verification inputs.",
+        "outOfScope": [
+          "Authentication, sessions, token transport, account UI, workflows, packages, policy, credentials, deployment and runtime administration",
+          "New execution controls, recovery claims, new product semantics or accepted-model edits",
+          "Completing #52/#57 or dispatching parent #88",
+          "Introducing gh, GitHub credentials, Docker socket or a model into the application"
+        ]
+      },
+      "verificationPlan": {
+        "admittedCommands": [
+          [
+            "npm",
+            "ci",
+            "--ignore-scripts"
+          ],
+          [
+            "env",
+            "CI=true",
+            "npm",
+            "run",
+            "verify:container"
+          ],
+          [
+            "npx",
+            "--yes",
+            "--package=@fission-ai/openspec@1.15.0",
+            "openspec",
+            "validate",
+            "issue-99-proposal",
+            "--strict",
+            "--no-interactive"
+          ]
+        ],
+        "executionStatus": "Planned only; no command execution receipts produced at refine.",
+        "focusedCoverage": [
+          "Node: known attempts 1/2, valid positive integers, missing/null/nonpositive/nonintegral/nonnumeric values, known/missing event, serialized snapshot and actual raw JSON parsing including the precision lexeme.",
+          ".NET: same known/unknown metadata semantics through real JsonElement transport/projection and serialization; preserve coalescing, fresh authority checks, invalidation and stale-source assertions.",
+          "Browser: known and unknown values in active/history/unclassified/stale cards, safe hostile event text, unchanged repository-specific source links, filters, focus, dark/light desktop/mobile layout and accessibility."
+        ],
+        "runtimeEvidence": "During implementation use the real application with the existing GitHub browser fixture for known/missing metadata and exercise the actual unconfigured/unavailable path. Keep fixture observations distinct from positive authenticated source evidence.",
+        "proposalValidation": "Use the diagnosed layout: one scope declaration immediately after ADDED Requirements, short normative text before the first scenario, unchanged citation comments after assertions in the final scenario of their own requirement. Preserve citation IDs/digests, scenarios and strict validation; host independently validates materialized artifacts.",
+        "laterHostEvidence": "Fresh App/environment/model preflights and authority checks, independent native plan/candidate reviews, full hosted forge CI including authenticated App/publication evidence, actual PR/head/merge and post-merge acceptance remain future requirements. A blocked native run cannot be substituted with operator-only success."
+      },
+      "definitionOfReady": {
+        "titleAndDescription": "Satisfied by #99's explicit attempt/event outcome and retry ambiguity.",
+        "stakeholders": "Factory owner and authorized repository engineers inspecting source workflow evidence; supported by the applied Product Change and README operational overview.",
+        "priority": "N/A: the repository Definition of Ready explicitly drops formal priority.",
+        "dependencies": "Resolved for refinement: existing authenticated observer, issue-recorded merged prerequisites and mounted 6600-second route adoption; later host delivery gates are not claimed complete.",
+        "acceptanceAndScope": "Observable criteria and exact path restrictions are recorded above; no ambiguous product outcome remains.",
+        "productRulesAndDecisions": "Applied observation Product Change, source-evidence requirements, accepted ADR-0006 and authenticated runtime view preserve read-only/source authority boundaries.",
+        "affectedBehavior": "CLI JSON collection, authenticated observation JSON and all existing shared browser run cards; callers inspected above.",
+        "quality": "Safe text/links, no new authority or credentials, no extra source requests required, unchanged bounded collection/cache behavior, stale handling, filters, keyboard and accessibility.",
+        "testImpact": "Identified above; detailed implementation planning remains the proposal stage responsibility.",
+        "unknownsAndRisks": "Exact numeric parsing and later execution evidence are explicit verification risks, not unresolved product decisions. No current-stage blocker."
+      },
+      "agentObservations": [
+        "Additional source-inspection finding, not an execution receipt: the Node default collector uses JSON.parse on gh stdout, so checking Number.isInteger only after parsing cannot satisfy the fractional-lexeme requirement. Preserve raw numeric evidence during parsing within the allowed collector file.",
+        "Additional source-inspection finding: .NET currently maps bounded runs inside CollectAsync and the HTTP caller serializes its snapshot directly. Exact attempt validation must remain local to the permitted observation mapping, not alter shared authentication or general source-number helpers.",
+        "No prior context.triage estimate was supplied; no estimateRevision or predecessor has been invented. This is an FF assessment, not a hotfix request."
+      ]
+    },
+    "plan": {
+      "files": [
+        {
+          "path": "openspec/changes/issue-99-proposal/proposal.md",
+          "content": "# Proposal\n\n<!-- pdac-scope: cited -->\n\n## Why\n\nIssue #99 addresses ambiguous workflow evidence: a source run link does not distinguish its retry attempt or triggering event. Show those facts consistently without treating an observed retry as successful recovery.\n<!-- pdac:cite id=\"FR-RECOVERABLE-EXECUTION\" digest=\"sha256:02460c262c7ad33b35456a43d2f878a3791494aae51aa1b70f2578069054f176\" -->\n<!-- pdac:cite id=\"BR-RECOVERABLE-EXECUTION\" digest=\"sha256:91ee12d11c59c0ce7c865014a1d44f800b69733a8b915de25f57c4cb4631f014\" -->\n\n## What Changes\n\n- Add source `run_attempt` and `event` to collected run evidence, serialized as `runAttempt` and `event` in both projections. Missing or malformed values become explicit nulls, displayed as unknown.\n- Validate the exact numeric source value before accepting an attempt; raw `1.00000000000000001` must remain unknown even when floating-point parsing would round it to 1.\n- Show both facts as inert text in every existing run card, retaining the existing run source link and repository/run identity.\n- Add focused Node, .NET metadata and browser coverage and update README.md; preserve all existing assertions and evidence limits.\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"BR-EXPLAINABLE-SIGNALS\" digest=\"sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9\" -->\n<!-- pdac:cite id=\"TERM-EXECUTION-RUN\" digest=\"sha256:642146e1d05adc446743fc42425532ad889bcc8ecb6b03d2e26fec133bb59ba6\" -->\n\n## Capabilities\n\n### New Capabilities\n\nNone.\n\n### Modified Capabilities\n\n- `factory-overview`: add source attempt/event observation requirements and consistent known/unknown presentation; keep its fourteen existing requirements intact.\n\nThis is observable behavior, so a delta is required; do not set `skip_specs`. The source-bound host inventory lists delivery-verification, factory-overview, github-user-connection, identity-environments and owner-access. The relevant factory-overview and github-user-connection specifications were read in full. No connection or identity requirements change.\n\n## Impact\n\nImplementation is limited to `src/observation/github.mjs`, `src/SoFa.Modules.Workspace/Source/GitHubObservations.cs` and `src/web/public/app.js`, with `src/web/public/app.css` and `src/web/public/index.html` only if needed for metadata text/layout. Documentation is limited to `README.md`; tests to `tests/observation.test.mjs`, `tests/browser/observation.spec.mjs` and metadata fixtures/assertions in `tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs`. Planning stays under this issue-specific root.\n\nOnly additive .NET observation mapping is authorized. No new package, request, endpoint, persistence, migration, execution control or credential is needed. Preserve authentication, sessions, token transport, permissions, cache behavior and source guards. Do not change workflows, policies, packages, deployment, runtime administration or other verification inputs.\n<!-- pdac:cite id=\"BR-LAN-PRIVILEGE-BOUNDARY\" digest=\"sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8\" -->\n<!-- pdac:cite id=\"QR-EXECUTION-SECURITY\" digest=\"sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a\" -->\n\nRepository execution remains independent of SoFa. Keep keyboard access, visible focus and mobile layout; this bounded change does not claim complete phone-journey acceptance.\n<!-- pdac:cite id=\"CON-FACTORY-RUNTIME\" digest=\"sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d\" -->\n<!-- pdac:cite id=\"QR-MOBILE-OPERATIONS\" digest=\"sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35\" -->\n\n### Product impact and authority\n\nBefore drafting, compared #99 with the whole mounted product model and widened discovery using the host-prepared impact reports. The nine cited dependencies are FR-RECOVERABLE-EXECUTION, BR-RECOVERABLE-EXECUTION, BR-GITHUB-SOURCE, BR-EXPLAINABLE-SIGNALS, TERM-EXECUTION-RUN, CON-FACTORY-RUNTIME, BR-LAN-PRIVILEGE-BOUNDARY, QR-EXECUTION-SECURITY and QR-MOBILE-OPERATIONS. They ground the added observations and preserved boundaries; none is edited.\n\nChecked direct/transitive neighbours and left out of delivery changes: UC-EXECUTE-WORK-UNIT and BC-EXECUTION retain their observation role; CON-TRUSTED-LAN and UC-ACCESS-FACTORY retain authenticated access; FR-RUNTIME-HEALTH, UC-MAINTAIN-RUNTIME and BC-RUNTIME-OPERATIONS gain no telemetry; FR-DELIVERY-EVIDENCE and BC-DELIVERY gain no delivery-verification feature; UC-SCHEDULE-WORK, FR-MULTI-PROJECT-SCHEDULING and BC-SCHEDULING gain no scheduling; FR-RETENTION-POLICY gains no retention feature. Work commands, authorization, human decisions, backlog, discovery, issue conversation, inbox, project signals and the wider journeys remain unchanged. Graph reachability is not permission to implement those neighbours.\n\nImplements the already applied CHG-OBSERVE-REPOSITORY-WORKFLOWS-001 within ADR-0006 and the existing authenticated runtime view. No product-definition drift or new architecture decision is proposed. This does not complete #52/#57 or qualify parent #88.\n\n### Completion boundary\n\nSee design.md and tasks.md for candidate checks. Completion requires focused regression evidence, unchanged safety assertions, complete admitted checks, current citations, independent native reviews, full trusted hosted CI, actual PR/head/merge and post-merge acceptance. Planning artifacts and prior failed runs are not delivery receipts.\n"
+        },
+        {
+          "path": "openspec/changes/issue-99-proposal/design.md",
+          "content": "# Design\n\n<!-- pdac-scope: cited -->\n\n## Context\n\nSee proposal.md for motivation and the factory-overview delta for behavior. The historical CLI collector parses GitHub JSON in its default getter. The supported .NET observer maps JsonElement rows in CollectAsync and serializes its snapshot through the existing HTTP boundary. The browser shares runCard across active, completed, unclassified and stale views. ADR-0006 and the authenticated runtime view remain authoritative; no architecture documents change.\n\n## Goals / Non-Goals\n\n**Goals:** Add two source facts with identical known/unknown semantics and no loss of run identity, source times or limitations. A greater attempt is evidence of a retry, not proof of recovery.\n<!-- pdac:cite id=\"FR-RECOVERABLE-EXECUTION\" digest=\"sha256:02460c262c7ad33b35456a43d2f878a3791494aae51aa1b70f2578069054f176\" -->\n<!-- pdac:cite id=\"BR-RECOVERABLE-EXECUTION\" digest=\"sha256:91ee12d11c59c0ce7c865014a1d44f800b69733a8b915de25f57c4cb4631f014\" -->\n<!-- pdac:cite id=\"TERM-EXECUTION-RUN\" digest=\"sha256:642146e1d05adc446743fc42425532ad889bcc8ecb6b03d2e26fec133bb59ba6\" -->\n\n**Non-Goals:** No execution/recovery control, inferred event, new source lookup, source-link rewrite, schema migration, account UI or authority change. Preserve source guards, permission-before-cache checks, coalescing, connection-generation invalidation and session deadlines. Do not introduce gh or operator authentication into the application.\n<!-- pdac:cite id=\"CON-FACTORY-RUNTIME\" digest=\"sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d\" -->\n<!-- pdac:cite id=\"BR-LAN-PRIVILEGE-BOUNDARY\" digest=\"sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8\" -->\n<!-- pdac:cite id=\"QR-EXECUTION-SECURITY\" digest=\"sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a\" -->\n\n## Decisions\n\n### Add nullable evidence to existing run objects\n\nMap `run_attempt` to `runAttempt` (positive exact integer representable as a safe JSON/JavaScript integer, through 9007199254740991) and `event` to `event` (nonblank string, preserved as source text). Serialize both properties explicitly, using null for absent, null, malformed or unrepresentable values. Do not coerce strings/booleans to attempts or derive event from workflow name, status or labels. Keep other fields and the CLI array versus HTTP wrapper unchanged. Explicit nulls are preferable to omitted keys or mixed number/string sentinels because both clients can express unknown consistently.\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"BR-EXPLAINABLE-SIGNALS\" digest=\"sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9\" -->\n\n### Validate source numbers before precision is lost\n\nIn github.mjs, use the native JSON.parse reviver's primitive source context to validate numeric `run_attempt` tokens in the actual default stdout parsing path. Keep other JSON numbers untouched and retain the existing injected-object getter contract for tests/callers. Expose a small parsing helper from this same allowed file so raw transport JSON can exercise exactly the parser used by the default collector. A path without raw-token support must fail closed for source attempts rather than trust a rounded number. Object-injected test values still require positive safe integers, but cannot prove raw-source precision.\n\nIn GitHubObservations.cs, read the attempt JsonElement's GetRawText and apply the same exact lexical-value rule in a local helper. Extend only ObservedRun and its mapping; do not reuse or alter shared number/transport/authority helpers.\n\nEvaluate sign, decimal digits and exponent exactly: account for decimal scale and trailing zeros, reject a remaining fractional part, then range-check the positive integer before conversion. Thus `1`, `1.0` and `1e0` retain 1, `2` retains 2, and `1.00000000000000001` remains unknown. Bound exponent handling by token length and the safe-integer range rather than constructing arbitrarily large powers or allocating by the exponent. Reject post-parse integer checks and decimal/double conversions as the sole validator: rounding can erase the defect. No dependency or general JSON parser replacement is needed.\n\n### Extend the shared renderer, not identity or navigation\n\nAppend labeled Source attempt and Triggering event text in runCard; use unknown for null/missing values, including older snapshots. Use the existing textContent-based node creation and unchanged repository-bound source link. Do not add attempt to sourceKey: refreshed metadata belongs to the same run. Preserve groups, counts, disclosures, filters, timestamps and stale handling. Prefer existing styles; touch app.css/index.html only for necessary text/layout support. Long hostile event strings must wrap and remain inert.\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"QR-MOBILE-OPERATIONS\" digest=\"sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35\" -->\n\n## Risks / Trade-offs\n\n- [Numeric precision or parser mismatch] → Run identical raw JSON cases through the actual Node parser/collector and .NET transport/projection; assert serialized output, not only helper results.\n- [Unbounded exponent processing] → Compare scale/range before constructing a number; cover huge exponents and safe-integer boundaries.\n- [Authority regression hidden by metadata tests] → Keep all existing assertions, identity fixtures, permissions and verification entrypoints frozen; use only the exact three metadata-test exceptions.\n- [Fixture evidence mistaken for real source acceptance] → Label browser fixtures separately and retain later host authenticated-source and forge evidence.\n\n## Verification and Definition of Done\n\nCollector work lands with known/missing/malformed metadata tests and README JSON semantics. Browser work lands with all-card coverage, hostile text, attempt changes under stable focus, filter/stale preservation, light/dark desktop/390px layout and accessibility checks. The .NET raw fractional case must pass through HttpResponseMessage JSON transport and the production observer before serialization, without changing authentication fixtures.\n\nPlanned admitted commands, not execution receipts:\n\n```sh\nnpm ci --ignore-scripts\nenv CI=true npm run verify:container\nnpx --yes --package=@fission-ai/openspec@1.15.0 openspec validate issue-99-proposal --strict --no-interactive\n```\n\nThe existing container suite includes documentation, Node, product/model/integration/citation, strict specs, architecture, container-scoped .NET and browser checks. Preserve all checks and report their actual receipts. The host also independently validates returned proposal citations. For delta formatting use the issue's diagnosed exception: scope immediately after ADDED Requirements, short normative paragraphs, and unchanged canonical citation payloads after the assertions of each requirement's last scenario.\n\nRuntime observations may use the real app and existing GitHub browser fixture plus the actual unconfigured/unavailable path; no new credential or tool dependency is required. Later native independent plan/candidate reviews, full hosted CI including host-only lanes, positive authenticated App/publication evidence, actual PR/head/merge and post-merge acceptance remain mandatory. A blocked native run stays blocked. This worker executes no commands and makes no delivery claim.\n\n## Migration Plan\n\nAdditive nullable fields need no data migration. Existing snapshots without them display unknown. Deploy through the existing reviewed delivery path only; rollback removes the additions without changing source state, credentials, policy or persistence.\n"
+        },
+        {
+          "path": "openspec/changes/issue-99-proposal/tasks.md",
+          "content": "# Tasks\n\n<!-- pdac-scope: cited -->\n\n## 1. Source metadata and projection parity\n\n- [ ] 1.1 Extend github.mjs with raw-token exact attempt validation and additive runAttempt/event projection; add tests/observation.test.mjs cases for 1/2, integral decimal/exponent forms, missing/null/string/boolean/nonpositive/fractional/out-of-range inputs and known/missing event. Verify the actual default-path JSON parser feeds collector serialization and raw `1.00000000000000001` yields null while existing source/read-only/unavailable/timing assertions remain intact.\n- [ ] 1.2 Add nullable observation fields and local exact JsonElement number validation in GitHubObservations.cs; extend only observation metadata fixtures/assertions in GitHubAuthorizationTests.cs. Verify the same raw JSON matrix through the real transport, observer and JSON serialization, with explicit nulls and all existing authority, coalescing, stale, cancellation and read-stop assertions unchanged.\n- [ ] 1.3 Update README.md with runAttempt/event field semantics, explicit unknowns and the retry-versus-recovery limitation. Verify documented examples match Node and .NET serialized cases and keep historical CLI authentication separate from the supported web adapter.\n\nThese tasks consume source evidence without inferring recovery or replacing source identity.\n<!-- pdac:cite id=\"FR-RECOVERABLE-EXECUTION\" digest=\"sha256:02460c262c7ad33b35456a43d2f878a3791494aae51aa1b70f2578069054f176\" -->\n<!-- pdac:cite id=\"BR-RECOVERABLE-EXECUTION\" digest=\"sha256:91ee12d11c59c0ce7c865014a1d44f800b69733a8b915de25f57c4cb4631f014\" -->\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"BR-EXPLAINABLE-SIGNALS\" digest=\"sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9\" -->\n<!-- pdac:cite id=\"TERM-EXECUTION-RUN\" digest=\"sha256:642146e1d05adc446743fc42425532ad889bcc8ecb6b03d2e26fec133bb59ba6\" -->\n\n## 2. Shared run cards\n\n- [ ] 2.1 Add labeled attempt/event text and explicit unknowns in app.js's shared run card, retaining sourceKey and source link; change app.css/index.html only if needed for wrapping or explanatory text. Add browser metadata tests in observation.spec.mjs and update README.md's overview description in this slice. Verify known/missing values in running, queued/pending/requested, waiting, completed, unclassified and stale cards; attempt 2 must differ visibly from 1.\n- [ ] 2.2 Extend browser cases for hostile/long event text and attempt changes across refresh. Verify inert text, unchanged repository-bound links, source times, counts, filters, stale warnings, keyboard focus and accessibility in light/dark desktop and 390px layouts, preserving every existing assertion.\n\nPresentation remains source-backed and keyboard-accessible; it gains no authority.\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"QR-MOBILE-OPERATIONS\" digest=\"sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35\" -->\n\n## 3. Candidate integration evidence\n\n- [ ] 3.1 Run the admitted `npm ci --ignore-scripts`, `env CI=true npm run verify:container` and `npx --yes --package=@fission-ai/openspec@1.15.0 openspec validate issue-99-proposal --strict --no-interactive` on the candidate. Verify retained receipts and the existing product citation check are successful; compare the diff with the exact allowlist and three metadata-test exceptions, preserving all other frozen inputs.\n- [ ] 3.2 Exercise the real app against the existing browser GitHub fixture for known/missing values and the actual unconfigured/unavailable path. Verify labeled screenshots/observations show correct metadata and unknown evidence; record explicitly that fixture evidence is not authenticated GitHub acceptance.\n- [ ] 3.3 Reconcile the delivered behavior with the delta and refresh affected citations only from current provider-generated payloads if needed. Verify exactly one scope declaration per document, all citations current and zero strict OpenSpec issues; preserve the diagnosed citation placement and record any design deviation without expanding #99.\n\nThese checks must preserve authentication, session, source authority and independent repository execution; no new credentials, gh, Docker socket or model enter the app.\n<!-- pdac:cite id=\"BR-LAN-PRIVILEGE-BOUNDARY\" digest=\"sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8\" -->\n<!-- pdac:cite id=\"QR-EXECUTION-SECURITY\" digest=\"sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a\" -->\n<!-- pdac:cite id=\"CON-FACTORY-RUNTIME\" digest=\"sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d\" -->\n\n## Workflow follow-up\n\n- Trusted host independently validates these artifacts and obtains native planning review before implementation; all boxes above remain unchecked until actual implementation evidence exists.\n- Require fresh host preflights, independent native candidate acceptance, full hosted forge CI including authenticated App/publication and host-only lanes, actual PR/head/base/merge receipts and post-merge acceptance before closure. Keep one shared correction and the original 6600-second route; operator-only success cannot replace a blocked native run.\n- Archive only after the configured reviews, checks and citation validation pass. Do not claim #52/#57 completion or parent #88 qualification from this plan.\n"
+        },
+        {
+          "path": "openspec/changes/issue-99-proposal/specs/factory-overview/spec.md",
+          "content": "## ADDED Requirements\n\n<!-- pdac-scope: cited -->\n\n### Requirement: Source run attempt evidence\n\nEach collected run SHALL expose its source attempt as a known positive exact integer or explicitly unknown. A fractional numeric source value MUST NOT become known through rounding. Attempt metadata SHALL NOT replace run identity or establish successful recovery.\n\n#### Scenario: Known attempts distinguish a retry\n\n- **WHEN** GitHub supplies run_attempt 1 or 2 for an existing run\n- **THEN** the projection preserves the known attempt and distinguishes 2 from 1 without changing repository/run identity or inferring recovery\n\n#### Scenario: Missing and malformed source attempts\n\n- **WHEN** run_attempt is absent, null, nonnumeric, nonpositive, fractional or not exactly representable in the projection\n- **THEN** its projected attempt is explicitly unknown without coercion, a default first attempt or a nearest integer\n\n#### Scenario: Fractional JSON must survive precision checks\n\n- **WHEN** source JSON contains run_attempt as the numeric lexeme `1.00000000000000001`\n- **THEN** both CLI and authenticated observation parsing paths retain the fact that it is fractional and project unknown, even if a floating-point parser would produce 1\n- **THEN** exact integral numeric forms such as `1`, `1.0`, `1e0` and `2` remain known when representable\n<!-- pdac:cite id=\"FR-RECOVERABLE-EXECUTION\" digest=\"sha256:02460c262c7ad33b35456a43d2f878a3791494aae51aa1b70f2578069054f176\" -->\n<!-- pdac:cite id=\"BR-RECOVERABLE-EXECUTION\" digest=\"sha256:91ee12d11c59c0ce7c865014a1d44f800b69733a8b915de25f57c4cb4631f014\" -->\n<!-- pdac:cite id=\"TERM-EXECUTION-RUN\" digest=\"sha256:642146e1d05adc446743fc42425532ad889bcc8ecb6b03d2e26fec133bb59ba6\" -->\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"BR-EXPLAINABLE-SIGNALS\" digest=\"sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9\" -->\n\n### Requirement: Source triggering event evidence\n\nEach collected run SHALL expose its triggering event from GitHub as source text or explicitly unknown. Missing or malformed event evidence MUST NOT be inferred from other run facts.\n\n#### Scenario: Known triggering event\n\n- **WHEN** GitHub supplies a nonblank string event for a collected run\n- **THEN** the projection preserves that event as source evidence associated with the same repository/run and existing source link\n\n#### Scenario: Unknown triggering event\n\n- **WHEN** event is absent, null, blank or not a string\n- **THEN** event is explicitly unknown rather than inferred from workflow name, status, labels or attempt\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"BR-EXPLAINABLE-SIGNALS\" digest=\"sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9\" -->\n\n### Requirement: Consistent safe run metadata presentation\n\nThe CLI snapshot, authenticated observation projection and every existing run-card category SHALL agree on known and unknown attempt/event evidence. The additions MUST preserve existing source, safety, accessibility, freshness and read-only boundaries.\n\n#### Scenario: Serialized and displayed metadata agree\n\n- **WHEN** a run with known or unknown attempt/event evidence is serialized or displayed in active, completed, unclassified or retained stale evidence\n- **THEN** CLI and authenticated JSON include both fields with the same semantics, using null for unknown, and its card labels both facts with unknown where necessary\n- **THEN** older snapshots missing these fields display unknown and the existing repository-bound run source link remains unchanged\n\n#### Scenario: Safe metadata under refresh and filtering\n\n- **WHEN** event contains hostile markup or long text, or an attempt changes while observations refresh or filters change\n- **THEN** source text remains inert, layout remains usable in existing desktop/mobile themes, and keyboard focus follows the same run identity\n- **THEN** source revisions, timestamps, work/wait groups, counts, filters, stale/unavailable evidence and existing accessibility behavior are preserved\n\n#### Scenario: Metadata does not grant authority\n\n- **WHEN** a client reads or refreshes run metadata with valid, lost or unavailable source authority\n- **THEN** existing authentication/session, permission-before-cache, coalescing, invalidation and stale-evidence rules remain unchanged\n- **THEN** observation introduces no source mutation, new credential, execution dependency or recovery claim; repository workflows retain execution authority\n<!-- pdac:cite id=\"FR-RECOVERABLE-EXECUTION\" digest=\"sha256:02460c262c7ad33b35456a43d2f878a3791494aae51aa1b70f2578069054f176\" -->\n<!-- pdac:cite id=\"BR-RECOVERABLE-EXECUTION\" digest=\"sha256:91ee12d11c59c0ce7c865014a1d44f800b69733a8b915de25f57c4cb4631f014\" -->\n<!-- pdac:cite id=\"BR-GITHUB-SOURCE\" digest=\"sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a\" -->\n<!-- pdac:cite id=\"BR-EXPLAINABLE-SIGNALS\" digest=\"sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9\" -->\n<!-- pdac:cite id=\"CON-FACTORY-RUNTIME\" digest=\"sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d\" -->\n<!-- pdac:cite id=\"BR-LAN-PRIVILEGE-BOUNDARY\" digest=\"sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8\" -->\n<!-- pdac:cite id=\"QR-EXECUTION-SECURITY\" digest=\"sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a\" -->\n<!-- pdac:cite id=\"QR-MOBILE-OPERATIONS\" digest=\"sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35\" -->\n"
+        },
+        {
+          "path": "openspec/changes/issue-99-proposal/.openspec.yaml",
+          "content": "schema: spec-driven\ncreated: 2026-11-08\n"
+        }
+      ],
+      "refinement": {
+        "problem": "Factory owners and authorized engineers inspecting bounded operational evidence cannot distinguish a workflow's retry attempt or triggering event. Extend the existing source projection and run cards so CLI, authenticated .NET output and browser agree, without changing run identity or execution authority.",
+        "estimate": {
+          "points": 2,
+          "status": "confirmed",
+          "rationale": {
+            "scope": "Small additive observation behavior: two source fields in the existing Node collector, .NET projection and shared run-card renderer, plus focused tests and documentation. Existing endpoint and serialization paths remain intact; no new subsystem, migration or contract ownership is introduced. This fits the intake guide's small-component-behavior anchor, not a legacy-label conversion.",
+            "dependencies": "Issue #99 records #98/#101/#102/#104/#107 merged. Mounted policy contains the #108 6600-second deadline adoption, and the supported .NET observation boundary already exists. #52/#57 are related future work; #88 tracks qualification rather than implementation. No new package, credential or product decision is needed.",
+            "verification": "Reuse the admitted npm installation, complete container verification and pinned strict issue-specific OpenSpec validation. Add known/missing/malformed metadata cases across Node, .NET and browser, including the raw fractional JSON lexeme through both actual parsers. Existing authority, stale, unavailable, safe-link, keyboard and accessibility assertions stay frozen. Trusted hosted CI and publication remain later host responsibilities."
+          },
+          "confidence": "medium",
+          "uncertainty": [
+            "Exact source-number validation must reject 1.00000000000000001 before floating-point rounding can erase its fractional value; implementation and independent review must prove this through both parsing paths.",
+            "Implementation command success and fresh host environment/App/model preflights are not established by this refinement or by earlier failed native attempts."
+          ]
+        },
+        "eligibility": {
+          "points": 2,
+          "risk": "low",
+          "reversible": true,
+          "dependenciesResolved": true,
+          "scopeKnown": true,
+          "productChangeNeeded": false,
+          "humanDecisionRequired": false,
+          "reason": "FF assessment meets low risk and numeric 1–3 points without five-point opt-in. Source inspection shows additive read-only fields on existing projection and rendering paths; reverting these additions needs no migration or source mutation. Applied CHG-OBSERVE-REPOSITORY-WORKFLOWS-001, FR-RECOVERABLE-EXECUTION and ADR-0006 already supply the product meaning. Issue #99 resolves known/unknown behavior and bounds files; mounted .lighthouse/unattended.json supplies the 6600-second route. No unresolved refinement decision remains. Host authority/preflight checks and later independent review, CI and merge protections remain binding."
+        },
+        "acceptanceCriteria": [
+          "Collect GitHub run_attempt and event as source evidence in both existing collectors; preserve known positive integral attempts and distinguish 2 from 1. Missing or malformed attempt and missing event are explicitly unknown, never inferred.",
+          "Validate exact numeric integrality before projecting a known attempt. Raw JSON run_attempt: 1.00000000000000001 remains unknown through the actual Node and .NET parsing paths, even if a floating-point parser rounds it to 1.",
+          "Serialize both fields in the CLI and authenticated .NET projection with consistent semantics; show both in every existing run-card category using safe text and the unchanged source link.",
+          "Preserve repository/run identities, source revisions, timestamps, status/work/wait grouping, bounded counts, filters, stale/unavailable behavior, keyboard focus and accessibility. Preserve all .NET authority/session/token/cache behavior and every existing safety assertion.",
+          "Add focused Node, permitted .NET metadata and browser tests for known and missing values, malformed attempts and hostile event text; complete all admitted checks against the candidate.",
+          "Before closure obtain native independent reviews, trusted full hosted CI, actual PR/head/merge evidence and post-merge acceptance. Failed runs 42410198253 and 42429047634 remain negative evidence, not planning or delivery acceptance."
+        ],
+        "scope": {
+          "allowedFiles": [
+            "src/observation/github.mjs",
+            "src/web/public/app.js",
+            "src/web/public/app.css",
+            "src/web/public/index.html",
+            "src/SoFa.Modules.Workspace/Source/GitHubObservations.cs",
+            "README.md",
+            "tests/observation.test.mjs",
+            "tests/browser/observation.spec.mjs",
+            "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs"
+          ],
+          "planning": "Only the harness-owned issue-specific OpenSpec planning root; host materializes and independently validates returned proposal artifacts.",
+          "restrictions": "Only additive .NET observation mapping and the exact reviewed metadata-test exceptions. Preserve all existing assertions and other frozen verification inputs.",
+          "outOfScope": [
+            "Authentication, sessions, token transport, account UI, workflows, packages, policy, credentials, deployment and runtime administration",
+            "New execution controls, recovery claims, new product semantics or accepted-model edits",
+            "Completing #52/#57 or dispatching parent #88",
+            "Introducing gh, GitHub credentials, Docker socket or a model into the application"
+          ]
+        },
+        "verificationPlan": {
+          "admittedCommands": [
+            [
+              "npm",
+              "ci",
+              "--ignore-scripts"
+            ],
+            [
+              "env",
+              "CI=true",
+              "npm",
+              "run",
+              "verify:container"
+            ],
+            [
+              "npx",
+              "--yes",
+              "--package=@fission-ai/openspec@1.15.0",
+              "openspec",
+              "validate",
+              "issue-99-proposal",
+              "--strict",
+              "--no-interactive"
+            ]
+          ],
+          "executionStatus": "Planned only; no command execution receipts produced at refine.",
+          "focusedCoverage": [
+            "Node: known attempts 1/2, valid positive integers, missing/null/nonpositive/nonintegral/nonnumeric values, known/missing event, serialized snapshot and actual raw JSON parsing including the precision lexeme.",
+            ".NET: same known/unknown metadata semantics through real JsonElement transport/projection and serialization; preserve coalescing, fresh authority checks, invalidation and stale-source assertions.",
+            "Browser: known and unknown values in active/history/unclassified/stale cards, safe hostile event text, unchanged repository-specific source links, filters, focus, dark/light desktop/mobile layout and accessibility."
+          ],
+          "runtimeEvidence": "During implementation use the real application with the existing GitHub browser fixture for known/missing metadata and exercise the actual unconfigured/unavailable path. Keep fixture observations distinct from positive authenticated source evidence.",
+          "proposalValidation": "Use the diagnosed layout: one scope declaration immediately after ADDED Requirements, short normative text before the first scenario, unchanged citation comments after assertions in the final scenario of their own requirement. Preserve citation IDs/digests, scenarios and strict validation; host independently validates materialized artifacts.",
+          "laterHostEvidence": "Fresh App/environment/model preflights and authority checks, independent native plan/candidate reviews, full hosted forge CI including authenticated App/publication evidence, actual PR/head/merge and post-merge acceptance remain future requirements. A blocked native run cannot be substituted with operator-only success."
+        },
+        "definitionOfReady": {
+          "titleAndDescription": "Satisfied by #99's explicit attempt/event outcome and retry ambiguity.",
+          "stakeholders": "Factory owner and authorized repository engineers inspecting source workflow evidence; supported by the applied Product Change and README operational overview.",
+          "priority": "N/A: the repository Definition of Ready explicitly drops formal priority.",
+          "dependencies": "Resolved for refinement: existing authenticated observer, issue-recorded merged prerequisites and mounted 6600-second route adoption; later host delivery gates are not claimed complete.",
+          "acceptanceAndScope": "Observable criteria and exact path restrictions are recorded above; no ambiguous product outcome remains.",
+          "productRulesAndDecisions": "Applied observation Product Change, source-evidence requirements, accepted ADR-0006 and authenticated runtime view preserve read-only/source authority boundaries.",
+          "affectedBehavior": "CLI JSON collection, authenticated observation JSON and all existing shared browser run cards; callers inspected above.",
+          "quality": "Safe text/links, no new authority or credentials, no extra source requests required, unchanged bounded collection/cache behavior, stale handling, filters, keyboard and accessibility.",
+          "testImpact": "Identified above; detailed implementation planning remains the proposal stage responsibility.",
+          "unknownsAndRisks": "Exact numeric parsing and later execution evidence are explicit verification risks, not unresolved product decisions. No current-stage blocker."
+        },
+        "agentObservations": [
+          "Additional source-inspection finding, not an execution receipt: the Node default collector uses JSON.parse on gh stdout, so checking Number.isInteger only after parsing cannot satisfy the fractional-lexeme requirement. Preserve raw numeric evidence during parsing within the allowed collector file.",
+          "Additional source-inspection finding: .NET currently maps bounded runs inside CollectAsync and the HTTP caller serializes its snapshot directly. Exact attempt validation must remain local to the permitted observation mapping, not alter shared authentication or general source-number helpers.",
+          "No prior context.triage estimate was supplied; no estimateRevision or predecessor has been invented. This is an FF assessment, not a hotfix request."
+        ]
+      }
+    }
+  },
+  "result": {
+    "schemaVersion": 1,
+    "runId": "8a0a2e8d2872de606a68fd7e5090aa04d23e257e8fa8fefb637bc986c464b470",
+    "stage": "integrate",
+    "gate": "done",
+    "status": "passed",
+    "evidence": [],
+    "missingEvidence": [],
+    "unavailableChecks": [],
+    "pendingReview": [],
+    "output": {
+      "review": {
+        "binding": "c864fcecba1d5efc5747e619cf8766490e5e89e8d673c5ea496590727f76bb7f",
+        "verdict": "accept",
+        "findings": []
+      }
+    },
+    "nextAction": "Return to the trusted host for the remaining delivery gates."
+  },
+  "proposalRunId": "09f93cecc19e66561a39f19c3b615dd4555be37fd516f447b1b7d74bd7970192",
+  "reviewRunId": "8a0a2e8d2872de606a68fd7e5090aa04d23e257e8fa8fefb637bc986c464b470",
+  "verdict": "accept",
+  "configuredModels": {
+    "producer": "openai/gpt-6.1-sol",
+    "reviewer": "openai/gpt-6-luna"
+  },
+  "providerSettings": "unverified",
+  "artifact": "lighthouse-unattended-42452259718-1",
+  "runUrl": "https://github.com/juangcarmona/sofa/actions/runs/42452259718"
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "runId": "4f7e508d585516dcd568a301a1ad3b0daffb27b84f9deb4aa38121b9a4eb1435",
+  "stage": "review",
+  "gate": null,
+  "status": "passed",
+  "evidence": [
+    {
+      "id": "implementation:42452259718:1:f4f206e4347e9e81738a69da84a3f68fda3e00895c55967fe3197e028b735938:1",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/sofa/actions/runs/42452259718/attempts/1",
+      "reason": "npm ci --ignore-scripts completed successfully for the accepted candidate."
+    },
+    {
+      "id": "implementation:42452259718:1:f4f206e4347e9e81738a69da84a3f68fda3e00895c55967fe3197e028b735938:2",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/sofa/actions/runs/42452259718/attempts/1",
+      "reason": "Complete verify:container suite passed, including documentation lint, Node tests, product/spec/architecture checks, .NET tests and browser tests. Captured command output is truncated, but the host-verified command receipt records exit code 0."
+    },
+    {
+      "id": "implementation:42452259718:1:f4f206e4347e9e81738a69da84a3f68fda3e00895c55967fe3197e028b735938:3",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/sofa/actions/runs/42452259718/attempts/1",
+      "reason": "Pinned strict OpenSpec validation passed for the issue-specific proposal."
+    },
+    {
+      "id": "integration:42452259718:1",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/sofa/blob/c858fc1d321ac3522a87c8db1b500291b7aa4502/docs/process/20261108-99-show-source-run-attempts-and-triggering-events-in-the-operationa/runs/42452259718/attempt-0001/post-integration/report.md",
+      "reason": "Host-retained integration receipt records PR #113 merged at a9e06e0376f28dd5a3075cfd26c81fcb98130db0 after an independent candidate acceptance and explicit merge authorization."
+    },
+    {
+      "id": "github-check:128653517568",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/sofa/actions/runs/42455503204/job/128653517568",
+      "reason": "Authenticated required verify check passed on accepted PR head 6b5b4219d20df81e73c9656b1e139cc3c8ba062a."
+    },
+    {
+      "id": "github-check:128656606063",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/sofa/actions/runs/42456523349/job/128656606063",
+      "reason": "Authenticated required verify check passed on merged revision a9e06e0376f28dd5a3075cfd26c81fcb98130db0; this is also the configured post-merge verify.yml acceptance."
+    }
+  ],
+  "missingEvidence": [],
+  "unavailableChecks": [],
+  "pendingReview": [],
+  "output": {
+    "review": {
+      "workItem": "Issue #99 — Show source run attempts and triggering events in the operational overview",
+      "pullRequest": 113,
+      "acceptedHead": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+      "mergedRevision": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+      "outcome": "Accepted delivery: source run attempts and triggering events are included in CLI, authenticated .NET observations and browser run cards. Raw fractional JSON attempts remain unknown; missing and malformed fields are not inferred. The implementation retains run identity, safe text rendering, existing source links and read-only observation boundaries.",
+      "findings": [],
+      "classifiedFindings": [],
+      "guidanceReview": {
+        "checked": [
+          "README.md",
+          "AGENTS.md",
+          "docs/README.md",
+          "docs/engineering-lifecycle.md",
+          "src/README.md",
+          "tests/README.md"
+        ],
+        "result": "No stale or conflicting affected repository guidance established. README.md documents runAttempt/event and unknown-value semantics; repository lifecycle, source ownership and verification guidance remain consistent. The historical CLI and authenticated web adapter remain distinct as documented."
+      },
+      "finalization": {
+        "observedIssue": {
+          "state": "open",
+          "labels": [
+            "pr-ready"
+          ]
+        },
+        "observedPullRequest": {
+          "state": "closed",
+          "merged": true,
+          "labels": []
+        },
+        "intendedOnPassed": {
+          "removeLabels": [
+            "waiting-review",
+            "ready",
+            "pr-draft",
+            "pr-ready",
+            "integrate",
+            "review"
+          ],
+          "closeIssue": true
+        },
+        "note": "This records the host-declared transition only; the trusted publisher applies it after validating this result."
+      }
+    },
+    "retrospective": "## What went well\n\n- The accepted change stayed additive and read-only across the historical CLI collector, authenticated .NET projection and shared browser cards. The accepted implementation receipt records the raw numeric lexeme regressions, .NET transport/projection tests, browser metadata cases and complete container checks; authenticated required `verify` passed on both the candidate head and merged revision.\n- The retained integration receipt records independent acceptance and the explicitly authorized merge; post-merge `verify.yml` passed at the merged revision.\n- Affected README and repository guidance agree on exact attempt parsing, null/unknown behavior, unchanged run identity and source links.\n\n## What went wrong\n\n- Earlier attempts for this same issue exposed a strict-spec citation-layout failure and a fractional-number precision defect; a separate attempt also exhausted its original route window before candidate acceptance/publication. Those attempts are documented as negative evidence in the work-item history. The final candidate addresses the precision case and was delivered under the subsequently adopted bounded route. These are multiple retries of one issue, not evidence of recurrence across work items. No current product defect or unresolved review finding was established.\n- The `verify:container` captured log excerpt is truncated, so individual later test lines are not visible in this record; the host-verified receipt records the full command as passed with exit code 0. This is an evidence excerpt limitation, not a failed check.\n\n## Start doing\n\n- Keep exact raw source-number lexemes in parser regression cases whenever source semantics depend on numeric integrality; exercise the production transport and projection, not only a helper.\n- Reserve enough bounded execution time for final verification, independent review and publication after any correction. The earlier 42429047634 attempt records expiry before those steps; the adopted route and successful final delivery provide evidence of correction for this issue.\n\n## Stop doing\n\n- Do not treat a floating-point integer check as proof that the original JSON number was integral; `1.00000000000000001` demonstrates the precision loss.\n- Do not treat successful integration or a green pre-merge check alone as post-merge acceptance. Here, the separate merged-revision `verify.yml` receipt supplies that evidence.\n\n## Improvement candidates\n\n- No additional cross-work-item improvement candidate is established from this review. The observed citation, precision and deadline failures belong to retries of this single issue; the final implementation and adopted route address the recorded issues. Do not infer recurrence or propose a new policy guard without evidence from another work item."
+  },
+  "nextAction": "Trusted publisher: after validating this passed review, apply the host-declared final-label transition and close issue #99."
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "state": "merged",
+  "sha": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+  "acceptedHead": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+  "authorization": {
+    "issue": 99,
+    "pr": 113,
+    "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+    "merge": false
+  },
+  "binding": {
+    "repository": "juangcarmona/sofa",
+    "issue": 99,
+    "pr": 113,
+    "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+    "base": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+    "branch": "main",
+    "intent": "2e308a29f984c440d34422f8e7fe541d050241c7bbab6f6d08627571f4dd6512",
+    "policy": "6c48533cff4ff89a44d25bf0d0faa0f3557ce104ec40874ecb9aa8d512dcda86",
+    "reviews": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "prIntent": "458a754cea8ddbae9f4400fdd8e7e4cef6aecf7620b6f50d9a14c71e62dd1cae",
+    "files": "20e6269450d0f38bd150b02ff676693017f6556554ec589dacf59846116bcb93"
+  },
+  "postMerge": [
+    {
+      "workflow": "verify.yml",
+      "revision": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+      "state": "passed",
+      "status": "passed",
+      "runId": 42456523349,
+      "url": "https://github.com/juangcarmona/sofa/actions/runs/42456523349"
+    }
+  ]
+}
