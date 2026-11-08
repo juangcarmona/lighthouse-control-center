@@ -81,11 +81,12 @@ The commands that produce the deterministic lane's evidence. `verify-like-ci` de
 | Delivery specifications | `npm run spec:validate` and `npm run product:citations` | OpenSpec validates current specs/changes; ProductShape verifies document scope and product citations |
 | Architecture docs | `npm run architecture:check` | ArcShape validates all twelve arc42 sections |
 | .NET application profile | `npm run verify:dotnet` through root verification | Locked Release build, format/module checks, real LH1001/LH1002 rejection and provisioned solution tests |
-| Development identity provider | Host CI `npm run verify:identity:host` | Actual isolated Keycloak/TLS/MFA/refresh/revocation/outage and account UI evidence; actual source consent/device proof remains explicit |
 | Secret scanning | `npm run security:check` | Gitleaks scans all refs, staged changes, and the working tree with redacted output |
 | CI | GitHub Actions `verify` workflow | Repository verification passes on the proposed commit |
 
 The checks cover the web observer and retained runtime. Required checks must run on the candidate; missing tooling is reported as unavailable.
+
+The real-provider session suite is separate end-to-end verification: `identity-e2e.yml` runs nightly or by manual request and executes `npm run verify:identity:host`. Its wall-clock refresh/revocation/outage checks and account UI evidence are outside PR/push CI and are not a required merge check. The regular .NET suite retains deterministic session, revocation and outage coverage through its injected clock. Actual source consent and physical-device acceptance remain separate.
 
 ## Lighthouse stages and gates
 
@@ -209,3 +210,5 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 | 2026-11-07 | Fast Forward | Replace the closed #90 grant with the exact #99 observer qualification grant | Owner authorized completing #88 and necessary delivery; preserve supervised defaults, write scope, budgets and all protected gates |
 
 | 2026-11-08 | Fast Forward and autonomous continuation | Extend bounded native FF to eligible routine work after the maintainer explicitly requested autonomous continuation; preserve active-stack and identity review overrides | Independent review and required CI govern delegated integration; protected decisions remain human-owned |
+
+| 2026-11-08 | Verification lanes | Move real-provider wall-clock sessions to separate nightly/manual E2E; retain deterministic security tests in PR/push CI | Explicit maintainer decision: the long provider suite must not run in CI |
