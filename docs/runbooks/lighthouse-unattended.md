@@ -1,5 +1,7 @@
 # Bounded Lighthouse delivery
 
+The current public control contract selects CLI 0.12.61 / SDLC 0.22.0 and workflow release `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`. The [#48 prerequisite adoption](../delivery/evidence/issue-48/contract-adoption.md) preserves the exact #99 grant. Qualification sections below retain their original source/package evidence.
+
 This is the activation procedure for [#88](https://github.com/juangcarmona/sofa/issues/88). The owner-authorized, reviewed project policy enables unattended FF and delegated merge for the exact #99 override. Activation still requires current merged-source checks and App/provider/environment preflights; the complete native evidence chain must pass before #88 qualifies. The [repository workflow runbook](repository-workflows.md) governs supervised work.
 
 ## Installed policy
@@ -80,7 +82,7 @@ Delegated merge requires a later, separate owner grant for another bounded issue
 
 Set `merge: false`; restore `enabled: false` and remove only the qualification issue's override. Supervised defaults and workers remain installed. For an urgent stop of all new work, the owner can set `LIGHTHOUSE_AUTOMATION_ENABLED=false`; inspect active runs before cancellation or reservation cleanup. Do not unset the existing App credentials or alter repository protections. Do not enable `LIGHTHOUSE_MAINTENANCE_ENABLED`, `LIGHTHOUSE_RECOVERY_ENABLED`, a report index or CI repair as part of this adoption. Installing their workflows does not grant their execution.
 
-After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The current workflow source `59ded863109b045e399931dbad61e6cfdb698107` retains host-prepared OpenSpec discovery, per-command verification and the original deadline, and preserves opaque source-link checked-tree identity; installed package versions and the single correction budget are unchanged.
+After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The qualified #99 workflow source `59ded863109b045e399931dbad61e6cfdb698107` retains host-prepared OpenSpec discovery, per-command verification and the original deadline, and preserves opaque source-link checked-tree identity; installed package versions and the single correction budget are unchanged.
 
 ## Verification and admission correction
 
@@ -92,7 +94,7 @@ A credential-free operator replay of the exact candidate tree from native run [4
 
 Native [run 42429047634](https://github.com/juangcarmona/sofa/actions/runs/42429047634) passed its first trusted checks, then exhausted 3,600 seconds during its single candidate correction for fractional-number precision. It published no PR and remains failed. Its managed correction observations do not replace final host verification or independent acceptance.
 
-The reviewed source of [Lighthouse #569](https://github.com/juangcarmona/lighthouse/pull/569), `ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c`, shares one original deadline across provider work, CI/mergeability waiting and final authority checks. Source post-merge [verification](https://github.com/juangcarmona/lighthouse/actions/runs/42436609043) and [package checks](https://github.com/juangcarmona/lighthouse/actions/runs/42436608982) passed. The workflow source manifest is SDLC 0.21.11; installed public CLI/SDLC remain 0.12.55/0.21.6.
+The reviewed source of [Lighthouse #569](https://github.com/juangcarmona/lighthouse/pull/569), `ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c`, shares one original deadline across provider work, CI/mergeability waiting and final authority checks. Source post-merge [verification](https://github.com/juangcarmona/lighthouse/actions/runs/42436609043) and [package checks](https://github.com/juangcarmona/lighthouse/actions/runs/42436608982) passed. The workflow source manifest is SDLC 0.21.11; installed public CLI/SDLC were 0.12.55/0.21.6 at that checkpoint.
 
 The project route window is 6,600 seconds (110 minutes), leaving fifteen minutes within the existing 125-minute job for setup and cleanup. The exact #99 grant retains one shared correction, the same models, resources, checks and ten-minute per-command limit. The primary unattended workflow and CI App preflight use the same immutable source. Refresh current merged-source App/provider/environment preflights before one new native request. Native candidate, PR, CI, merge and post-merge review remain required to qualify #88.
 
