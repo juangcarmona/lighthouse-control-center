@@ -38,5 +38,10 @@
     "readFallback": "Missing intended App configuration preserves the authorized read scope and reports unsupported controls; it does not discard readable issue context.",
     "independentReview": "control-qualified-review.json accepts head159be4ccc16b8be1aabac4678b75428b28fd4483; the subsequent presentation adjustment is covered by the next candidate review.",
     "interface": "Observed narrow layout: result text uses user-facing states; raw journal/receipt IDs are inside Request details; ordinary comments do not display workflow admission or question-resolution claims."
+  },
+  "ownerPermissionUpdate": {
+    "confirmedAt": "2026-11-08T08:48:04.395150+00:00",
+    "appId": 5658460,
+    "confirmation": "User reports development App permissions changed; actual connected-token authority must still be observed."
   }
 }

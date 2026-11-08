@@ -24,8 +24,8 @@ test('native FF delegates only the authorized operational slice and retains supe
   assert.equal(entries['99'].reviewRequired, false);
   assert.deepEqual(entries['99'].paths, policy.paths);
   assert.deepEqual(entries['99'].checks, implementation.checks);
-  assert.deepEqual(entries['99'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs']);
-  assert.deepEqual(Object.keys(entries['99'].verification.corrections).sort(), ['tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
+  assert.deepEqual(entries['99'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs', 'tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs']);
+  assert.deepEqual(Object.keys(entries['99'].verification.corrections).sort(), ['tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs', 'tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
   validateImplementationPolicy(entries['99'], 99);
   const enabled = policy;
   validateUnattendedPolicy(enabled, 'ff');
@@ -37,8 +37,9 @@ test('native FF delegates only the authorized operational slice and retains supe
     assert.throws(() => admitUnattended({ ...eligibility, ...denied }, enabled, 'ff'));
   }
   const scoped = unattendedImplementationPolicy(implementation, enabled, 88, 'ff');
-  assert.equal(withinScope('src/web/view.mjs', scoped), true);
-  for (const path of ['src/SoFa.Runtime/Program.cs', 'docs/product/model/README.md', '.github/workflows/verify.yml', '.lighthouse/unattended.json']) {
+  assert.equal(withinScope('src/web/public/app.js', scoped), true);
+  assert.equal(withinScope('src/SoFa.Modules.Workspace/Source/GitHubObservations.cs', scoped), true);
+  for (const path of ['src/SoFa.Runtime/Program.cs', 'docs/product/model/README.md', '.github/workflows/verify.yml', '.lighthouse/unattended.json', 'src/web/public/account.js', 'src/SoFa.Modules.Workspace/Identity/OwnerSessions.cs', 'src/SoFa.Modules.Workspace/Source/GitHubTransport.cs']) {
     assert.equal(withinScope(path, scoped), false, path);
   }
 });
@@ -65,8 +66,8 @@ test('verification integrity freezes Node, browser, .NET and CI inputs including
 
 test('the exact operational test corrections remain required and cannot open other verification inputs', () => {
   const granted = json('.lighthouse/implement.json')['99'];
-  const exact = ['tests/observation.test.mjs', 'tests/browser/observation.spec.mjs'];
-  const files = [...granted.verification.paths.filter(path => !path.endsWith('/')), 'tests/web.test.mjs'];
+  const exact = ['tests/observation.test.mjs', 'tests/browser/observation.spec.mjs', 'tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs'];
+  const files = [...granted.verification.paths.filter(path => !path.endsWith('/')), 'tests/web.test.mjs', 'tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs'];
   const before = new Map(files.map(path => [path, { mode: '100644', content: read(path) }]));
   for (const path of exact) {
     const extended = new Map(before).set(path, { mode: '100644', content: Buffer.concat([read(path), Buffer.from('\n// new behavior coverage\n')]) });
@@ -129,7 +130,7 @@ test('credential preflight is owner-triggered on the default branch and uses onl
   assert.match(workflow, /github\.actor == github\.repository_owner/);
   assert.match(workflow, /github\.triggering_actor == github\.repository_owner/);
   assert.match(workflow, /github\.event\.repository\.default_branch/);
-  assert.match(workflow, /repository: juangcarmona\/lighthouse\n          ref: 83a7796e254f897f40074d6d1bed3d733fc59e32/);
+  assert.match(workflow, /repository: juangcarmona\/lighthouse\n          ref: 59ded863109b045e399931dbad61e6cfdb698107/);
   assert.match(workflow, /assert\.equal\(receipt\.tokenRevoked, true/);
   const verify = read('.github/workflows/verify.yml').toString();
   assert.match(verify, /branches: \[main, 'lighthouse\/verification-\*'\]/);

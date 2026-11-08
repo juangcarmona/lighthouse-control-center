@@ -1,0 +1,35 @@
+{
+  "issue": 88,
+  "sourcePullRequest": "https://github.com/juangcarmona/lighthouse/pull/558",
+  "sourceRevision": "860624fcca7eeb676a8d1945088452a6d321061d",
+  "sourceManifestVersion": "0.21.10",
+  "installedCli": "0.12.55",
+  "installedSdlc": "0.21.6",
+  "policyChanges": false,
+  "nativeQualificationComplete": false,
+  "priorNativeRun": "https://github.com/juangcarmona/sofa/actions/runs/42411980410",
+  "operatorReplay": {
+    "kind": "operator-provider-replay-not-native-delivery",
+    "candidateTree": "b572a214d87e4cf7886bdc0fa27ec0d5023243f8",
+    "exactOriginalTree": true,
+    "verifierHead": "debe2c851f341ce630a6a009fa64dfcd9fc5d2e7",
+    "image": "sha256:6f24370d28f2e471430aa06e5fa507a913e36792d7e54a9484c472439e218d14",
+    "limits": {
+      "cpus": 2,
+      "memory": "4g",
+      "pids": 1024
+    },
+    "exitCodes": [
+      0,
+      0,
+      0
+    ],
+    "cleanup": "clean",
+    "passed": true
+  },
+  "priorStops": [
+    "Original native check timeout then corrective engine admission wait expired",
+    "First operator replay npm ECONNRESET",
+    "Reusing an old diagnostic command receipt was rejected; final replay used a fresh owned workspace"
+  ]
+}
