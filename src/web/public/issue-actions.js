@@ -1,4 +1,5 @@
 export function renderActions(area, facts, target, scope, live, clear, contextLabel = '') {
+  area.classList.add('source-actions');
   let busy = false, preparation = null;
   const message = document.createElement('p'); message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
   const body = document.createElement('textarea'); body.rows = 5; body.maxLength = 12288;

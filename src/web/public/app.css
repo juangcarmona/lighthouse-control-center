@@ -336,3 +336,8 @@ footer {
 }
 
 [hidden] { display: none !important; }
+
+.source-actions textarea { color: inherit; background: var(--lh-color-surface, #171b24); border: 1px solid currentColor; border-radius: .4rem; padding: .5rem; display: block; width: 100%; box-sizing: border-box; margin-block: .5rem; resize: vertical; }
+.source-actions .issue-tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+.source-actions section { border-top: 1px solid var(--lh-color-border, #465063); margin-block-start: 1rem; padding-block-start: 1rem; }
+.source-actions section button { margin: .25rem; }
