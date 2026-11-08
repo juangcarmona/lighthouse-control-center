@@ -31,11 +31,11 @@ Existing Workspace options/query handlers, one tokenless host reader, plain brow
 
 The 71-file accepted product definition was inspected in this delivery; #57 was widened through FR-RUNTIME-HEALTH impact and configuration-drift context. The cited requirements/rules support source-backed observation. Existing issue/command/authentication meanings stay unchanged. Shared telemetry is not reimplemented: process health, measured usage, queue decisions and leases remain unobserved until consumed through their source contracts. No product-definition drift identified. Physical-phone rehearsal is owner-deferred, not tested.
 
-<!-- pdac:cite id="FR-RUNTIME-HEALTH" digest="sha256:3566c2bc7919a04b15a3e0e89d2cc2947a9ba38962673d6eb67f7d4addb6dce2" -->
+<!-- pdac:cite id="FR-RUNTIME-HEALTH" digest="sha256:f13856de8700ab35a6cca5fd6297e25a07719aa44f55f783d4079988eb535d7e" -->
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
-<!-- pdac:cite id="UC-MAINTAIN-RUNTIME" digest="sha256:bd92d57c9e69c4dfad43ad798ab0ee63d299976202fc18d18361522eaa8d4d23" -->
-<!-- pdac:cite id="BR-CAPACITY-DEFAULTS" digest="sha256:1fae00c2b56b581a8562883217b9f7c720c0fcc74f3d820c271dbc8686558af9" -->
-<!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9" -->
-<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
-<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
+<!-- pdac:cite id="UC-MAINTAIN-RUNTIME" digest="sha256:3f59de22de35a1875c32c4901ce7488c68bf32d878d0c62e2ca70fa12b38852b" -->
+<!-- pdac:cite id="BR-CAPACITY-DEFAULTS" digest="sha256:24fdf64ce66a09fa35b21d0cbf75b7e38235f289cefdb30c1849981cc14f55fa" -->
+<!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
+<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 <!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->

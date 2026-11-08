@@ -14,7 +14,7 @@ The browser first establishes an owner session through the configured provider. 
 
 The browser refreshes observations while visible. Transport failures preserve old source timestamps with a stale warning; owner/source authority loss clears the displayed records and counts. No observation request dispatches or cancels work. The [query adapter](../../../src/SoFa.Modules.Workspace/Source/GitHubObservations.cs) and [HTTP boundary tests](../../../tests/SoFa.Web.Tests/OwnerBoundaryTests.cs) provide implementation evidence.
 
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 ## Session failure and source-account transitions
 
@@ -59,3 +59,39 @@ Search, project boards and inbox resolve stable source identities and enter the 
 ## Implemented factory discovery
 
 The owner explicitly collects configured issue pages or looks up an exact issue number. Account status establishes the source connection scope; each data request independently checks repository issue permission and the atomic source guard. The browser reconciles ordinary issues by source ID, keeps raw page coverage separate from PR exclusion and labels title filtering as collected-scope search. Source-account changes remove prior rows; temporary failures retain same-scope stale times and denied access removes affected context. Explicit historical report reads never establish a live lease or command eligibility. [Source/browser regressions](../../../tests/SoFa.Web.Tests/FactoryDiscoveryTests.cs) cover this implemented boundary; they do not prove actual GitHub user acceptance.
+
+## Proposed runtime-administration flow
+
+[ADR-0010](../09-architecture-decisions/0010-administer-independent-runtime-providers.md) governs this proposed flow. Repository action submission continues through the existing #48 source-control flow above.
+
+```mermaid
+sequenceDiagram
+  accTitle: Proposed explicitly authorized provider operation
+  accDescr: An administrator reviews a provider target and effect, confirms it, and the server checks fresh authority and state before recording one send claim. A lost response is reconciled against provider evidence without resubmission. No repository stage is requested.
+  actor Admin as Runtime administrator
+  participant LCC as Existing LCC server
+  participant Journal as Protected intent and audit store
+  participant Provider as Scoped provider adapter
+  Admin->>LCC: Inspect target and prepare operation
+  LCC->>Provider: Read capabilities, state and occupancy
+  Provider-->>LCC: Evidence, revision and supported effect
+  LCC-->>Admin: Exact effect, scope and confirmation
+  Admin->>LCC: Confirm bound operation
+  LCC->>Provider: Recheck grant and expected state
+  LCC->>Journal: Persist intent and atomic send claim
+  LCC->>Provider: Submit once with operation identity
+  alt Actual provider receipt
+    Provider-->>LCC: Provider operation ID and pending outcome
+  else Timeout or lost response
+    LCC->>Journal: Record uncertain outcome
+  end
+  LCC->>Provider: Reconcile exact operation and read actual state
+  LCC->>Journal: Record confirmed outcome or evidence gap
+  LCC-->>Admin: Source-confirmed outcome and audit
+```
+
+A denied session, revoked provider grant, changed target or unsupported capability prevents submission. A restart requires provider-enforced quiescence/admission fencing; a poll returning idle is insufficient. LCC restart recovers an operation for reconciliation only. A provider-side capacity operation can finish after LCC stops. Current repository attempts continue independently. A narrow local helper repeats target/state checks at the mutation boundary so a browser or web-process check is never the sole protection.
+
+### Proposed telemetry projection
+
+Read public Lighthouse telemetry per `(stream, sequence)` cursor and deduplicate by event ID. Persist an ingested record and cursor atomically before advancing; after restart replay from the committed cursor. Stream disappearance/retention loss creates an explicit collection gap. Hosted-job artifacts are fetched separately; runner-only journals do not contain every hosted event. Explicit source/correlation IDs join issue, request, workflow attempt, job, runner and engine session; unavailable links remain unavailable. Current state and retained historical facts have different freshness. No event or transport trace grants a delivery verdict.

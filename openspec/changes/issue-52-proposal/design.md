@@ -5,15 +5,15 @@
 ## Source and server boundary
 
 Add an internal query handler and protected GET routes inside the established workspace module. Only configured repositories are accepted. Recheck effective connected-user issue authority before any metadata or issue collection, use the mandatory atomic source request guard, and bind all returned records to connection scope/generation. There is no operator credential fallback. Disconnect/replacement cannot start a subsequent old-token read or return prior-scope rows.
-<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
-<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
+<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 
 Read fixed GitHub repository/issue paths. Pages contain at most 25 source issue-shaped records, excluding PR records from issue results while preserving raw page coverage. Permit pages1–10 with an explicit Load more operation; the response cap remains2MiB and a request has a35-second budget. Reaching a bound leaves coverage incomplete. Title search and local filters cover collected rows only, prominently stated; exact-number search reads that ordinary issue directly across the selected configured repositories. No source query syntax comes from search text. A four-MiB retained browser collection bound rejects an entire further page, preserves prior rows and exposes incomplete coverage; it never silently drops a page or automatically retries it.
 
 Accept an optional repository-to-default-branch configuration map while preserving existing repository-only configuration. A source default branch is a separate observed fact. Show configured/observed disagreement and unavailable values without changing registration or permissions. All source collection times, issue update times, page coverage and failures are independent fields. Missing authority clears related rows; transient failure retains explicitly stale same-scope display only, with current totals unknown.
-<!-- pdac:cite id="FR-FACTORY-DISCOVERY" digest="sha256:18b4ae82857bb3098cb0b39f7cdfce4e0e9f308f23907f66d876b8c572b12bbf" -->
-<!-- pdac:cite id="FR-PROJECT-DISCOVERY" digest="sha256:834d2e20c321db40d8151f30c5b9f26075f7fa3068b6b13dfc6b68ae62bea427" -->
-<!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9" -->
+<!-- pdac:cite id="FR-FACTORY-DISCOVERY" digest="sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9" -->
+<!-- pdac:cite id="FR-PROJECT-DISCOVERY" digest="sha256:fb93a1c32232be6a679aa7aa074e9b6c0efd871cd48592b6b8d56996c36a2382" -->
+<!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 
 ## Presentation and evidence
 
