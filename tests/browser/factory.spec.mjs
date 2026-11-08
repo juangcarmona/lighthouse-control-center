@@ -5,9 +5,9 @@ const makeIssue = (number, title, state = 'open', labels = []) => ({ id: number 
   labelsComplete: true, updatedAt: '2026-11-07T10:00:00Z', sourceUrl: `https://github.com/example/repository/issues/${number}` });
 async function fixture(page) {
   let accountStatus = 0, failure = 0, scope = 'factory-71', title = 'Ordinary work', configured = ['example/repository', 'example/other'], otherWait;
-  const methods = [];
+  const methods = [], requests = [];
   await page.route('**/api/**', async route => {
-    methods.push(route.request().method()); const url = new URL(route.request().url());
+    methods.push(route.request().method()); const url = new URL(route.request().url()); requests.push(url.pathname + url.search);
     if (url.pathname === '/api/connections/github' && accountStatus) return route.fulfill({ status: accountStatus, body: 'Session ended' });
     if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true })) } });
     if (url.pathname.startsWith('/api/issues/')) return route.fulfill({ json: url.pathname.endsWith('/evidence')
@@ -24,7 +24,7 @@ async function fixture(page) {
       nextPage: selectedPage === 1 && repository === 'example/repository' && !number ? 2 : null, complete: selectedPage > 1 || repository === 'example/other' || !!number,
       configuredBranch: 'expected', observedBranch: 'main', reason: 'Synthetic collection: bounded live pages, not an atomic snapshot.' } });
   });
-  return { methods, expireAccount() { accountStatus = 401; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
+  return { methods, requests, expireAccount() { accountStatus = 401; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
 }
 for (const width of [1280, 390]) test(`factory ${width}: list board filters evidence paging and keyboard`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 }); const source = await fixture(page);
@@ -54,11 +54,15 @@ for (const width of [1280, 390]) test(`factory ${width}: list board filters evid
   expect(source.methods.every(method => method === 'GET')).toBeTruthy();
 });
 test('exact-number lookup finds uncollected ordinary work and title mode returns to pages', async ({ page }) => {
-  await fixture(page); await page.goto(origin + '/workspace/factory');
+  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
   await page.fill('#factory-search', '#701'); await page.getByRole('button', { name: 'Apply search' }).click();
   await expect(page.locator('.factory-issue')).toHaveCount(2);
   await expect(page.locator('#factory-scope')).toContainText('Exact-number lookup');
   await expect(page.getByRole('link', { name: /example\/repository#701/ })).toHaveAttribute('href', '/workspace/issues/example/repository/701');
+  await page.fill('#factory-search', '#702'); await page.getByRole('button', { name: 'Apply search' }).click();
+  await expect(page.locator('.factory-issue')).toHaveCount(2);
+  await expect(page.getByRole('link', { name: /example\/repository#702/ })).toHaveAttribute('href', '/workspace/issues/example/repository/702');
+  expect(source.requests).toContain('/api/factory/example/repository?number=702');
   await page.fill('#factory-search', 'Ordinary'); await page.getByRole('button', { name: 'Apply search' }).click();
   await expect(page.locator('.factory-issue')).toHaveCount(1);
   await expect(page.locator('#factory-scope')).toContainText('Title search and filters cover collected');

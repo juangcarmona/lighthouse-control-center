@@ -58,3 +58,23 @@ The issuer is reachable again. Rotation of the previously exposed development cl
 needs operator confirmation before reuse. Production identity/deployment remain #58; the maintainer
 already waived physical-phone rehearsal. Synthetic browser/security tests remain distinguishable
 from actual source-user acceptance. All five issues stay open until their respective gates pass.
+
+## Confirmed feature integration
+
+After the existing `feat/50-issue-workspace` branch advanced by fast-forward to the joint candidate,
+GitHub reported #112, #103, #105 and #111 as **merged**, respectively retaining merge commits
+`8aec752e4ceabba5e6141ad8e21c9da55189bbc1`, `d495309dcd8b66ddb5fa076d4b397d77517a3595`,
+`24eae98af58dcc30fdb69e0cf79267d17079340b` and `0711d39e701e3cf5bbea40d033da326fbb74036d`.
+No manual child-PR close or additional feature-ref alignment was needed. The five acceptance issues
+were rechecked open. PR #100 remains draft against main, and its description names the aggregate scope.
+
+Hosted verification [42535673190](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42535673190)
+passed on `8bc807350542b9dcebc15f0d42d92c213a34d592`, including all unchanged verification gates.
+That is the checkpoint before the following test-only extension.
+
+An independent review suspected that changing exact discovery search from #701 to #702 failed to
+refresh. Reproduction passed against existing production code: the finding was a comparison-type
+misread, not a reproduced defect. The existing browser test now also checks the actual #702 API
+request and its result link after #701. No production correction was made, and existing assertions
+remain intact. Focused browser evidence does not establish actual connected-user source acceptance.
+The new final head must receive its own hosted verification.
