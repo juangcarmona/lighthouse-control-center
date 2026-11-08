@@ -1,6 +1,6 @@
 # Local inventory bounds evidence
 
-This checkpoint extends the approved #57 Plan's task1.1 evidence without changing the reviewed helper implementation. The independent final audit remains required. The source is [runtime-inventory.mjs](../../../../src/workspace-tools/runtime-inventory.mjs); the cases below are in [runtime-inventory.test.mjs](../../../../tests/runtime-inventory.test.mjs).
+This checkpoint extends the approved #57 Plan's task1.1 evidence without changing the reviewed helper implementation. The independent bounds audit accepted head `7251e1959d143a9d45a0bd76f5f765cba75fb7e2` and supports task1.1; [its receipt](bounds-review.json) retains remaining Done gates. The source is [runtime-inventory.mjs](../../../../src/workspace-tools/runtime-inventory.mjs); the cases below are in [runtime-inventory.test.mjs](../../../../tests/runtime-inventory.test.mjs).
 
 | Boundary | Evidence and limit |
 | --- | --- |
@@ -20,6 +20,6 @@ This checkpoint extends the approved #57 Plan's task1.1 evidence without changin
 
 Some defensive limits cannot be reached through valid configured inputs. Four fixed committed files need at most nine distinct commit/tree/blob objects, so64 selected packs plus those loose objects remain below the128 descriptor guard. Twenty bounded source records cannot fill the1MiB projection guard. Neither guard is reported as exercised at its maximum.
 
-Git stdout at2MiB is exercised by the committed-file boundary. Git stderr8192, per-command2-second and collection9.5-second limits remain defensive failure bounds; this checkpoint does not claim exhaustive operating-system fault injection for them. Existing .NET bridge tests exercise held-helper cancellation, owner lifetime and nonqueuing slot release. Final independent review must reconcile these structural limits and remaining failure evidence before task1.1 or Done is marked complete.
+Git stdout at2MiB is exercised by the committed-file boundary. Git stderr8192, per-command2-second and collection9.5-second limits remain defensive failure bounds; this checkpoint does not claim exhaustive operating-system fault injection for them. Existing .NET bridge tests exercise held-helper cancellation, owner lifetime and nonqueuing slot release. The independent bounds audit accepted these structural explanations and reachable-bound evidence for task1.1. Full Done, current App-user acceptance and prerequisite integration remain pending.
 
 The first attempt to pad a pack for a physical-size boundary produced invalid Git data. The final test uses a stat fixture and preserves a valid pack; fixture rejection is not classified as an application defect.
