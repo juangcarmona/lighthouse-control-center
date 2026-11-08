@@ -12,6 +12,7 @@ internal sealed class WorkspaceOptions
   public string? GitHubClientId { get; init; }
   [System.Text.Json.Serialization.JsonIgnore]
   public string? GitHubClientSecret { get; init; }
+  public long? GitHubAppId { get; init; }
 
   public override string ToString() => "WorkspaceOptions (credentials withheld)";
 
@@ -57,6 +58,9 @@ internal sealed class WorkspaceOptions
       Repositories = repositories,
       GitHubClientId = githubClient,
       GitHubClientSecret = githubSecret,
+      GitHubAppId = section["GitHub:AppId"] is { } appId
+          ? long.TryParse(appId, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var parsed) && parsed is > 0 and <= 9_007_199_254_740_991
+              ? parsed : throw new InvalidOperationException("Configure a valid numeric GitHub App ID.") : null,
     };
   }
 

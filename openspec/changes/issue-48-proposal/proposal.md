@@ -12,7 +12,7 @@ The owner authorized necessary dependencies and technical delivery for #51/#52/#
 
 Consume an actually published compatible Lighthouse issue-control SDK after upstream #119 passes its source qualification, review and release gates. A packed candidate is development evidence, not an adopted registry release. No copied eligibility, pending-question, reservation or deduplication policy substitutes for the SDK. Unsupported capability or permission keeps the dependent effect unavailable with its real reason.
 
-Proposed ADR-0008 already selects SQLite for a single-instance command journal. This plan makes that design concrete but does not accept the ADR: maintainer acceptance precedes persistent command storage and source writes. Read-only shared-source observations may be implemented first after SDK adoption, independently of the journal. Source-user consent for any additional development App permission remains an external gate; production permissions are not inferred.
+Proposed ADR-0008 already selects SQLite for a single-instance command journal. This plan makes that design concrete but does not accept the ADR: maintainer acceptance precedes persistent command storage and source writes. Read-only shared-source observations may be implemented first, independently of the journal. Development against an isolated packed candidate may precede publication; released consumer adoption and actual App-user acceptance still require the compatible public release. Source-user consent for any additional development App permission remains an external gate; production permissions are not inferred.
 
 ## Scope and prerequisites
 

@@ -7,18 +7,19 @@ function source(page = 1) {
     conversation: { availability: 'available', items: Array.from({ length: page === 1 ? 100 : 1 }, (_, index) => ({ id: page === 1 ? index + 1 : 101, author: 'participant', body: 'Conversation evidence ' + (index + 1) + '\n```\n' + 'long-source-value'.repeat(12) + '\n```', updatedAt: '2026-11-07T11:00:00Z', sourceUrl: `https://github.com/example/repository/issues/7#issuecomment-${page === 1 ? index + 1 : 101}` })), page, perPage: 100, sourceCount: 101, nextPage: page === 1 ? 2 : null, complete: page === 2, reason: 'Source pagination is not atomic.' } };
 }
 async function fixture(page, { unavailable = false } = {}) {
-  let failure = unavailable, restricted = false, conversationUnavailable = false, scope = 'fixture-71';
+  let failure = unavailable, restricted = false, conversationUnavailable = false, scope = 'fixture-71', controls = { availability: 'unsupported', reason: 'Installed contract unavailable.' };
   const methods = [];
   await page.route('**/api/issues/**', async route => {
     methods.push(route.request().method());
     const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/controls')) return route.fulfill({ json: { ...controls, dataScope: scope, actingUserId: 71, observedAt: '2026-11-08T06:00:00Z' } });
     if (url.pathname.endsWith('/evidence') && restricted) return route.fulfill({ json: { availability: 'restricted', dataScope: scope, reports: [], reason: 'Actions-read access was removed.' } });
     if (url.pathname.endsWith('/evidence')) return route.fulfill({ json: { availability: 'available', dataScope: 'fixture-71', reports: [{ commentId: 90, sourceUrl: 'https://github.com/example/repository/issues/7#issuecomment-90', availability: 'available', stage: 'propose', result: 'blocked', sourceRevision: 'a'.repeat(40), runId: 500, attempt: 2, executionStatus: 'completed', executionConclusion: 'success', reason: 'Published result; current host lease unavailable.', missingEvidence: ['Proposal artifact has expired.'], pendingReview: ['Answer the source question.'] }], scope: 'Synthetic fixture: one source-associated report; other evidence unavailable.' } });
     const data = { ...source(Number(url.searchParams.get('page') || 1)), dataScope: scope, evidenceReadAllowed: !restricted };
     if (conversationUnavailable) data.conversation = { ...data.conversation, availability: 'unavailable', items: [], reason: 'Temporary conversation outage.' };
     return failure ? route.fulfill({ status: failure === true ? 503 : failure, json: {} }) : route.fulfill({ json: data });
   });
-  return { methods, fail(value = true) { failure = value; }, restrictEvidence() { restricted = true; }, replaceAccount() { scope = 'replacement-71'; }, failConversation() { conversationUnavailable = true; } };
+  return { methods, fail(value = true) { failure = value; }, restrictEvidence() { restricted = true; }, replaceAccount() { scope = 'replacement-71'; }, failConversation() { conversationUnavailable = true; }, controls(value) { controls = value; } };
 }
 for (const width of [1280, 390]) test(`issue context ${width}: paginated, inert Markdown, blocked result, keyboard and accessibility`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
@@ -47,6 +48,7 @@ test('temporary failure retains stale context; source authority loss removes eve
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
   harness.fail(); await page.getByRole('button', { name: 'Refresh source' }).click();
   await expect(page.locator('#issue-status')).toContainText('stale');
+  await expect(page.locator('#controls-status')).toContainText('Previous shared observations are stale');
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
   await expect(page.locator('#issue-age')).toContainText('2026-11-07T12:00:00Z');
   harness.fail(403); await page.getByRole('button', { name: 'Refresh source' }).click();
@@ -74,6 +76,7 @@ test('losing Actions access removes execution evidence while authorized issue co
 });
 test('very long source text keeps a bounded DOM and preserves the full remaining content', async ({ page }) => {
   await page.route('**/api/issues/**', route => {
+    if (new URL(route.request().url()).pathname.endsWith('/controls')) return route.fulfill({ json: { availability: 'unsupported', dataScope: 'fixture-71' } });
     if (new URL(route.request().url()).pathname.endsWith('/evidence')) return route.fulfill({ json: { availability: 'available', dataScope: 'fixture-71', reports: [], scope: 'Synthetic fixture.' } });
     const data = source(); data.issue.body = '# Source paragraph\n'.repeat(10000) + 'end-of-source-body';
     data.conversation = { ...data.conversation, items: [], sourceCount: 0, nextPage: null, complete: true };
@@ -109,4 +112,41 @@ test('known Actions grant loss removes old evidence even when conversation refre
   await expect(page.locator('#evidence-status')).toContainText('Actions-read access is unavailable');
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
   await expect(page.locator('#issue-status')).toContainText('stale');
+});
+
+for (const width of [1280, 390]) test(`shared source question ${width}: safe text, separate eligibility and no submission`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', facts: {
+    repository: { id: 22, name: 'example/repository' }, issue: { id: 70, number: 7 }, actor: { id: 71 },
+    question: { availability: 'available', current: true, text: '<script>window.questionExecuted=true</script> Which repository?',
+      sourceUpdatedAt: '2026-11-07T10:00:00Z', source: 'https://github.com/example/repository/issues/7#issuecomment-90' },
+    reservation: { availability: 'unavailable', reason: 'reservation-evidence-unavailable' },
+    actions: { comment: { eligible: true, availability: 'available' }, continue: { eligible: false, availability: 'unavailable', reason: 'reservation-evidence-unavailable' } }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#issue-controls')).toContainText('Verified current question');
+  await expect(page.locator('#issue-controls')).toContainText('<script>window.questionExecuted=true</script>');
+  await expect(page.locator('#issue-controls')).toContainText('Question source updated: 2026-11-07T10:00:00Z · Observed: 2026-11-08T06:00:00Z');
+  await expect(page.locator('#issue-controls')).toContainText('Ordinary comment · Source: eligible · SoFa submission: unavailable');
+  await expect(page.locator('#issue-controls button, #issue-controls script')).toHaveCount(0);
+  expect(await page.evaluate(() => window.questionExecuted)).toBeUndefined();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+  await page.locator('#issue-controls').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `test-results/issue/shared-question-${width}.png`, fullPage: false });
+});
+
+test('shared source authority loss clears the earlier private issue and question', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', facts: { repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    question: { availability: 'available', current: true, text: 'Private source question' } } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#issue-controls')).toContainText('Private source question');
+  await page.route('**/api/issues/**/controls', route => route.fulfill({ status: 403, json: { availability: 'denied' } }));
+  await page.getByRole('button', { name: 'Refresh source' }).click();
+  await expect(page.locator('#issue-controls')).toBeEmpty();
+  await expect(page.locator('#issue-body')).toBeEmpty();
+  await expect(page.locator('#issue-status')).toContainText('Source authority changed');
 });

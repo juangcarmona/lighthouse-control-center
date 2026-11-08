@@ -23,6 +23,8 @@ public static class WorkspaceModule
     services.AddSingleton<GetAccountStatusHandler>();
     services.AddSingleton<GetIssueContextHandler>();
     services.AddSingleton<GetIssueEvidenceHandler>();
+    services.AddSingleton<SourceControlBridge>();
+    services.AddSingleton<GetIssueControlsHandler>();
     return services;
   }
 
@@ -225,6 +227,13 @@ public static class WorkspaceModule
           "Evidence projection exceeds the 2 MiB response bound; source reports remain readable and this is not evidence of absent work.");
       return Results.Json(result, statusCode: result.Availability switch
       { "denied" => 403, "disconnected" => 409, "unavailable" => 503, "changed" => 409, _ => 200 });
+    });
+    app.MapGet("/api/issues/{owner}/{repository}/{number:int}/controls", async (string owner, string repository, int number,
+        HttpContext context, OwnerSessions sessions, GetIssueControlsHandler controls) =>
+    {
+      var result = await controls.Handle(new(sessions.Get(context.User)!, owner + "/" + repository, number), context.RequestAborted).ConfigureAwait(false);
+      return Results.Json(result, statusCode: result.Availability switch
+      { "denied" => 403, "disconnected" => 409, "unavailable" => 503, "invalid" => 400, _ => 200 });
     });
     app.MapGet("/workspace/issues", async (HttpContext context, OwnerSessions sessions) =>
     {

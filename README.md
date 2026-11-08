@@ -24,6 +24,8 @@ Install browser prerequisites with `npx playwright install --with-deps chromium`
 
 ## Repository map
 
+The #48 development branch adds a read-only shared-source question/eligibility panel in the issue reader. Configure the intended numeric `SoFa:GitHub:AppId` to verify the current user and matching installation. Source eligibility remains separate from application submission, which is unavailable. A missing public SDK export, source contract or App read scope remains explicit; no source-write or persistent journal is enabled. Public release/adoption and actual App-user acceptance remain pending. Published applications include the complete selected SDK, and verification resolves it outside the checkout so development dependencies cannot hide missing runtime files.
+
 - [`docs/product/`](docs/product/README.md): ProductShape model and Product Changes.
 - [`docs/architecture/`](docs/architecture/README.md): ArcShape-managed arc42 architecture documentation.
 - [`docs/engineering-lifecycle.md`](docs/engineering-lifecycle.md): shared Agentic SDLC gates and working agreements.

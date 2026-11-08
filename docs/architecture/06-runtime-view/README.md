@@ -36,6 +36,8 @@ The source artifacts are streamed within ZIP/member bounds, kept in memory and p
 
 ## Proposed issue operation
 
+The #48 development checkpoint implements the read-only part: current owner/source scope and the intended App installation precede SDK observation. A fixed tokenless child requests only bounded source reads from its parent; the parent guards each HTTP initiation and rechecks scope/grants before returning facts. The browser displays the shared current-question and action decisions separately from historical reports and application submission. Missing compatible SDK export remains unsupported. Persistent receipts and every write below remain proposed.
+
 1. The browser loads issue context through the authenticated query adapter. The response includes source revision, observation age and the shared capability decision, including denial reasons.
 2. The owner sees the acting GitHub identity and the effect, then submits an explicit command with its stable request identity and expected issue/evidence version.
 3. The server checks session, CSRF/origin protection, configured repository scope and current GitHub user authority; it obtains fresh evidence and shared eligibility. A changed state returns a refreshed explanation without dispatch.

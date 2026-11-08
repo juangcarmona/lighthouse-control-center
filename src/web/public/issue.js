@@ -11,7 +11,8 @@ function clear() {
   renderingBudget = { remaining: 5000 };
   current = null; comments = []; bytes = 0; nextPage = null;
   byId('issue-title').textContent = 'Issue workspace'; byId('evidence-status').textContent = '';
-  for (const id of ['issue-body', 'issue-facts', 'issue-comments', 'issue-evidence']) byId(id).replaceChildren();
+  for (const id of ['issue-body', 'issue-facts', 'issue-comments', 'issue-evidence', 'issue-controls']) byId(id).replaceChildren();
+  byId('controls-status').textContent = 'Shared source authority has not been observed.';
   byId('conversation-coverage').textContent = ''; byId('issue-age').textContent = ''; byId('issue-more').hidden = true;
 }
 function selection() {
@@ -59,6 +60,7 @@ async function read(append = false) {
   const target = selection(); if (!target) { status('Choose owner/repository and a positive issue number.', true); return; }
   if (pending || append && (nextPage === null || bytes >= maximumTextBytes || comments.length >= 1000)) return;
   if (!append && current?.key !== target.key) clear();
+  if (!append && current) byId('controls-status').textContent = 'Refreshing source context; previous shared observations may be stale.';
   pending = true; const operation = ++revision; controller?.abort(); controller = new AbortController();
   byId('issue-refresh').disabled = true; byId('issue-more').disabled = true;
   const page = append ? nextPage : 1;
@@ -88,6 +90,7 @@ async function read(append = false) {
       byId('conversation-coverage').textContent = `${comments.length} previously read comments retained as stale. Source times are unchanged. ${data.conversation.reason ?? ''}`;
       if (data.evidenceReadAllowed !== false) byId('evidence-status').textContent = 'Previous evidence remains stale; its source observations have not refreshed.';
       status('Issue refreshed; previous conversation pages remain stale because their source refresh failed.', true);
+      void readControls(target, operation);
       return;
     }
     const oldIds = new Set(append ? comments.map(item => item.id) : []);
@@ -101,9 +104,12 @@ async function read(append = false) {
     else { bytes += size; comments.push(...data.conversation.items); }
     current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope }; show(data, append);
     void readEvidence(target, page, data.snapshot, operation);
+    if (!append) void readControls(target, operation);
   } catch (error) {
-    if (error.name !== 'AbortError' && operation === revision) status(current
-      ? 'Refresh unavailable; displayed source context is stale. Source times are unchanged.' : 'Source context unavailable; no issue or empty conversation is inferred.', true);
+    if (error.name !== 'AbortError' && operation === revision) {
+      status(current ? 'Refresh unavailable; displayed source context is stale. Source times are unchanged.' : 'Source context unavailable; no issue or empty conversation is inferred.', true);
+      if (current) byId('controls-status').textContent = 'Source refresh unavailable. Previous shared observations are stale; their source times are unchanged.';
+    }
   } finally { if (operation === revision) { pending = false; byId('issue-refresh').disabled = false; byId('issue-more').disabled = false; } }
 }
 byId('issue-picker').addEventListener('submit', event => {
@@ -165,5 +171,43 @@ async function readEvidence(target, page, snapshot, operation) {
   } catch (error) {
     if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)
       byId('evidence-status').textContent = 'Lifecycle artifacts are unavailable. Issue text and source reports remain readable; no result, lease or command authority is inferred.';
+  }
+}
+
+async function readControls(target, operation) {
+  byId('controls-status').textContent = 'Refreshing shared source facts; previous observations may be stale.';
+  try {
+    const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
+      { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
+    if (operation !== revision || current?.key !== target.key) return;
+    if ([401, 403, 409].includes(response.status)) { clear(); status('Source authority changed; previous context was removed.', true); return; }
+    const data = await response.json();
+    if (!response.ok) throw Error('Shared source facts unavailable');
+    if (!data.dataScope || data.dataScope !== current.dataScope) { clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
+    byId('issue-controls').replaceChildren();
+    if (data.availability !== 'available') {
+      byId('controls-status').textContent = 'Shared source observation: ' + (data.availability ?? 'unavailable') + '. ' + (data.reason ?? 'No current question or eligibility is inferred.');
+      return;
+    }
+    const facts = data.facts;
+    if (!facts || facts.repository?.name?.toLowerCase() !== target.repository.toLowerCase() || facts.issue?.number !== target.number
+        || facts.actor?.id !== data.actingUserId || typeof data.observedAt !== 'string') throw Error('Unverified shared source identity');
+    const area = byId('issue-controls'), question = facts.question;
+    byId('controls-status').textContent = 'Shared observation: ' + data.observedAt + ' · GitHub user ID ' + data.actingUserId + '. Source eligibility and application submission are separate.';
+    if (question?.availability === 'available') {
+      area.append(paragraph(question.current === true ? 'Verified current question' : 'Verified source question; current input or wait no longer matches'),
+        paragraph(question.text), paragraph('Question source updated: ' + (question.sourceUpdatedAt ?? 'unknown') + ' · Observed: ' + data.observedAt));
+      if (question.source) area.append(sourceLink('Inspect source question', question.source));
+    } else area.append(paragraph('Current question: ' + (question?.availability ?? 'unavailable') + '. ' + (question?.reason ?? 'Source labels and historical reports do not identify a current question.')));
+    area.append(paragraph('Reservation observation: ' + (facts.reservation?.availability ?? 'unavailable') + '. ' + (facts.reservation?.reason ?? facts.reservation?.coverage ?? 'Coverage unknown.')));
+    for (const [name, label] of [['comment', 'Ordinary comment'], ['refine', 'Refine'], ['propose', 'Propose'], ['continue', 'Continue']]) {
+      const action = facts.actions?.[name];
+      area.append(paragraph(label + ' · Source: ' + (action?.eligible === true ? 'eligible' : action?.availability ?? 'unavailable')
+        + (action?.reason ? ' · ' + action.reason : '') + ' · SoFa submission: unavailable'));
+    }
+    if (data.missingReadScopes?.length) area.append(paragraph('Missing or unknown App read scopes: ' + data.missingReadScopes.join(', ')));
+  } catch (error) {
+    if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)
+      byId('controls-status').textContent = 'Shared source refresh unavailable. Previous observations may be stale; no current eligibility or question is inferred.';
   }
 }

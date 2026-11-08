@@ -11,6 +11,8 @@
 
 ## 2. Shared read observation
 
+The first development checkpoint implements a read-only bridge and issue-reader projection while public release/adoption remains pending. The installed SDK still reports its missing public export as unsupported. An isolated packed candidate exercises the same protocol without changing the application lockfile. Persistent storage and effects remain gated by task 1.3; this checkpoint is not complete #48 acceptance or released SDK adoption.
+
 - [ ] 2.1 Add the fixed bounded tokenless SDK bridge with existing guarded source transport and effective App-user authority.
 - [ ] 2.2 Feed shared current question, action, reservation and denial facts into #50/#51 while preserving historical/source labels separately.
 - [ ] 2.3 Verify unknown, malformed, revoked, late-source and missing-contract/grant behavior; no source write is enabled by this phase.
