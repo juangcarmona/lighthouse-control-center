@@ -64,7 +64,7 @@ internal sealed class GetRepositoryRunnersHandler(OwnerSessions sessions, GitHub
         var runners = new List<RepositoryRunner>();
         foreach (var row in rows.EnumerateArray())
         {
-          if (SourceJson.Number(row, "id") is not (> 0 and <= 9_007_199_254_740_991) || SourceJson.Text(row, "name") is not { Length: > 0 and <= 256 } name)
+          if (row.ValueKind != JsonValueKind.Object || SourceJson.Number(row, "id") is not (> 0 and <= 9_007_199_254_740_991) || SourceJson.Text(row, "name") is not { Length: > 0 and <= 256 } name)
             return Failure("unavailable", "A runner record is malformed; records were not silently omitted.", total);
           var hasLabels = row.TryGetProperty("labels", out var labels) && labels.ValueKind == JsonValueKind.Array;
           var projected = hasLabels ? labels.EnumerateArray().Take(100).Select(l => SourceJson.Text(l, "name")).Where(l => l is { Length: > 0 and <= 256 }).OfType<string>().ToArray() : [];
