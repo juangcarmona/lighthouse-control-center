@@ -1,0 +1,90 @@
+{
+  "observedAt": "2026-11-08T21:00:49.809Z",
+  "candidate": "assets/lighthouse-control-center/bench-banner-edited-v2.png",
+  "sha256": "c737bd7e794cf9cb8cae4f8fc88c1bf49f67f54013c6368db1b451ff845c47fc",
+  "originalSha256": "65784f3108c66c9121c7a25e8746087ec72712db4a30fc514bdfe440a67e4f26",
+  "generation": "Built-in imagegen edit of original; Loira photograph shape reference only",
+  "maintainerDecision": "pending; first reconstruction rejected",
+  "browser": {
+    "status": "passed",
+    "galleryAxeViolations": 0,
+    "transparentCornerAlpha": 0,
+    "results": [
+      {
+        "theme": "dark",
+        "width": 1440,
+        "axeViolations": 0,
+        "overflow": false,
+        "keyboardFocus": {
+          "matches": true,
+          "style": "solid",
+          "width": "3px"
+        },
+        "textStatuses": true
+      },
+      {
+        "theme": "dark",
+        "width": 390,
+        "axeViolations": 0,
+        "overflow": false,
+        "keyboardFocus": {
+          "matches": true,
+          "style": "solid",
+          "width": "3px"
+        },
+        "textStatuses": true
+      },
+      {
+        "theme": "light",
+        "width": 1440,
+        "axeViolations": 0,
+        "overflow": false,
+        "keyboardFocus": {
+          "matches": true,
+          "style": "solid",
+          "width": "3px"
+        },
+        "textStatuses": true
+      },
+      {
+        "theme": "light",
+        "width": 390,
+        "axeViolations": 0,
+        "overflow": false,
+        "keyboardFocus": {
+          "matches": true,
+          "style": "solid",
+          "width": "3px"
+        },
+        "textStatuses": true
+      },
+      {
+        "theme": "system",
+        "width": 1440,
+        "axeViolations": 0,
+        "overflow": false,
+        "keyboardFocus": {
+          "matches": true,
+          "style": "solid",
+          "width": "3px"
+        },
+        "textStatuses": true
+      },
+      {
+        "theme": "system",
+        "width": 390,
+        "axeViolations": 0,
+        "overflow": false,
+        "keyboardFocus": {
+          "matches": true,
+          "style": "solid",
+          "width": "3px"
+        },
+        "textStatuses": true
+      }
+    ],
+    "visualAcceptance": "pending maintainer",
+    "photoReference": "supplied Loira bench photograph",
+    "artwork": "bench-banner-edited-v2.png"
+  }
+}

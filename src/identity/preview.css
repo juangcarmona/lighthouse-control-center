@@ -1,0 +1,19 @@
+.identity-mark { flex-shrink:0; width:40px; height:40px }
+.identity-name { display:flex; flex-direction:column; font-size:1.25rem; line-height:1.25 }
+.identity-name span { font-size:.8125rem; color:var(--lh-text-muted); font-weight:450 }
+.review { max-width:1280px; padding:var(--lh-space-6); margin:auto }
+.review h1 { margin-block:var(--lh-space-6) }
+.review a { text-decoration:underline }
+.review h2 { margin-top:var(--lh-space-8) }
+.review img { max-width:100%; height:auto }
+.review .banner { width:100%; display:block; border-radius:var(--lh-radius-panel) }
+.review .samples { display:flex; flex-wrap:wrap; align-items:center; gap:var(--lh-space-6); padding:var(--lh-space-6); background:var(--lh-surface); border:1px solid var(--lh-border); border-radius:var(--lh-radius-panel) }
+.review .wordmark { width:min(100%,600px) }
+.review .icon { width:128px; height:128px }
+.review .favicon { width:auto; height:auto; max-width:none }
+.review figure { margin:0 }
+.review figcaption { margin-block:var(--lh-space-2); font-size:var(--lh-text-small); color:var(--lh-text-muted) }
+.review .crop { width:100%; aspect-ratio:1200/630; object-fit:cover }
+@media (max-width:480px) { .topbar { flex-wrap:wrap } }
+[data-lh-theme="light"] .identity-mark { content:url('/assets/lighthouse-icon-light.svg') }
+@media (prefers-color-scheme:light) { [data-lh-theme="system"] .identity-mark { content:url('/assets/lighthouse-icon-light.svg') } }
