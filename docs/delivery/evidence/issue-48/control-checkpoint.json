@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-11-08T08:29:54.771839+00:00",
+  "scope": "Released SDK, private journal and explicit source-control code checkpoint; not full #48 Done",
+  "ownerPlan": "planning-owner-acceptance.json",
+  "publicSdk": "public-sdk-adoption.json",
+  "verification": {
+    "full": "npm run verify",
+    "status": "passed",
+    "node": 49,
+    "web": 168,
+    "runtime": 38,
+    "browser": 30,
+    "productArtifacts": 71,
+    "architectureSections": 12,
+    "focusedJournalAndCommands": 51,
+    "focusedBrowser": 4
+  },
+  "covered": [
+    "Real SQLite transactions, concurrent claims and one permitted transmission",
+    "Lost response after accepted controlled comment, public SDK reconciliation, duplicate submit and restart recovery",
+    "Pre-claim backup restoration remains reconciliation-only",
+    "Private payload at rest, scope separation, unsafe paths, missing/mutated key ring, count/byte limits and bounded busy writer",
+    "Released SDK stage-only Refine dispatch with no merge grant, current authority loss, exact effect matching",
+    "Owner and CSRF boundaries; safe confirmation text, keyboard, 390/1280 layouts, reload recovery and no browser resend"
+  ],
+  "contention": "An auxiliary SQLite WAL member may disappear between enumeration and opening as another connection closes. The request fails unavailable; it never grants a second send. The competing-claim test requires exactly one claim and bounded existing/unavailable losers.",
+  "limits": [
+    "Hosted exact-head and actual provider lane will run after pushing this candidate",
+    "Actual connected development App-user write/dispatch consent and accepted source effects remain unproven",
+    "Controlled source responses do not qualify native Continue/question resolution; upstream native contract evidence remains separately linked",
+    "The current development preview still serves the earlier #51 build",
+    "Shared #50/#51/#52 prerequisites and protected owner gates remain separate",
+    "Logical SQLite cap does not bound WAL/key disk; production backup/custody remains #58"
+  ]
+}

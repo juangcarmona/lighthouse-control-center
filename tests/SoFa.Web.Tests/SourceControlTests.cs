@@ -127,6 +127,7 @@ public sealed class SourceControlTests
     private readonly TestClock clock = new();
     private readonly GitHubTransport transport;
     private readonly SourceControlBridge bridge = new();
+    private readonly ControlJournal journal = new(null, null);
     private readonly OwnerSessions sessions;
     internal Handler Handler { get; } = new();
     internal RepositoryAccess Access { get; }
@@ -145,7 +146,7 @@ public sealed class SourceControlTests
       };
       var authorization = new GitHubAuthorization(settings, sessions, transport, clock);
       Access = new(settings, sessions, authorization, transport, clock);
-      Query = new(settings, sessions, authorization, Access, transport, bridge, clock);
+      Query = new(new(settings, sessions, authorization, Access, transport), bridge, journal, clock);
     }
     internal async Task<OwnerSession> Session()
     {
@@ -155,7 +156,7 @@ public sealed class SourceControlTests
           clock.GetUtcNow().AddHours(1), clock.GetUtcNow().AddHours(4)), clock.GetUtcNow());
       return session;
     }
-    public void Dispose() { bridge.Dispose(); transport.Dispose(); }
+    public void Dispose() { bridge.Dispose(); transport.Dispose(); journal.Dispose(); }
   }
 
   private sealed class Handler : HttpMessageHandler

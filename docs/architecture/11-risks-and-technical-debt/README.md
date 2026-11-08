@@ -26,6 +26,6 @@ See [ADR-0006](../09-architecture-decisions/0006-observe-repository-owned-workfl
 | Incomplete collector hides issues or evidence | Paginated query adapter with coverage and unavailable states |
 | Health data is partial or not comparable | Inspectable source definitions and no invented values/scores |
 | Development host exposes real operational credentials | Test credentials locally; protected production boundary per ADR-0007 |
-| Proposed storage lost or corrupted | Backup/recovery; source reconciliation before any resend |
+| Protected journal or key ring lost/corrupted | Controls fail closed; restore the paired private backup and reconcile, never automatically resend |
 
 Issue #47's refined request now has a blocked proposal report identifying identity/deployment and exact correlation. Owner decisions address identity direction; shared/source receipt behavior still needs implementation evidence. Legacy issue #16 describes the superseded supervisor and must not be treated as a dependency of this operational backlog. Its history and closure decision are preserved.

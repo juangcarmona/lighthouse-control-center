@@ -7,13 +7,13 @@
 - [x] 1.1 Read #48/#47 scope, accepted product intent, current reader/identity/transport, shared contract and Proposed ADR-0008.
 - [x] 1.2 Reconcile tracker drift and independently review this concrete design/test plan.
 - [x] 1.3 Obtain maintainer acceptance of ADR-0008 and the persistent journal design before storage/source-write implementation; owner accepted PR #112 on 2026-11-08, retained in the acceptance record.
-- [ ] 1.4 Verify and adopt the compatible public Lighthouse release; retain exact package/source/contract evidence.
+- [x] 1.4 Verify and adopt the compatible public Lighthouse release; retain exact package/source/contract evidence.
 
 ## 2. Shared read observation
 
-The first development checkpoint implements a read-only bridge and issue-reader projection while public release/adoption remains pending. The installed SDK still reports its missing public export as unsupported. An isolated packed candidate exercises the same protocol without changing the application lockfile. Persistent storage and effects remain gated by task 1.3; this checkpoint is not complete #48 acceptance or released SDK adoption.
+The historical read checkpoint retained the missing-export/prerelease limits. The current candidate adopts public CLI 0.12.61 / SDK 0.22.0 and the official source contract at release commit d7ce30a91a9d6c195cc9b6a34e7a42a36737099d. Owner acceptance of task 1.3 unlocked protected persistence and explicit effects. Consumer fixtures do not establish actual App-user delivery acceptance.
 
-- [ ] 2.1 Add the fixed bounded tokenless SDK bridge with existing guarded source transport and effective App-user authority.
+- [x] 2.1 Add the fixed bounded tokenless SDK bridge with existing guarded source transport and effective App-user authority.
 - [ ] 2.2 Feed shared current question, action, reservation and denial facts into #50/#51 while preserving historical/source labels separately.
 - [ ] 2.3 Verify unknown, malformed, revoked, late-source and missing-contract/grant behavior; no source write is enabled by this phase.
 

@@ -1,3 +1,4 @@
+import { renderActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
 const byId = id => document.getElementById(id);
 const maximumTextBytes = 8 * 1024 * 1024;
@@ -8,6 +9,7 @@ const initial = location.pathname.match(/^\/workspace\/issues\/([^/]+)\/([^/]+)\
 if (initial) { byId('issue-repository').value = initial[1] + '/' + initial[2]; byId('issue-number').value = initial[3]; }
 function status(text, error = false) { byId('issue-status').textContent = text; byId('issue-status').dataset.state = error ? 'error' : 'ready'; }
 function clear() {
+  byId("control-actions").replaceChildren();
   renderingBudget = { remaining: 5000 };
   current = null; comments = []; bytes = 0; nextPage = null;
   byId('issue-title').textContent = 'Issue workspace'; byId('evidence-status').textContent = '';
@@ -61,6 +63,7 @@ async function read(append = false) {
   if (pending || append && (nextPage === null || bytes >= maximumTextBytes || comments.length >= 1000)) return;
   if (!append && current?.key !== target.key) clear();
   if (!append && current) byId('controls-status').textContent = 'Refreshing source context; previous shared observations may be stale.';
+  byId("control-actions").replaceChildren();
   pending = true; const operation = ++revision; controller?.abort(); controller = new AbortController();
   byId('issue-refresh').disabled = true; byId('issue-more').disabled = true;
   const page = append ? nextPage : 1;
@@ -175,6 +178,7 @@ async function readEvidence(target, page, snapshot, operation) {
 }
 
 async function readControls(target, operation) {
+  byId('control-actions').replaceChildren();
   byId('controls-status').textContent = 'Refreshing shared source facts; previous observations may be stale.';
   try {
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
@@ -203,8 +207,11 @@ async function readControls(target, operation) {
     for (const [name, label] of [['comment', 'Ordinary comment'], ['refine', 'Refine'], ['propose', 'Propose'], ['continue', 'Continue']]) {
       const action = facts.actions?.[name];
       area.append(paragraph(label + ' · Source: ' + (action?.eligible === true ? 'eligible' : action?.availability ?? 'unavailable')
-        + (action?.reason ? ' · ' + action.reason : '') + ' · SoFa submission: unavailable'));
+        + (action?.reason ? ' · ' + action.reason : '') + ' · SoFa submission: ' + (data.submissionAvailable ? 'available with confirmation' : 'unavailable')));
     }
+    if (data.submissionAvailable) renderActions(byId('control-actions'), facts, target, data.dataScope,
+      () => operation === revision && current?.key === target.key && current?.dataScope === data.dataScope,
+      () => { clear(); status('Source authority changed. Verify your account and refresh.', true); });
     if (data.missingReadScopes?.length) area.append(paragraph('Missing or unknown App read scopes: ' + data.missingReadScopes.join(', ')));
   } catch (error) {
     if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)

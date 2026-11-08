@@ -1,4 +1,4 @@
-// The host owns credentials, HTTP initiation and artifact downloads. This child only runs the shared reader.
+// The host owns credentials, HTTP initiation and artifact downloads. This child only runs the shared SDK.
 import { TextDecoder } from 'node:util';
 
 const maximum = 4 * 1024 * 1024;
@@ -46,9 +46,13 @@ globalThis.fetch = async () => { broken = true; throw Error('Only host transport
 
 try {
   const input = await frame();
-  if (input?.version !== 1 || input.operation !== 'observe' || !positive(input.number) || input.number > 2147483647
+  if (input?.version !== 1 || !['observe', 'prepare', 'submit', 'reconcile'].includes(input.operation) || !positive(input.number) || input.number > 2147483647
       || typeof input.repository !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/.test(input.repository)
-      || Object.keys(input).length !== 4) throw Error('Invalid observation');
+      || Object.keys(input).some(key => !['version', 'operation', 'repository', 'number', 'action', 'id', 'body', 'prepared'].includes(key))
+      || input.operation === 'observe' && Object.keys(input).length !== 4
+      || input.operation === 'prepare' && (!['refine', 'propose', 'comment', 'continue'].includes(input.action)
+          || typeof input.id !== 'string' || typeof input.body !== 'string' || Buffer.byteLength(input.body) > 12288)
+      || ['submit', 'reconcile'].includes(input.operation) && (!input.prepared || Object.keys(input).length !== 5)) throw Error('Invalid observation');
   let createIssueControl;
   try { ({ createIssueControl } = await import('@juangcarmona/lighthouse-sdlc/issue-control')); }
   catch (error) {
@@ -59,10 +63,14 @@ try {
   } else {
     const sdk = createIssueControl({ repository: input.repository,
       transport: async request => {
-        if (request.method !== 'GET' || request.body !== undefined || !['account', 'repository'].includes(request.scope)
+        if (!['GET', 'POST'].includes(request.method) || request.method === 'GET' && request.body !== undefined || !['account', 'repository'].includes(request.scope)
             || request.scope === 'account' && request.path !== 'user'
             || request.scope === 'repository' && request.repository !== input.repository) {
-          broken = true; throw Error('Read-only transport boundary');
+          broken = true; throw Error('Transport boundary');
+        }
+        if (request.method === 'POST') {
+          if (input.operation !== 'submit' || request.scope !== 'repository') { broken = true; throw Error('Effect boundary'); }
+          return callback('effect', { scope: request.scope, path: request.path, method: 'POST', body: request.body, apiVersion: request.apiVersion ?? null });
         }
         try { return await callback('transport', { scope: request.scope, path: request.path }); }
         catch (error) { if (request.optional === true && error.status === 404) return null; throw error; }
@@ -83,7 +91,10 @@ try {
         return callback('artifact', { artifactId: matches[0].id, member });
       },
     });
-    const result = await sdk.observe({ number: input.number });
+    const result = input.operation === 'observe' ? await sdk.observe({ number: input.number })
+      : input.operation === 'prepare' ? await sdk.prepare({ number: input.number, action: input.action, id: input.id, body: input.body })
+      : input.operation === 'reconcile' ? await sdk.reconcile(input.prepared)
+      : await sdk.submit(input.prepared, { claim: value => callback('claim', value) });
     if (broken) throw Error('Observation protocol failed');
     emit({ type: 'result', result });
   }

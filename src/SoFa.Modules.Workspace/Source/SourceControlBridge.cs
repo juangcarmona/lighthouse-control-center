@@ -17,11 +17,19 @@ internal sealed class SourceControlBridge : IDisposable
   {
     if (!await slots.WaitAsync(0, cancellationToken).ConfigureAwait(false))
       return new("unavailable", Reason: "Source observation slots are occupied.");
-    try { return await Run(repository, number, callback, cancellationToken).ConfigureAwait(false); }
+    try { return await Run(new { version = 1, operation = "observe", repository, number }, true, callback, cancellationToken).ConfigureAwait(false); }
     finally { slots.Release(); }
   }
 
-  private static async Task<ControlReadResult> Run(string repository, int number,
+  internal async Task<ControlReadResult> Execute(object request,
+      Func<JsonElement, CancellationToken, Task<ControlCallbackResult>> callback, CancellationToken cancellationToken)
+  {
+    if (!await slots.WaitAsync(0, cancellationToken).ConfigureAwait(false)) return new("unavailable", Reason: "Source control slots are occupied.");
+    try { return await Run(request, false, callback, cancellationToken).ConfigureAwait(false); }
+    finally { slots.Release(); }
+  }
+
+  private static async Task<ControlReadResult> Run(object request, bool observation,
       Func<JsonElement, CancellationToken, Task<ControlCallbackResult>> callback, CancellationToken cancellationToken)
   {
     var start = new ProcessStartInfo("node")
@@ -47,7 +55,7 @@ internal sealed class SourceControlBridge : IDisposable
       if (!process.Start()) return new("unavailable", Reason: "Shared source reader could not start.");
       stderr = DrainError(process.StandardError.BaseStream, budget.Token);
       var frames = new ControlFrames(process.StandardOutput.BaseStream);
-      await Send(process, new { version = 1, operation = "observe", repository, number }, budget.Token).ConfigureAwait(false);
+      await Send(process, request, budget.Token).ConfigureAwait(false);
       var sequence = 0;
       JsonElement? result = null;
       while (true)
@@ -61,7 +69,8 @@ internal sealed class SourceControlBridge : IDisposable
         if (SourceJson.Text(value, "type") == "result")
         {
           if (value.EnumerateObject().Count() != 2 || !value.TryGetProperty("result", out var facts)
-              || facts.ValueKind != JsonValueKind.Object || SourceJson.Text(facts, "availability") is not ("available" or "unavailable" or "unsupported" or "denied"))
+              || facts.ValueKind != JsonValueKind.Object || observation && SourceJson.Text(facts, "availability") is not ("available" or "unavailable" or "unsupported" or "denied")
+              || !observation && SourceJson.Text(facts, "state") is null && SourceJson.Number(facts, "version") != 1 && SourceJson.Text(facts, "availability") is null)
             throw new InvalidDataException("Invalid observation result.");
           result = facts.Clone();
           process.StandardInput.Close();
@@ -75,7 +84,7 @@ internal sealed class SourceControlBridge : IDisposable
       await process.WaitForExitAsync(budget.Token).ConfigureAwait(false);
       if (result is null || process.ExitCode != 0 || !await stderr.ConfigureAwait(false))
         return new("unavailable", Reason: "Shared source reader did not return a complete observation.");
-      return new(SourceJson.Text(result.Value, "availability")!, result, SourceJson.Text(result.Value, "reason"));
+      return new(SourceJson.Text(result.Value, "availability") ?? "available", result, SourceJson.Text(result.Value, "reason"));
     }
     catch (Exception error) when (error is Win32Exception or IOException or InvalidOperationException or JsonException or OperationCanceledException or ArgumentException)
     { return new("unavailable", Reason: "Shared source observation failed or exceeded its bounds."); }

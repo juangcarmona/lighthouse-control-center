@@ -150,3 +150,47 @@ test('shared source authority loss clears the earlier private issue and question
   await expect(page.locator('#issue-body')).toBeEmpty();
   await expect(page.locator('#issue-status')).toContainText('Source authority changed');
 });
+
+for (const width of [1280, 390]) test(`explicit source action ${width}: confirmation, lost response and recovery without another send`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true }, refine: { eligible: true }, continue: { eligible: false } }
+  } });
+  let entry = null; const operations = [];
+  await page.route('**/api/controls/csrf', route => route.fulfill({ json: { token: 'browser-test-csrf' } }));
+  await page.route('**/api/issues/**/controls', route => {
+    if (route.request().method() === 'GET') return route.fallback();
+    expect(route.request().headers()['x-sofa-csrf']).toBe('browser-test-csrf');
+    const input = route.request().postDataJSON(); operations.push(input.operation);
+    if (input.operation === 'prepare') entry = { availability: 'available', dataScope: 'fixture-71', actingUserId: 71,
+      observedAt: '2026-11-08T08:00:00Z', id: 'a'.repeat(32), journalState: 'prepared',
+      intent: { action: input.action, body: input.body }, effect: { kind: 'comment' } };
+    if (input.operation === 'submit') { entry = { ...entry, journalState: 'claimed' }; return route.fulfill({ status: 503, json: { reason: 'Response lost; recover the same confirmation.' } }); }
+    if (input.operation === 'reconcile') entry = { ...entry, receipt: { state: 'comment-published', questionResolved: false,
+      source: 'https://github.com/example/repository/issues/7#issuecomment-91' } };
+    return route.fulfill({ json: entry });
+  });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.getByRole('button', { name: 'Prepare ordinary comment' })).toBeVisible();
+  await page.getByLabel('Your comment or answer').fill('<script>window.replyExecuted=true</script>');
+  await page.getByRole('button', { name: 'Prepare ordinary comment' }).focus(); await page.keyboard.press('Enter');
+  await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('does not resume work');
+  expect(operations).toEqual(['prepare']);
+  await expect(page.locator('#control-actions script')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Confirm and send' }).focus(); await page.keyboard.press('Enter');
+  await expect(page.locator('#control-actions')).toContainText('No automatic resend');
+  await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
+  await page.reload();
+  await page.getByRole('button', { name: 'Recover previous action' }).click();
+  await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('a'.repeat(32));
+  await page.getByRole('button', { name: 'Reconcile source result' }).click();
+  await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('comment-published');
+  await expect(page.locator('#control-actions')).toContainText('Question resolved: unconfirmed');
+  expect(operations.filter(item => item === 'submit')).toHaveLength(1);
+  expect(await page.evaluate(() => window.replyExecuted)).toBeUndefined();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({ path: `test-results/issue/controls-${width}.png`, fullPage: true });
+});
