@@ -1,5 +1,5 @@
 main { max-width: 100rem; margin: auto; padding: 1rem; }
-nav { display: flex; gap: 1rem; }
+nav { display: flex; flex-wrap: wrap; gap: 1rem; }
 #issue-picker, .issue-tools { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; margin-block: 1rem; }
 #issue-picker label { display: grid; gap: .25rem; }
 input, button, summary { min-height: 44px; }

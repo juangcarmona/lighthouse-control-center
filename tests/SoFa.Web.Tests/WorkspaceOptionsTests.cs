@@ -85,6 +85,44 @@ public sealed class WorkspaceOptionsTests
 
   private static IConfiguration Configuration(Dictionary<string, string?> values) => new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 
+  [Fact]
+  public void OptionalRuntimeSourcesHaveExplicitTrustAndNeverSerializeTheirPrivateDirectories()
+  {
+    var values = Values();
+    values["SoFa:Runtime:Registrations:0:Alias"] = "runner-1";
+    values["SoFa:Runtime:Registrations:0:Directory"] = "/private/registration";
+    values["SoFa:Runtime:Checkouts:0:Repository"] = "owner/repository";
+    values["SoFa:Runtime:Checkouts:0:Directory"] = "/private/checkout";
+    values["SoFa:Runtime:TrustedGroupIds:0"] = "1000";
+    values["SoFa:GitHub:AppId"] = "123";
+    var configured = WorkspaceOptions.Load(Configuration(values));
+    Assert.Equal(123, configured.GitHubAppId);
+    Assert.Equal(1000u, Assert.Single(configured.Runtime.TrustedGroupIds));
+    Assert.Equal("runner-1", Assert.Single(configured.Runtime.Registrations).Alias);
+    Assert.DoesNotContain("/private", JsonSerializer.Serialize(configured), StringComparison.Ordinal);
+    Assert.DoesNotContain("/private", configured.Runtime.ToString(), StringComparison.Ordinal);
+    foreach (var invalid in new[] { "../outside", "/private/../outside", "/private/\0value", "/" + new string('é', 2048) })
+    {
+      values["SoFa:Runtime:Registrations:0:Directory"] = invalid;
+      Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+    }
+  }
+
+  [Theory]
+  [InlineData("SoFa:Runtime:Registrations:0:Alias", "bad/alias")]
+  [InlineData("SoFa:Runtime:Registrations:0:Alias", "bad\n")]
+  [InlineData("SoFa:Repositories:0", "owner/repository\n")]
+  [InlineData("SoFa:Runtime:Checkouts:0:Repository", "other/repository")]
+  [InlineData("SoFa:Runtime:TrustedGroupIds:0", "-1")]
+  [InlineData("SoFa:GitHub:AppId", "0")]
+  [InlineData("SoFa:GitHub:AppId", "9007199254740992")]
+  public void InvalidRuntimeConfigurationIsRejectedWithoutLeakingItsValue(string key, string value)
+  {
+    var values = Values(); values[key] = value;
+    var error = Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+    Assert.DoesNotContain(value, error.Message, StringComparison.Ordinal);
+  }
+
   internal static Dictionary<string, string?> Values(string mode = "Development") => new()
   {
     ["SoFa:Identity:Mode"] = mode,

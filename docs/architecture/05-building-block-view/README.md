@@ -28,3 +28,9 @@ The issue reader now implements bounded conversation pages and optional source-a
 ## Implemented discovery projection
 
 The [factory query](../../../src/SoFa.Modules.Workspace/Source/GetFactoryPageHandler.cs) reuses current repository authority and atomic request admission for fixed metadata and ordinary-issue reads. It returns bounded explicit pages or an exact-number result, connection scope, coverage and separate configured/observed branch facts. The [browser view](../../../src/web/public/factory.js) uses one predicate for list/state-board views and preserves shared issue identities; evidence reads reuse #50. No database, source mutation or new execution component is introduced. Actual connected-user acceptance remains open.
+
+## Implemented runtime inventory adapter
+
+The [runtime queries](../../../src/SoFa.Modules.Workspace/Runtime/) coordinate owner-gated host observations and connected-user repository-runner reads. The [bounded tokenless helper](../../../src/workspace-tools/runtime-inventory.mjs) reads selected registration metadata and committed adoption through a private object view; it creates no execution worker, supervisor or journal. The [browser projection](../../../src/web/public/runtime.js) correlates repository-scoped identities and preserves unknown or conflicting observations. Source/read lifetime and authority belong to [section 08](../08-crosscutting-concepts/README.md); operational configuration belongs to the [runbook](../../runbooks/runtime-inventory.md).
+
+<!-- pdac:cite id="FR-RUNTIME-HEALTH" digest="sha256:3566c2bc7919a04b15a3e0e89d2cc2947a9ba38962673d6eb67f7d4addb6dce2" -->

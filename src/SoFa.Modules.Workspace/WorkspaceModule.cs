@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 using JuanGCarmona.SoFa.Modules.Workspace.Source;
+using JuanGCarmona.SoFa.Modules.Workspace.Runtime;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace;
 
@@ -24,6 +25,9 @@ public static class WorkspaceModule
     services.AddSingleton<GetIssueContextHandler>();
     services.AddSingleton<GetIssueEvidenceHandler>();
     services.AddSingleton<GetFactoryPageHandler>();
+    services.AddSingleton<RuntimeReadSlots>();
+    services.AddSingleton<GetHostInventoryHandler>();
+    services.AddSingleton<GetRepositoryRunnersHandler>();
     return services;
   }
 
@@ -260,10 +264,33 @@ public static class WorkspaceModule
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
       return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "index.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
     });
+    app.MapGet("/workspace/runtime", async (HttpContext context, OwnerSessions sessions) =>
+    {
+      sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
+      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "runtime.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+    });
+    app.MapGet("/api/runtime/host", async (HttpContext context, OwnerSessions sessions, GetHostInventoryHandler host) =>
+    {
+      var record = sessions.Get(context.User)!;
+      var result = await host.Handle(new(record), context.RequestAborted).ConfigureAwait(false);
+      if (!ReferenceEquals(sessions.Get(record.Id), record)) return Results.StatusCode(401);
+      result = GetHostInventoryHandler.Bound(result);
+      return Results.Json(result, statusCode: result.Availability switch { "disconnected" => 401, "busy" => 429, "unavailable" => 503, _ => 200 });
+    });
+    app.MapGet("/api/runtime/{owner}/{repository}", async (string owner, string repository,
+        HttpContext context, OwnerSessions sessions, GetRepositoryRunnersHandler runners) =>
+    {
+      var record = sessions.Get(context.User)!;
+      var result = await runners.Handle(new(record, owner + "/" + repository), context.RequestAborted).ConfigureAwait(false);
+      if (!ReferenceEquals(sessions.Get(record.Id), record)) return Results.StatusCode(401);
+      result = GetRepositoryRunnersHandler.Bound(result);
+      return Results.Json(result, statusCode: result.Availability switch { "disconnected" => 409, "denied" => 403, "busy" => 429, "unavailable" => 503, _ => 200 });
+    });
     foreach (var asset in new[] { (Path: "/app.js", File: "app.js", Type: "text/javascript"),
             (Path: "/app.css", File: "app.css", Type: "text/css"), (Path: "/tokens.css", File: "tokens.css", Type: "text/css"),
             (Path: "/factory.js", File: "factory.js", Type: "text/javascript"),
             (Path: "/factory.css", File: "factory.css", Type: "text/css"),
+            (Path: "/runtime.js", File: "runtime.js", Type: "text/javascript"), (Path: "/runtime.css", File: "runtime.css", Type: "text/css"),
             (Path: "/issue.js", File: "issue.js", Type: "text/javascript"),
             (Path: "/markdown.js", File: "markdown.js", Type: "text/javascript"), (Path: "/issue.css", File: "issue.css", Type: "text/css"),
             (Path: "/account.css", File: "account.css", Type: "text/css"), (Path: "/account.js", File: "account.js", Type: "text/javascript") })
@@ -276,7 +303,7 @@ public static class WorkspaceModule
       "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>SoFa · "
       + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
       + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
-      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Factory</a> <a href=\"/workspace/issues\">Issues</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
+      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Factory</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
   private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action
       + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token)

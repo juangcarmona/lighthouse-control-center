@@ -6,7 +6,8 @@ namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal enum SourceAvailability { Available, Denied, Unavailable }
 internal sealed record RepositoryAuthority(string Repository, SourceAvailability Availability, bool IssuesRead,
-    bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt);
+    bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt, bool AdministrationRead = false, string? DataScope = null, long? Generation = null,
+    SourceAvailability AdministrationAvailability = SourceAvailability.Unavailable);
 
 internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions sessions, GitHubAuthorization authorization,
     GitHubTransport transport, TimeProvider clock)
@@ -31,7 +32,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     if (!repo.Successful)
     {
       if (repo.Status == HttpStatusCode.Unauthorized) GitHubAuthorization.Invalidate(record, connection);
-      return Unknown(repo.Status == HttpStatusCode.NotFound ? SourceAvailability.Denied : SourceAvailability.Unavailable);
+      return Unknown(repo.Status is HttpStatusCode.NotFound or HttpStatusCode.Forbidden ? SourceAvailability.Denied : SourceAvailability.Unavailable);
     }
     if (repo.Value.ValueKind != JsonValueKind.Object || !repo.Value.TryGetProperty("permissions", out var userPermissions)
         || userPermissions.ValueKind != JsonValueKind.Object || !userPermissions.TryGetProperty("pull", out var pull)
@@ -80,8 +81,10 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
               var issues = Permission(grants, "issues");
               var actions = Permission(grants, "actions");
               var write = Granted(userPermissions, "push") || Granted(userPermissions, "maintain") || Granted(userPermissions, "admin");
+              var administration = AdministrationAuthority(metadata, userPermissions, grants, installation, repo.Value, item, settings.GitHubAppId);
               return new RepositoryAuthority(repository, metadata ? SourceAvailability.Available : SourceAvailability.Denied,
-                  metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now);
+                  metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now,
+                  administration == SourceAvailability.Available, connection.DataScope, generation, administration);
             }
           }
           if (Complete(accessible.Value, repositories.GetArrayLength(), repoPage)) return Unknown(SourceAvailability.Denied);
@@ -91,6 +94,21 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
       if (Complete(installations.Value, rows.GetArrayLength(), page)) return Unknown(SourceAvailability.Denied);
     }
     return Unknown(SourceAvailability.Unavailable);
+  }
+
+  private static SourceAvailability AdministrationAuthority(bool metadata, JsonElement user, JsonElement grants,
+      JsonElement installation, JsonElement repository, JsonElement listed, long? expectedApp)
+  {
+    if (!metadata) return SourceAvailability.Denied;
+    if (expectedApp is null || !user.TryGetProperty("admin", out var admin) || admin.ValueKind is not (JsonValueKind.True or JsonValueKind.False)
+        || SourceJson.Number(installation, "app_id") is not (> 0 and <= 9_007_199_254_740_991)
+        || SourceJson.Number(repository, "id") is not (> 0 and <= 9_007_199_254_740_991)
+        || SourceJson.Number(listed, "id") is not (> 0 and <= 9_007_199_254_740_991)) return SourceAvailability.Unavailable;
+    if (!admin.GetBoolean() || SourceJson.Number(installation, "app_id") != expectedApp
+        || SourceJson.Number(repository, "id") != SourceJson.Number(listed, "id")) return SourceAvailability.Denied;
+    if (!grants.TryGetProperty("administration", out var grant)) return SourceAvailability.Denied;
+    return grant.ValueKind != JsonValueKind.String || grant.GetString() is not ("read" or "write")
+        ? SourceAvailability.Unavailable : SourceAvailability.Available;
   }
 
   private static bool Complete(JsonElement root, int length, int page) => length < 100

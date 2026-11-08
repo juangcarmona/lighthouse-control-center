@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using JuanGCarmona.SoFa.Modules.Workspace.Identity;
+using JuanGCarmona.SoFa.Modules.Workspace.Runtime;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace;
 
@@ -11,6 +12,9 @@ internal sealed class WorkspaceOptions
   public required IReadOnlyList<string> Repositories { get; init; }
   public IReadOnlyDictionary<string, string> RepositoryBranches { get; init; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
   public string? GitHubClientId { get; init; }
+  public long? GitHubAppId { get; init; }
+  [System.Text.Json.Serialization.JsonIgnore]
+  public RuntimeOptions Runtime { get; init; } = new();
   [System.Text.Json.Serialization.JsonIgnore]
   public string? GitHubClientSecret { get; init; }
 
@@ -41,7 +45,7 @@ internal sealed class WorkspaceOptions
     var repositories = section.GetSection("Repositories").GetChildren().Select(c => c.Value ?? "").ToArray();
     if (repositories.Length is < 1 or > 10 || repositories.Distinct(StringComparer.OrdinalIgnoreCase).Count() != repositories.Length
         || repositories.Any(r => !System.Text.RegularExpressions.Regex.IsMatch(r,
-            "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant,
+            "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\\z", System.Text.RegularExpressions.RegexOptions.CultureInvariant,
             TimeSpan.FromMilliseconds(100))))
       throw new InvalidOperationException("Configure one to ten distinct, valid repository names.");
 
@@ -64,6 +68,10 @@ internal sealed class WorkspaceOptions
       RepositoryBranches = branches,
       GitHubClientId = githubClient,
       GitHubClientSecret = githubSecret,
+      GitHubAppId = section["GitHub:AppId"] is { } appId
+          ? long.TryParse(appId, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var parsed) && parsed is > 0 and <= 9_007_199_254_740_991
+              ? parsed : throw new InvalidOperationException("Configure a valid numeric GitHub App ID.") : null,
+      Runtime = RuntimeOptions.Load(section.GetSection("Runtime"), repositories),
     };
   }
 

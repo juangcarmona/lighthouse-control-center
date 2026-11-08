@@ -5,22 +5,24 @@
 ## 1. Host evidence
 
 - [ ] 1.1 Add bounded private source configuration and a tokenless fixed-file/read-only Git helper; prove exact committed adoption, safe registration projection, literal-origin/bounded-ref parsing and disposable bare object reads isolated from all source/system/global Git configuration; prove hostile config never launches helpers or network, source metadata stays unchanged, and every numeric/form/traversal bound has at/over-limit cases. Add same-handle file/parent replacement races and ownership/unsupported-platform cases; never reopen a validated source pathname.
-- [ ] 1.2 Add owner-gated bounded process bridge and host query with owner-lifetime/deadline cancellation, atomic helper initiation, a global nonqueuing host1 cap and sequential Git children; no secret/path output, network, source writes or runtime process control.
+- [x] 1.2 Add owner-gated bounded process bridge and host query with owner-lifetime/deadline cancellation, atomic helper initiation, a global nonqueuing host1 cap and sequential Git children; no secret/path output, network, source writes or runtime process control.
 
 ## 2. GitHub evidence
 
-- [ ] 2.1 Extend effective authority with administration read and add guarded bounded repository runner projection, coverage, unknown fields and honest denial; globally cap runtime GitHub queries at2 without queueing.
-- [ ] 2.2 Prove the full user-admin / matching App-administration / metadata conjunction, wrong account/installation/repository and all-granted case, zero runner calls on denied authority, final serialized response overflow; prove owner logout/expiry stops a held helper; initiation/removal races, concurrency limits/busy results and cancellation slot release; no-call denial, source errors, identity/generation/read-stop boundaries and preserve existing assertions.
+- [x] 2.1 Extend effective authority with administration read and add guarded bounded repository runner projection, coverage, unknown fields and honest denial; globally cap runtime GitHub queries at2 without queueing.
+- [x] 2.2 Prove the full user-admin / matching App-administration / metadata conjunction, wrong account/installation/repository and all-granted case, zero runner calls on denied authority, final serialized response overflow; prove owner logout/expiry stops a held helper; initiation/removal races, concurrency limits/busy results and cancellation slot release; no-call denial, source errors, identity/generation/read-stop boundaries and preserve existing assertions.
 
 ## 3. Runtime workspace
 
-- [ ] 3.1 Implement independent source refresh, exact scoped registration joins/conflicts, committed adoption/version detail and source recovery links.
-- [ ] 3.2 Prove immediate scoped/global authority clearing, stale timestamps, absent/partial data, keyboard/390px and safe rendering through browser regressions.
+- [x] 3.1 Implement independent source refresh, exact scoped registration joins/conflicts, committed adoption/version detail and source recovery links.
+- [x] 3.2 Prove immediate scoped/global authority clearing, stale timestamps, absent/partial data, keyboard/390px and safe rendering through browser regressions.
+
+Task1.1 remains open for the final independent audit of exhaustive bounds and unsupported-layout evidence. Checked implementation tasks describe the local code checkpoint, not full Done or prerequisite acceptance.
 
 ## 4. Verification and integration
 
-- [ ] 4.1 Observe actual host registrations and committed adoption with source-safe receipt; distinguish real App limitations, fixtures and unobserved health/usage. Record independent supervision without restarting/cancelling runtime.
-- [ ] 4.2 Update implementation architecture/README/configuration docs and validate current ProductShape citations.
+- [x] 4.1 Observe actual host registrations and committed adoption with source-safe receipt; distinguish real App limitations, fixtures and unobserved health/usage. Record independent supervision without restarting/cancelling runtime.
+- [x] 4.2 Update implementation architecture/README/configuration docs and validate current ProductShape citations.
 - [ ] 4.3 Run full repository and hosted verification; configured isolated LunaHigh (`openai/gpt-6-luna#high`) final-head review with actual executor identity, distinct selected-model attestation and durable exact-head/decision evidence; review every Done dimension, including acceptance, implementation completeness, tests, quality, security, architecture, docs, product/spec consistency, evidence, review and known limitations.
 - [ ] 4.4 Integrate only after prerequisites and Done pass; synchronize/archive accepted specs through OpenSpec, merge with exact-head protections, check postmerge and record retrospective. Do not close future capacity/usage scope as implemented.
 

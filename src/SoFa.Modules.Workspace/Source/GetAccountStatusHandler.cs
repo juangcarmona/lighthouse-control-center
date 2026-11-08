@@ -4,7 +4,8 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal sealed record GetAccountStatus(OwnerSession Session);
-internal sealed record RepositoryGrant(string Repository, string Availability, bool IssuesRead, bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt);
+internal sealed record RepositoryGrant(string Repository, string Availability, bool IssuesRead, bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt,
+    bool AdministrationRead = false, string AdministrationAvailability = "unavailable");
 internal sealed record AccountStatus(string State, string? Login = null, long? UserId = null,
     DateTimeOffset? VerifiedAt = null, IReadOnlyList<RepositoryGrant>? Repositories = null, string? DataScope = null);
 
@@ -29,7 +30,8 @@ internal sealed class GetAccountStatusHandler(WorkspaceOptions settings, OwnerSe
           || record.GitHub.Generation != generation) return new AccountStatus("unavailable");
       return new AccountStatus("linked", connection.Login, connection.UserId, connection.VerifiedAt,
           authorities.Select(authority => new RepositoryGrant(authority.Repository, authority.Availability.ToString().ToLowerInvariant(),
-              authority.IssuesRead, authority.ActionsRead, authority.IssuesWrite, authority.CheckedAt)).ToArray(), connection.DataScope);
+              authority.IssuesRead, authority.ActionsRead, authority.IssuesWrite, authority.CheckedAt, authority.AdministrationRead,
+              authority.AdministrationAvailability.ToString().ToLowerInvariant())).ToArray(), connection.DataScope);
     }
   }
 }

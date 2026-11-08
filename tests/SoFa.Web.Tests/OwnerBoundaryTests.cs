@@ -30,7 +30,8 @@ public sealed class OwnerBoundaryTests
   {
     await using var app = new OwnerApplication();
     using var client = app.Client();
-    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory", "/unknown" })
+    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory",
+        "/workspace/runtime", "/api/runtime/host", "/api/runtime/example/repository", "/unknown" })
       Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
     Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/auth/login", new StringContent(""))).StatusCode);
     Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/auth/logout", new StringContent(""))).StatusCode);
@@ -143,6 +144,7 @@ public sealed class OwnerBoundaryTests
     var sessions = scope.ServiceProvider.GetRequiredService<OwnerSessions>();
     var record = sessions.Get(authenticated.Principal!)!;
     var previousId = record.Id;
+    var stopped = record.Stopped.Token;
     var absolute = record.AbsoluteDeadline;
     var idle = record.IdleDeadline;
     var validated = record.ProviderValidatedAt;
@@ -159,6 +161,8 @@ public sealed class OwnerBoundaryTests
     Assert.Equal(previousId, authenticated.Principal!.FindFirst(OwnerSessions.SessionClaim)!.Value);
     Assert.Null(sessions.Get(previousId));
     Assert.Same(record, sessions.Get(record.Id));
+    Assert.Equal(stopped, record.Stopped.Token);
+    Assert.False(stopped.IsCancellationRequested);
     Assert.Equal(absolute, record.AbsoluteDeadline);
     Assert.Equal(idle, record.IdleDeadline);
     Assert.Equal(validated, record.ProviderValidatedAt);

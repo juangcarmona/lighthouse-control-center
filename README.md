@@ -58,3 +58,5 @@ Run observations add optional `startedAt` from GitHub `run_started_at`, alongsid
 The former supervisor is retained for historical rollback, disabled by default and no longer started by AppHost. See [ADR-0006](docs/architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md).
 
 The repository's own development workflows use the pinned Lighthouse gh-aw/OpenCode adapter. See [repository workflow operation](docs/runbooks/repository-workflows.md) for runner setup, stage requests, evidence and recovery.
+
+The runtime inventory at `/workspace/runtime` reads configured local runner registrations and committed Lighthouse versions separately from permission-gated GitHub runner observations. See the [runtime inventory runbook](docs/runbooks/runtime-inventory.md) for private sources, explicit filesystem trust, limits and unavailable evidence. Registrations and matching source IDs do not prove process health or free capacity.

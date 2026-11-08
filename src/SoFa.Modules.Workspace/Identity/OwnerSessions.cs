@@ -170,6 +170,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     {
       if (!record.Active) return;
       record.Active = false;
+      record.Stopped.Cancel();
       if (sessions.TryGetValue(record.Id, out var current) && ReferenceEquals(record, current))
         sessions.TryRemove(record.Id, out _);
       record.Ticket.Properties.StoreTokens([]);
@@ -193,5 +194,6 @@ internal sealed class OwnerSession(string id, AuthenticationTicket ticket, DateT
   internal DateTimeOffset ProviderRetryAfter { get; set; }
   internal Task<ProviderAuthority>? ProviderRefresh { get; set; }
   internal bool Active { get; set; } = true;
+  internal CancellationTokenSource Stopped { get; } = new();
   internal GitHubSession GitHub { get; } = new();
 }

@@ -58,3 +58,13 @@ The issue reader has no global issue cache. Evidence consumes one validated curr
 The Markdown subset builds DOM text nodes and explicit HTTPS links. Raw HTML, scripts, forms and images remain inert. Original Markdown remains readable. The browser preserves stale source timestamps after temporary failure and erases prior context, including the title, after authority loss. A public non-authority connection identifier and generation bind pagination snapshots; account replacement or reconnection cannot append new pages to an earlier connection. Known loss of Actions access clears old execution evidence even when conversation refresh fails. These implemented mechanics do not supply command admission or the proposed durable journal.
 
 <!-- pdac:cite id="FR-ISSUE-CONTEXT" digest="sha256:11f4c196c15675fa20c05bb320f02a2bab4bdbf96cf275a408c849924faed270" -->
+
+## Implemented local observation boundary
+
+Host request initiation shares the owner-session lock with removal, and the owned helper tree is cancelled on session removal or its admitted idle/absolute deadline. Cookie rotation retains that lifetime. Fixed metadata reads use pinned no-follow regular-file/directory handles; selected committed objects pass through a disposable bare view with pinned storage descriptors, isolated Git configuration/protocols and hash validation. No source configuration, hooks or credential helper executes. Global nonqueuing read slots and bounded process/byte lifetimes constrain observations independently from factory worker capacity. See the [query boundary](../../../src/SoFa.Modules.Workspace/Runtime/GetHostInventoryHandler.cs) and [helper](../../../src/workspace-tools/runtime-inventory.mjs).
+
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+
+Repository-runner authority intersects verified user administration with the expected App installation, immutable repository identity and current connection generation. Permission denial and unavailable authority remain distinct. The browser clears affected GitHub scope before unrelated reads finish, keeps host scope separate and retains original times only for explicitly stale observations. A local registration is metadata, GitHub runner status is a source fact, and committed versions are revision evidence; none establishes process health, deployed version or available execution capacity.
+
+<!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:1b8ec288714357b03b030a921f70b7f1dd0e82a590d05430cc8b4bf638c933a9" -->
