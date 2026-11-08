@@ -2,7 +2,7 @@
 
 <!-- pdac-scope: none reason="Operational documentation and evidence classification for an existing repository rename; no product-semantic or architectural change." -->
 
-## Context
+## Planning-time context
 
 See proposal.md for motivation. The issue reports the rename and updated main origin, but also broken linked-worktree pointers. The workspace is a disposable source copy, not the moved Bastion checkout. Source inspection finds old-name metadata, setup samples and historical evidence. Verification inputs are frozen without issue-specific corrections.
 
@@ -22,7 +22,7 @@ See proposal.md for motivation. The issue reports the rename and updated main or
 
 ## Risks / Trade-offs
 
-- [Live continuity cannot be established here] → Return blocked until the operator supplies actual repair and applicable integration receipts.
+- [Original worker cannot establish live continuity] → Publish a bounded candidate for operator follow-up. The continuation below supplies current repair/GitHub receipts; private integrations and historical checks remain open.
 - [The issue's observations may age] → Attribute their date/source; require fresh receipts for completion.
 - [Old-name defaults remain] → List them explicitly; use reviewed, separately authorized corrections for frozen inputs and preserve immutable evidence.
 - [A successful local check could imply remote acceptance] → Report local check results separately from operational acceptance and later publication/CI.

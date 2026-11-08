@@ -22,10 +22,10 @@ None. This is operational documentation, not new system behavior.
 
 ### Modified Capabilities
 
-None. Existing `delivery-verification` and `factory-overview` specifications were read; neither changes. The source inventory also contains `github-user-connection`, `identity-environments` and `owner-access`, whose authentication behavior is outside this work. CLI inventory remains an unavailable check until dependency installation succeeds. `skip_specs: true` records the absence of behavioral deltas.
+None. Existing `delivery-verification` and `factory-overview` specifications were read; neither changes. The source inventory also contains `github-user-connection`, `identity-environments` and `owner-access`, whose authentication behavior is outside this work. CLI inventory was unavailable in the original worker; operator installation and strict specification validation subsequently passed. `skip_specs: true` records the absence of behavioral deltas.
 
 ## Impact
 
 Changes are confined to this planning root, the rename roadmap, a continuity runbook and the installation runbook. ProductShape, architecture, generated integrations, frozen verification inputs, .NET names, application origin and identity registrations remain untouched. This change does not implement product behavior from CHG-LCC-EVOLUTION-001 or accept ADR-0010. No product artifact is altered or used to define a new behavior contract; #123, #124, #120 and #58 remain separate deliveries.
 
-Full issue completion still requires operator evidence unavailable in this workspace, particularly repair of the reported linked-worktree failure. A documentation candidate must not silently replace those acceptance criteria.
+At planning time, operator repair and continuity receipts were unavailable to the disposable worker. The operator continuation now supplies current repair/GitHub observations. Full issue completion still lacks the pre-cutover baseline and applicable private integration/historical request reconciliation; those are explicitly outside this documentation increment and #121 remains open.
