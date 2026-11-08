@@ -46,6 +46,8 @@ function runCard(repo, run) {
   const li = node('li'), heading = node('div', undefined, 'run-heading');
   heading.append(link(run.name || `Run ${run.id}`, run.url, repo.repository, 'actions/runs/', sourceKey(repo.repository, 'run', run.id)), badge(run.status || 'Status unavailable', active(run) ? 'activity' : ''));
   li.append(node('p', `${repo.repository} · Run ${run.id}`, 'muted'), heading, node('p', `Source revision: ${run.sourceRevision || 'unavailable'}`, 'timestamp'));
+  li.append(node('p', `Source attempt: ${Number.isSafeInteger(run.runAttempt) && run.runAttempt > 0 ? run.runAttempt : 'unknown'}`, 'timestamp'),
+    node('p', `Triggering event: ${typeof run.event === 'string' && run.event.trim() ? run.event : 'unknown'}`, 'timestamp'));
   if (run.conclusion) li.append(node('p', `Source conclusion: ${run.conclusion}`, 'muted'));
   if (run.status === 'in_progress') li.append(timing('Elapsed from source start', run.startedAt, repo.observedAt));
   li.append(timing('Since source update', run.updatedAt, repo.observedAt));

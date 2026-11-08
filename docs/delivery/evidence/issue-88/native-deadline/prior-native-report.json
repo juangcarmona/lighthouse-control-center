@@ -1,0 +1,27 @@
+{
+  "status": "blocked",
+  "evidence": [
+    {
+      "kind": "planning",
+      "round": 0,
+      "review": {
+        "accepted": true,
+        "verdict": "accept",
+        "findings": []
+      }
+    },
+    {
+      "kind": "candidate",
+      "round": 0,
+      "review": {
+        "accepted": false,
+        "verdict": "request-changes",
+        "findings": [
+          "The Node and .NET attempt validators accept fractional JSON numbers that round to an integer in their floating-point parsers (for example, run_attempt 1.00000000000000001 becomes 1), contrary to the explicit fractional-value-is-unknown criterion. Add a regression using that raw JSON numeric lexeme and validate its exact integral value before projecting a known attempt."
+        ]
+      }
+    }
+  ],
+  "reason": "The operation was aborted",
+  "nextAction": "Inspect execution evidence and resolve the identified blocker"
+}

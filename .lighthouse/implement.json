@@ -50,20 +50,29 @@
         ".editorconfig",
         "openspec/config.yaml",
         "openspec/schemas/",
-        "openspec/specs/"
+        "openspec/specs/",
+        "src/SoFa.Web/SoFa.Web.csproj",
+        "src/SoFa.Web/packages.lock.json",
+        "src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj",
+        "src/SoFa.Modules.Workspace/packages.lock.json",
+        "src/dotnet/"
       ],
       "corrections": {}
     }
   },
   "99": {
     "reviewRequired": false,
-    "scope": "Deliver only issue #99: expose source run attempts and triggering events in the existing read-only observer. Independent planning/candidate acceptance and merge are delegated after trusted checks and forge requirements pass. Preserve all existing safety assertions and frozen verification inputs. No authentication, production deployment or broader issue completion.",
+    "scope": "Deliver only issue #99: expose source run attempts and triggering events in the existing read-only observer. Independent planning/candidate acceptance and merge are delegated after trusted checks and forge requirements pass. Preserve all existing safety assertions and frozen verification inputs. No authentication, production deployment or broader issue completion. Include the supported authenticated .NET observation projection now delivered by49, retaining its source guard and authority/session behavior. Only source attempt/event mapping and the associated metadata assertions may change there.",
     "paths": [
-      "src/observation/",
-      "src/web/",
+      "src/observation/github.mjs",
+      "src/web/public/app.js",
+      "src/web/public/app.css",
+      "src/web/public/index.html",
       "tests/observation.test.mjs",
       "tests/browser/observation.spec.mjs",
-      "README.md"
+      "README.md",
+      "src/SoFa.Modules.Workspace/Source/GitHubObservations.cs",
+      "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs"
     ],
     "checks": [
       [
@@ -111,12 +120,19 @@
         "openspec/config.yaml",
         "openspec/schemas/",
         "openspec/specs/",
+        "src/SoFa.Web/SoFa.Web.csproj",
+        "src/SoFa.Web/packages.lock.json",
+        "src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj",
+        "src/SoFa.Modules.Workspace/packages.lock.json",
+        "src/dotnet/",
         "tests/observation.test.mjs",
-        "tests/browser/observation.spec.mjs"
+        "tests/browser/observation.spec.mjs",
+        "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs"
       ],
       "corrections": {
         "tests/observation.test.mjs": "Issue #99: extend source run attempt/event coverage, including absent and malformed values. Preserve existing source, unavailable-evidence, timestamp and read-only assertions.",
-        "tests/browser/observation.spec.mjs": "Issue #99: exercise known and unknown source attempt/event values in operational cards. Preserve all source-link, stale-evidence, filter, keyboard and accessibility assertions."
+        "tests/browser/observation.spec.mjs": "Issue #99: exercise known and unknown source attempt/event values in operational cards. Preserve all source-link, stale-evidence, filter, keyboard and accessibility assertions.",
+        "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs": "Issue99 only: extend observed workflow run attempt/event fixtures and assertions, including absent/malformed values. Preserve every existing authorization, scope, coalescing, stale-evidence, cancellation and read-stop assertion; do not alter identity fixtures or permission logic."
       }
     }
   }

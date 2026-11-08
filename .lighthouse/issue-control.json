@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "routerDigest": "582dd17a016c0422fa11cf1242a52b250bdd453287afb007f1b095d7596a3774",
+  "stages": [
+    "triage",
+    "refine",
+    "propose",
+    "implement",
+    "integrate",
+    "review"
+  ],
+  "autoImplement": true,
+  "completionEnabled": true,
+  "productChangeEnabled": false,
+  "backgroundWorkflows": [
+    "lighthouse-sdlc-unattended.yml"
+  ]
+}

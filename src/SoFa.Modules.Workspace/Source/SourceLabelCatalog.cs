@@ -15,7 +15,7 @@ internal static class SourceLabelCatalog
     var result = new Dictionary<string, SourceLabelFact>(StringComparer.Ordinal);
     try
     {
-      using var file = File.OpenRead(Path.Combine(AppContext.BaseDirectory, "workspace-tools", "lighthouse-capabilities.json"));
+      using var file = File.OpenRead(Path.Combine(AppContext.BaseDirectory, "workspace-tools", "node_modules", "@juangcarmona", "lighthouse-sdlc", "capabilities.json"));
       if (file.Length > 512 * 1024) return result;
       using var document = JsonDocument.Parse(file);
       var labels = document.RootElement.GetProperty("capabilities").EnumerateArray()

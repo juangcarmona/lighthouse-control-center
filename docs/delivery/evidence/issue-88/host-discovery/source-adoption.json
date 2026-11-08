@@ -1,0 +1,39 @@
+{
+  "problem": "Fresh native run42399314092 halted during planning because the read-only model could not run required OpenSpec CLI discovery. No result from that run is called qualified.",
+  "failedRun": "https://github.com/juangcarmona/sofa/actions/runs/42399314092",
+  "upstreamRepair": "https://github.com/juangcarmona/lighthouse/pull/552",
+  "reviewedHead": "72d7efde3a962c66f0269291a6a0c58cd6d2c194",
+  "workflowSourceRevision": "7815b7c38d1dabed5ee4e84293bc7dd8f04103c1",
+  "sourceCI": {
+    "repository": "https://github.com/juangcarmona/lighthouse/actions/runs/42405490827",
+    "packages": "https://github.com/juangcarmona/lighthouse/actions/runs/42405490890"
+  },
+  "distribution": "Official installed immutable-source workflow installer, --with-unattended --with-maintenance --replace-reviewed --apply. CLI0.12.55/SDLC0.21.6 package versions remain unchanged.",
+  "necessaryScopeReconciliation": "After49 moved the supported observer to.NET,99 must map attempt/event metadata in that source adapter as well as the historical collector. Exact observation source and its metadata assertions are added. Previous broad web/collector directory grants are narrowed to exact observer files. No identity, transport, account UI, source command, production, model, time or correction-budget change.",
+  "verificationInputs": "New web/module project files, locks and shared dotnet code are frozen; the exact existing web metadata test file is required and receives a narrow correction reason preserving all auth/scope assertions.",
+  "policyRegression": {
+    "first": "The expanded test correctly rejected removal of the new correction file until that file was explicitly required in the trust inventory. No assertion was removed.",
+    "final": {
+      "command": "node --test tests/lighthouse-adoption.test.mjs",
+      "passed": 6,
+      "exitCode": 0
+    }
+  },
+  "checks": {
+    "root": {
+      "command": "npm run verify",
+      "exitCode": 0,
+      "tests": {
+        "node": 39,
+        "web": 74,
+        "legacyDotnet": 38,
+        "browser": 17
+      },
+      "logSha256": "8393a10155c9527d69366dbfe246b5e6dbafed276934f660c23ecf5a2f99ddd0"
+    },
+    "foundation": "lighthouse verify passed after correcting the local branch name to the repository convention; the initial branch failure remains negative evidence.",
+    "guard": "node scripts/lighthouse-guard.mjs verify exited0",
+    "workflows": "gh aw compile --validate --no-emit exited0"
+  },
+  "nativeQualification": "Requires fresh preflights and a new request after adoption. The policy/source update is not a qualified native result."
+}

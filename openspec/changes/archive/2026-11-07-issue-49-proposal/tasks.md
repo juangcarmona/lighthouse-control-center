@@ -41,7 +41,9 @@ The owner authorized this development proposal and necessary dependencies on 202
 - [x] 6.1 Wire new .NET build/tests and provider integration coverage into repository verification/CI. Local full verification passed39Node/70web/38legacy.NET/16browser and the actual provider lane passed password login, refresh, revocation, outage and cleanup. The AC1-AC7 index separates synthetic protocol/source cases, actual provider results, owner-confirmed desktop source use and deferred phone rehearsal. Current-head hosted CI remains an explicit pre-integration gate under6.3.
 
 - [x] 6.2 Update supported startup/user/runbook documentation, tests documentation and affected arc42 views through their owning skills, preserving ProductShape authority and ADR statuses; verify `npm run lint:docs`, architecture/product checks, documented commands and explicit rollback behavior without anonymous fallback.
-- [ ] 6.3 Present the implementation with CI links, redacted runtime evidence, remaining #58 production limitations and an independent dimension-by-dimension Done review under the owner's explicit implementation/merge delegation. Retain the real authorization, never fabricate a human forge vote, and stop at a remaining owner-only or protected gate.
+- [x] 6.3 Present the implementation with CI links, redacted runtime evidence, remaining #58 production limitations and an independent dimension-by-dimension Done review under the owner's explicit implementation/merge delegation. Retain the real authorization, never fabricate a human forge vote, and stop at a remaining owner-only or protected gate.
+
+Task6.3 settled at reviewed head `4bd1f84863bd91e5d60656c3e939b2c0a2e129d0`: independent LunaHigh accepted every Done dimension; PR84 required verify42404934254 and foundation checks passed. Merge `6a94e6fc1e0f07b1b2298b1275c62f92e5739013` passed postmerge verify42406179996. Physical phone remains explicitly owner-deferred and production remains #58, not claimed tested/released. See the issue49 retrospective and PR84 for source receipts.
 
 ## Workflow follow-up
 

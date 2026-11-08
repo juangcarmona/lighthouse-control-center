@@ -30,6 +30,8 @@ Optional `SoFa:RepositoryBranches` entries map an already configured repository 
 
 ## Repository map
 
+The #48 development branch adds a read-only shared-source question/eligibility panel in the issue reader. Configure the intended numeric `SoFa:GitHub:AppId` to verify the current user and matching installation. Source eligibility remains separate from application submission, which is unavailable. A missing public SDK export, source contract or App read scope remains explicit; no source-write or persistent journal is enabled. Public release/adoption and actual App-user acceptance remain pending. Published applications include the complete selected SDK, and verification resolves it outside the checkout so development dependencies cannot hide missing runtime files.
+
 - [`docs/product/`](docs/product/README.md): ProductShape model and Product Changes.
 - [`docs/architecture/`](docs/architecture/README.md): ArcShape-managed arc42 architecture documentation.
 - [`docs/engineering-lifecycle.md`](docs/engineering-lifecycle.md): shared Agentic SDLC gates and working agreements.
@@ -54,6 +56,8 @@ ProductShape and ArcShape are pinned as local development dependencies. Their ma
 Run `npm run observe -- owner/repository [owner/another-repository]` with an authenticated `gh` client to collect current workflow and issue observations. Its attention list includes requests for information, active agent work, ready items and issues waiting for review, preserving their source labels. This command only reads GitHub. This historical CLI uses operator authentication explicitly. The authenticated web adapter uses its connected GitHub user and never falls back to this collector.
 
 Run observations add optional `startedAt` from GitHub `run_started_at`, alongside unchanged `updatedAt`, source facts and the mixed `attention` collection. Absent or invalid source timing is not replaced with an inferred timestamp.
+
+Both the historical CLI snapshot and authenticated web projection include `runAttempt` from GitHub `run_attempt` and `event` from GitHub `event`. Attempts are exact positive integers through 9007199254740991; missing, malformed, fractional or out-of-range values serialize as `null`. Integral decimal/exponent forms remain known, but `1.00000000000000001` is fractional and stays unknown. Events preserve nonblank source strings; other values serialize as `null`, never inferred from workflow names or status. For example, `"runAttempt": 2, "event": "workflow_dispatch"` distinguishes a retry from attempt 1, not proof of successful recovery. Every operations run card labels Source attempt and Triggering event, displaying `unknown` for nulls or older snapshots without these fields. Existing source links and run identity are unchanged.
 
 The former supervisor is retained for historical rollback, disabled by default and no longer started by AppHost. See [ADR-0006](docs/architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md).
 
