@@ -9,14 +9,14 @@ Use a non-root Linux x64 account with Node 22 or newer, .NET 10 SDK, Git, Docker
 Install the inspected default-branch baseline in a new directory:
 
 ```sh
-git clone https://github.com/juangcarmona/sofa.git lighthouse-control-center
+git clone https://github.com/juangcarmona/lighthouse-control-center.git lighthouse-control-center
 cd lighthouse-control-center
 git checkout --detach 4c457c337640795a31492f7219cb0e497df9e232
 npm ci
 npm run verify
 ```
 
-That immutable revision provides the authenticated observer and development identity foundation. The issue workspace, controls, discovery, inventory and inbox are active candidates identified in the [assessment](../roadmap/lighthouse-control-center-assessment.md); do not install an unreviewed combined preview as a release. Future releases must publish an equally explicit supported artifact/version. After the gated repository rename, use the new direct clone path; preserve the selected commit and configuration compatibility.
+That immutable revision provides the authenticated observer and development identity foundation. The issue workspace, controls, discovery, inventory and inbox are active candidates identified in the [assessment](../roadmap/lighthouse-control-center-assessment.md); do not install an unreviewed combined preview as a release. Future releases must publish an equally explicit supported artifact/version. Issue #121 reports the repository renamed; the command now uses its new direct clone path while preserving the selected commit and configuration compatibility. Existing moved checkouts follow the [continuity runbook](repository-rename-continuity.md), not a replacement clone.
 
 ## Configure and start
 
