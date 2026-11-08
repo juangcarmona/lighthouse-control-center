@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Lighthouse Control Center</title>
+  <desc id="desc">A wooden slatted bench seen from behind faces a calm blue bay, sailboats, a coastal village and a lighthouse on the left headland. Draft composition awaiting comparison with the Loira reference photograph.</desc>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#0d0f17"/><stop offset="1" stop-color="#172b46"/></linearGradient>
+    <linearGradient id="sea" x2="0.4" y2="1"><stop stop-color="#183d6a"/><stop offset="1" stop-color="#111b2b"/></linearGradient>
+    <linearGradient id="ground" x2="1" y2="1"><stop stop-color="#26344b"/><stop offset="1" stop-color="#0d0f17"/></linearGradient>
+    <linearGradient id="wood" x2="0" y2="1"><stop stop-color="#bfa17b"/><stop offset="0.4" stop-color="#987754"/><stop offset="1" stop-color="#70543c"/></linearGradient>
+    <linearGradient id="beam"><stop stop-color="#4da3ff" stop-opacity=".35"/><stop offset="1" stop-color="#4da3ff" stop-opacity="0"/></linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1280v640H0z"/>
+  <path d="m88 188 1050-48v97L88 199Z" fill="url(#beam)"/>
+  <g fill="#8fc2ff" opacity=".4"><circle cx="203" cy="104" r="1"/><circle cx="350" cy="82" r="1"/><circle cx="470" cy="128" r="1.3"/><circle cx="1120" cy="68" r="1"/></g>
+  <g font-family="system-ui, sans-serif" fill="#f8faff">
+    <text x="652" y="155" font-size="57" font-weight="750" letter-spacing="-2">Lighthouse</text>
+    <text x="655" y="203" font-size="33" font-weight="450" letter-spacing="1">Control Center</text>
+  </g>
+  <!-- Coastal silhouette follows the selected source's left-to-right bay viewpoint. -->
+  <path d="m0 258 142-8 115 26 125-2 111 36 92-7 76 18 109-18 94 22 109-9 115 26 192-4v217H0Z" fill="#173759"/>
+  <path d="m0 250 145 3 94 25 78 16 76 45 134 12 84 28H0Z" fill="#1f6fd1"/>
+  <path d="m0 259 147 2 71 78 104 24 68 67H0Z" fill="#111b2b"/>
+  <path d="m239 282 96 3 70 39 61 12 69 41-154 9-87-41Z" fill="#26344b"/>
+  <path d="M0 366q275 32 548-9t732-6v289H0Z" fill="url(#sea)"/>
+  <g fill="none" stroke="#4da3ff" stroke-linecap="round">
+    <path d="M361 381h212m180-17h420M325 441h80m105-29h55m190 46h241m76-57h129" opacity=".45"/>
+    <path d="M175 407h97m-36 14h32m-66 17h46m814 16h96" opacity=".2"/>
+  </g>
+  <!-- Lighthouse is scenery; the application mark is retained separately, unmodified. -->
+  <g transform="translate(65 158)">
+    <path d="M8 82h38L38 39H17Z" fill="#1f6fd1"/>
+    <path d="M19 43h11l4 34H13Z" fill="#f8faff"/>
+    <path d="M12 40h31l-5-7H17Z" fill="#8fc2ff"/>
+    <path d="M19 22h17v13H19Z" fill="#4da3ff" stroke="#f8faff"/>
+    <path d="M15 22h25l-7-8H22Z" fill="#f8faff"/>
+    <circle cx="28" cy="28" r="3" fill="#fff"/>
+    <path d="M27 14V8M4 84h46" stroke="#8fc2ff" stroke-width="2"/>
+  </g>
+  <!-- Small village and quay, retained on the inner left coast. -->
+  <g fill="#8fc2ff" stroke="#1f6fd1" stroke-width="1.5">
+    <path d="M115 367v-24l13-9 14 9v24Zm32 5v-31l17-11 18 11v31Zm42 5v-21l14-9 14 9v21Zm-30-39v-24l16-11 18 11v24Z"/>
+    <path d="m112 342 16-12 17 12m-1-1 20-15 21 15m-29-27 19-15 21 15" fill="none" stroke="#4da3ff" stroke-width="4"/>
+  </g>
+  <g fill="#111b2b"><path d="M124 348h6v8h-6zm35-1h6v9h-6zm13 0h5v9h-5zm0-28h6v8h-6zm28 40h6v8h-6z"/></g>
+  <path d="m106 381 193 7 34 12-220-6Z" fill="#26344b" stroke="#4da3ff"/>
+  <path d="M294 386v-22m-2 0h4M251 386v-17m-2 0h4" stroke="#8fc2ff"/>
+  <!-- Boats keep scale and distance legible. -->
+  <g fill="#f8faff" stroke="#8fc2ff" stroke-width="1">
+    <path d="m393 421 11-22v22Zm13-19 8 19h-8Zm-16 24h28l-4 4h-20Z"/>
+    <path d="m780 389 8-18v18Zm10-15 6 15h-6Zm-13 19h23l-3 3h-17Z"/>
+    <path d="m1106 397 8-18v18Zm10-15 6 15h-6Zm-13 19h24l-4 3h-17Z"/>
+  </g>
+  <path d="M0 395q154 9 240 68l95 29 77 53 211-42 176 13 117-11 364 48v87H0Z" fill="url(#ground)"/>
+  <path d="m0 393 141 27 90 37 82 14 51 26 56 24-33 9-80-33-67-25-93-45Z" fill="#4da3ff" opacity=".6"/>
+  <path d="m370 551 253-48 176 13 117-11 364 48" fill="none" stroke="#1f6fd1" stroke-width="4"/>
+  <!-- Rear view: open slats, no upholstery or arms; the seat faces the bay. -->
+  <ellipse cx="891" cy="582" rx="190" ry="22" fill="#0d0f17" opacity=".65"/>
+  <g stroke="#3e332c" stroke-width="3" stroke-linejoin="round">
+    <!-- Seat projects away from the viewer, behind the backrest toward the bay. -->
+    <path d="m735 536 296 9-24-22-258-9Z" fill="#bfa17b"/>
+    <path d="m753 465 15 1-7 125-12 1Zm249 8 14 1 12 111-13 1Z" fill="#605044"/>
+    <path d="m738 456 287 9 1 18-289-10Zm-1 26 290 10 1 18-292-11Zm-1 26 293 10 1 18-295-11Z" fill="url(#wood)"/>
+    <path d="m735 536 296 9v8l-296-9Z" fill="#70543c"/>
+    <path d="m771 548 11 1-3 25-11 1Zm230 7 11 1 6 17-11 1Z" fill="#605044"/>
+  </g>
+  <g fill="none" stroke="#e0c29a" stroke-width="1" opacity=".5"><path d="m749 463 265 8m-267 19 269 9m-270 18 272 9"/></g>
+  <g fill="#26344b"><circle cx="762" cy="466" r="2"/><circle cx="1008" cy="474" r="2"/><circle cx="761" cy="491" r="2"/><circle cx="1009" cy="500" r="2"/><circle cx="760" cy="518" r="2"/><circle cx="1011" cy="526" r="2"/></g>
+</svg>
