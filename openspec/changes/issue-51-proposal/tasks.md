@@ -12,13 +12,15 @@
 - [x] 2.1 Add the protected view/navigation and reuse configured issue-page queries and shared context links.
 - [x] 2.2 Project stable source identities, distinct contexts, factual label reasons, actors/ages when known and explicit unknown/currentness limitations.
 - [x] 2.3 Reconcile refresh/pagination/history, scope revocation, stale/unavailable state and accessible focus without implying resolution.
-- [ ] 2.4 Add meaningful backend/browser regressions and update the realized architecture/runbook and preview evidence.
+- [x] 2.4 Add meaningful backend/browser regressions and update the realized architecture/runbook and preview evidence.
 
 ## 3. Shared source decisions
 
-- [ ] 3.1 After compatible #47/#48/#119 adoption, consume verified current questions and supported common actions without local admission rules.
-- [ ] 3.2 Follow common receipts and fresh source confirmation for resolved/superseded state; preserve rejected/uncertain waits and source fallbacks.
+- [x] 3.1 After compatible #47/#48/#119 adoption, consume verified current questions and supported common actions without local admission rules.
+- [x] 3.2 Follow common receipts and fresh source confirmation for resolved/superseded state; preserve rejected/uncertain waits and source fallbacks.
 - [ ] 3.3 Retain actual connected-user pending/question/ordinary-comment/continuation/conflict and resolution evidence; preserve unsupported scope explicitly.
+
+The shared development preview and its independent technical checkpoint are retained in `docs/delivery/evidence/issue-51/development-preview.json` and `shared-preview-review.json`. Completed implementation tasks do not establish task3.3 actual connected-user acceptance or the final Done gate.
 
 ## 4. Complete delivery
 
