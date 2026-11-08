@@ -1,7 +1,10 @@
+import { reconcileAttention } from './attention.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text, className) => { const element = document.createElement(tag); if (text !== undefined) element.textContent = text; if (className) element.className = className; return element; };
 const filterIds = ['repository', 'search', 'state', 'stage', 'execution', 'wait', 'view'];
 const filters = () => Object.fromEntries(filterIds.map(key => [key, byId('factory-' + key).value]));
+const attentionView = document.body.dataset.view === 'attention';
+let attentionHistory = new Map();
 const repositories = new Map();
 const evidence = new Map();
 let dataScope, busy = false, epoch = 0, lookupNumber = null;
@@ -15,7 +18,7 @@ function remember() {
 }
 function setBusy(value) { busy = value; byId('factory-refresh').disabled = value; for (const button of document.querySelectorAll('#factory-projects button, #factory-results button')) button.disabled = value; }
 function clearSource(message) {
-  epoch++; repositories.clear(); evidence.clear(); dataScope = undefined; render();
+  epoch++; repositories.clear(); evidence.clear(); attentionHistory.clear(); dataScope = undefined; render();
   byId('factory-count').textContent = 'No authorized collection is available.';
   const account = node('a', 'Open account'); account.href = '/workspace';
   byId('factory-results').replaceChildren(node('p', 'Verify your account to read factory work.'), account);
@@ -24,6 +27,7 @@ function clearSource(message) {
 function denyRepository(repository) {
   repositories.set(repository, { availability: 'denied', issues: [], complete: false, reason: 'Current repository authority is denied.' });
   for (const key of evidence.keys()) if (key.startsWith(repository.toLowerCase() + ':')) evidence.delete(key);
+  for (const [key, entry] of attentionHistory) if (entry.repository === repository) attentionHistory.delete(key);
   render(); status('Repository authority was denied; its earlier issue context was removed.');
 }
 function sourceLink(text, repository, suffix) {
@@ -98,6 +102,7 @@ function render() {
   byId('factory-projects').replaceChildren(projects);
   const limited = [...repositories.values()].filter(value => value.availability !== 'available' || value.stale || !value.complete).length;
   byId('factory-project-summary').textContent = `Projects and source coverage · ${repositories.size} repositories · ${limited} incomplete or unavailable`;
+  if (attentionView) { renderAttention(selected, focusKey); return; }
   const sourceFacts = all.map(row => facts(row.repository, row.issue));
   options('factory-stage', sourceFacts.flatMap(source => source.stages)); options('factory-execution', sourceFacts.flatMap(source => source.executions));
   const visible = all.filter(row => matches(row.repository, row.issue, selected));
@@ -120,6 +125,31 @@ function render() {
   }
   if (!visible.length) results.append(node('p', unknown ? 'No match in the collected scope. Remaining or unavailable source records may contain work.' : all.length ? 'No collected issues match these filters.' : 'The successfully collected scope contains no ordinary issues.'));
   byId('factory-results').replaceChildren(results);
+  if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
+}
+function renderAttention(selected, focusKey) {
+  const projection = reconcileAttention(repositories, attentionHistory); attentionHistory = projection.entries;
+  const visible = [...attentionHistory.values()].filter(entry => matches(entry.repository, entry.issue, selected));
+  byId('factory-count').textContent = `${visible.length} collected label contexts. Questions, responsible actors and resolution remain unverified.`;
+  byId('factory-scope').textContent = 'Order: source-label observations, then stale or unobserved contexts; oldest issue update first, source identity breaks ties. Age does not establish urgency. Collection coverage is shown per project.';
+  const list = node('div', undefined, 'factory-list');
+  for (const entry of visible) {
+    const card = node('article', undefined, 'factory-issue' + (entry.state === 'source-label' ? '' : ' factory-stale'));
+    card.dataset.attentionKey = entry.key;
+    const heading = node('h3'), link = node('a', `${entry.repository}#${entry.issue.number} · ${entry.issue.title}`);
+    link.href = `/workspace/issues/${entry.repository}/${entry.issue.number}`; link.dataset.focusKey = entry.key; heading.append(link);
+    card.append(heading, node('p', `Source label: ${entry.label} · Issue state: ${entry.issue.state ?? 'unknown'}`),
+      node('p', 'Question: unverified · Responsible actor: unknown'),
+      node('p', `Issue updated: ${time(entry.sourceTime)} (not the start of this wait)`),
+      node('p', `Observed: ${time(entry.observedAt)}`));
+    if (entry.state === 'stale') card.append(node('p', 'Stale observation; current source context is unknown.', 'notice'));
+    if (entry.state === 'not-observed') card.append(node('p', 'Not observed in this collection; resolution is unknown. Missing pages or a removed label do not establish a resolved question.', 'notice'));
+    card.append(node('p', 'Open the issue for context. Verified current-question controls are unavailable in this read-only view.'), sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number));
+    list.append(card);
+  }
+  if (!visible.length) list.append(node('p', 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));
+  if (projection.limited) list.append(node('p', 'The retained 1 MiB / 1,000-context bound was reached; omitted history is not a resolved intervention.', 'notice'));
+  byId('factory-results').replaceChildren(list);
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 async function getPage(repository, page, requestEpoch, number) {
@@ -151,7 +181,7 @@ async function refresh() {
     if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading factory work.'); return; }
     const configured = new Set(account.repositories.map(row => row.repository));
     for (const repository of repositories.keys()) if (!configured.has(repository)) repositories.delete(repository);
-    if (dataScope !== account.dataScope) { repositories.clear(); evidence.clear(); }
+    if (dataScope !== account.dataScope) { repositories.clear(); evidence.clear(); attentionHistory.clear(); }
     dataScope = account.dataScope; evidence.clear(); lookupNumber = exactNumber(byId('factory-search').value);
     const picker = byId('factory-repository'), selected = picker.value || new URL(location.href).searchParams.get('repository') || '';
     const all = node('option', 'All repositories'); all.value = '';

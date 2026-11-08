@@ -214,6 +214,11 @@ public static class WorkspaceModule
       return Results.Json(result, statusCode: result.Availability switch
       { "invalid" => 400, "denied" => 403, "disconnected" => 409, "unavailable" => 503, _ => 200 });
     });
+    app.MapGet("/workspace/attention", async (HttpContext context, OwnerSessions sessions) =>
+    {
+      sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
+      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "attention.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+    });
     app.MapGet("/workspace/factory", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
@@ -289,6 +294,7 @@ public static class WorkspaceModule
     foreach (var asset in new[] { (Path: "/app.js", File: "app.js", Type: "text/javascript"),
             (Path: "/app.css", File: "app.css", Type: "text/css"), (Path: "/tokens.css", File: "tokens.css", Type: "text/css"),
             (Path: "/factory.js", File: "factory.js", Type: "text/javascript"),
+            (Path: "/attention.js", File: "attention.js", Type: "text/javascript"),
             (Path: "/factory.css", File: "factory.css", Type: "text/css"),
             (Path: "/runtime.js", File: "runtime.js", Type: "text/javascript"), (Path: "/runtime.css", File: "runtime.css", Type: "text/css"),
             (Path: "/issue.js", File: "issue.js", Type: "text/javascript"),
@@ -303,7 +309,7 @@ public static class WorkspaceModule
       "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>SoFa · "
       + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
       + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
-      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Factory</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
+      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Factory</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
   private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action
       + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token)

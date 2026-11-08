@@ -22,6 +22,10 @@ Development Keycloak protocol, revocation and outage behavior have a host-only v
 
 Install browser prerequisites with `npx playwright install --with-deps chromium` before verification. CI retains safe post-callback screenshots and reports. Its identity-provider test requires `libnss3-tools` for an isolated browser trust database.
 
+## Inspect observed interventions
+
+Open `/workspace/attention` for source-labeled waits, separate source/observation times and explicit unknown question or actor context. Opening, commenting or a missing label never proves resolution. See the [intervention inbox runbook](docs/runbooks/intervention-inbox.md) for coverage, history, privacy and the pending shared-control acceptance.
+
 ## Find configured work
 
 Open `/workspace/factory` for ordinary issues, project metadata and equivalent list/board views. Title search and combined filters cover visibly collected pages; exact-number lookup can reach an issue outside those pages. Load more extends the bounded collection, while Refresh starts it again. Source times, denied/unavailable repositories, partial labels and unknown report/associated-run facts remain visible. The board groups GitHub open/closed state and never requests a transition.

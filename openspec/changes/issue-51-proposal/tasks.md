@@ -9,9 +9,9 @@
 
 ## 2. Read-only inbox
 
-- [ ] 2.1 Add the protected view/navigation and reuse configured issue-page queries and shared context links.
-- [ ] 2.2 Project stable source identities, distinct contexts, factual label reasons, actors/ages when known and explicit unknown/currentness limitations.
-- [ ] 2.3 Reconcile refresh/pagination/history, scope revocation, stale/unavailable state and accessible focus without implying resolution.
+- [x] 2.1 Add the protected view/navigation and reuse configured issue-page queries and shared context links.
+- [x] 2.2 Project stable source identities, distinct contexts, factual label reasons, actors/ages when known and explicit unknown/currentness limitations.
+- [x] 2.3 Reconcile refresh/pagination/history, scope revocation, stale/unavailable state and accessible focus without implying resolution.
 - [ ] 2.4 Add meaningful backend/browser regressions and update the realized architecture/runbook and preview evidence.
 
 ## 3. Shared source decisions
