@@ -1,0 +1,203 @@
+{
+  "issue": 88,
+  "observedAt": "2026-11-08T07:52:06.565768+00:00",
+  "status": "native qualification passed",
+  "publishedPackages": {
+    "cli": "0.12.55",
+    "sdlc": "0.21.6"
+  },
+  "workflowSource": "59ded863109b045e399931dbad61e6cfdb698107",
+  "policySource": "dba2886abb761c07b03cd33e1b09844db352413e",
+  "native": {
+    "issue": 99,
+    "run": 42452259718,
+    "attempt": 1,
+    "status": "passed",
+    "planningRound": 0,
+    "independentReviews": [
+      {
+        "kind": "planning",
+        "round": 0,
+        "review": {
+          "accepted": true,
+          "verdict": "accept",
+          "findings": []
+        }
+      },
+      {
+        "kind": "candidate",
+        "round": 0,
+        "review": {
+          "accepted": true,
+          "verdict": "accept",
+          "findings": []
+        }
+      }
+    ],
+    "producerArtifact": 13607583370,
+    "producerArtifactName": "lighthouse-unattended-42452259718-1",
+    "binding": {
+      "repository": "juangcarmona/sofa",
+      "issue": 99,
+      "runId": "9a9125903d2ec0935965b3e0b32b1265346ea2059472844b74597c5fec70ec68",
+      "workflowRunId": "42452259718",
+      "attempt": 1,
+      "sourceRevision": "dba2886abb761c07b03cd33e1b09844db352413e",
+      "policyRevision": "dba2886abb761c07b03cd33e1b09844db352413e",
+      "intent": "2e308a29f984c440d34422f8e7fe541d050241c7bbab6f6d08627571f4dd6512",
+      "policy": "436eeb1a1da0c489d2a3137f0d53ed83da4a4d2beffc46273784cad7da76c41c",
+      "planning": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "sourceLinks": "4c5bb6a2a4d32c2a85fd51a7f805e027a8fb53b92f7940eac0bf1b064da18dca"
+    },
+    "publication": {
+      "pr": 113,
+      "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+      "tree": "c581198880d32022bbe2ded3f704096e67f87f6a"
+    },
+    "checkedTree": "c581198880d32022bbe2ded3f704096e67f87f6a",
+    "sourceLinkMetadataCount": 33,
+    "checks": [
+      {
+        "command": [
+          "npm",
+          "ci",
+          "--ignore-scripts"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "env",
+          "CI=true",
+          "npm",
+          "run",
+          "verify:container"
+        ],
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "npx",
+          "--yes",
+          "--package=@fission-ai/openspec@1.15.0",
+          "openspec",
+          "validate",
+          "issue-99-proposal",
+          "--strict",
+          "--no-interactive"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "serviceCleanup": true,
+    "models": [
+      {
+        "worker": "independent-review",
+        "model": "openai/gpt-6-luna",
+        "execution": "passed"
+      },
+      {
+        "worker": "refine",
+        "model": "openai/gpt-6.1-sol",
+        "execution": "passed"
+      },
+      {
+        "worker": "implement",
+        "model": "openai/gpt-6.1-sol",
+        "execution": "passed"
+      },
+      {
+        "worker": "independent-review",
+        "model": "openai/gpt-6-luna",
+        "execution": "passed"
+      },
+      {
+        "worker": "propose",
+        "model": "openai/gpt-6.1-sol",
+        "execution": "passed"
+      }
+    ]
+  },
+  "eligibleCi": {
+    "run": 42455503204,
+    "actor": "lighthouse-sdlc[bot]",
+    "event": "push",
+    "branch": "lighthouse/verification-113-6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+    "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+    "status": "passed",
+    "check": "verify",
+    "integrationId": 15368
+  },
+  "nativeMerge": {
+    "sha": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+    "tree": "c581198880d32022bbe2ded3f704096e67f87f6a",
+    "grant": "exact issue99 merge:true",
+    "result": {
+      "state": "merged",
+      "sha": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+      "recovered": false,
+      "postMerge": [
+        {
+          "workflow": "verify.yml",
+          "revision": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+          "state": "missing",
+          "status": "unavailable",
+          "runId": null,
+          "url": null
+        }
+      ],
+      "notifications": []
+    }
+  },
+  "postMergeReview": {
+    "router": 42459910688,
+    "worker": 42459934534,
+    "result": "passed",
+    "receipt": {
+      "schemaVersion": 1,
+      "state": "merged",
+      "sha": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+      "acceptedHead": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+      "authorization": {
+        "issue": 99,
+        "pr": 113,
+        "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+        "merge": false
+      },
+      "binding": {
+        "repository": "juangcarmona/sofa",
+        "issue": 99,
+        "pr": 113,
+        "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+        "base": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+        "branch": "main",
+        "intent": "2e308a29f984c440d34422f8e7fe541d050241c7bbab6f6d08627571f4dd6512",
+        "policy": "6c48533cff4ff89a44d25bf0d0faa0f3557ce104ec40874ecb9aa8d512dcda86",
+        "reviews": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "prIntent": "458a754cea8ddbae9f4400fdd8e7e4cef6aecf7620b6f50d9a14c71e62dd1cae",
+        "files": "20e6269450d0f38bd150b02ff676693017f6556554ec589dacf59846116bcb93"
+      },
+      "postMerge": [
+        {
+          "workflow": "verify.yml",
+          "revision": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+          "state": "passed",
+          "status": "passed",
+          "runId": 42456523349,
+          "url": "https://github.com/juangcarmona/sofa/actions/runs/42456523349"
+        }
+      ]
+    },
+    "publicationCommit": "a6748d6570c9fa52ca57f32b56ce2b722e37793b",
+    "report": "docs/process/20261108-99-show-source-run-attempts-and-triggering-events-in-the-operationa/runs/42459934534/attempt-0001/post-integration/report.md"
+  },
+  "recovery": "The native merge initially reported post-merge CI missing. Actual verify42456523349 passed. One documented exact-head manual REVIEW request completed the official native review; no implementation, privileged resend or manual merge substituted for the native chain.",
+  "negativeEvidence": {
+    "failedNative": 42440808113,
+    "closedSupersededPr": 109,
+    "reason": "checked/published tree equality failed; original failure and source-link correction retained under opaque-source-links",
+    "appPreflight": 42449524153,
+    "tokenRevocationVerified": true
+  },
+  "authority": "Only the exact issue99 grant is qualified. Supervised defaults, owner/product/security decisions, production and publication gates remain separate. No new issue or cross-repository merge grant is introduced."
+}
