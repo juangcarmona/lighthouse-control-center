@@ -19,6 +19,8 @@
 
 Task1.1 remains open for the final independent audit of exhaustive bounds and unsupported-layout evidence. Checked implementation tasks describe the local code checkpoint, not full Done or prerequisite acceptance.
 
+Additional boundary cases and explicit structural/nonphysical limits are mapped in [bounds coverage](../../../docs/delivery/evidence/issue-57/bounds-coverage.md). The helper code is unchanged; task1.1 is not marked complete by its author.
+
 ## 4. Verification and integration
 
 - [x] 4.1 Observe actual host registrations and committed adoption with source-safe receipt; distinguish real App limitations, fixtures and unobserved health/usage. Record independent supervision without restarting/cancelling runtime.
