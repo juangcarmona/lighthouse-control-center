@@ -60,15 +60,17 @@ Local sign-out and disconnect require CSRF-protected POSTs and remove local cred
 
 `npm start` restores/builds the pinned Release AppHost, then executes that exact assembly. Its application dashboard is disabled. Calling `dotnet run` directly can invoke Aspire's CLI setup/run hook and select another configuration; the launcher avoids that path. AppHost starts the workspace and development provider, with no execution database, supervisor or anonymous legacy listener. Aspire's stopped project-rebuilder helper is development tooling.
 
-## Verification and physical-device acceptance
+## CI, separate E2E and physical-device acceptance
 
 ```sh
 npm run verify
-# Requires Docker and certutil (libnss3-tools on Ubuntu):
+# Separate E2E; requires Docker and certutil (libnss3-tools on Ubuntu):
 npm run verify:identity:host
 ```
 
-The deterministic lane checks real middleware with signed synthetic issuer responses, callback forgery/replay, session deadlines, permission/callback isolation, no source fallback and module/compiler gates. The host lane composes the actual pinned provider through Aspire, validates TLS, password-only development login, wrong-password rejection, logout, online refresh, revocation, provider outage, keyboard operation and axe checks. Linked/insufficient source UI states are explicitly browser fixtures. Safe screenshots and summary receipts go to `test-results/identity`; no HARs, traces, callback screenshots or raw browser call logs are retained.
+PR/push CI runs `npm run verify`. The separate `Development identity E2E` workflow runs only nightly or by manual request; it is not a PR/push trigger or a required merge check. Its real five-minute session windows remain unchanged.
+
+The deterministic lane checks real middleware with signed synthetic issuer responses, callback forgery/replay, session deadlines, permission/callback isolation, no source fallback and module/compiler gates. The separate E2E suite composes the actual pinned provider through Aspire, validates TLS, password-only development login, wrong-password rejection, logout, online refresh, revocation, provider outage, keyboard operation and axe checks. Linked/insufficient source UI states are explicitly browser fixtures. Safe screenshots and summary receipts go to `test-results/identity`; no HARs, traces, callback screenshots or raw browser call logs are retained.
 
 The owner confirmed actual GitHub connection and operations data on a computer on2026-11-07 and deferred additional physical-phone rehearsal. Insufficient/revoked source states have deterministic transport coverage; no actual owner grant-revocation rehearsal is claimed. For optional future device verification, use a phone on LAN/VPN to:
 

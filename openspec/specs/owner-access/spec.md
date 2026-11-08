@@ -13,9 +13,9 @@ Authenticate operational access with the configured exact owner identity and bou
 ### Requirement: Owner-only operational access
 
 SoFa SHALL authenticate operational reads and writes on the server and admit only the configured exact issuer/subject pair. Network location, display name, email or provider sign-in alone MUST NOT grant access.
-<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:a1636b3cd8f0bce9d58c51beca3b349491e8e1f50de2cd10366f9effc9ce46a7" -->
 
-<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
 
 #### Scenario: Configured owner enters
 
@@ -35,7 +35,7 @@ SoFa SHALL authenticate operational reads and writes on the server and admit onl
 ### Requirement: Authentication ceremony
 
 SoFa SHALL use authorization-code flow with PKCE S256 and verify issuer, audience, signature, lifetime, state and nonce. The owner-revised development policy requires provider-verified password assurance1 without OTP; external mode retains MFA assurance2. Both verify their configured assurance claim and authentication time. No local password bypass SHALL exist.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 #### Scenario: Fresh sufficiently assured login
 
@@ -55,7 +55,7 @@ SoFa SHALL use authorization-code flow with PKCE S256 and verify issuer, audienc
 ### Requirement: Bounded server sessions
 
 The candidate session policy SHALL expire access after 15 minutes without authenticated user activity or four hours from provider authentication, whichever occurs first. Automated polling MUST NOT renew inactivity. Reauthentication at the absolute limit MUST require a fresh provider ceremony; refresh MUST NOT extend that limit.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 #### Scenario: Idle and absolute expiry
 
@@ -70,7 +70,7 @@ The candidate session policy SHALL expire access after 15 minutes without authen
 ### Requirement: Revocation and provider failure
 
 SoFa SHALL revalidate provider session authority at least every five minutes during use and block protected requests when due validation cannot succeed. Recognized revocation MUST invalidate local access immediately. Provider failure MUST NOT extend a deadline or grant a bypass.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 #### Scenario: Provider unavailable
 
@@ -86,7 +86,7 @@ SoFa SHALL revalidate provider session authority at least every five minutes dur
 ### Requirement: Credential containment
 
 Provider and GitHub tokens and session tickets SHALL remain server-side and MUST NOT appear in browser storage, page content, logs or retained evidence. Browser session references MUST use Secure, HttpOnly cookies; protected responses MUST prevent shared caching.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
 #### Scenario: Browser and evidence inspection
 
@@ -97,9 +97,9 @@ Provider and GitHub tokens and session tickets SHALL remain server-side and MUST
 ### Requirement: Protected session mutations
 
 Logout and application/source-connection mutations SHALL require server-enforced anti-CSRF checks. Logout MUST invalidate the server session before attempting provider logout. Session loss MUST NOT cancel independent repository execution.
-<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:9f39dd08a392db995a75f26c9a30ed4d4ec43f73ad0ccafbdfaa3d0eabc1528a" -->
+<!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 
-<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:a1636b3cd8f0bce9d58c51beca3b349491e8e1f50de2cd10366f9effc9ce46a7" -->
 
 #### Scenario: Cross-site request rejected
 
@@ -115,9 +115,9 @@ Logout and application/source-connection mutations SHALL require server-enforced
 ### Requirement: Authenticated observation successor
 
 The supported workspace SHALL protect observation pages and APIs and obtain repository data only within the connected user's configured source scope. It MUST NOT expose the legacy anonymous listener or fall back to operator GitHub CLI authority.
-<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:0b58747905a775c38f02b058ea90e2a63481cf69e4708e9b14aabf79d1335170" -->
+<!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:a1636b3cd8f0bce9d58c51beca3b349491e8e1f50de2cd10366f9effc9ce46a7" -->
 
-<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
+<!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
 
 #### Scenario: Owner has no source connection
 
@@ -135,7 +135,7 @@ The supported workspace SHALL protect observation pages and APIs and obtain repo
 The owner SHALL be able to sign in, sign out and connect GitHub on desktop and a real phone over LAN/VPN. Desktop controls MUST be keyboard-accessible with visible focus, clear identity labels and understandable denial/retry messages.
 <!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->
 
-<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:56eeb8a1f5a920882d473c57262a9c9da1de3c920c812570ae8ef45f4f3bfab8" -->
+<!-- pdac:cite id="CON-TRUSTED-LAN" digest="sha256:e9cb07b2f01016597b13223fa0f517b9be7f56b26354042f99fc79591e124edd" -->
 
 #### Scenario: Desktop keyboard journey
 

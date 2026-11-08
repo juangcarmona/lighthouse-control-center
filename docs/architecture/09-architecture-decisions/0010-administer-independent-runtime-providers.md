@@ -39,7 +39,7 @@ The existing delivery path keeps operating when LCC is stopped. Infrastructure a
 
 ## References
 
-- [Proposed product change](../../product/changes/active/chg-lcc-evolution-001/change.md)
+- [Proposed product change](../../product/changes/completed/chg-lcc-evolution-001/change.md)
 - [ADR-0006](0006-observe-repository-owned-workflows.md)
 - [ADR-0007](0007-shared-identity-custody-and-recovery.md), [ADR-0008](0008-source-correlated-issue-commands.md), [ADR-0009](0009-dotnet-and-aspire.md)
 - [Building blocks and provider contract](../05-building-block-view/README.md)

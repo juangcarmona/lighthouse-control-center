@@ -1,22 +1,22 @@
 ---
 id: BC-RUNTIME-OPERATIONS
 type: bounded-context
-title: Runtime health observation
+title: Infrastructure and runtime operations
 status: draft
 ---
 
 ## Responsibility
 
-Observe independent runtimes, runner availability, execution progress and evidence retention.
+Observe runtime providers, pools, hosts, runner registrations and agent runtimes; present telemetry and support explicitly authorized administrative operations.
 
 ## Language
 
-Health, elapsed time, availability, interruption and evidence age.
+Provider, pool, execution host, runner, agent runtime, model provider, capacity, drain, maintenance and confirmed outcome.
 
 ## Boundaries
 
-Health findings do not dispatch, cancel or recover work and are not mandatory execution gates.
+Providers own actual resources and enforce limits. Repository workflows retain job scheduling, lifecycle execution, cancellation policy and delivery authority. A read refresh never causes a write.
 
 ## External Relationships
 
-Observes source runtime evidence and presents findings to ACT-FACTORY-OWNER.
+Consumes ACT-RUNTIME-PROVIDER evidence, serves ACT-OPERATOR and ACT-RUNTIME-ADMINISTRATOR, and correlates infrastructure observations with BC-EXECUTION and BC-DELIVERY.

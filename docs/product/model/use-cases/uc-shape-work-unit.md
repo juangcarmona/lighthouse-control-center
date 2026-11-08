@@ -3,7 +3,7 @@ id: UC-SHAPE-WORK-UNIT
 type: use-case
 title: Shape a dependency-aware work unit
 status: draft
-primary-actor: ACT-FACTORY-OWNER
+primary-actor: ACT-OPERATOR
 supporting-actors: [ACT-ENGINEER, ACT-REQUESTER]
 bounded-context: BC-BACKLOG-TRIAGE
 governed-by: [BR-GITHUB-SOURCE, BR-HUMAN-DECISION-BOUNDARIES, BR-WORK-AUTHORIZATION]

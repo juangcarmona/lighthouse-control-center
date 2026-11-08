@@ -3,13 +3,13 @@ id: JRN-ENGINEERING-EXECUTION
 type: journey
 title: Move a small work unit to verified delivery
 status: draft
-primary-actor: ACT-FACTORY-OWNER
+primary-actor: ACT-OPERATOR
 steps: [{use-case: UC-TRIAGE-BACKLOG}, {use-case: UC-SHAPE-WORK-UNIT}, {use-case: UC-SCHEDULE-WORK}, {use-case: UC-EXECUTE-WORK-UNIT}, {use-case: UC-VERIFY-DELIVERY}]
 ---
 
 ## Intended Outcome
 
-Juan can supervise one small GitHub work item through requester intake or direct authorized engineering entry, dependency-aware execution, recovery if interrupted, verification, authorized integration, and delivery evidence.
+The operator can supervise one small GitHub work item through requester intake or direct authorized engineering entry, dependency-aware execution, recovery if interrupted, verification, authorized integration, and delivery evidence.
 
 ## Entry Conditions
 
@@ -17,7 +17,7 @@ The source issue exists, the relevant Product Change and architecture decisions 
 
 ## Journey Narrative
 
-Juan reviews source evidence, sets priority and boundaries, accepts a small work unit, requests bounded supervised or unattended repository workflow execution, inspects deterministic and human evidence, and authorizes the external decisions that remain his responsibility.
+The operator reviews source evidence, sets priority and boundaries, accepts a small work unit, requests bounded supervised or unattended repository workflow execution, inspects deterministic and human evidence, and authorizes the remaining external decisions within their verified authority.
 
 ## Variants and Branches
 
@@ -25,7 +25,7 @@ A requester enters through triage and may receive automated delivery under a sta
 
 Missing evidence, failed checks, stale leases, unavailable workers, changed dependencies, or a required human decision stop the journey with an explicit outcome.
 
-SoFa observes and verifies the journey across repositories. GitHub workflows and an independent runtime own execution; they continue when SoFa is unavailable.
+Lighthouse Control Center observes and verifies the journey across repositories. GitHub workflows and an independent runtime own execution; they continue when Lighthouse Control Center is unavailable.
 
 ## Completion Conditions
 

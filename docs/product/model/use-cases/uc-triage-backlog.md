@@ -3,7 +3,7 @@ id: UC-TRIAGE-BACKLOG
 type: use-case
 title: Triage GitHub backlog work
 status: draft
-primary-actor: ACT-FACTORY-OWNER
+primary-actor: ACT-OPERATOR
 supporting-actors: [ACT-GITHUB-BACKLOG, ACT-REQUESTER, ACT-ENGINEER]
 bounded-context: BC-BACKLOG-TRIAGE
 governed-by: [BR-GITHUB-SOURCE, BR-HUMAN-DECISION-BOUNDARIES, BR-WORK-AUTHORIZATION]
@@ -24,9 +24,9 @@ GitHub evidence is reachable or its limitation is explicit.
 
 ## Main Flow
 
-1. SoFa captures a new idea or reads configured GitHub projects and issues.
-2. If the candidate is an idea, Juan explores its outcome and scope, selects a repository, inspects potentially related issues and reviews the proposed issue before explicitly creating or linking it. SoFa preserves the confirmed issue identity before normal backlog processing.
-3. SoFa reconciles GitHub source identities and records priority, status, dependencies, and evidence time.
+1. Lighthouse Control Center captures a new idea or reads configured GitHub projects and issues.
+2. If the candidate is an idea, The operator explores its outcome and scope, selects a repository, inspects potentially related issues and reviews the proposed issue before explicitly creating or linking it. Lighthouse Control Center preserves the confirmed issue identity before normal backlog processing.
+3. Lighthouse Control Center reconciles GitHub source identities and records priority, status, dependencies, and evidence time.
 4. The Lighthouse intake result selects continuation under the effective policy, requests information, refers a decision to an engineer, or rejects the request with a reason. Direct engineer entry is admitted separately and does not require this triage run.
 
 ## Alternative Flows

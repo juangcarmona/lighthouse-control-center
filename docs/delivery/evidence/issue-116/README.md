@@ -36,3 +36,21 @@ The initial slice completes the existing #50/#48 journey; it is already candidat
 The follow-up review removes the proposed named-person actor and named individual from Proposed ADR-0010. The overlay now defines ACT-OPERATOR, updates actor links throughout the affected journeys and use cases, and retires the two legacy operator actors through ProductShape operations. Titles and prose use fleet, mission, Control Center and engineering operations. Other source IDs, code paths, immutable source links and historical records remain intact. Harbor/bay imagery and Loop Point remain unselected suggestions; no domain entity, role grant or runtime behavior is added.
 
 Validation for this wording-only revision covers ProductShape baseline/overlay, current architecture and OpenSpec citations, ArcShape links, Markdown and unchanged accepted-model checks. Earlier application/native test receipts above refer to the original preparation head, not a new application execution for this terminology revision.
+
+## Product apply and post-rename follow-up
+
+After the maintainer merged PR #122, the operator ran `prodshape change apply CHG-LCC-EVOLUTION-001`. The CLI applied 18 additions, 35 modifications and two actor retirements and moved the change to completed history. The source-owned delivery, authentication and explainable-evidence statements remain valid under the broader intent; their live architecture/OpenSpec citations were regenerated through `prodshape cite --file` after reviewing applicability. Archived delivery citations retain their historical snapshots. ADR-0010 remains Proposed.
+
+The moved main checkout was repaired with `git worktree repair`, preserving existing branches and dirty assets. The GitHub profile repository binding still used the former name, producing `Repository profile differs from the event` in router run 42506948917. This follow-up corrects that project-owned binding without changing any forge protection or credential.
+
+## Dependency and autonomous-continuation preparation
+
+The maintainer requested autonomous repository continuation after starting #123/#124 through labels. This follow-up pins CLI 0.12.65 / SDLC 0.22.4 / UI 0.2.1 and regenerates foundation/workflow projections through the owning installers at published npm gitHead `879c4e75efebd945f8aea5b8ee09b97db62edbea`. Workflow compilation used gh-aw 0.93.2; required check names, source contracts, model profiles and forge protections are preserved.
+
+Routine native FF can substitute its distinct independent plan/candidate reviewer within the declared low-risk paths. Supervised overrides retain the existing #47/#48/#50/#51/#52/#57/#58 boundaries. The #99 grant is unchanged. Policy regressions exercise the preserved protected-path denials, frozen verification inputs and original #99 test exceptions; the operator bootstrap updates these policy expectations explicitly, rather than permitting a candidate to edit its own verifier. Maintenance/recovery activation is scoped to #116/#121/#123/#124 and does not resume substantive blockers.
+
+Validation before bootstrap publication: 48 Node tests passed; ProductShape model/integrity/doctor, all 19 live architecture and 59 live OpenSpec citations, ArcShape links, Markdown and secret scanning passed. Native workflow compilation passed. The first full local verification stopped at .NET locked restore with `Internal CLR error (0x80131506)`; locked restore then passed with build servers disabled, and the unchanged normal verification command is being retried. A separate local configured-reviewer attempt returned provider HTTP 401 and supplies no accepted review receipt. Hosted CI and any required review remain separate and must pass on the final head before integration or activation.
+
+## Separate identity E2E from CI
+
+The maintainer explicitly rejected real-provider wall-clock session tests on the PR/push CI path. The `verify` workflow now runs the existing deterministic verification without invoking the real-provider harness. A separate `Development identity E2E` workflow runs that unchanged harness nightly or manually, with its own timeout, locked .NET restore, trusted browser setup and retained evidence. It has no push/PR trigger and is not a required merge check. Session authorization, five-minute production policy and the deterministic injected-clock tests are unchanged.

@@ -15,7 +15,7 @@ The supported application entrypoint builds and directly launches the pinned Rel
 | Application state | Bounded process-memory sessions, connection state and observations | Protected durable custody/recovery remains unresolved release work |
 | Repository delivery | Independently operated workflows and executor | Independent of either workspace or development provider |
 
-<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
+<!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 
 [Composition source](../../../src/SoFa.AppHost/WorkspaceComposition.cs) is the infrastructure truth. AppHost provisions no supervisor, execution database or anonymous Node listener. Aspire's project-rebuilder helper is development tooling, not a delivery worker. The application dashboard is disabled for this entrypoint.
 

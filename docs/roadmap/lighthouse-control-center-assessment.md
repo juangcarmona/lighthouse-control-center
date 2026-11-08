@@ -1,6 +1,6 @@
 # Lighthouse Control Center: current state and gaps
 
-Evidence snapshot: 2026-11-08 UTC, before any product apply or rename. Tracking: [#116](https://github.com/juangcarmona/sofa/issues/116). This assessment distinguishes implementation from acceptance; the [roadmap](lighthouse-control-center.md) owns sequencing. Product intent is proposed in [CHG-LCC-EVOLUTION-001](../product/changes/active/chg-lcc-evolution-001/change.md); architecture remains in the twelve ArcShape views.
+Evidence snapshot: 2026-11-08 UTC, before any product apply or rename. Tracking: [#116](https://github.com/juangcarmona/sofa/issues/116). This assessment distinguishes implementation from acceptance; the [roadmap](lighthouse-control-center.md) owns sequencing. Product intent is proposed in [CHG-LCC-EVOLUTION-001](../product/changes/completed/chg-lcc-evolution-001/change.md); architecture remains in the twelve ArcShape views.
 
 ## Evidence boundary
 

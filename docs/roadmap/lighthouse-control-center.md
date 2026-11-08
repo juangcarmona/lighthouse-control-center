@@ -1,13 +1,13 @@
 # Lighthouse Control Center evolution roadmap
 
-Tracking issue: [#116](https://github.com/juangcarmona/sofa/issues/116). This is an incremental evolution of the existing repository. The name is decided; the [Product Change](../product/changes/active/chg-lcc-evolution-001/change.md) and [Proposed ADR-0010](../architecture/09-architecture-decisions/0010-administer-independent-runtime-providers.md) remain review artifacts. No product apply, merge, deployment or remote rename is authorized by a green documentation check.
+Tracking issue: [#116](https://github.com/juangcarmona/sofa/issues/116). This is an incremental evolution of the existing repository. The name is decided; the [Product Change](../product/changes/completed/chg-lcc-evolution-001/change.md) and [Proposed ADR-0010](../architecture/09-architecture-decisions/0010-administer-independent-runtime-providers.md) remain review artifacts. No product apply, merge, deployment or remote rename is authorized by a green documentation check.
 
 ## Review package and owners
 
 | Deliverable | Canonical artifact |
 | --- | --- |
 | Current state, capability status and gap analysis | [Dated assessment](lighthouse-control-center-assessment.md), with source permalinks and exact active PR heads |
-| Target responsibilities, actors, journeys and bounded contexts | [CHG-LCC-EVOLUTION-001](../product/changes/active/chg-lcc-evolution-001/change.md) and its complete proposed artifacts |
+| Target responsibilities, actors, journeys and bounded contexts | [CHG-LCC-EVOLUTION-001](../product/changes/completed/chg-lcc-evolution-001/change.md) and its complete proposed artifacts |
 | Target architecture | [Twelve ArcShape views](../architecture/README.md), explicitly proposed LCC sections; [ADR-0010](../architecture/09-architecture-decisions/0010-administer-independent-runtime-providers.md) |
 | Platform patterns, trade-offs and measurement catalog | [Research comparison](lighthouse-control-center-research.md) |
 | Ordered implementation and execution backlog | This roadmap, [#116](https://github.com/juangcarmona/sofa/issues/116) and native child links |
@@ -64,4 +64,4 @@ For the documentation increment, run product baseline and overlay validation, Pr
 
 ## Gates and next decision
 
-The review package is prepared; CHG-LCC-EVOLUTION-001 is approved by the maintainer on 2026-11-08 and ADR-0010 Proposed. ProductShape apply and human merge remain separate from the recorded approval. Existing accepted workspace work can continue through its own grants; it is not blocked merely by this future provider proposal. The first implementation action after product/plan acceptance is to finish the existing real-source #50/#48 acceptance path. Provider writes, broad access and rename each retain their own reviewed security/operational gates.
+The review package is prepared; CHG-LCC-EVOLUTION-001 is approved by the maintainer on 2026-11-08 and ADR-0010 Proposed. PR #122 merged the approved change record. ProductShape has now applied that change on this follow-up branch; its integration establishes the updated baseline. Existing accepted workspace work can continue through its own grants; it is not blocked merely by this future provider proposal. The first implementation action after product/plan acceptance is to finish the existing real-source #50/#48 acceptance path. Provider writes, broad access and rename each retain their own reviewed security/operational gates.
