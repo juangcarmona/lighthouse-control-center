@@ -49,6 +49,8 @@ Run `npm run observe -- owner/repository [owner/another-repository]` with an aut
 
 Run observations add optional `startedAt` from GitHub `run_started_at`, alongside unchanged `updatedAt`, source facts and the mixed `attention` collection. Absent or invalid source timing is not replaced with an inferred timestamp.
 
+Both the historical CLI snapshot and authenticated web projection include `runAttempt` from GitHub `run_attempt` and `event` from GitHub `event`. Attempts are exact positive integers through 9007199254740991; missing, malformed, fractional or out-of-range values serialize as `null`. Integral decimal/exponent forms remain known, but `1.00000000000000001` is fractional and stays unknown. Events preserve nonblank source strings; other values serialize as `null`, never inferred from workflow names or status. For example, `"runAttempt": 2, "event": "workflow_dispatch"` distinguishes a retry from attempt 1, not proof of successful recovery. Every operations run card labels Source attempt and Triggering event, displaying `unknown` for nulls or older snapshots without these fields. Existing source links and run identity are unchanged.
+
 The former supervisor is retained for historical rollback, disabled by default and no longer started by AppHost. See [ADR-0006](docs/architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md).
 
 The repository's own development workflows use the pinned Lighthouse gh-aw/OpenCode adapter. See [repository workflow operation](docs/runbooks/repository-workflows.md) for runner setup, stage requests, evidence and recovery.
