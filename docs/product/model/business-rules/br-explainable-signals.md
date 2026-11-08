@@ -9,11 +9,11 @@ uses-terms: [TERM-PROJECT, TERM-DELIVERY-EVIDENCE]
 
 ## Rule
 
-Every displayed signal MUST identify the decision it supports, its source, observation time, scope, calculation or source verdict, and limitations. SoFa MUST distinguish measured facts from derived assessments and distinguish complete, incomplete, stale, unavailable and not-applicable evidence. Coverage and freshness are independent: an incomplete observation can also be stale. Missing values MUST NOT become zero or passing results. Trends MUST identify comparable windows and changes to the calculation or baseline. Shared definitions belong to Lighthouse; SoFa MUST NOT copy screenshot scores, thresholds or policies into a new authority.
+Every displayed signal MUST identify the decision it supports, its source, observation time, scope, calculation or source verdict, and limitations. Lighthouse Control Center MUST distinguish measured facts from derived assessments and distinguish complete, incomplete, stale, unavailable and not-applicable evidence. Coverage and freshness are independent: an incomplete observation can also be stale. Missing values MUST NOT become zero or passing results. Trends MUST identify comparable windows and changes to the calculation or baseline. Shared definitions belong to Lighthouse; Lighthouse Control Center MUST NOT copy screenshot scores, thresholds or policies into a new authority.
 
 ## Rationale
 
-A factory dashboard is useful when the owner can verify why it calls for a decision and understand when its evidence is insufficient.
+A fleet overview is useful when the operator can verify why it calls for a decision and understand when its evidence is insufficient.
 
 ## Examples
 

@@ -1,7 +1,7 @@
 ---
 id: FR-FACTORY-DISCOVERY
 type: functional-requirement
-title: Search and filter repository work across the factory
+title: Search and filter repository work across the fleet
 status: draft
 derived-from: [UC-EXPLORE-FACTORY, BR-GITHUB-SOURCE]
 uses-terms: [TERM-PROJECT, TERM-WORK-UNIT, TERM-DELIVERY-EVIDENCE]
@@ -12,7 +12,7 @@ verification:
 
 ## Requirement
 
-SoFa MUST provide a joint repository and issue view with search and combinable filters for repository, issue state, lifecycle stage, execution and human wait. Source identity MUST survive navigation and refresh. Collection coverage, pagination and filters MUST be visible; the owner MUST be able to open ordinary issues as well as attention items.
+Lighthouse Control Center MUST provide a joint repository and issue view with search and combinable filters for repository, issue state, lifecycle stage, execution and human wait. Source identity MUST survive navigation and refresh. Collection coverage, pagination and filters MUST be visible; the operator MUST be able to open ordinary issues as well as attention items.
 
 ## Rationale
 

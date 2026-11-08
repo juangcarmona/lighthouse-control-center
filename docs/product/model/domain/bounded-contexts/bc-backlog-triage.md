@@ -1,7 +1,7 @@
 ---
 id: BC-BACKLOG-TRIAGE
 type: bounded-context
-title: Backlog and triage
+title: Missions and backlog
 status: draft
 ---
 
@@ -11,12 +11,12 @@ Capture ideas, promote them to GitHub issues, reconcile GitHub work into a local
 
 ## Language
 
-Ideas, backlog items, project priority, work units, dependency edges, readiness, promotion, and triage evidence.
+Missions, ideas, backlog items, project priority, work units, dependency edges, readiness, promotion and triage evidence.
 
 ## Boundaries
 
-SoFa may own an idea before promotion, but GitHub becomes the backlog source of truth when the idea becomes or links to an issue. This context does not execute work, approve product intent, or replace repository issue state.
+Lighthouse Control Center may own an idea before promotion, but GitHub becomes the backlog source of truth when the idea becomes or links to an issue. This context does not execute work, approve product intent, or replace repository issue state.
 
 ## External Relationships
 
-Reads from ACT-GITHUB-BACKLOG and presents decisions and proposed work units to ACT-FACTORY-OWNER.
+Reads from ACT-GITHUB-BACKLOG and presents decisions and proposed work units to ACT-OPERATOR.

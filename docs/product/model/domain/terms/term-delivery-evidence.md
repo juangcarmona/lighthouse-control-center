@@ -18,4 +18,4 @@ Telemetry describes operation; delivery evidence supports what happened to a wor
 
 ## Usage
 
-UC-VERIFY-DELIVERY collects it and presents it to ACT-FACTORY-OWNER.
+UC-VERIFY-DELIVERY collects it and presents it to ACT-OPERATOR.

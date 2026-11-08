@@ -1,8 +1,10 @@
 # SoFa
 
-SoFa — my software factory.
+![SoFa: a sofa overlooking the bay, boats and lighthouse.](assets/socialpreview_1.png)
 
-SoFa observes and verifies Juan's software factory across repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
+SoFa is evolving into Lighthouse Control Center.
+
+SoFa observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
 
 ## Open the authenticated workspace
 
@@ -18,7 +20,7 @@ The account view shows the acting account, source-check times and configured rep
 
 Observation data is coalesced within the owner/session connection scope for fifteen seconds. Permission checks precede cache reuse. Background polling does not renew the session; authority loss clears displayed records and counts. Temporary transport failure retains old source times with a stale warning. The issue reader at `/workspace/issues` opens ordinary configured issues and bounded conversation pages. Optional evidence reads reuse the displayed conversation page without downloading it again, recheck source permissions and preserve exact source associations and use the installed Lighthouse result validator; unavailable or expired artifacts remain explicit. Actual connected-user issue-reader acceptance and live reservation coverage remain open under #50; the desktop GitHub connection and operational observations were confirmed for #49. Commands, discovery/boards/inbox and runtime/capacity metrics remain #47/#48/#51/#52/#57 work.
 
-Development Keycloak protocol, revocation and outage behavior have a host-only verification lane. The owner confirmed actual GitHub connection and operational data on a computer. Physical-phone rehearsal was deferred by the owner; narrow browser tests do not establish physical-device acceptance. Production custody, persistence and deployment remain #58 work.
+Development Keycloak protocol, revocation and outage behavior have a separate nightly/manual E2E suite, outside PR/push CI. The owner confirmed actual GitHub connection and operational data on a computer. Physical-phone rehearsal was deferred by the owner; narrow browser tests do not establish physical-device acceptance. Production custody, persistence and deployment remain #58 work.
 
 Install browser prerequisites with `npx playwright install --with-deps chromium` before verification. CI retains safe post-callback screenshots and reports. Its identity-provider test requires `libnss3-tools` for an isolated browser trust database.
 
@@ -37,11 +39,11 @@ Verification requires Node.js 22 or newer, .NET 10 and Docker. Install dependenc
 ```sh
 npm ci
 npm run verify
-# Host-only real provider, trusted browser and accessibility verification:
+# Separate E2E suite: real provider, trusted browser and accessibility:
 npm run verify:identity:host
 ```
 
-`npm run verify:dotnet` runs locked restore, Release build, the relevant source-format/module checks, real LH1001/LH1002 rejection and solution tests through the existing PostgreSQL/Docker lanes. The host-only identity test composes disposable resources and does not require production identity or a GitHub user grant.
+`npm run verify:dotnet` runs locked restore, Release build, the relevant source-format/module checks, real LH1001/LH1002 rejection and solution tests through the existing PostgreSQL/Docker lanes. The separate identity E2E suite composes disposable resources and does not require production identity or a GitHub user grant.
 
 ProductShape and ArcShape are pinned as local development dependencies. Their managed files are refreshed through their CLIs; see [tooling notes](docs/tooling.md).
 

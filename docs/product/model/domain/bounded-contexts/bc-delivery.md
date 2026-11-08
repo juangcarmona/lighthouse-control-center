@@ -19,4 +19,4 @@ Green automation is not human approval. This context does not own ProductShape i
 
 ## External Relationships
 
-Reads execution outcomes and ACT-GITHUB-BACKLOG evidence, then presents a delivery claim and its limitations to ACT-FACTORY-OWNER.
+Reads execution outcomes and ACT-GITHUB-BACKLOG evidence, then presents a delivery claim and its limitations to ACT-OPERATOR.

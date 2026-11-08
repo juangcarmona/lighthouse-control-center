@@ -3,7 +3,7 @@ id: UC-VERIFY-DELIVERY
 type: use-case
 title: Verify work and delivery evidence
 status: draft
-primary-actor: ACT-FACTORY-OWNER
+primary-actor: ACT-OPERATOR
 supporting-actors: [ACT-GITHUB-BACKLOG]
 bounded-context: BC-DELIVERY
 governed-by: [BR-GITHUB-SOURCE, BR-HUMAN-DECISION-BOUNDARIES, BR-LAN-PRIVILEGE-BOUNDARY]
@@ -24,9 +24,9 @@ The run and its source revision are known.
 
 ## Main Flow
 
-1. SoFa collects deterministic checks and source-side review/PR evidence.
-2. Juan reviews evidence and explicitly authorizes integration when required.
-3. SoFa identifies the exact post-integration commit on the default branch, verifies the relevant default-branch pipelines and generated artifacts, and records limitations.
+1. Lighthouse Control Center collects deterministic checks and source-side review/PR evidence.
+2. The operator reviews evidence; an actor with the required repository authority explicitly authorizes integration when policy requires it.
+3. Lighthouse Control Center identifies the exact post-integration commit on the default branch, verifies the relevant default-branch pipelines and generated artifacts, and records limitations.
 
 ## Alternative Flows
 
