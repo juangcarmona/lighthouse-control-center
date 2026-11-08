@@ -1,0 +1,84 @@
+{
+  "state": "merged",
+  "sha": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+  "recovered": false,
+  "acceptedHead": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+  "authorization": {
+    "issue": 99,
+    "pr": 113,
+    "head": "6b5b4219d20df81e73c9656b1e139cc3c8ba062a",
+    "merge": true,
+    "unattended": {
+      "route": "ff",
+      "owner": "juangcarmona",
+      "policyDigest": "4ad9dd78864380529a681de7936678b44cbd78eb2d867ab16defae5197e704bf",
+      "review": {
+        "binding": "89fb371f344df51c58eb0dbab79cce2765e3073fca285c2cb388f16fc4953b69",
+        "result": {
+          "schemaVersion": 1,
+          "runId": "d842eca81304ffb6b0d12b1d166b1b32a95b58e79bb4144c4d3caf9df86505fe",
+          "stage": "integrate",
+          "gate": "done",
+          "status": "passed",
+          "evidence": [],
+          "missingEvidence": [],
+          "unavailableChecks": [],
+          "pendingReview": [],
+          "output": {
+            "review": {
+              "binding": "89fb371f344df51c58eb0dbab79cce2765e3073fca285c2cb388f16fc4953b69",
+              "verdict": "accept",
+              "findings": []
+            }
+          },
+          "nextAction": "Return to the trusted host for the remaining delivery gates."
+        },
+        "model": {
+          "requested": {
+            "profile": "plan",
+            "model": "openai/gpt-6-luna",
+            "reasoningEffort": "high"
+          },
+          "resolved": {
+            "mode": "profile",
+            "profile": "plan",
+            "model": "openai/gpt-6-luna",
+            "reasoningEffort": "high",
+            "engineModel": "openai/gpt-6-luna#high",
+            "source": "task.profile",
+            "fields": {
+              "model": "project",
+              "reasoningEffort": "project"
+            },
+            "capabilityEvidence": "operator-configuration-only"
+          },
+          "providerReported": {
+            "model": null,
+            "reasoningEffort": null,
+            "status": "unverified",
+            "reason": "The current adapter has no authenticated provider-settings receipt"
+          },
+          "billing": {
+            "route": "unchanged",
+            "actualCost": null,
+            "estimatedApiEquivalentCost": null,
+            "subscriptionUsage": null
+          }
+        },
+        "execution": {
+          "status": "passed",
+          "exitCode": 0,
+          "signal": null,
+          "resources": {
+            "pidsLimit": 128,
+            "pidsPeak": 36,
+            "pidsDenied": 0,
+            "memoryPeakBytes": 487964672,
+            "oomKills": 0
+          }
+        }
+      }
+    }
+  },
+  "postMerge": []
+}

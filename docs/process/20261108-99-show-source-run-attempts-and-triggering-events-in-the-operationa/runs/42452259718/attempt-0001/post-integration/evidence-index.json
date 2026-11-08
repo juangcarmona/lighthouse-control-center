@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "indexId": "evidence-index",
+  "runId": "5f6f9f9b2d2f9177235077e9d7fb9ee98c42f64e64c980c36e43f783bea85ac6",
+  "repository": "juangcarmona/sofa",
+  "revision": "a9e06e0376f28dd5a3075cfd26c81fcb98130db0",
+  "records": [
+    {
+      "id": "completion:5f6f9f9b2d2f9177235077e9d7fb9ee98c42f64e64c980c36e43f783bea85ac6",
+      "path": "evidence-record.json",
+      "sha256": "5aa9c4145183236b6f5ad679d4c17c466688efc7d82d69dc3db293465ca33f3c",
+      "kind": "stage-result",
+      "status": "passed",
+      "subject": {
+        "type": "issue",
+        "id": "https://github.com/juangcarmona/sofa/issues/99"
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "subject": {
+        "type": "issue",
+        "id": "https://github.com/juangcarmona/sofa/issues/99"
+      },
+      "status": "verified",
+      "evidenceIds": [
+        "completion:5f6f9f9b2d2f9177235077e9d7fb9ee98c42f64e64c980c36e43f783bea85ac6"
+      ]
+    }
+  ]
+}
