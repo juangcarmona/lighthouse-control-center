@@ -16,14 +16,14 @@
   "stages": [
     {
       "name": "implement",
-      "result": "local-verification-passed-code-checkpoint",
+      "result": "correction-1-full-local-verification-passed",
       "inputCommit": "dadd1dc99141ad43c2c4bc8bbb28404f0041317d",
       "evidence": [
         "selected-host-observation.json"
       ],
       "local": {
         "command": "CI=true taskset -c 2,3 npm run verify",
-        "node": 52,
+        "node": 54,
         "web": 154,
         "runtime": 38,
         "browser": 41,
@@ -40,8 +40,35 @@
       ]
     }
   ],
-  "reviews": [],
-  "corrections": [],
+  "reviews": [
+    {
+      "kind": "code-checkpoint-not-Done",
+      "head": "db8c1607d67887d1c9fb63ca4918ae26262a37fc",
+      "model": "openai/gpt-6-luna",
+      "effort": "high",
+      "decision": "request-changes",
+      "evidence": "implementation-code-review-1.json"
+    }
+  ],
+  "corrections": [
+    {
+      "gate": "implementation-code-checkpoint",
+      "round": 1,
+      "finding": "R57-C1 unconfined metadata parent traversal",
+      "fix": "Only canonical absolute .git/worktrees/name target, pinned common/worktrees/selected handles, exact ../.. marker and selected-checkout gitdir backlink; generic component traversal rejects dot/parent",
+      "regression": {
+        "before": "Unrelated .git redirect incorrectly available; test failed as expected",
+        "after": "Full helper suite including linked metadata byte boundaries and pinned parent replacement passes"
+      },
+      "fullVerification": {
+        "exitCode": 0,
+        "node": 54,
+        "web": 154,
+        "runtime": 38,
+        "browser": 41
+      }
+    }
+  ],
   "stopReason": null,
   "pullRequest": "https://github.com/juangcarmona/sofa/pull/105",
   "links": {

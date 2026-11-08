@@ -83,3 +83,7 @@ Configuration is optional and private; existing setups display unconfigured host
 <!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:318c7d8d4d3b2e27109e24628f99dd1825494fa9858dc13410032d73650f1cc8" -->
 <!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:3e183bdd765a663d966e19e3c645ee91e36c8e30b14dacc9f4724c670fd21a2d" -->
 <!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->
+
+## Implementation correction: linked metadata confinement
+
+The first code audit found that generic directory traversal still accepted parent components in metadata redirects. The helper now rejects dot/parent components everywhere. Its supported linked-worktree layout has a canonical absolute `.git/worktrees/name` target, a fixed `../..` common marker and a `gitdir` backlink naming exactly the configured checkout; each metadata file remains bounded at8KiB. Pinned common/worktrees/selected handles replace arbitrary redirect traversal. Relative, bare-repository and other layouts return unavailable. A regression first demonstrated the unrelated-directory escape, then passed with a pinned-parent replacement race and normal linked-worktree coverage. This narrows unsupported metadata without adding source authority or a network read.

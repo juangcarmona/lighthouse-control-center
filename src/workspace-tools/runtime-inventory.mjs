@@ -46,11 +46,10 @@ class PinnedSource {
   async directory(path, base = null) {
     if (!safeText(path, 4096) || Buffer.byteLength(path) > 4096) throw Error('Invalid directory');
     const parts = path.split('/').filter(Boolean);
-    if (parts.length > 64) throw Error('Directory traversal bound');
+    if (parts.length > 64 || parts.some(part => part === '.' || part === '..')) throw Error('Directory traversal bound');
     let current = isAbsolute(path) ? await this.hold('/', true) : base;
     if (!current) throw Error('Relative directory without base');
     for (const part of parts) {
-      if (part === '.') continue;
       current = await this.hold(this.path(current, part), true);
     }
     return current;
@@ -105,18 +104,25 @@ function literalOrigin(config) {
 async function gitMetadata(files, checkout) {
   const root = await files.directory(checkout);
   const entry = await files.hold(files.path(root, '.git'));
-  let selected;
-  if ((await entry.stat()).isDirectory()) selected = entry;
-  else {
+  let selected, common;
+  if ((await entry.stat()).isDirectory()) {
+    selected = common = entry;
+    try { await files.text(selected, 'commondir', 8192); throw Error('Unsupported common-directory redirect'); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+  } else {
     const target = decoder.decode(await files.bytes(entry, 8192)).trim().match(/^gitdir: ([^\r\n]+)$/)?.[1];
-    if (!target) throw Error('Unsupported worktree metadata');
-    selected = await files.directory(target, root);
+    if (!privatePath(target)) throw Error('Unsupported worktree metadata');
+    const parts = target.split('/');
+    const name = parts.pop();
+    if (parts.pop() !== 'worktrees' || parts.at(-1) !== '.git' || !safeText(name, 255) || !/^[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(name))
+      throw Error('Unsupported linked-worktree layout');
+    common = await files.directory(parts.join('/'));
+    const worktrees = await files.directory('worktrees', common);
+    selected = await files.directory(name, worktrees);
+    if ((await files.text(selected, 'commondir', 8192)).trim() !== '../..'
+        || (await files.text(selected, 'gitdir', 8192)).trim() !== join(checkout, '.git'))
+      throw Error('Worktree metadata is not bound to the selected checkout');
   }
-  let common = selected;
-  let commonTarget;
-  try { commonTarget = (await files.text(selected, 'commondir', 8192)).trim(); }
-  catch (error) { if (error.code !== 'ENOENT') throw error; }
-  if (commonTarget !== undefined) common = await files.directory(commonTarget, selected);
   let head = (await files.text(selected, 'HEAD', 8192)).trim();
   const seen = new Set();
   for (let hop = 0; !sha(head); hop++) {

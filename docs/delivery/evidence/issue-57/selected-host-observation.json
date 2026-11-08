@@ -1,9 +1,9 @@
 {
   "kind": "actual-selected-host-operator-read-not-acting-user-acceptance",
-  "helperSha256": "18b6c6a62c7af0cce3dbbe82493823b83b3d7ecce845aed16cad5307951a22c4",
+  "helperSha256": "f00025fa0b194c7ba9f618dff3d7e22e63a517f215b95bff66fb9f4c1748e2f2",
   "observation": {
     "availability": "available",
-    "observedAt": "2026-11-08T00:04:26.308Z",
+    "observedAt": "2026-11-08T00:09:10.889Z",
     "registrationCount": 2,
     "checkoutCount": 2,
     "configured": true,
@@ -12,7 +12,7 @@
       {
         "alias": "sofa-registration",
         "availability": "available",
-        "collectedAt": "2026-11-08T00:04:26.308Z",
+        "collectedAt": "2026-11-08T00:09:10.889Z",
         "repository": "juangcarmona/sofa",
         "id": 22,
         "name": "bastion-sofa-gh-aw",
@@ -21,7 +21,7 @@
       {
         "alias": "lighthouse-registration",
         "availability": "available",
-        "collectedAt": "2026-11-08T00:04:26.312Z",
+        "collectedAt": "2026-11-08T00:09:10.892Z",
         "repository": "juangcarmona/lighthouse",
         "id": 21,
         "name": "bastion-lighthouse-gh-aw",
@@ -32,7 +32,7 @@
       {
         "repository": "juangcarmona/sofa",
         "availability": "available",
-        "collectedAt": "2026-11-08T00:04:26.313Z",
+        "collectedAt": "2026-11-08T00:09:10.895Z",
         "revision": "bb3c2aef11951937a9203a6abc861ae9483791b2",
         "declaredCli": "0.12.55",
         "lockedCli": "0.12.55",
@@ -44,7 +44,7 @@
       {
         "repository": "juangcarmona/lighthouse",
         "availability": "available",
-        "collectedAt": "2026-11-08T00:04:26.494Z",
+        "collectedAt": "2026-11-08T00:09:11.113Z",
         "revision": "860624fcca7eeb676a8d1945088452a6d321061d",
         "declaredCli": null,
         "lockedCli": null,

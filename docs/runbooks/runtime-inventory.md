@@ -25,7 +25,7 @@ Add optional entries to the existing private application configuration, outside 
 
 Checkouts must name repositories already configured in `SoFa:Repositories`. Select the intended local checkout: the observation describes its committed HEAD, including a feature or detached revision, and does not claim that it is the default branch, installed package or deployed application. No checkout is pulled, cloned, upgraded or modified. Missing configuration means unknown total coverage.
 
-The supported host reader requires Linux, Node and `/usr/bin/git`. Source paths are canonical absolute paths without control characters or symlink components. Metadata must belong to the application Unix user or root. Explicitly list only trusted groups that may write selected source ancestors; default group trust is empty. Root-owned sticky ancestor directories retain their normal protection of owned children. Do not grant filesystem access or add a group merely to make an observation pass. Unsupported ownership/layout/storage returns unavailable evidence.
+The supported host reader requires Linux, Node and `/usr/bin/git`. Source paths are canonical absolute paths without control characters or symlink components. Linked worktrees support only a canonical absolute `.git/worktrees/name` target with its exact `../..` common-directory marker and an absolute `gitdir` backlink to the configured checkout. Common/worktrees/selected directories are pinned before reads; other redirects, relative targets and bare-repository layouts remain unavailable. Metadata must belong to the application Unix user or root. Explicitly list only trusted groups that may write selected source ancestors; default group trust is empty. Root-owned sticky ancestor directories retain their normal protection of owned children. Do not grant filesystem access or add a group merely to make an observation pass. Unsupported ownership/layout/storage returns unavailable evidence.
 
 The host helper receives no identity/GitHub secret environment. It reads fixed `.runner` metadata and selected committed files. It never reads `.credentials`, accesses a Docker socket, scans processes, executes source hooks or controls workers. A private bare object view pins selected object file descriptors, disables source/system/global Git configuration and protocols, and verifies object hashes. Its temporary files and owned children are removed after completion or cancellation. Cleanup failure prevents a successful observation.
 
@@ -42,7 +42,7 @@ No GitHub permission is automatically escalated. Source recovery links open repo
 | Configured registrations / checkouts / trusted groups | Ten of each; distinct aliases/repositories/groups |
 | Aliases / private paths / directory traversal | 64 ASCII alias characters / 4,096 UTF-8 path bytes / 64 components |
 | Metadata redirections / symbolic refs | One `.git` redirect plus one `commondir`; five reference hops with cycle detection |
-| `.runner` / HEAD, `.git`, commondir / config | 32 KiB / 8 KiB each / 64 KiB |
+| `.runner` / HEAD, `.git`, commondir, gitdir / config | 32 KiB / 8 KiB each / 64 KiB |
 | Loose ref / packed refs / selected committed file | 1 KiB / 2 MiB / 2 MiB |
 | Object storage view | 32 pack pairs, 128 inherited object handles, 512 MiB per storage file; unsupported layouts remain unknown |
 | Helper protocol | 128 KiB stdin, 1 MiB stdout, 8 KiB stderr; 128 MiB Node heap |

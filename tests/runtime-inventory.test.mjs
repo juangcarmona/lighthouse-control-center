@@ -202,7 +202,7 @@ test('linked git metadata redirection byte bounds cannot select an oversized or 
   const gitFile = join(worktree, '.git');
   const pointer = await readFile(gitFile, 'utf8');
   const selected = pointer.trim().slice(8);
-  for (const path of [gitFile, join(selected, 'commondir')]) {
+  for (const path of [gitFile, join(selected, 'commondir'), join(selected, 'gitdir')]) {
     const original = await readFile(path);
     await writeFile(path, Buffer.concat([original, Buffer.alloc(8192 - original.length, 32)]));
     assert.equal((await observedCheckout(root, worktree)).availability, 'available');
@@ -234,3 +234,38 @@ test('private configuration exact field, group, source and UTF8 path maxima are 
   assert.throws(() => validateRuntimeInput({ ...input, extra: 'unexpected' }));
   assert.throws(() => validateRuntimeInput({ ...input, registrations: [{ alias: 'x', directory: '/tmp', extra: true }] }));
 });
+
+
+test('metadata redirects outside the selected linked-worktree layout are unavailable', async () => fixture(async root => {
+  const source = await checkout(root), worktree = join(root, 'linked');
+  git(source, 'worktree', 'add', '--detach', worktree);
+  const pointerPath = join(worktree, '.git'), original = await readFile(pointerPath, 'utf8');
+  await writeFile(pointerPath, 'gitdir: ' + join(source, '.git') + '\n');
+  assert.equal((await observedCheckout(root, worktree)).availability, 'unavailable');
+  await writeFile(pointerPath, original);
+  const metadata = original.trim().slice(8), commonPath = join(metadata, 'commondir');
+  await writeFile(commonPath, '../..//\n');
+  assert.equal((await observedCheckout(root, worktree)).availability, 'unavailable');
+}));
+
+
+test('replacement of a pinned worktrees parent cannot redirect committed reads', async () => fixture(async root => {
+  const source = await checkout(root), worktree = join(root, 'linked');
+  git(source, 'worktree', 'add', '--detach', worktree);
+  const head = git(source, 'rev-parse', 'HEAD');
+  const metadata = (await readFile(join(worktree, '.git'), 'utf8')).trim().slice(8);
+  const { cp } = await import('node:fs/promises');
+  const outside = join(root, 'outside-worktrees');
+  await cp(join(source, '.git/worktrees'), outside, { recursive: true });
+  await writeFile(join(outside, metadata.split('/').at(-1), 'HEAD'), '0'.repeat(40) + '\n');
+  const scratch = await mkdtemp(join(root, 'observation-'));
+  let replaced = false;
+  const result = await observeRuntime({ ...config(scratch), checkouts: [{ repository: 'example/repository', directory: worktree }] }, { opened: async path => {
+    if (!replaced && path.endsWith('/worktrees')) {
+      replaced = true;
+      await rename(join(source, '.git/worktrees'), join(source, '.git/old-worktrees'));
+      await symlink(outside, join(source, '.git/worktrees'));
+    }
+  } });
+  assert.equal(replaced, true); assert.equal(result.adoptions[0].availability, 'available'); assert.equal(result.adoptions[0].revision, head);
+}));
