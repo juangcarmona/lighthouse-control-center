@@ -21,7 +21,7 @@ export function renderActions(area, facts, target, scope, live, clear) {
       : 'Publishes an ordinary comment. It does not resume work. The new input can make an earlier result stale.'));
     else confirmation.append(text('Requests ' + data.intent?.action + ' for this issue in GitHub. Admission, worker execution and stage outcome are verified separately.'));
     if (data.receipt) {
-      confirmation.append(text('Source receipt: ' + data.receipt.state), text(data.receipt.reason ?? ''),
+      confirmation.append(text('Source receipt: ' + data.receipt.state), text('Receipt observed: ' + (data.receiptObservedAt ?? 'unknown')), text(data.receipt.reason ?? ''),
         text('Source acknowledged: ' + (data.receipt.sourceAcknowledged === true ? 'yes' : 'unconfirmed')),
         text('Question resolved: ' + (data.receipt.questionResolved === true ? 'yes' : 'unconfirmed')));
       if (data.receipt.execution) confirmation.append(text('Execution: ' + (data.receipt.execution.availability ?? 'unknown')

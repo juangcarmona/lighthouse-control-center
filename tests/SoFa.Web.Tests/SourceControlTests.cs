@@ -116,7 +116,9 @@ public sealed class SourceControlTests
   {
     using var fixture = new Fixture(appId: null);
     var session = await fixture.Session();
-    Assert.Equal("unsupported", (await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None)).Availability);
+    var unsupported = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("unsupported", unsupported.Availability);
+    Assert.Equal(session.GitHub.Current!.DataScope, unsupported.DataScope);
     Assert.Equal("invalid", (await fixture.Query.Handle(new(session, "other/repository", 7), CancellationToken.None)).Availability);
     Assert.Equal("invalid", (await fixture.Query.Handle(new(session, "example/repository", 0), CancellationToken.None)).Availability);
     Assert.Empty(fixture.Handler.Paths);

@@ -1,5 +1,5 @@
 {
-  "observedAt": "2026-11-08T08:29:54.771839+00:00",
+  "observedAt": "2026-11-08T08:39:16.020885+00:00",
   "scope": "Released SDK, private journal and explicit source-control code checkpoint; not full #48 Done",
   "ownerPlan": "planning-owner-acceptance.json",
   "publicSdk": "public-sdk-adoption.json",
@@ -31,5 +31,11 @@
     "The current development preview still serves the earlier #51 build",
     "Shared #50/#51/#52 prerequisites and protected owner gates remain separate",
     "Logical SQLite cap does not bound WAL/key disk; production backup/custody remains #58"
-  ]
+  ],
+  "followUp": {
+    "baselineProjection": "Regenerated with the official harness upgrade after the existing GitHub guardrail rejected SDK version drift; guardrails must pass at the repaired head.",
+    "receiptFreshness": "Protected source receipts retain their original observation time independently of a later recovery request.",
+    "readFallback": "Missing intended App configuration preserves the authorized read scope and reports unsupported controls; it does not discard readable issue context.",
+    "independentReview": "control-checkpoint-review.json accepts prior code head1c9356031673861ccdf1a8e42c29111b6c3bc7c0; fresh review required for these follow-up changes."
+  }
 }

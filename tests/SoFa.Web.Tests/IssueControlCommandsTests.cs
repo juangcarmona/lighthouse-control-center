@@ -31,6 +31,7 @@ public sealed class IssueControlCommandsTests
     Assert.Equal("available", sent.Availability);
     Assert.Equal(loseResponse ? "unknown" : "comment-published", SourceJson.Text(sent.Receipt!.Value, "state"));
     Assert.Single(fixture.Handler.Writes);
+    Assert.NotNull(sent.ReceiptObservedAt);
     var duplicate = await fixture.Commands.Handle(query, new("submit", Id: prepared.Id), CancellationToken.None);
     Assert.Equal("comment-published", SourceJson.Text(duplicate.Receipt!.Value, "state"));
     Assert.False(duplicate.Receipt.Value.GetProperty("questionResolved").GetBoolean());
@@ -38,6 +39,7 @@ public sealed class IssueControlCommandsTests
     fixture.Restart();
     var recovered = await fixture.Commands.Handle(query, new("receipt"), CancellationToken.None);
     Assert.Equal(prepared.Id, recovered.Id);
+    Assert.NotNull(recovered.ReceiptObservedAt);
     Assert.Equal("Private ordinary reply", SourceJson.Text(recovered.Intent!.Value, "body"));
     var reconciled = await fixture.Commands.Handle(query, new("reconcile", Id: recovered.Id), CancellationToken.None);
     Assert.Equal("comment-published", SourceJson.Text(reconciled.Receipt!.Value, "state"));

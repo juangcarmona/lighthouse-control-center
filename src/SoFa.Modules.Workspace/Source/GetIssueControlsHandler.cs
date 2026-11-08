@@ -16,7 +16,11 @@ internal sealed class GetIssueControlsHandler(SourceControlAccess source, Source
 {
   public async Task<IssueControlObservation> Handle(GetIssueControls query, CancellationToken cancellationToken)
   {
-    IssueControlObservation Failure(string availability, string? reason) => new(query.Repository, query.Number, availability, clock.GetUtcNow(), Reason: reason);
+    IssueControlObservation Failure(string availability, string? reason)
+    {
+      lock (query.Session.Sync) return new(query.Repository, query.Number, availability, clock.GetUtcNow(),
+          query.Session.GitHub.Current?.DataScope, query.Session.GitHub.Current?.UserId, Reason: reason);
+    }
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     budget.CancelAfter(TimeSpan.FromSeconds(20));
     var opened = await source.Open(query, budget.Token).ConfigureAwait(false);

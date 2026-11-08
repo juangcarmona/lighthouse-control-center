@@ -38,7 +38,7 @@
   "lastAppliedMigration": "upgrade-0.12.61",
   "files": {
     "LIGHTHOUSE.md": {
-      "hash": "d0e6235b0658ff847f3042fc8b97fb51a71c026a80ff57ba7e9b02e4be53baea",
+      "hash": "376a89e72e14eed6efcb8cef645211147f37a76b9c7afaa235a5a630c2876158",
       "scope": "harness"
     },
     "scripts/lighthouse-guard.mjs": {

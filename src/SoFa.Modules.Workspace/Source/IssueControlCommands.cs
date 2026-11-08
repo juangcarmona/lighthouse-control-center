@@ -7,7 +7,7 @@ namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 internal sealed record ControlCommand(string Operation, string? Action = null, string? Body = null, string? Id = null);
 internal sealed record ControlCommandResult(string Availability, DateTimeOffset ObservedAt, string? DataScope = null,
     long? ActingUserId = null, string? Id = null, string? JournalState = null, JsonElement? Intent = null,
-    JsonElement? Effect = null, JsonElement? Receipt = null, string? Reason = null);
+    JsonElement? Effect = null, JsonElement? Receipt = null, string? ReceiptObservedAt = null, string? Reason = null);
 
 internal sealed class IssueControlCommands(WorkspaceOptions settings, SourceControlAccess source, SourceControlBridge bridge,
     ControlJournal journal, GitHubTransport transport, TimeProvider clock)
@@ -92,14 +92,15 @@ internal sealed class IssueControlCommands(WorkspaceOptions settings, SourceCont
       var result = await bridge.Execute(new { version = 1, operation = command.Operation, repository = query.Repository, number = query.Number, prepared }, Callback, budget.Token).ConfigureAwait(false);
       var receipt = result.Facts is { } facts && SourceJson.Text(facts, "state") is not null ? facts
           : JsonSerializer.SerializeToElement(new { state = "unknown", reason = "source-outcome-unconfirmed", retry = false });
-      var recorded = journal.Record(identity, entry.Id, receipt, Terminal(receipt));
+      var recorded = journal.Record(identity, entry.Id, JsonSerializer.SerializeToElement(new { source = receipt, observedAt = clock.GetUtcNow() }), Terminal(receipt));
       if (recorded.State != "recorded") return new("unavailable", clock.GetUtcNow(), Id: entry.Id, Reason: "The outcome could not be stored. Reconcile this confirmation; do not prepare a replacement.");
       entry = journal.Read(identity, entry.Id);
     }
     var verified = await lease.Validate(budget.Token).ConfigureAwait(false);
     if (verified.Availability != "available") return Failure(verified.Availability, verified.Reason);
     return new("available", clock.GetUtcNow(), connection.DataScope, connection.UserId, entry.Id, entry.State,
-        entry.Prepared?.GetProperty("intent"), entry.Prepared?.GetProperty("effect"), entry.Receipt);
+        entry.Prepared?.GetProperty("intent"), entry.Prepared?.GetProperty("effect"),
+        entry.Receipt?.GetProperty("source"), entry.Receipt is { } saved ? SourceJson.Text(saved, "observedAt") : null);
   }
 
   private static bool Terminal(JsonElement receipt) => SourceJson.Text(receipt, "state") is "rejected" or "conflict" or "comment-published"
