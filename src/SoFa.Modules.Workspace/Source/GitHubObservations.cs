@@ -6,7 +6,7 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal sealed record ObservedRun(long Id, string? Name, string? Status, string? Conclusion, string? SourceRevision,
-    string? Url, string? StartedAt, string? UpdatedAt);
+    string? Url, string? StartedAt, string? UpdatedAt, long? RunAttempt, string? Event);
 internal sealed record ObservedIssue(int Number, string? Title, IReadOnlyList<string> Labels, string? Url, string? UpdatedAt);
 internal sealed record ObservedRepository(string Repository, DateTimeOffset ObservedAt, string Availability, string Scope,
     IReadOnlyList<ObservedRun>? Runs = null, IReadOnlyList<ObservedIssue>? Attention = null, string? Reason = null);
@@ -86,7 +86,7 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
       var mappedRuns = runRows.EnumerateArray().Take(20).Where(r => SourceJson.Number(r, "id") is > 0 and <= 9_007_199_254_740_991)
           .Select(r => new ObservedRun(SourceJson.Number(r, "id")!.Value, Text(r, "name", 256), Text(r, "status", 64),
               Text(r, "conclusion", 64), Text(r, "head_sha", 128), Text(r, "html_url", 2048),
-              Timestamp(r, "run_started_at"), Timestamp(r, "updated_at"))).ToArray();
+               Timestamp(r, "run_started_at"), Timestamp(r, "updated_at"), Attempt(r), Text(r, "event", 256) is { Length: > 0 } sourceEvent ? sourceEvent : null)).ToArray();
       var mappedIssues = issues.Value.EnumerateArray().Take(100)
           .Where(i => i.ValueKind == JsonValueKind.Object && !i.TryGetProperty("pull_request", out _) && SourceJson.Number(i, "number") is > 0 and <= int.MaxValue)
           .Select(i => new ObservedIssue((int)SourceJson.Number(i, "number")!.Value, Text(i, "title", 1024), Labels(i), Text(i, "html_url", 2048), Timestamp(i, "updated_at")))
@@ -97,6 +97,25 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
   }
 
   private static bool Transient(GitHubResponse response) => response.Status == 0 || (int)response.Status == 429 || (int)response.Status >= 500;
+
+  private static long? Attempt(JsonElement row)
+  {
+    if (!row.TryGetProperty("run_attempt", out var token) || token.ValueKind != JsonValueKind.Number) return null;
+    // Work on exact decimal digits, never a rounded double or decimal conversion.
+    var parts = token.GetRawText().ToLowerInvariant().Split('e');
+    if (parts[0].StartsWith('-') || !int.TryParse(parts.Length == 2 ? parts[1] : "0",
+        NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var exponent)) return null;
+    var coefficient = parts[0].Split('.');
+    var fraction = coefficient.Length == 2 ? coefficient[1] : "";
+    var digits = (coefficient[0] + fraction).TrimStart('0');
+    long scale = (long)exponent - fraction.Length;
+    if (digits.Length == 0) return null;
+    var significant = digits.TrimEnd('0');
+    scale += digits.Length - significant.Length;
+    if (scale < 0 || significant.Length + scale > 16) return null;
+    return long.TryParse(significant + new string('0', (int)scale), NumberStyles.None, CultureInfo.InvariantCulture, out var value)
+        && value is > 0 and <= 9_007_199_254_740_991 ? value : null;
+  }
 
   private bool Live(OwnerSession record, GitHubConnection connection, long generation) => ReferenceEquals(sessions.Get(record.Id), record)
       && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;

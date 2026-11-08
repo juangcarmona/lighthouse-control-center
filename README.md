@@ -49,6 +49,8 @@ Run `npm run observe -- owner/repository [owner/another-repository]` with an aut
 
 Run observations add optional `startedAt` from GitHub `run_started_at`, alongside unchanged `updatedAt`, source facts and the mixed `attention` collection. Absent or invalid source timing is not replaced with an inferred timestamp.
 
+CLI and authenticated snapshots also expose nullable `runAttempt` and `event` from GitHub `run_attempt` and `event`. Attempts must be exact positive integers from 1 through 9,007,199,254,740,991; missing, malformed, fractional or out-of-range values stay null, never rounded or defaulted. Empty, non-string or over-256-character events stay null. Every run card shows `Source attempt` and `Triggering event` as safe text, labeling missing values `unknown`, beside the existing source link. Attempt 2 distinguishes a retry from attempt 1; it does not prove recovery. Run identity, timestamps, stale evidence and read-only authority remain unchanged, with no additional source request or credential requirement.
+
 The former supervisor is retained for historical rollback, disabled by default and no longer started by AppHost. See [ADR-0006](docs/architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md).
 
 The repository's own development workflows use the pinned Lighthouse gh-aw/OpenCode adapter. See [repository workflow operation](docs/runbooks/repository-workflows.md) for runner setup, stage requests, evidence and recovery.

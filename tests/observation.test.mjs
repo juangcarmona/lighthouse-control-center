@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { observeRepositories } from '../src/observation/github.mjs';
+import { observeRepositories, parseGitHubResponse } from '../src/observation/github.mjs';
 test('observation preserves source facts and never dispatches work', async () => {
   const paths = [];
   const result = await observeRepositories(['owner/repo'], async path => {
@@ -17,6 +17,39 @@ test('unavailable evidence stays unknown and invalid repository input is rejecte
   const [result] = await observeRepositories(['owner/repo'], async () => { throw Error('denied'); });
   assert.equal(result.availability, 'unavailable'); assert.equal(result.runs, undefined);
   await assert.rejects(observeRepositories(['../repo']), /owner\/repository/);
+});
+
+test('raw source attempts remain exact through parsing, collection and snapshot serialization', async () => {
+  const cases = [
+    ['1', 1], ['2', 2], ['1.0', 1], ['2e0', 2], ['100e-2', 1], ['0.02e2', 2],
+    ['9007199254740991', Number.MAX_SAFE_INTEGER], ['9007199254740992', null],
+    ['1.00000000000000001', null], ['9007199254740990.9', null], ['1.5', null],
+    ['0', null], ['-1', null], ['null', null], ['"2"', null], ['true', null],
+    ['{}', null], ['[]', null], ['1e999999999999', null], ['1e-999999999999', null],
+    ['0e999999999999', null], [undefined, null],
+  ];
+  for (const [raw, expected] of cases) {
+    const source = `{"workflow_runs":[{"id":71,"status":"in_progress","head_sha":"abc","html_url":"run-url","updated_at":"source-time","event":"workflow_dispatch"${raw === undefined ? '' : `,"run_attempt":${raw}`}}]}`;
+    const paths = [];
+    const snapshot = await observeRepositories(['owner/repo'], async path => {
+      paths.push(path);
+      return parseGitHubResponse(path.includes('/actions/runs') ? source : '[]');
+    });
+    const run = JSON.parse(JSON.stringify(snapshot))[0].runs[0];
+    assert.equal(run.runAttempt, expected, raw);
+    assert.equal(run.event, 'workflow_dispatch');
+    assert.equal(run.id, 71); assert.equal(run.sourceRevision, 'abc');
+    assert.equal(run.url, 'run-url'); assert.equal(run.updatedAt, 'source-time');
+    assert.deepEqual(paths, ['repos/owner/repo/actions/runs?per_page=20', 'repos/owner/repo/issues?state=open&per_page=100']);
+  }
+});
+
+test('injected callers retain known attempts and bounded inert events without inferring absence', async () => {
+  const events = [undefined, null, '', 2, {}, 'push', '<img src=x onerror=alert(1)>', 'x'.repeat(257)];
+  const [repo] = await observeRepositories(['owner/repo'], async path => path.includes('/actions/runs')
+    ? { workflow_runs: events.map((event, id) => ({ id, event, run_attempt: id === 0 ? 2 : undefined })) } : []);
+  assert.deepEqual(repo.runs.map(run => run.event), [null, null, null, null, null, 'push', events[6], null]);
+  assert.deepEqual(repo.runs.map(run => run.runAttempt), [2, null, null, null, null, null, null, null]);
 });
 
 test('review waits remain visible without claiming agent work or including PR records', async () => {

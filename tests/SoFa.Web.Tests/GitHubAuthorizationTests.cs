@@ -289,6 +289,75 @@ public sealed class GitHubAuthorizationTests
     Assert.Single(other.GitHub.Observations);
   }
 
+  [Theory]
+  [InlineData("1", 1L)]
+  [InlineData("2", 2L)]
+  [InlineData("1.0", 1L)]
+  [InlineData("2e0", 2L)]
+  [InlineData("100e-2", 1L)]
+  [InlineData("0.02e2", 2L)]
+  [InlineData("9007199254740991", 9007199254740991L)]
+  [InlineData("9007199254740992", null)]
+  [InlineData("1.00000000000000001", null)]
+  [InlineData("9007199254740990.9", null)]
+  [InlineData("1.5", null)]
+  [InlineData("0", null)]
+  [InlineData("-1", null)]
+  [InlineData("null", null)]
+  [InlineData("\"2\"", null)]
+  [InlineData("true", null)]
+  [InlineData("{}", null)]
+  [InlineData("[]", null)]
+  [InlineData("1e999999999999", null)]
+  [InlineData("1e-999999999999", null)]
+  [InlineData("0e999999999999", null)]
+  [InlineData(null, null)]
+  public async Task ObservationMetadataValidatesExactRawSourceNumbers(string? raw, long? expected)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    fixture.Handler.RawWorkflowResponse = "{\"workflow_runs\":[{\"id\":71,\"name\":\"CI\",\"status\":\"in_progress\",\"head_sha\":\"observed-revision\",\"html_url\":\"https://github.com/example/repository/actions/runs/71\",\"updated_at\":\"2026-11-07T12:00:00Z\",\"event\":\"workflow_dispatch\""
+        + (raw is null ? "" : ",\"run_attempt\":" + raw) + "}]}";
+    var snapshot = await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None);
+    var run = Assert.Single(Assert.Single(snapshot!.Repositories).Runs!);
+    Assert.Equal(expected, run.RunAttempt);
+    Assert.Equal("workflow_dispatch", run.Event);
+    Assert.Equal(71, run.Id);
+    Assert.Equal("observed-revision", run.SourceRevision);
+    Assert.Equal("https://github.com/example/repository/actions/runs/71", run.Url);
+    Assert.Equal("2026-11-07T12:00:00.0000000+00:00", run.UpdatedAt);
+    using var serialized = JsonDocument.Parse(JsonSerializer.Serialize(snapshot, JsonSerializerOptions.Web));
+    var jsonRun = serialized.RootElement.GetProperty("repositories")[0].GetProperty("runs")[0];
+    Assert.Equal(expected, jsonRun.GetProperty("runAttempt").ValueKind == JsonValueKind.Null ? (long?)null : jsonRun.GetProperty("runAttempt").GetInt64());
+    Assert.Equal("workflow_dispatch", jsonRun.GetProperty("event").GetString());
+    Assert.Single(fixture.Handler.Calls, c => c == "GET /repos/example/repository/actions/runs");
+    Assert.Single(fixture.Handler.Calls, c => c == "GET /repos/example/repository/issues");
+  }
+
+  [Theory]
+  [InlineData(null, null)]
+  [InlineData("null", null)]
+  [InlineData("\"\"", null)]
+  [InlineData("2", null)]
+  [InlineData("{}", null)]
+  [InlineData("\"push\"", "push")]
+  [InlineData("\"<img src=x onerror=alert(1)>\"", "<img src=x onerror=alert(1)>")]
+  public async Task ObservationEventsRemainNullableSourceText(string? raw, string? expected)
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    fixture.Handler.RawWorkflowResponse = "{\"workflow_runs\":[{\"id\":71" + (raw is null ? "" : ",\"event\":" + raw) + "}]}";
+    var snapshot = await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None);
+    var run = Assert.Single(Assert.Single(snapshot!.Repositories).Runs!);
+    Assert.Null(run.RunAttempt);
+    Assert.Equal(expected, run.Event);
+    fixture.Clock.Advance(TimeSpan.FromSeconds(16));
+    fixture.Handler.RawWorkflowResponse = "{\"workflow_runs\":[{\"id\":71,\"event\":\"" + new string('x', 257) + "\"}]}";
+    Assert.Null(Assert.Single(Assert.Single((await fixture.Observations.Handle(new GetObservations(record), CancellationToken.None))!.Repositories).Runs!).Event);
+  }
+
   private sealed class SourceFixture : IDisposable
   {
     private readonly GitHubTransport transport;
@@ -356,6 +425,7 @@ public sealed class GitHubAuthorizationTests
     internal Task? DataWait { get; set; }
     internal bool DataUnavailable { get; set; }
     internal HttpStatusCode? DataStatus { get; set; }
+    internal string? RawWorkflowResponse { get; set; }
     internal Action<HttpRequestMessage>? OnRequest { get; set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -388,6 +458,8 @@ public sealed class GitHubAuthorizationTests
       {
         if (DataWait is not null) await DataWait;
         if (DataStatus is { } status) return Response(status, new { message = "Unavailable" });
+        if (RawWorkflowResponse is { } raw) return new HttpResponseMessage(HttpStatusCode.OK)
+        { Content = new StringContent(raw, Encoding.UTF8, "application/json") };
         return DataUnavailable ? Response(HttpStatusCode.ServiceUnavailable, new { message = "Unavailable" })
             : Response(HttpStatusCode.OK, new { workflow_runs = new[] { new { id = UserId, name = "CI", status = "in_progress", head_sha = "observed-revision", html_url = "https://github.com/example/repository/actions/runs/71", updated_at = "2026-11-07T12:00:00Z" } } });
       }

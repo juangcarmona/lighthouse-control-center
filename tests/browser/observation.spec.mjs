@@ -37,6 +37,7 @@ function operationalPayload() {
   const repo = structuredClone(payload.repositories[0]);
   repo.runs = ['in_progress', 'queued', 'pending', 'requested', 'waiting', 'completed', 'mystery', 'in_progress', 'queued', 'waiting', 'requested', 'in_progress'].map((status, id) => ({
     id, name: `Workflow ${id}`, status, sourceRevision: `revision-${id}`, startedAt: '2026-10-26T05:00:00Z', updatedAt: '2026-10-26T06:00:00Z', url: `https://github.com/${repo.repository}/actions/runs/${id}`,
+    runAttempt: id % 3 === 0 ? 1 : id % 3 === 1 ? 2 : null, event: id % 3 === 0 ? 'push' : id % 3 === 1 ? 'workflow_dispatch' : null,
   }));
   repo.attention = [
     { number: 1, title: 'Information', labels: ['needs-info'], updatedAt: '2026-10-25T07:00:00Z' },
@@ -160,6 +161,7 @@ for (const theme of ['dark', 'light']) test(`${theme}: operational fixture phone
   const repo = current.repositories[0];
   repo.runs[0].name = '<img src=x onerror=alert(1)>' + 'long-title'.repeat(20);
   repo.runs[0].sourceRevision = 'revision'.repeat(30);
+  repo.runs[0].event = '<img src=x onerror=alert(1)>' + 'hostile-event'.repeat(15);
   repo.runs[0].url = 'https://github.com/owner/elsewhere/actions/runs/1';
   repo.attention[0].labels.push('long-label'.repeat(30));
   repo.attention[0].url = 'javascript:alert(1)';
@@ -289,4 +291,51 @@ test('stale repository evidence keeps original source times outside current coun
   await expect(page.locator('#attention-count')).toHaveText('Unavailable');
   await expect(page.locator('.repository .timestamp').first()).toContainText('2026');
   await expect(page.locator('.repository')).toContainText('current activity is unknown');
+});
+
+test('every run-card location shows source attempt and inert triggering event, including stale evidence', async ({ page }) => {
+  const current = operationalPayload();
+  current.repositories = [current.repositories[0]];
+  const repo = current.repositories[0];
+  repo.runs[0].event = '<img src=x onerror=alert(1)>';
+  await page.route('**/api/observations', route => route.fulfill({ json: current }));
+  await page.goto('/');
+  for (const title of ['Recent completed runs', 'Unclassified source statuses']) await page.getByText(title, { exact: true }).click();
+  async function checkCards() {
+    for (const run of repo.runs) {
+      const source = page.getByRole('link', { name: run.name, exact: true });
+      await expect(source).toHaveAttribute('href', run.url);
+      const card = source.locator('xpath=ancestor::li');
+      await expect(card.getByText(`Source attempt: ${run.runAttempt ?? 'unknown'}`, { exact: true })).toBeVisible();
+      await expect(card.getByText(`Triggering event: ${run.event ?? 'unknown'}`, { exact: true })).toBeVisible();
+      await expect(card).toContainText(`Source revision: ${run.sourceRevision}`);
+    }
+    await expect(page.locator('img')).toHaveCount(0);
+  }
+  await checkCards();
+  await page.selectOption('#repository-filter', repo.repository);
+  const source = page.getByRole('link', { name: repo.runs[0].name, exact: true });
+  await source.focus();
+  repo.runs[0].runAttempt = 2;
+  await refreshInPlace(page);
+  await expect(source).toBeFocused();
+  await expect(page.locator('#repository-filter')).toHaveValue(repo.repository);
+  await expect(page.locator('#active-count')).toHaveText('10');
+  await checkCards();
+  for (const run of repo.runs) { run.runAttempt = undefined; run.event = undefined; }
+  await refreshInPlace(page);
+  await checkCards();
+  for (const run of repo.runs) { run.runAttempt = 2; run.event = 'workflow_dispatch'; }
+  await refreshInPlace(page);
+  await checkCards();
+  repo.availability = 'stale';
+  await refreshInPlace(page);
+  await checkCards();
+  await expect(source).toBeFocused();
+  await expect(page.locator('#active-count')).toHaveText('Unavailable');
+  await expect(page.getByText('Source observation time:', { exact: false })).toContainText('2026-10-26');
+  await page.route('**/api/observations', route => route.fulfill({ status: 503 }));
+  await page.getByRole('button', { name: 'Refresh observations' }).click();
+  await expect(page.getByRole('status')).toContainText('may be stale');
+  await checkCards();
 });
