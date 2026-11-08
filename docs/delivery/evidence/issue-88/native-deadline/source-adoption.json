@@ -1,0 +1,34 @@
+{
+  "issue": 88,
+  "sourcePullRequest": "https://github.com/juangcarmona/lighthouse/pull/569",
+  "sourceRevision": "ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c",
+  "sourceManifestVersion": "0.21.11",
+  "installedCli": "0.12.55",
+  "installedSdlc": "0.21.6",
+  "distribution": "Official installed immutable-source workflow installer, --with-unattended --with-maintenance --replace-reviewed --apply; seven workers compiled with gh-aw0.93.2",
+  "policyChanges": {
+    "timeoutSeconds": {
+      "before": 3600,
+      "after": 6600
+    },
+    "existingWorkflowJobMinutes": 125,
+    "remainingJobMinutes": 15,
+    "maxCorrections": 1,
+    "otherPolicyBytes": "unchanged"
+  },
+  "unchanged": [
+    "public package manifests/lock",
+    "exact issue99 implementation override",
+    "models",
+    "execution environment",
+    "trusted checks and frozen input inventory"
+  ],
+  "sourcePostMerge": {
+    "repository": "https://github.com/juangcarmona/lighthouse/actions/runs/42436609043",
+    "packages": "https://github.com/juangcarmona/lighthouse/actions/runs/42436608982",
+    "status": "passed"
+  },
+  "nativeQualificationComplete": false,
+  "priorNativeRun": "https://github.com/juangcarmona/sofa/actions/runs/42429047634",
+  "priorNativeResult": "Failed at the original one-hour route limit during the single genuine precision correction; no candidate PR published."
+}

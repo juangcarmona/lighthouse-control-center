@@ -1,0 +1,41 @@
+{
+  "head": "d36214ec6e6e98b96dcab04764b820ffebd92b31",
+  "verdict": "accept",
+  "findings": [],
+  "dimensions": [
+    {
+      "name": "product scope/authority",
+      "assessment": "Pass. The implementation corrects an internal waiting boundary and preserves existing route limits, product authority, resource bounds, correction limits, provider selection and merge delegation. No adopter lifecycle file is present or needed."
+    },
+    {
+      "name": "original deadline and cancellation propagation",
+      "assessment": "Pass. unattended-actions.mjs creates one absolute route deadline and propagates it to the provider, recheck and waitForIntegration. completion-state.mjs checks cancellation and expiry before and after authority checks and observations, and caps the final delay to the remaining window."
+    },
+    {
+      "name": "exact-head/state/owner holds",
+      "assessment": "Pass. Integration verifies the authorized PR head and open state, checks owner authority/holds through recheck, preserves draft holds and refuses a PR returned to draft after promotion. The deadline-during-final-authority regression covers expiry during recheck."
+    },
+    {
+      "name": "check/workflow provenance",
+      "assessment": "Pass. Existing required-check validation and authenticated workflow-origin checks remain in inspectCompletion/assertChecks; ineligible or unverified origins stop before promotion."
+    },
+    {
+      "name": "promotion uncertainty/fresh final merge checks",
+      "assessment": "Pass. Promotion uncertainty is reconciled against the same open PR, exact head and confirmed non-draft state without retrying the mutation. The final observation is reauthorized; mergeAccepted performs fresh reads, checks and a guarded write, with single-read lost-response reconciliation."
+    },
+    {
+      "name": "meaningful regression and verification evidence",
+      "assessment": "Pass. Deterministic integration-deadline tests exercise the real polling loop, including readiness after ten minutes, deadline/cancellation during reads, changed head, owner hold, invalid origins, promotion uncertainty and final-read expiry. The archived regression receipt records full repository verification (1,064 passed, 10 skipped, 0 failed) and negative controls. The Changesets failure was traced to shallow history; the unchanged validation passes with complete history and a local main ref, and the package workflow now supplies these prerequisites instead of removing the check."
+    },
+    {
+      "name": "documentation/spec/task reconciliation and qualification limits",
+      "assessment": "Pass. The archived plan, tasks, archived and canonical spec, package guide and regression receipt describe the same bounded behavior. Implementation tasks are complete; pending exact-head review, hosted checks and forge/OpenSpec integration are explicit closeout requirements, not missing implementation. Local evidence does not establish that hosted checks or merge have passed; they remain independently required."
+    }
+  ],
+  "kind": "code",
+  "issue": 568,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-08T01:57:43.639Z",
+  "sourceReadOnly": true
+}
