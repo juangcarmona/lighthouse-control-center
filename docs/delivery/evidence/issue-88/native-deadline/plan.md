@@ -8,7 +8,7 @@ The owner authorized autonomous completion and necessary technical dependencies 
 
 ## Proposed change
 
-Adopt the independently reviewed, merged source of [Lighthouse #569](https://github.com/juangcarmona/lighthouse/pull/569) through the installed immutable-source workflow installer. Record the resulting exact merge revision before applying. This source shares the original route deadline with CI waiting and final authority checks; it also retains per-command verification windows and the reviewed recovery-provenance correction. Public CLI 0.12.55 and installed SDLC 0.21.6 remain separate from the workflow source manifest.
+Adopt the independently reviewed, merged source of [Lighthouse #569](https://github.com/juangcarmona/lighthouse/pull/569) through the installed immutable-source workflow installer. The selected immutable merge revision is `ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c`; its post-merge checks must pass before activation. This source shares the original route deadline with CI waiting and final authority checks; it also retains per-command verification windows and the reviewed recovery-provenance correction. Public CLI 0.12.55 and installed SDLC 0.21.6 remain separate from the workflow source manifest.
 
 Set the project-owned route limit to 6,600 seconds. This leaves ten minutes inside the existing 120-minute workflow job for setup and cleanup, while allowing one real correction and full CI. Keep one shared correction, existing models, container limits, checks and the exact #99 implementation override. Update the CI App preflight source pin, its exact-pin guard and owning runbooks together.
 
