@@ -10,7 +10,7 @@ See proposal.md for motivation. The issue reports the rename and updated main or
 
 **Goals:** Give the operator a bounded repair procedure and receipt checklist; distinguish supplied observations, source findings and unperformed live checks.
 
-**Non-Goals:** Administer GitHub or Bastion; rename again; replay source requests; activate the legacy observer; change authentication, namespaces, protected identifiers, package identity, managed files or verification policy.
+**Non-Goals:** Change GitHub or Bastion configuration; rename again; replay source requests; activate the legacy observer; change authentication, namespaces, protected identifiers, package identity, managed files or verification policy.
 
 ## Decisions
 
@@ -30,3 +30,7 @@ See proposal.md for motivation. The issue reports the rename and updated main or
 ## Migration Plan
 
 Publish the documentation candidate for review without deployment or a lifecycle dispatch. The operator follows the runbook on the actual checkout and records safe receipts. Rollback of documentation is a reviewed revert of this change only; repository rename-back, worktree deletion, credential migration and uncertain write retries are not rollback actions authorized by this plan.
+
+## Operator continuation
+
+After the worker published its candidate, the maintainer delegated orchestration and an operator gathered actual GitHub and Bastion read-only receipts. This documentation increment now includes those observations. Its scope does not include retroactively recreating pre-cutover evidence or completing private integration acceptance; #121 stays open for those explicitly recorded limits. No specification delta is needed.

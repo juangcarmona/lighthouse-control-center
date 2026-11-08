@@ -41,10 +41,10 @@ For each applicable row, record date, responsible actor, exact source revision/r
 | Check | Required evidence | Current evidence boundary |
 | --- | --- | --- |
 | Before cutover | Target availability, active-delivery snapshot and outstanding old-name request reconciliation | Not supplied to this workspace; do not rerun the rename to recreate a snapshot |
-| Same repository | Numeric ID `1425429121`, node ID `R_kgDOVPZSgQ`, expected history/refs/tags, issue/PR/release continuity | Issue reports retained node identity; full comparison still needs administrator receipts |
-| Moved checkout | Main origin uses new direct URL; all linked checkouts registered and expected work preserved after repair | Issue reports main origin updated and linked pointers broken; actual repair receipt missing |
-| Direct Git and PRs | New-path fetch succeeds; expected refs retained; each open PR retains expected base/head and target repository identity | Requires current Git/GitHub observations, not redirect assumptions |
-| Required CI | Actual eligible new-path check on the exact candidate SHA, with unchanged required check policy | Host publication and forge CI follow independently; this document does not establish them |
+| Same repository | Numeric ID `1425429121`, node ID `R_kgDOVPZSgQ`, expected history/refs/tags, issue/PR/release continuity | Numeric/node identity and current PR bases/heads observed; complete historical baseline unavailable |
+| Moved checkout | Main origin uses new direct URL; all linked checkouts registered and expected work preserved after repair | Issue reports main origin updated and linked pointers broken; all 45 linked checkouts accessible; see the dated post-rename receipt |
+| Direct Git and PRs | New-path fetch succeeds; expected refs retained; each open PR retains expected base/head and target repository identity | Direct and redirected Git HEAD agree; all eight current PRs target repository ID 1425429121 |
+| Required CI | Actual eligible new-path check on the exact candidate SHA, with unchanged required check policy | Both hosted checks passed at candidate 454f8cd; each later candidate requires its own exact-head checks |
 | Name-dependent integrations | Actual source routing, repository selection, hosted Action references, webhooks, schedules, runner/checkout paths and documentation hosting, where configured | Source scans do not prove private settings or effective integrations; owning operator records applicability and actual result |
 
 The current workflow request arrives with the new repository name as host-supplied provenance. That is not proof of every integration, CI result or successful downstream publication. Preserve that distinction in #121's completion assessment.
@@ -62,10 +62,14 @@ At source revision `19a180791df017ae41e2f61144a8995650340ac1`:
 | `.github/workflows/` | Targeted literal scan found no old repository/main-folder references; generated sources and pins remain untouched. This does not establish live workflow eligibility or CI |
 | Historical reports, fixtures and reconciliation records | Preserve original old-name URLs/identities; no global substitution or replay |
 
-The broken worktree pointers are a failure **reported by the issue**, not reproduced here. Old-name literals are source findings, not evidence that an integration actually failed. Record each real failure separately with its owner, affected delivery, bounded recovery action and post-recovery receipt. Preserve unrelated delivery and uncertain effects; do not use rename-back as an automatic recovery action.
+The initial broken worktree pointers were reported by the issue. The operator subsequently ran `git worktree repair` from the moved main checkout. The [post-rename receipt](../delivery/evidence/issue-121/post-rename/README.md) now verifies all 45 registered checkouts are accessible and resolve to the moved common Git directory. This current observation does not reconstruct a missing pre-cutover inventory. Old-name literals are source findings, not evidence that an integration actually failed. Record each real failure separately with its owner, affected delivery, bounded recovery action and post-recovery receipt. Preserve unrelated delivery and uncertain effects; do not use rename-back as an automatic recovery action.
 
 ## Completion and separate work
 
 Keep #121 open while repair, required continuity receipts or actual integration failures remain unresolved. Missing product-independent operational evidence needs the repository administrator or Bastion operator, not a new product decision.
 
 Keep .NET namespaces, `SOFA_CONFIG_FILE`, `SoFa:*`, cryptographic purposes, application origin, issuer/client identities and provider registrations stable. No credential, callback, storage or namespace migration is implied. Coordinate visual identity with #123 and Lighthouse dogfooding with #124. #120 owns independent installation; #58 owns production identity and custody. Neither is a prerequisite for the bounded repository/folder rename, and no visual publication or production acceptance is claimed here.
+
+## Recorded post-rename observations
+
+See the [dated operational receipt](../delivery/evidence/issue-121/post-rename/README.md) for current GitHub identity, PR targets, required rules and all linked-checkout observations. The documentation increment can be reviewed separately from #121 operational closeout; missing historical observations and private integration checks remain explicit, and this change does not close the issue.
