@@ -1,0 +1,141 @@
+{
+  "observedAt": "2026-11-08T20:57:31.587527+00:00",
+  "repository": {
+    "id": 1425429121,
+    "node_id": "R_kgDOVPZSgQ",
+    "full_name": "juangcarmona/lighthouse-control-center",
+    "default_branch": "main"
+  },
+  "gitAccess": {
+    "oldRedirectHead": "19a180791df017ae41e2f61144a8995650340ac1",
+    "directHead": "19a180791df017ae41e2f61144a8995650340ac1",
+    "sameHead": true
+  },
+  "openPullRequests": [
+    {
+      "number": 128,
+      "head": "454f8cdc74233c8bb7386293a1e510251653f753",
+      "headRef": "chore/121-lighthouse-implement-2a2422154c9f",
+      "baseRef": "main",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 127,
+      "head": "69a2051645afeed6284e6c4e326bb4a7baca0fa1",
+      "headRef": "chore/123-lighthouse-implement-e7d524915a7d",
+      "baseRef": "main",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 112,
+      "head": "e3eaa81b977929839434d0de8a29f8c6b6648270",
+      "headRef": "feat/48-source-controls",
+      "baseRef": "feat/50-issue-workspace",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 111,
+      "head": "06fcbcdf8b8b03867f06413d8e47dd8f955bf3bf",
+      "headRef": "feat/51-intervention-inbox",
+      "baseRef": "feat/57-runner-inventory",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 105,
+      "head": "d495309dcd8b66ddb5fa076d4b397d77517a3595",
+      "headRef": "feat/57-runner-inventory",
+      "baseRef": "feat/52-factory-discovery",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 103,
+      "head": "8aec752e4ceabba5e6141ad8e21c9da55189bbc1",
+      "headRef": "feat/52-factory-discovery",
+      "baseRef": "feat/48-source-controls",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 100,
+      "head": "cffd6e5c6d04a25d9d8b18cf9c3404df97686cc4",
+      "headRef": "feat/50-issue-workspace",
+      "baseRef": "main",
+      "baseRepositoryId": 1425429121
+    },
+    {
+      "number": 60,
+      "head": "1d9f26b6575ad97f61161d333d2d9eb6454319f7",
+      "headRef": "lighthouse/propose-47-148d3cc3962b",
+      "baseRef": "main",
+      "baseRepositoryId": 1425429121
+    }
+  ],
+  "releases": [],
+  "tags": [],
+  "mainRules": [
+    {
+      "type": "deletion",
+      "ruleset_source_type": "Repository",
+      "ruleset_source": "juangcarmona/lighthouse-control-center",
+      "ruleset_id": 25811673
+    },
+    {
+      "type": "non_fast_forward",
+      "ruleset_source_type": "Repository",
+      "ruleset_source": "juangcarmona/lighthouse-control-center",
+      "ruleset_id": 25811673
+    },
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 0,
+        "dismiss_stale_reviews_on_push": true,
+        "required_reviewers": [],
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": true,
+        "require_extra_approval_for_unattributed_changes": true,
+        "allowed_merge_methods": [
+          "merge",
+          "squash",
+          "rebase"
+        ]
+      },
+      "ruleset_source_type": "Repository",
+      "ruleset_source": "juangcarmona/lighthouse-control-center",
+      "ruleset_id": 25811673
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          {
+            "context": "verify",
+            "integration_id": 15368
+          }
+        ]
+      },
+      "ruleset_source_type": "Repository",
+      "ruleset_source": "juangcarmona/lighthouse-control-center",
+      "ruleset_id": 25811673
+    }
+  ],
+  "requiredChecks": [
+    {
+      "run": 42519060226,
+      "head": "454f8cdc74233c8bb7386293a1e510251653f753",
+      "conclusion": "success"
+    },
+    {
+      "run": 42519060278,
+      "head": "454f8cdc74233c8bb7386293a1e510251653f753",
+      "conclusion": "success"
+    }
+  ],
+  "limitations": [
+    "No complete pre-rename inventory exists; current observations cannot prove every historical ref or private setting remained unchanged.",
+    "No repository, credential, callback, OIDC, application or cryptographic identifier was changed by these checks.",
+    "Source-native router and CI execute under the canonical name; authenticated LCC App-user effects remain the separate #48/#50 acceptance boundary."
+  ]
+}

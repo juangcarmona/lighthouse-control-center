@@ -1,5 +1,7 @@
 # Product definition
 
+![Lighthouse Control Center: a bench overlooking the blue bay, sailboats and lighthouse.](../../assets/lighthouse-control-center/readme-banner.png)
+
 This directory is the canonical product definition of this repository, managed with
 Product Definition as Code.
 

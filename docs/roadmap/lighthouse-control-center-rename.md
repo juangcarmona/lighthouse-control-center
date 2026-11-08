@@ -1,10 +1,18 @@
 # Rename the existing repository and distribute Lighthouse Control Center
 
-Owner: [#121](https://github.com/juangcarmona/sofa/issues/121), under [#116](https://github.com/juangcarmona/sofa/issues/116). Target: `juangcarmona/lighthouse-control-center`. No remote rename, namespace edit, callback change or infrastructure migration has been performed by this plan. Retain repository numeric ID `1425429121` and node ID `R_kgDOVPZSgQ`.
+Owner: [#121](https://github.com/juangcarmona/lighthouse-control-center/issues/121), under [#116](https://github.com/juangcarmona/lighthouse-control-center/issues/116). Canonical repository: `juangcarmona/lighthouse-control-center`. Retain repository numeric ID `1425429121` and node ID `R_kgDOVPZSgQ`.
+
+## Current status — 2026-11-08
+
+The maintainer renamed the existing repository and moved the main checkout to `/srv/repos/juangcarmona/lighthouse-control-center`. The [post-rename receipt](../delivery/evidence/issue-121/post-rename/README.md) now records fresh operator observations of retained numeric/node identity and direct Git access. The plan itself performs no remote rename, namespace edit, callback change or infrastructure migration.
+
+The initial linked-worktree pointer failure was repaired by the operator. All 45 registered checkouts are now accessible and resolve to the moved common Git directory; direct Git access, eight open PR targets and candidate checks have receipts. A complete pre-cutover baseline and private integration/historical request reconciliation remain unproven, so #121 stays open. Follow the [post-rename continuity runbook](../runbooks/repository-rename-continuity.md) for those remaining checks. Do not repeat the completed rename or cancel unrelated delivery.
 
 GitHub redirects repository web/Git operations after rename, but Pages URLs and hosted Actions references need separate handling; old names must not be reused. Verify each integration directly rather than relying on redirects. See [GitHub repository rename behavior](https://docs.github.com/en/repositories/creating-and-managing-repositories/renaming-a-repository). App callback/permission changes are separate administrative settings; new permissions need installation/user consent before becoming effective. See [GitHub App registration changes](https://docs.github.com/en/apps/maintaining-github-apps/modifying-a-github-app-registration).
 
 ## Early repository and folder rename
+
+The following preparation guidance is retained for context and recovery planning, not as an instruction to repeat the completed administrative cutover. Missing pre-cutover receipts must be recorded as missing, not reconstructed as passing checks.
 
 The repository/folder rename can precede the remaining #116 implementation, #58 production hardening and #120 independent distribution. The maintainer accepted the Product Change on 2026-11-08 and explicitly requested this earlier sequencing. Those delivery items are not repository-rename prerequisites. Internal .NET names, configuration keys, OIDC client/issuer IDs and cryptographic purposes can remain unchanged.
 
@@ -25,8 +33,8 @@ Observed paths are source anchors, not an assertion that private environment con
 
 | Surface | Current source / observed dependency | Migration and compatibility check | Owner / current evidence gap |
 | --- | --- | --- | --- |
-| Repository identity, history, issues, PRs, releases | Existing public repository `juangcarmona/sofa`; stable numeric/node ID above | Preserve same repository; compare identity, refs/tags, issue/PR/release IDs/counts and open stack before/after; no clone into a new repository | Repository administrator; full execution-window snapshot still required |
-| Git remotes and worktrees | Many existing checkouts/worktrees; origin uses old path | Update common remotes deliberately, fetch new direct path and compare refs; worktree directories need not move | Operator; enumerate active checkouts immediately before migration |
+| Repository identity, history, issues, PRs, releases | Existing repository now named `juangcarmona/lighthouse-control-center`, formerly `juangcarmona/sofa`; stable numeric/node ID above | Preserve same repository; compare identity, refs/tags, issue/PR/release IDs/counts and open stack before/after; no clone into a replacement repository | Repository administrator; issue reports retained node identity, full continuity receipts still required |
+| Git remotes and worktrees | Main origin uses canonical URL; initial pointer failure repaired and all 45 checkouts verified | Verify common remotes, fetch new direct path and compare refs; repair registration without renaming linked folders | Operator; aggregate post-repair receipt recorded, with dirty/untracked work preserved |
 | Repository metadata | `package.json` repository/bugs/homepage; `README.md`, `lighthouse.json`, default setup repository list | Change current canonical links/labels; preserve historical URLs and immutable source evidence | Application maintainer; current scan establishes paths |
 | Lighthouse adoption/workflow source | `.lighthouse/sdlc.json`, `issue-control.json`, generated router/source/locks and immutable upstream pin | Reinstall only through owning installer after reviewed diff; preserve flags, stage policy, checks and exact grants; immutable Lighthouse references are a different repository and are not renamed | Lighthouse adopter; real post-rename source receipt probe required |
 | Hash-bound source intents and evidence | #48 candidate protected journal; Lighthouse request keys, repository names and digests; original reports and task digests | Prove old intent/repository-alias resolution without rewriting signed/hashed bytes. Unknown/missing evidence remains uncertain; never resend an old key under a new path | Lighthouse/source contract owner; pending old-name requests must be reconciled before cutover |

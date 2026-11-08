@@ -1,0 +1,5 @@
+schema: spec-driven
+created: 2026-11-08
+# Specifications were folded and the scoped plan archived before integration.
+# Retain only the metadata required by native candidate requalification.
+skip_specs: true
