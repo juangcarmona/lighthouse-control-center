@@ -31,7 +31,7 @@ public sealed class OwnerBoundaryTests
     await using var app = new OwnerApplication();
     using var client = app.Client();
     foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory",
-        "/workspace/runtime", "/api/runtime/host", "/api/runtime/example/repository", "/unknown" })
+        "/workspace/runtime", "/api/runtime/host", "/api/runtime/example/repository", "/api/controls/csrf", "/api/issues/example/repository/7/controls", "/unknown" })
       Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
     Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/auth/login", new StringContent(""))).StatusCode);
     Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/auth/logout", new StringContent(""))).StatusCode);
@@ -40,6 +40,23 @@ public sealed class OwnerBoundaryTests
     using var wrongHost = app.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://other.invalid"), AllowAutoRedirect = false });
     Assert.Equal(HttpStatusCode.BadRequest, (await wrongHost.GetAsync("/")).StatusCode);
     Assert.Equal(0, app.TokenExchanges);
+  }
+
+  [Fact]
+  public async Task IssueEffectsRequireOwnerSessionAndCsrfBeforeAnySourceRequest()
+  {
+    await using var app = new OwnerApplication();
+    using var client = app.Client();
+    Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/api/issues/example/repository/7/controls", new StringContent("{}", Encoding.UTF8, "application/json"))).StatusCode);
+    await client.GetAsync(await app.Begin(client));
+    Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/api/issues/example/repository/7/controls", new StringContent("{}", Encoding.UTF8, "application/json"))).StatusCode);
+    Assert.Empty(app.Source.Calls);
+    using var token = JsonDocument.Parse(await client.GetStringAsync("/api/controls/csrf"));
+    using var command = new HttpRequestMessage(HttpMethod.Post, "/api/issues/example/repository/7/controls")
+    { Content = new StringContent("{\"operation\":\"prepare\",\"effect\":{}}", Encoding.UTF8, "application/json") };
+    command.Headers.Add("X-SoFa-Csrf", token.RootElement.GetProperty("token").GetString());
+    Assert.Equal(HttpStatusCode.BadRequest, (await client.SendAsync(command)).StatusCode);
+    Assert.Empty(app.Source.Calls);
   }
 
   [Fact]

@@ -82,3 +82,5 @@ Phone-width emulation does not prove these device steps. A successful unit suite
 ## Stop and rollback
 
 Stop the launcher/AppHost to stop its workspace and disposable development provider. Process-local sessions and connections are discarded. Rollback never requests workflow cancellation or silently starts an anonymous observer. The historical `npm run observe -- owner/repository` CLI is separate read-only tooling using the operator's explicit `gh` authorization.
+
+For the later #48 explicit-control capability, additional App permissions and separate protected command storage are described in [Development issue controls](issue-controls.md). Its accepted persistent journal does not change authentication/session credential lifetime.

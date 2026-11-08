@@ -1,0 +1,68 @@
+{
+  "kind": "read-only-development-checkpoint",
+  "issue": 48,
+  "pullRequest": "https://github.com/juangcarmona/sofa/pull/112",
+  "codeHead": "7ed4fb78f51e104e8ac38af2e497f52740c57f46",
+  "observedAt": "2026-11-08T06:34:22.083436+00:00",
+  "localVerification": {
+    "command": "DOTNET_PROCESSOR_COUNT=4 npm run verify",
+    "result": "passed",
+    "node": 49,
+    "web": 150,
+    "runtime": 38,
+    "browser": 28,
+    "productCitations": 110,
+    "arc42Sections": 12,
+    "publishOutsideCheckout": "passed"
+  },
+  "packedCandidateTest": {
+    "command": "SOFA_TEST_PUBLIC_SDK_ROOT=<isolated packed consumer> node --test tests/source-control-read.test.mjs",
+    "result": "passed",
+    "tests": 10,
+    "sourceCandidate": "02996035f14e3d9f8d05eeb736ee1d89711d3a1a",
+    "sdlcVersion": "0.22.0",
+    "sdlcIntegrity": "sha512-aVEI8+BJ1CtVWfam7XJdTf7XLIgetg8UrTDrVxMSE76+IZULXiJut6qbco1zMUIDXChh7+iVW4u2F9ORqMMerA==",
+    "registryAdoption": false,
+    "actualAppUserAcceptance": false
+  },
+  "selectedInstalled": {
+    "cli": "0.12.55",
+    "sdlc": "0.21.6",
+    "issueControlExport": "unsupported; no fallback"
+  },
+  "regressions": [
+    {
+      "problem": "The published offline validator could not resolve the SDK outside checkout dependency ancestry.",
+      "before": "ERR_MODULE_NOT_FOUND from the existing published validator",
+      "guard": "scripts/check-workspace-publish.mjs publishes outside the checkout and executes the bundled validator with no source credential.",
+      "after": "passed"
+    },
+    {
+      "problem": "Optional source 404 was propagated rather than represented as absence.",
+      "before": "optional source case failed",
+      "guard": "optional source 404 is absence while other HTTP failures stay unavailable",
+      "after": "passed"
+    },
+    {
+      "problem": "System.Text.Json can defer malformed UTF-8 validation until string access.",
+      "before": "The protocol invalid-UTF8 test did not throw.",
+      "guard": "ControlFrames validates UTF-8 before accepting a JSON frame; malformed frame regression.",
+      "after": "passed"
+    }
+  ],
+  "scope": {
+    "sourceWrites": false,
+    "persistentJournal": false,
+    "newDependencies": false,
+    "productionDeployment": false,
+    "developmentDeployment": false
+  },
+  "remainingGates": [
+    "Compatible public SDK publication and released adoption",
+    "Maintainer acceptance of Proposed ADR-0008 and journal design before persistence/effects",
+    "Actual connected App-user acceptance and any required source permission consent",
+    "Independent code audit after active native #99 qualification terminates",
+    "Hosted verification, final Done review, spec integration and protected merge"
+  ],
+  "done": false
+}
