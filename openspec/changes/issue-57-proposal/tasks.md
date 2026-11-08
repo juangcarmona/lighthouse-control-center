@@ -17,9 +17,9 @@
 - [x] 3.1 Implement independent source refresh, exact scoped registration joins/conflicts, committed adoption/version detail and source recovery links.
 - [x] 3.2 Prove immediate scoped/global authority clearing, stale timestamps, absent/partial data, keyboard/390px and safe rendering through browser regressions.
 
-Task1.1 remains open for the final independent audit of exhaustive bounds and unsupported-layout evidence. Checked implementation tasks describe the local code checkpoint, not full Done or prerequisite acceptance.
+The final independent bounds audit accepted task1.1 at the documented checkpoint. Checked implementation tasks describe the local code checkpoint, not full Done or prerequisite acceptance.
 
-Additional boundary cases and explicit structural/nonphysical limits are mapped in [bounds coverage](../../../docs/delivery/evidence/issue-57/bounds-coverage.md). The helper code is unchanged; task1.1 is not marked complete by its author.
+Additional boundary cases and explicit structural/nonphysical limits are mapped in [bounds coverage](../../../docs/delivery/evidence/issue-57/bounds-coverage.md). The helper code was unchanged for that bounds audit; its accepted decision is retained in `docs/delivery/evidence/issue-57/bounds-review.json`.
 
 ## 4. Verification and integration
 

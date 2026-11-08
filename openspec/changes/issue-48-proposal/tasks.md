@@ -15,19 +15,21 @@ The historical read checkpoint retained the missing-export/prerelease limits. Th
 
 - [x] 2.1 Add the fixed bounded tokenless SDK bridge with existing guarded source transport and effective App-user authority.
 - [ ] 2.2 Feed shared current question, action, reservation and denial facts into #50/#51 while preserving historical/source labels separately.
-- [ ] 2.3 Verify unknown, malformed, revoked, late-source and missing-contract/grant behavior; no source write is enabled by this phase.
+- [x] 2.3 Verify unknown, malformed, revoked, late-source and missing-contract/grant behavior in the read adapter; later explicit effects remain separately guarded.
 
 ## 3. Journal and explicit effects
 
-- [ ] 3.1 Implement protected SQLite/protector storage, migrations, bounded unique claims and immutable reconciliation inputs after the acceptance gate.
-- [ ] 3.2 Add explicit server prepare/submit/reconcile handlers, exact effect matching, CSRF/current-generation guards and no resend for existing claims.
-- [ ] 3.3 Add Refine/Propose and distinct ordinary-comment/Continue controls using only the common SDK; preserve #47 evidence and original grants.
-- [ ] 3.4 Exercise transactions, competing tabs/claims, crash/lost response, restart/restore, permission changes, protocol limits and source-only resolution.
+- [x] 3.1 Implement protected SQLite/protector storage, migrations, bounded unique claims and immutable reconciliation inputs after the acceptance gate.
+- [x] 3.2 Add explicit server prepare/submit/reconcile handlers, exact effect matching, CSRF/current-generation guards and no resend for existing claims.
+- [x] 3.3 Add Refine/Propose and distinct ordinary-comment/Continue controls using only the common SDK; preserve #47 evidence and original grants.
+- [x] 3.4 Exercise transactions, competing tabs/claims, crash/lost response, restart/restore, permission changes, protocol limits and source-only resolution.
+
+Implementation checks above are supported by the protected-journal/command/browser regressions and retained checkpoint reviews. Actual connected App-user acceptance and final Done/integration remain open below.
 
 ## 4. Complete acceptance
 
 - [ ] 4.1 Verify browser/keyboard/narrow layouts, full deterministic and hosted identity checks, and actual connected App-user source evidence with required consent.
-- [ ] 4.2 Update realized architecture, operating/rollback docs and ADR status through the owning workflows; preserve remaining production limits.
+- [x] 4.2 Update realized architecture, operating/rollback docs and ADR status through the owning workflows; preserve remaining production limits.
 - [ ] 4.3 Independently audit all eleven Done dimensions at final head, reconcile every criterion/dependency, integrate only after applicable gates, and retain post-merge/retrospective evidence.
 
 <!-- pdac:cite id="UC-OPERATE-ISSUE" digest="sha256:e1c11763cbb6a3f3ff8aa2a7101bc672a6a45595a256134fb04d1d2070f66d2f" -->
