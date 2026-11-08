@@ -1,0 +1,12 @@
+{
+  "issue": 48,
+  "pullRequest": "https://github.com/juangcarmona/sofa/pull/112",
+  "approvedHead": "9ef04de748b49f606bb923bb1ccbbb007aeeadd0",
+  "decision": "approved",
+  "adr": "ADR-0008",
+  "journalDecision": "accepted",
+  "actor": "repository owner via task reply",
+  "answer": "112 aprobado  y flujos de 570 corriendo",
+  "recordedAt": "2026-11-08T07:39:40.493316+00:00",
+  "scope": "Implement the reviewed plan and protected SQLite journal; public SDK adoption, actual App-user authority/consent, deterministic/final reviews and protected forge/publication gates remain binding. Production stays separate."
+}

@@ -6,7 +6,7 @@
 
 - [x] 1.1 Read #48/#47 scope, accepted product intent, current reader/identity/transport, shared contract and Proposed ADR-0008.
 - [x] 1.2 Reconcile tracker drift and independently review this concrete design/test plan.
-- [ ] 1.3 Obtain maintainer acceptance of Proposed ADR-0008 and the persistent journal design before storage/source-write implementation.
+- [x] 1.3 Obtain maintainer acceptance of ADR-0008 and the persistent journal design before storage/source-write implementation; owner accepted PR #112 on 2026-11-08, retained in the acceptance record.
 - [ ] 1.4 Verify and adopt the compatible public Lighthouse release; retain exact package/source/contract evidence.
 
 ## 2. Shared read observation

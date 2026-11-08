@@ -18,7 +18,9 @@ Authority intersects the verified acting user with the current matching App inst
 
 Denied or unobservable installation/grant facts disable the dependent action. Missing development App permissions must be reported and consented through the owner-managed App configuration; entering a setting does not grant them. The separate Lighthouse CI App and production grants are unchanged.
 
-## Proposed journal under ADR-0008
+## Accepted journal design under ADR-0008
+
+The owner accepted PR #112 and ADR-0008 on 2026-11-08. The design below is accepted; implementation and actual App-user acceptance remain required.
 
 After maintainer acceptance, use one local SQLite database in an explicitly configured private directory. Use a separate persistent Data Protection purpose/key directory outside that database for sensitive intent/response payloads; leave authentication's ephemeral protector unchanged. Persist no source credential. Require trusted ownership/private permissions and no symlink redirection for journal/key paths; fail closed on unsafe, missing or unsupported persistence. Pin a framework-compatible Microsoft.Data.Sqlite version through the lockfile after checking the actual package.
 
