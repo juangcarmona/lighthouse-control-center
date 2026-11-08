@@ -100,6 +100,9 @@ public sealed class RuntimeInventoryTests
     fixture.Source.Rows = [new { id = -1, name = "malformed" }]; fixture.Source.Total = 1;
     var invalid = await fixture.Runners.Handle(new(session, "example/repository"), CancellationToken.None);
     Assert.Equal("unavailable", invalid.Availability); Assert.False(invalid.Complete); Assert.Equal(1, invalid.SourceTotal);
+    fixture.Source.Rows = [null!];
+    var nonObject = await fixture.Runners.Handle(new(session, "example/repository"), CancellationToken.None);
+    Assert.Equal("unavailable", nonObject.Availability); Assert.False(nonObject.Complete); Assert.Equal(1, nonObject.SourceTotal);
   }
 
   [Theory]
