@@ -28,6 +28,16 @@ public static class WorkspaceModule
     services.AddSingleton<RuntimeReadSlots>();
     services.AddSingleton<GetHostInventoryHandler>();
     services.AddSingleton<GetRepositoryRunnersHandler>();
+
+    services.AddSingleton<SourceControlBridge>();
+    services.AddSingleton<GetIssueControlsHandler>();
+    services.AddSingleton<SourceControlAccess>();
+    services.AddSingleton<IssueControlCommands>();
+    services.AddSingleton(provider =>
+    {
+      var options = provider.GetRequiredService<WorkspaceOptions>();
+      return new ControlJournal(options.ControlJournalDirectory, options.ControlJournalKeyDirectory);
+    });
     return services;
   }
 
@@ -254,6 +264,44 @@ public static class WorkspaceModule
       return Results.Json(result, statusCode: result.Availability switch
       { "denied" => 403, "disconnected" => 409, "unavailable" => 503, "changed" => 409, _ => 200 });
     });
+    app.MapGet("/api/issues/{owner}/{repository}/{number:int}/controls", async (string owner, string repository, int number,
+        HttpContext context, OwnerSessions sessions, GetIssueControlsHandler controls) =>
+    {
+      var result = await controls.Handle(new(sessions.Get(context.User)!, owner + "/" + repository, number), context.RequestAborted).ConfigureAwait(false);
+      return Results.Json(result, statusCode: result.Availability switch
+      { "denied" => 403, "disconnected" => 409, "unavailable" => 503, "invalid" => 400, _ => 200 });
+    });
+    app.MapGet("/api/controls/csrf", (HttpContext context, IAntiforgery antiforgery) =>
+        Results.Json(new { token = antiforgery.GetAndStoreTokens(context).RequestToken }));
+    app.MapPost("/api/issues/{owner}/{repository}/{number:int}/controls", async (string owner, string repository, int number,
+        HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions, IssueControlCommands commands) =>
+    {
+      if (!await Csrf(context, antiforgery).ConfigureAwait(false)) return Results.StatusCode(400);
+      if (context.Request.ContentLength is > 16384 || !context.Request.HasJsonContentType()) return Results.StatusCode(400);
+      using var input = new MemoryStream();
+      var bytes = new byte[4096]; int read;
+      while ((read = await context.Request.Body.ReadAsync(bytes, context.RequestAborted).ConfigureAwait(false)) > 0)
+      {
+        if (input.Length + read > 16384) return Results.StatusCode(400);
+        input.Write(bytes, 0, read);
+      }
+      ControlCommand? command;
+      try
+      {
+        using var value = System.Text.Json.JsonDocument.Parse(input.ToArray());
+        if (value.RootElement.ValueKind != System.Text.Json.JsonValueKind.Object
+            || value.RootElement.EnumerateObject().Select(property => property.Name).Distinct(StringComparer.Ordinal).Count() != value.RootElement.EnumerateObject().Count()
+            || value.RootElement.EnumerateObject().Any(property => property.Name is not ("operation" or "action" or "body" or "id"))) return Results.StatusCode(400);
+        command = System.Text.Json.JsonSerializer.Deserialize<ControlCommand>(input.ToArray(), System.Text.Json.JsonSerializerOptions.Web);
+      }
+      catch (System.Text.Json.JsonException) { return Results.StatusCode(400); }
+      if (command is null) return Results.StatusCode(400);
+      var record = sessions.Get(context.User)!;
+      sessions.TouchUserActivity(record.Id);
+      var result = await commands.Handle(new(record, owner + "/" + repository, number), command, context.RequestAborted).ConfigureAwait(false);
+      return Results.Json(result, statusCode: result.Availability switch
+      { "denied" => 403, "disconnected" or "conflict" => 409, "unavailable" => 503, "invalid" => 400, _ => 200 });
+    });
     app.MapGet("/workspace/issues", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
@@ -295,9 +343,11 @@ public static class WorkspaceModule
             (Path: "/app.css", File: "app.css", Type: "text/css"), (Path: "/tokens.css", File: "tokens.css", Type: "text/css"),
             (Path: "/factory.js", File: "factory.js", Type: "text/javascript"),
             (Path: "/attention.js", File: "attention.js", Type: "text/javascript"),
+            (Path: "/attention-controls.js", File: "attention-controls.js", Type: "text/javascript"),
             (Path: "/factory.css", File: "factory.css", Type: "text/css"),
             (Path: "/runtime.js", File: "runtime.js", Type: "text/javascript"), (Path: "/runtime.css", File: "runtime.css", Type: "text/css"),
             (Path: "/issue.js", File: "issue.js", Type: "text/javascript"),
+            (Path: "/issue-actions.js", File: "issue-actions.js", Type: "text/javascript"),
             (Path: "/markdown.js", File: "markdown.js", Type: "text/javascript"), (Path: "/issue.css", File: "issue.css", Type: "text/css"),
             (Path: "/account.css", File: "account.css", Type: "text/css"), (Path: "/account.js", File: "account.js", Type: "text/javascript") })
       app.MapGet(asset.Path, async (HttpContext context, CancellationToken cancellationToken) => Results.Content(

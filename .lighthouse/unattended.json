@@ -5,15 +5,19 @@
     "ff"
   ],
   "paths": [
-    "src/observation/",
-    "src/web/",
+    "src/observation/github.mjs",
+    "src/web/public/app.js",
+    "src/web/public/app.css",
+    "src/web/public/index.html",
     "tests/observation.test.mjs",
     "tests/browser/observation.spec.mjs",
-    "README.md"
+    "README.md",
+    "src/SoFa.Modules.Workspace/Source/GitHubObservations.cs",
+    "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs"
   ],
   "reviewerProfile": "plan",
   "allowFivePoint": false,
   "merge": true,
   "maxCorrections": 1,
-  "timeoutSeconds": 3600
+  "timeoutSeconds": 6600
 }

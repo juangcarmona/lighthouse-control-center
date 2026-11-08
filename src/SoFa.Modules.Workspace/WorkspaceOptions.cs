@@ -17,6 +17,8 @@ internal sealed class WorkspaceOptions
   public RuntimeOptions Runtime { get; init; } = new();
   [System.Text.Json.Serialization.JsonIgnore]
   public string? GitHubClientSecret { get; init; }
+  public string? ControlJournalDirectory { get; init; }
+  public string? ControlJournalKeyDirectory { get; init; }
 
   public override string ToString() => "WorkspaceOptions (credentials withheld)";
 
@@ -61,6 +63,8 @@ internal sealed class WorkspaceOptions
 
     return new WorkspaceOptions
     {
+      ControlJournalDirectory = section["Controls:JournalDirectory"],
+      ControlJournalKeyDirectory = section["Controls:KeyDirectory"],
       Origin = origin,
       IdentityMode = mode,
       Identity = new IdentityProfile { Issuer = issuer, ClientId = client, ClientSecret = secret, OwnerSubject = subject, RequiredAssurance = mode == "Development" ? "1" : "2" },

@@ -1,3 +1,4 @@
+import { inspectAttention } from './attention-controls.js';
 import { reconcileAttention } from './attention.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text, className) => { const element = document.createElement(tag); if (text !== undefined) element.textContent = text; if (className) element.className = className; return element; };
@@ -130,7 +131,7 @@ function render() {
 function renderAttention(selected, focusKey) {
   const projection = reconcileAttention(repositories, attentionHistory); attentionHistory = projection.entries;
   const visible = [...attentionHistory.values()].filter(entry => matches(entry.repository, entry.issue, selected));
-  byId('factory-count').textContent = `${visible.length} collected label contexts. Questions, responsible actors and resolution remain unverified.`;
+  byId('factory-count').textContent = `${visible.length} collected label contexts. Inspect a context to verify its current question and supported actions.`;
   byId('factory-scope').textContent = 'Order: source-label observations, then stale or unobserved contexts; oldest issue update first, source identity breaks ties. Age does not establish urgency. Collection coverage is shown per project.';
   const list = node('div', undefined, 'factory-list');
   for (const entry of visible) {
@@ -144,7 +145,17 @@ function renderAttention(selected, focusKey) {
       node('p', `Observed: ${time(entry.observedAt)}`));
     if (entry.state === 'stale') card.append(node('p', 'Stale observation; current source context is unknown.', 'notice'));
     if (entry.state === 'not-observed') card.append(node('p', 'Not observed in this collection; resolution is unknown. Missing pages or a removed label do not establish a resolved question.', 'notice'));
-    card.append(node('p', 'Open the issue for context. Verified current-question controls are unavailable in this read-only view.'), sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number));
+    card.append(sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number));
+    const inspect = node('button', 'Inspect current question'); inspect.type = 'button';
+    const detail = node('section'); detail.setAttribute('aria-label', 'Current source context · ' + entry.repository + '#' + entry.issue.number + ' · ' + entry.label);
+    const scope = dataScope, version = epoch;
+    inspect.addEventListener('click', async () => {
+      if (busy) return; inspect.disabled = true;
+      const live = () => card.isConnected && dataScope === scope && epoch === version;
+      await inspectAttention(detail, entry, scope, live, () => clearSource('Source authority changed. Verify your account and refresh.'));
+      if (live()) inspect.disabled = false;
+    });
+    if (entry.state === 'source-label') card.append(inspect, detail);
     list.append(card);
   }
   if (!visible.length) list.append(node('p', 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));

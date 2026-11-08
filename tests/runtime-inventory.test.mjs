@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, readFile, rm, rename, symlink, chmod } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile, rm, rename, symlink, chmod, copyFile, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -119,9 +119,9 @@ test('configuration form/count bounds reject ambiguous source identities before 
   assert.throws(() => validateRuntimeInput({ ...input, checkouts: [{ repository: 'example/repository', directory: '/tmp' }, { repository: 'Example/Repository', directory: '/tmp' }] }));
 });
 
-async function observedCheckout(root, source) {
+async function observedCheckout(root, source, hooks = {}) {
   const scratch = await mkdtemp(join(root, 'observation-'));
-  return (await observeRuntime({ ...config(scratch), checkouts: [{ repository: 'example/repository', directory: source }] })).adoptions[0];
+  return (await observeRuntime({ ...config(scratch), checkouts: [{ repository: 'example/repository', directory: source }] }, hooks)).adoptions[0];
 }
 
 test('metadata byte boundaries accept exact maxima and reject oversized HEAD, config, loose and packed refs', async () => fixture(async root => {
@@ -268,4 +268,114 @@ test('replacement of a pinned worktrees parent cannot redirect committed reads',
     }
   } });
   assert.equal(replaced, true); assert.equal(result.adoptions[0].availability, 'available'); assert.equal(result.adoptions[0].revision, head);
+}));
+
+test('registration numeric/name bounds, UTF8 and trusted writers are checked on actual files', async () => fixture(async root => {
+  const runner = join(root, 'runner'); await mkdir(runner);
+  const path = join(runner, '.runner'), row = { agentId: Number.MAX_SAFE_INTEGER, agentName: 'x'.repeat(256), gitHubUrl: 'https://github.com/example/repository' };
+  const input = { ...config(root), registrations: [{ alias: 'runner', directory: runner }] };
+  await writeFile(path, JSON.stringify(row));
+  assert.equal((await observeRuntime(input)).registrations[0].availability, 'available');
+  for (const invalid of [{ ...row, agentId: 0 }, { ...row, agentId: -1 }, { ...row, agentId: 1.5 }, { ...row, agentId: Number.MAX_SAFE_INTEGER + 1 },
+    { ...row, agentName: '' }, { ...row, agentName: 'x'.repeat(257) }, { ...row, agentName: 'bad\u007f' }, { ...row, agentName: '\ud800' }]) {
+    await writeFile(path, JSON.stringify(invalid));
+    assert.equal((await observeRuntime(input)).registrations[0].availability, 'unavailable');
+  }
+  await writeFile(path, Buffer.from([123, 34, 97, 34, 58, 34, 255, 34, 125]));
+  assert.equal((await observeRuntime(input)).registrations[0].availability, 'unavailable');
+  await writeFile(path, JSON.stringify(row)); await chmod(path, 0o660);
+  assert.equal((await observeRuntime(input)).registrations[0].availability, 'available');
+  assert.equal((await observeRuntime({ ...input, trustedGroupIds: [] })).registrations[0].availability, 'unavailable');
+  await chmod(path, 0o666);
+  assert.equal((await observeRuntime(input)).registrations[0].availability, 'unavailable');
+}));
+
+test('unsupported platform, repository lengths and malformed configuration are explicit', () => {
+  const input = config('/tmp/scratch');
+  const name = 'x'.repeat(100) + '/' + 'y'.repeat(100);
+  validateRuntimeInput({ ...input, checkouts: [{ repository: name, directory: '/tmp' }] });
+  for (const repository of ['x'.repeat(101) + '/y', 'x/' + 'y'.repeat(101), '../repo', 'owner/repo\n', 'owner/repo\ud800'])
+    assert.throws(() => validateRuntimeInput({ ...input, checkouts: [{ repository, directory: '/tmp' }] }));
+  for (const registrations of [null, {}, [{ alias: '.hidden', directory: '/tmp' }], [{ alias: 'r', directory: '/tmp' }, { alias: 'R', directory: '/tmp' }]])
+    assert.throws(() => validateRuntimeInput({ ...input, registrations }));
+  const descriptor = Object.getOwnPropertyDescriptor(process, 'platform');
+  try {
+    Object.defineProperty(process, 'platform', { value: 'win32' });
+    assert.throws(() => validateRuntimeInput(input), /Unsupported local configuration/);
+  } finally { Object.defineProperty(process, 'platform', descriptor); }
+});
+
+test('literal origins and committed version maxima cannot enable source configuration or leak credentials', async () => fixture(async root => {
+  const source = await checkout(root), path = join(source, '.git/config');
+  for (const origin of ['https://github.com/example/repository.git', 'git@github.com:example/repository.git', 'ssh://git@github.com/example/repository']) {
+    await writeFile(path, '[remote "origin"]\n url = ' + origin + '\n');
+    assert.equal((await observedCheckout(root, source)).availability, 'available');
+  }
+  for (const origin of ['https://user:private-value@github.com/example/repository', 'https://other.invalid/example/repository',
+    'git@github.com:example/repository.git\n url = git@github.com:example/other.git', '"git@github.com:example/repository.git"', 'git@github.com:example/repository.git;anything']) {
+    await writeFile(path, '[remote "origin"]\n url = ' + origin + '\n');
+    const result = await observedCheckout(root, source);
+    assert.equal(result.availability, 'unavailable'); assert.doesNotMatch(JSON.stringify(result), /private-value|other.invalid/);
+  }
+  await writeFile(path, '[remote "origin"]\n url = git@github.com:example/repository.git\n');
+  for (const length of [128, 129]) {
+    await writeFile(join(source, 'package.json'), JSON.stringify({ devDependencies: { '@juangcarmona/lighthouse': 'x'.repeat(length) } }));
+    git(source, 'add', '.'); git(source, 'commit', '-m', 'Version boundary ' + length);
+    const result = await observedCheckout(root, source);
+    assert.equal(result.availability, 'available');
+    assert.equal(result.declaredCli, length === 128 ? 'x'.repeat(length) : null);
+    assert.equal(result.complete, length === 128);
+  }
+}));
+
+test('packed storage byte limits use stat fixtures while inventory limits use actual files', async () => fixture(async root => {
+  const source = await checkout(root); git(source, 'gc', '--prune=now');
+  const directory = join(source, '.git/objects/pack'), original = await readdir(directory);
+  const pack = original.find(name => name.endsWith('.pack')), index = original.find(name => name.endsWith('.idx'));
+  // Exercise the stat guard with an actual valid pinned pack; padding a pack makes it invalid Git data.
+  for (const size of [512 * 1024 * 1024, 512 * 1024 * 1024 + 1]) {
+    const result = await observedCheckout(root, source, { opened: async (path, handle) => {
+      if (!path.endsWith('.pack')) return;
+      const originalStat = handle.stat.bind(handle);
+      handle.stat = async () => Object.assign(await originalStat(), { size });
+    } });
+    assert.equal(result.availability, size === 512 * 1024 * 1024 ? 'available' : 'unavailable');
+  }
+  for (let n = 1; n <= 31; n++) for (const [suffix, name] of [['pack', pack], ['idx', index]])
+    await copyFile(join(directory, name), join(directory, 'pack-' + n.toString(16).padStart(40, '0') + '.' + suffix));
+  assert.equal((await observedCheckout(root, source)).availability, 'available', '64 selected pack/index files');
+  await copyFile(join(directory, pack), join(directory, 'pack-' + 'f'.repeat(40) + '.pack'));
+  assert.equal((await observedCheckout(root, source)).availability, 'unavailable', '65 selected pack/index files');
+  for (const name of await readdir(directory)) if (!original.includes(name)) await rm(join(directory, name));
+  for (let n = original.length; n < 128; n++) await writeFile(join(directory, 'ignored-' + n), '');
+  assert.equal((await observedCheckout(root, source)).availability, 'available', '128 directory entries');
+  await writeFile(join(directory, 'one-more'), '');
+  assert.equal((await observedCheckout(root, source)).availability, 'unavailable', '129 directory entries');
+}));
+
+test('linked metadata name maximum and unsupported directory redirects preserve source identity', async () => fixture(async root => {
+  const source = await checkout(root), worktree = join(root, 'linked');
+  git(source, 'worktree', 'add', '--detach', worktree);
+  const pointer = join(worktree, '.git'), selected = (await readFile(pointer, 'utf8')).trim().slice(8);
+  const parent = selected.slice(0, selected.lastIndexOf('/'));
+  const name = 'x'.repeat(255);
+  await rename(selected, join(parent, name));
+  await writeFile(pointer, 'gitdir: ' + join(parent, name) + '\n');
+  assert.equal((await observedCheckout(root, worktree)).availability, 'available');
+  await writeFile(pointer, 'gitdir: ' + join(parent, name + 'x') + '\n');
+  assert.equal((await observedCheckout(root, worktree)).availability, 'unavailable');
+  await writeFile(join(source, '.git/commondir'), '../..\n');
+  assert.equal((await observedCheckout(root, source)).availability, 'unavailable');
+}));
+
+test('ownership rejection uses the runtime uid without treating another uid as trusted', async t => fixture(async root => {
+  const runner = join(root, 'runner'); await mkdir(runner);
+  await writeFile(join(runner, '.runner'), JSON.stringify({ agentId: 1, agentName: 'owned', gitHubUrl: 'https://github.com/example/repository' }));
+  const input = { ...config(root), registrations: [{ alias: 'runner', directory: runner }] };
+  assert.equal((await observeRuntime(input)).registrations[0].availability, 'available');
+  const actualUid = process.getuid();
+  // Runtime-identity fixture; no host file ownership or process credentials are changed.
+  const replacement = t.mock.method(process, 'getuid', () => actualUid + 1);
+  try { assert.equal((await observeRuntime(input)).registrations[0].availability, 'unavailable'); }
+  finally { replacement.mock.restore(); }
 }));

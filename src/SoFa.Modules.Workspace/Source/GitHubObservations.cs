@@ -6,7 +6,7 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal sealed record ObservedRun(long Id, string? Name, string? Status, string? Conclusion, string? SourceRevision,
-    string? Url, string? StartedAt, string? UpdatedAt);
+    string? Url, string? StartedAt, string? UpdatedAt, long? RunAttempt, string? Event);
 internal sealed record ObservedIssue(int Number, string? Title, IReadOnlyList<string> Labels, string? Url, string? UpdatedAt);
 internal sealed record ObservedRepository(string Repository, DateTimeOffset ObservedAt, string Availability, string Scope,
     IReadOnlyList<ObservedRun>? Runs = null, IReadOnlyList<ObservedIssue>? Attention = null, string? Reason = null);
@@ -86,7 +86,7 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
       var mappedRuns = runRows.EnumerateArray().Take(20).Where(r => SourceJson.Number(r, "id") is > 0 and <= 9_007_199_254_740_991)
           .Select(r => new ObservedRun(SourceJson.Number(r, "id")!.Value, Text(r, "name", 256), Text(r, "status", 64),
               Text(r, "conclusion", 64), Text(r, "head_sha", 128), Text(r, "html_url", 2048),
-              Timestamp(r, "run_started_at"), Timestamp(r, "updated_at"))).ToArray();
+               Timestamp(r, "run_started_at"), Timestamp(r, "updated_at"), Attempt(r), Event(r))).ToArray();
       var mappedIssues = issues.Value.EnumerateArray().Take(100)
           .Where(i => i.ValueKind == JsonValueKind.Object && !i.TryGetProperty("pull_request", out _) && SourceJson.Number(i, "number") is > 0 and <= int.MaxValue)
           .Select(i => new ObservedIssue((int)SourceJson.Number(i, "number")!.Value, Text(i, "title", 1024), Labels(i), Text(i, "html_url", 2048), Timestamp(i, "updated_at")))
@@ -97,6 +97,42 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
   }
 
   private static bool Transient(GitHubResponse response) => response.Status == 0 || (int)response.Status == 429 || (int)response.Status >= 500;
+
+  private static long? Attempt(JsonElement row)
+  {
+    if (!row.TryGetProperty("run_attempt", out var value) || value.ValueKind != JsonValueKind.Number) return null;
+    // Work on the original decimal token: double/decimal conversions can erase a fraction.
+    var source = value.GetRawText();
+    if (source.StartsWith('-')) return null;
+    var parts = source.Split(['e', 'E']);
+    var exponent = 0;
+    if (parts.Length > 1 && (!int.TryParse(parts[1], NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out exponent)
+        || Math.Abs((long)exponent) > source.Length + 16L)) return null;
+    var point = parts[0].IndexOf('.');
+    var fractionLength = point < 0 ? 0 : parts[0].Length - point - 1;
+    var digits = parts[0].Replace(".", "", StringComparison.Ordinal).TrimStart('0');
+    if (digits.Length == 0) return null;
+    var scale = (long)exponent - fractionLength;
+    if (scale < 0)
+    {
+      var trailing = digits.Length - digits.TrimEnd('0').Length;
+      if (-scale > trailing) return null;
+      digits = digits[..(digits.Length + (int)scale)];
+    }
+    else
+    {
+      if (digits.Length + scale > 16) return null;
+      digits += new string('0', (int)scale);
+    }
+    return digits.Length <= 16 && long.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out var attempt)
+        && attempt is > 0 and <= 9_007_199_254_740_991 ? attempt : null;
+  }
+
+  private static string? Event(JsonElement row)
+  {
+    var text = SourceJson.Text(row, "event");
+    return string.IsNullOrWhiteSpace(text) ? null : text;
+  }
 
   private bool Live(OwnerSession record, GitHubConnection connection, long generation) => ReferenceEquals(sessions.Get(record.Id), record)
       && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;

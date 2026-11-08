@@ -26,6 +26,17 @@ internal sealed partial class GitHubTransport : IDisposable
     return SendAsync(request, guard, cancellationToken);
   }
 
+  internal Task<GitHubResponse> PostControlAsync(string repository, string path, JsonElement body, string? apiVersion,
+      string token, SourceRequestGuard guard, CancellationToken cancellationToken)
+  {
+    var request = new HttpRequestMessage(HttpMethod.Post, "https://api.github.com/repos/" + repository + "/" + path)
+    { Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(body)) };
+    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    request.Headers.Add("X-GitHub-Api-Version", apiVersion ?? "2026-03-10");
+    return SendAsync(request, guard, cancellationToken);
+  }
+
   private async Task<GitHubResponse> SendAsync(HttpRequestMessage request, SourceRequestGuard guard, CancellationToken cancellationToken)
   {
     using (request)

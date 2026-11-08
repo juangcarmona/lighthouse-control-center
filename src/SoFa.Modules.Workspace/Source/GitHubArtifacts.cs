@@ -12,7 +12,7 @@ internal sealed partial class GitHubTransport
   internal async Task<ArtifactJson> ReadArtifactAsync(string repository, long artifactId, string token, string member,
       SourceRequestGuard guard, CancellationToken cancellationToken)
   {
-    if (artifactId <= 0 || member is not ("request.json" or "envelope.json"))
+    if (artifactId <= 0 || member is not ("request.json" or "envelope.json" or "result.json"))
       return new("unavailable", "Unsupported artifact identity or member.");
     using var request = new HttpRequestMessage(HttpMethod.Get,
         "https://api.github.com/repos/" + repository + "/actions/artifacts/" + artifactId.ToString(System.Globalization.CultureInfo.InvariantCulture) + "/zip");

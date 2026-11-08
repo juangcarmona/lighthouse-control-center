@@ -1,7 +1,7 @@
 ---
 id: ADR-0008
 title: Persist and correlate issue commands
-status: Proposed
+status: Accepted
 date: "2026-10-26"
 deciders: [Juan García Carmona]
 ---
@@ -32,3 +32,7 @@ Record command intent and source receipts in the application, and reconcile unce
 - [Work command product definition](../../product/model/domain/terms/term-work-command.md)
 - [Independent repository execution](0006-observe-repository-owned-workflows.md)
 - [Shared command contract](https://github.com/juangcarmona/lighthouse/issues/119)
+
+## History
+
+- 2026-11-08: Juan accepted PR #112 and its protected SQLite journal design through the task reply. Implementation and verification remain separate from this decision; authentication credentials remain process-local. [Acceptance record](../../delivery/evidence/issue-48/planning-owner-acceptance.json).

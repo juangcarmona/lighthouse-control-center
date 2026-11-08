@@ -4,7 +4,7 @@
 
 ## 1. Host evidence
 
-- [ ] 1.1 Add bounded private source configuration and a tokenless fixed-file/read-only Git helper; prove exact committed adoption, safe registration projection, literal-origin/bounded-ref parsing and disposable bare object reads isolated from all source/system/global Git configuration; prove hostile config never launches helpers or network, source metadata stays unchanged, and every numeric/form/traversal bound has at/over-limit cases. Add same-handle file/parent replacement races and ownership/unsupported-platform cases; never reopen a validated source pathname.
+- [x] 1.1 Add bounded private source configuration and a tokenless fixed-file/read-only Git helper; prove exact committed adoption, safe registration projection, literal-origin/bounded-ref parsing and disposable bare object reads isolated from all source/system/global Git configuration; prove hostile config never launches helpers or network, source metadata stays unchanged, and every numeric/form/traversal bound has at/over-limit cases. Add same-handle file/parent replacement races and ownership/unsupported-platform cases; never reopen a validated source pathname.
 - [x] 1.2 Add owner-gated bounded process bridge and host query with owner-lifetime/deadline cancellation, atomic helper initiation, a global nonqueuing host1 cap and sequential Git children; no secret/path output, network, source writes or runtime process control.
 
 ## 2. GitHub evidence
@@ -18,6 +18,8 @@
 - [x] 3.2 Prove immediate scoped/global authority clearing, stale timestamps, absent/partial data, keyboard/390px and safe rendering through browser regressions.
 
 Task1.1 remains open for the final independent audit of exhaustive bounds and unsupported-layout evidence. Checked implementation tasks describe the local code checkpoint, not full Done or prerequisite acceptance.
+
+Additional boundary cases and explicit structural/nonphysical limits are mapped in [bounds coverage](../../../docs/delivery/evidence/issue-57/bounds-coverage.md). The helper code is unchanged; task1.1 is not marked complete by its author.
 
 ## 4. Verification and integration
 

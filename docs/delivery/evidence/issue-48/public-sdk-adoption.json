@@ -1,0 +1,37 @@
+{
+  "observedAt": "2026-11-08T08:28:11.350606+00:00",
+  "release": {
+    "pullRequest": "https://github.com/juangcarmona/lighthouse/pull/570",
+    "commit": "d7ce30a91a9d6c195cc9b6a34e7a42a36737099d",
+    "workflowRun": 42459892264,
+    "publicationGate": "npm-publish approved by juangcarmona; release workflow succeeded"
+  },
+  "packages": {
+    "@juangcarmona/lighthouse": {
+      "version": "0.12.61",
+      "integrity": "sha512-jzd+0QCpzJKGlkccA6SiwPVE0I4UTyVCTJLqJplIi7OVksBLS+0q6utiCLg8iIfSRUnc31I7vr+PO5CcYvS7Pw=="
+    },
+    "@juangcarmona/lighthouse-sdlc": {
+      "version": "0.22.0",
+      "integrity": "sha512-q5UWbxT68F82WOidrBtivivHcRLheF40DPqIyExLI4Y7bKwRLlaZxOP+FMju/R/KxLuWfG5TZaFTf4rG+42vkQ=="
+    }
+  },
+  "sdkCandidateEquality": {
+    "files": 224,
+    "comparison": "SHA-256 per relative regular file; exact file set and bytes equal; compressed tarball identity is not claimed"
+  },
+  "projection": {
+    "installer": "released SDK install-workflows.mjs --with-unattended --with-maintenance --with-issue-control --replace-reviewed --apply",
+    "sourceRevision": "d7ce30a91a9d6c195cc9b6a34e7a42a36737099d",
+    "compilationsPassed": 7,
+    "protectedPolicy": "Existing unattended grant, model selection and implementation inventory preserved",
+    "harness": "Official lighthouse upgrade --scope harness --apply synchronizes LIGHTHOUSE.md after manifest selection; no managed file edited by hand."
+  },
+  "authority": "Public SDK adoption and controlled consumer tests do not establish connected App-user consent, source production deployment or #48 Done.",
+  "guardrailCorrection": {
+    "run": 42463255771,
+    "head": "1c9356031673861ccdf1a8e42c29111b6c3bc7c0",
+    "failure": "LIGHTHOUSE.md retained the former SDK version after the SDLC-only upgrade. Existing guardrails refused the drift.",
+    "repair": "Official harness upgrade updates the baseline projection; full local and hosted checks must pass on the repaired head."
+  }
+}

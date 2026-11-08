@@ -34,14 +34,15 @@ The source artifacts are streamed within ZIP/member bounds, kept in memory and p
 
 <!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
 
-## Proposed issue operation
+## Implemented issue operation checkpoint
 
-1. The browser loads issue context through the authenticated query adapter. The response includes source revision, observation age and the shared capability decision, including denial reasons.
-2. The owner sees the acting GitHub identity and the effect, then submits an explicit command with its stable request identity and expected issue/evidence version.
-3. The server checks session, CSRF/origin protection, configured repository scope and current GitHub user authority; it obtains fresh evidence and shared eligibility. A changed state returns a refreshed explanation without dispatch.
-4. The command adapter durably records intent before sending. The repository rechecks authority, reservations and evidence at admission; preflight success is not a reservation.
-5. The source receipt identifies the workflow run. The query adapter follows its jobs, human waits and published stage result. Proposal success links its actual proposal/PR; it does not authorize implementation.
-6. A reload or another device resumes the same request history. Closing SoFa leaves admitted execution running.
+The #48 candidate uses the released public Lighthouse SDK 0.22.0 with its officially generated source contract. These code paths are verified with controlled HTTP, actual SQLite and browser fixtures; actual connected App-user admission remains a separate acceptance item.
+
+1. Current owner/session, configured repository, numeric acting user/repository/issue and intended App installation are verified before observing or preparing an action. The tokenless SDK child reads source eligibility and the current question through parent callbacks.
+2. Explicit preparation creates a server-generated request identity and stores the immutable SDK intent/effect under a protected scope. The browser reviews the action and comment text; it submits only the opaque local confirmation ID.
+3. On confirmation, the SDK requests an atomic durable claim, rechecks source eligibility and asks for its prepared POST. The parent independently matches the exact path, body and API version, verifies unchanged grants and initiates HTTP under the live connection/session lock. Each invocation can consume only one effect attempt.
+4. The SDK receipt separately describes submission, source admission, worker/run identity and verified stage result. Requesting Refine or Propose never grants implementation or merge. Ordinary comments and Continue use distinct typed source intents.
+5. A lost response or existing claim leads to SDK source reconciliation. Reload/restart exposes recovery of the latest confirmation only after fresh owner/source authorization. Restarted or restored preparations cannot send. Closing SoFa does not stop admitted repository execution.
 
 ### Failure behavior
 
@@ -58,3 +59,7 @@ Search, project boards and inbox resolve stable source identities and enter the 
 ## Implemented factory discovery
 
 The owner explicitly collects configured issue pages or looks up an exact issue number. Account status establishes the source connection scope; each data request independently checks repository issue permission and the atomic source guard. The browser reconciles ordinary issues by source ID, keeps raw page coverage separate from PR exclusion and labels title filtering as collected-scope search. Source-account changes remove prior rows; temporary failures retain same-scope stale times and denied access removes affected context. Explicit historical report reads never establish a live lease or command eligibility. [Source/browser regressions](../../../tests/SoFa.Web.Tests/FactoryDiscoveryTests.cs) cover this implemented boundary; they do not prove actual GitHub user acceptance.
+
+## Implemented selected intervention context
+
+The inbox first projects bounded factual label contexts through the existing factory reader. Only an explicit context selection queries common #48 source facts; immutable issue identity and the acting connection must still match. It displays a verified current or superseded question separately from the collected label. Supported actions reuse the same prepare/confirm/reconcile flow, journal and source-only resolution receipt as the issue reader. A changed account, denied repository or detached context removes private details and rejects late results. [Browser cases](../../../tests/browser/attention.spec.mjs) exercise these mechanics with controlled responses; actual connected App-user acceptance remains separate.

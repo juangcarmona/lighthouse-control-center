@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const root = new URL('../../src/web/public/', import.meta.url);
-const assets = new Map(['attention.html', 'attention.js', 'runtime.html', 'runtime.js', 'runtime.css', 'factory.html', 'factory.js', 'factory.css', 'issue.html', 'issue.js', 'markdown.js', 'app.css', 'issue.css'].map(file => ['/' + file, new URL(file, root)]));
+const assets = new Map(['attention.html', 'attention.js', 'attention-controls.js', 'runtime.html', 'runtime.js', 'runtime.css', 'factory.html', 'factory.js', 'factory.css', 'issue.html', 'issue.js', 'issue-actions.js', 'markdown.js', 'app.css', 'issue.css'].map(file => ['/' + file, new URL(file, root)]));
 assets.set('/tokens.css', require.resolve('@juangcarmona/lighthouse-ui/tokens.css'));
 createServer(async (request, response) => {
   const path = request.url.split('?')[0];
