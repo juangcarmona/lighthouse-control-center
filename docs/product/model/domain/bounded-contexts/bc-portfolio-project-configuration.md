@@ -1,17 +1,17 @@
 ---
 id: BC-PORTFOLIO-PROJECT-CONFIGURATION
 type: bounded-context
-title: Portfolio and source configuration
+title: Fleet inventory and adoption
 status: draft
 ---
 
 ## Responsibility
 
-Maintain repository identities and discover workflow, evidence and runtime observation endpoints.
+Discover and register repositories, group projects and explain their Lighthouse adoption, profiles, capabilities and configuration drift. Repositories remain visible at every adoption level.
 
 ## Language
 
-Repository, source identity, access, observation time and policy provenance.
+Repository, project, adoption, Discovery, Foundations, Maintenance, source identity, access and policy provenance.
 
 ## Boundaries
 

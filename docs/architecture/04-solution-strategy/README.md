@@ -22,3 +22,9 @@ The application serves the existing HTML/CSS/JavaScript presentation through a .
 ## Remaining extension strategy
 
 The implemented paginated issue reader uses the same source identities and authorized adapters. Discovery, intervention requests and boards remain extensions of that boundary. Issue mutations, durable command receipts, explicit continuation and signal projections are not implemented by the identity slice. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) remains Proposed; no application journal or execution database is introduced here.
+
+## Proposed incremental Control Center strategy
+
+Retain the current .NET module, CQRS/analyzer boundary, Aspire composition, native presentation and Lighthouse tokens. Complete the active source-reader/control stack first; normalize projection identities within those handlers rather than introducing a parallel backend. Provider inventory wraps the #57 local/GitHub adapters after their acceptance. A command journal stores explicit intentions and receipts; a bounded historical observation store is introduced only for an accepted history/measurement requirement. It never becomes a job queue.
+
+[ADR-0010](../09-architecture-decisions/0010-administer-independent-runtime-providers.md) is Proposed. Use the installed Lighthouse SDK/version contract for repository controls. A small adapter registry for configured provider instances is sufficient; no remotely loaded plugin code or generic enterprise framework is implied. Support read-only operation when a provider, telemetry field or source capability is absent. Personal acceptance precedes broader provider and capacity claims.

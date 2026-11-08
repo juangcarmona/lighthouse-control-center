@@ -1,42 +1,56 @@
 ---
 id: UC-MAINTAIN-RUNTIME
 type: use-case
-title: Inspect health of independent execution infrastructure
+title: Inspect and administer independent runtime resources
 status: draft
-primary-actor: ACT-FACTORY-OWNER
-supporting-actors: []
+primary-actor: ACT-RUNTIME-ADMINISTRATOR
+supporting-actors:
+- ACT-RUNTIME-PROVIDER
+- ACT-OPERATOR
 bounded-context: BC-RUNTIME-OPERATIONS
-governed-by: [BR-RECOVERABLE-EXECUTION, BR-LAN-PRIVILEGE-BOUNDARY]
-uses-terms: [TERM-EXECUTION-RUN, TERM-RUNTIME-HEALTH, TERM-RETENTION-POLICY]
+governed-by:
+- BR-PROVIDER-OPERATIONS
+- BR-LAN-PRIVILEGE-BOUNDARY
+- BR-EXPLAINABLE-SIGNALS
+uses-terms:
+- TERM-RUNTIME-PROVIDER
+- TERM-RUNTIME-POOL
+- TERM-EXECUTION-HOST
+- TERM-RUNNER
+- TERM-AGENT-RUNTIME
+- TERM-MODEL-PROVIDER
+- TERM-RUNTIME-OPERATION
+- TERM-RUNTIME-HEALTH
 ---
 
 ## Goal
 
-Inspect health of independent execution infrastructure.
+Understand runtime health and follow a supported, explicitly authorized maintenance or capacity action to its confirmed provider outcome.
 
 ## Trigger
 
-An owner requests a refresh or a configured source observation is refreshed.
+An operator inspects a resource or a runtime administrator requests a supported operation.
 
 ## Preconditions
 
-Repository identity is configured; unavailable source access is explicit.
+Provider scope is explicitly configured. Observation access and administrative grants are distinct; missing information is visible.
 
 ## Main Flow
 
-1. SoFa reads available runner and runtime observations.
-2. SoFa reports source, age, failure and missing evidence.
-3. Juan operates the independent runtime through its own tools.
-4. Observation does not mutate execution or repository work.
+1. Control Center reads provider inventory, capabilities, timestamps, limits and telemetry.
+2. The administrator selects a supported action and reviews exact target, current work, parameters, impact and authority.
+3. After explicit confirmation, Control Center refreshes authorization and target state, records the durable intent and submits once through the provider.
+4. Control Center correlates the provider receipt, reads the resulting provider state and retains its audit and limitations.
+5. Existing repository delivery remains independent.
 
 ## Alternative Flows
 
-Unavailable or stale evidence is shown with a source link and observation time.
+An observation-only operator can inspect evidence without controls. A provider lacking drain, scaling or telemetry states that limitation. A changed target requires a new review; a timeout remains uncertain until reconciled.
 
 ## Failure Conditions
 
-An observation cannot authorize work or claim success without evidence.
+Missing grants, unsupported capabilities, unknown occupancy, target races, expired confirmation, resource limits or unavailable provider evidence deny dependent actions. Failed administration does not become a successful mission or implicit retry.
 
 ## Postconditions
 
-The owner can inspect source-backed state without SoFa becoming an execution dependency.
+The resource operation is confirmed, pending, blocked, failed or explicitly uncertain with attributable audit. No repository lifecycle or scheduler was created.

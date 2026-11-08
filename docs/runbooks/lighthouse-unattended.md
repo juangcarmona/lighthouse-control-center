@@ -1,4 +1,18 @@
-# Bounded Lighthouse delivery
+# Autonomous Lighthouse delivery
+
+The maintainer requested autonomous repository continuation on 2026-11-08. This updates the earlier exact-#99 pilot below; historical qualification receipts retain their original scope.
+
+The current grant uses the existing native FF implementation, independent plan/candidate reviewer, one shared correction and 6,600-second deadline. Eligible work must be low risk, reversible, dependency-resolved and 1–3 points. It can change only the observation/frontend, asset and operational-documentation paths declared in `.lighthouse/unattended.json`; verification inputs stay frozen except existing explicitly reasoned issue-specific corrections. Larger work is refined into verifiable increments rather than bypassing admission.
+
+Default implementation policy no longer requires a separate owner decision before bounded FF. Exact overrides preserve supervised review for #47/#48/#50/#51/#52/#57/#58 and preserve #99's old tested scope. A normal implementation stage alone does not authorize merge. Native FF still requires distinct independent reviewers, a complete source-bound acceptance receipt, exact-head required CI and forge permission. Product semantics, new architecture/security decisions, authentication/authorization, credentials, provider operations, visual publication approval, release and deployment retain their authorities.
+
+Routine dependencies that modify `.github`, `.lighthouse` or other protected surfaces remain outside an unattended candidate's authority. The operator performs the current owner-requested dependency/bootstrap change through a reviewed PR, using the owning installers; a candidate cannot modify its own policy.
+
+Enable the existing maintenance workflow with `LIGHTHOUSE_MAINTENANCE_ENABLED=true`, `LIGHTHOUSE_RECOVERY_ENABLED=true`, and `LIGHTHOUSE_MAINTENANCE_ISSUES=[116,121,123,124]` after the bootstrap is integrated. Recovery is bounded to supported technical interruptions; it never clears human decisions, substantive failures, exhausted corrections or uncertain effects. Check the linked stage report before sending a fresh request. Existing owner labels and native FF workflow entrypoints select work; no new scheduler or automatic epic admission is added.
+
+To stop new delegated delivery, set `.lighthouse/unattended.json` `enabled:false` and `merge:false` through the normal reviewed configuration path; disable the maintenance/recovery variables separately if required. Existing admitted executions must be reconciled rather than blindly retried.
+
+Historical qualification record
 
 The current public control contract selects CLI 0.12.61 / SDLC 0.22.0 and workflow release `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`. The [#48 prerequisite adoption](../delivery/evidence/issue-48/contract-adoption.md) preserves the exact #99 grant. Qualification sections below retain their original source/package evidence.
 

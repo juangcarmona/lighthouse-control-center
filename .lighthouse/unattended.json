@@ -13,7 +13,10 @@
     "tests/browser/observation.spec.mjs",
     "README.md",
     "src/SoFa.Modules.Workspace/Source/GitHubObservations.cs",
-    "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs"
+    "tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs",
+    "assets/",
+    "docs/runbooks/",
+    "docs/roadmap/"
   ],
   "reviewerProfile": "plan",
   "allowFivePoint": false,

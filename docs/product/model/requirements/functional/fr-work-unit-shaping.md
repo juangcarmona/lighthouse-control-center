@@ -13,8 +13,8 @@ verification:
 
 ## Requirement
 
-SoFa MUST show work-unit scope, acceptance criteria, dependencies, risk and decision boundaries from repository evidence. It MUST let the authenticated and source-authorized owner request refinement through the same repository workflow entrypoint available without SoFa, when the current contract permits it. Readiness belongs to the repository workflow; SoFa MUST NOT create a parallel readiness decision or run the agent itself. A prior refinement remains evidence for its original scope and revision, not automatic authorization for changed work.
+Lighthouse Control Center MUST show work-unit scope, acceptance criteria, dependencies, risk and decision boundaries from repository evidence. It MUST let the authenticated and source-authorized owner request refinement through the same repository workflow entrypoint available without Lighthouse Control Center, when the current contract permits it. Readiness belongs to the repository workflow; Lighthouse Control Center MUST NOT create a parallel readiness decision or run the agent itself. A prior refinement remains evidence for its original scope and revision, not automatic authorization for changed work.
 
 ## Rationale
 
-An explicit issue action turns the source-backed factory view into a useful operating surface without replacing engineering authority.
+An explicit issue action turns the source-backed fleet view into a useful operating surface without replacing engineering authority.
