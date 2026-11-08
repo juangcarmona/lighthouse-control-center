@@ -260,21 +260,52 @@ public sealed class RuntimeInventoryTests
     Assert.Equal("unavailable", source.Availability); Assert.Equal(700, source.SourceTotal); Assert.Equal(at, source.ObservedAt); Assert.Empty(source.Runners);
   }
 
+  [Fact]
+  public void ExitedProcessMayLoseItsProcDirectoryBetweenExistenceCheckAndRead()
+  {
+    if (!OperatingSystem.IsLinux()) return;
+    Assert.False(Running(Environment.ProcessId, _ => throw new DirectoryNotFoundException()));
+    Assert.False(Running(Environment.ProcessId, _ => throw new FileNotFoundException()));
+    Assert.Throws<UnauthorizedAccessException>(() => Running(Environment.ProcessId, _ => throw new UnauthorizedAccessException()));
+    Assert.Throws<IOException>(() => Running(Environment.ProcessId, _ => throw new IOException("Unrelated read failure")));
+  }
+
+  [Fact]
+  public void ExitedProcessCanDisappearAfterItsProcStatHandleWasOpened()
+  {
+    if (!OperatingSystem.IsLinux()) return;
+    using var process = Process.Start(new ProcessStartInfo("node") { ArgumentList = { "-e", "setInterval(() => {}, 1000)" } })!;
+    try
+    {
+      Assert.False(Running(process.Id, path =>
+      {
+        using var reader = new StreamReader(path);
+        process.Kill();
+        Assert.True(process.WaitForExit(5000));
+        return reader.ReadToEnd();
+      }));
+      Assert.True(process.HasExited);
+    }
+    finally { if (!process.HasExited) { process.Kill(); process.WaitForExit(5000); } }
+  }
+
   private static async Task Until(Func<bool> predicate)
   {
     using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(5));
     while (!predicate()) await Task.Delay(20, deadline.Token);
   }
-  private static bool Running(int pid)
+  private static bool Running(int pid, Func<string, string>? readProcStat = null)
   {
     try
     {
       if (OperatingSystem.IsLinux() && File.Exists("/proc/" + pid.ToString(CultureInfo.InvariantCulture) + "/stat"))
-        return !File.ReadAllText("/proc/" + pid.ToString(CultureInfo.InvariantCulture) + "/stat").Split(')')[1].StartsWith(" Z", StringComparison.Ordinal);
+        return !(readProcStat ?? File.ReadAllText)("/proc/" + pid.ToString(CultureInfo.InvariantCulture) + "/stat").Split(')')[1].StartsWith(" Z", StringComparison.Ordinal);
       using var process = Process.GetProcessById(pid); return !process.HasExited;
     }
     catch (ArgumentException) { return false; }
     catch (FileNotFoundException) { return false; }
+    catch (DirectoryNotFoundException) { return false; }
+    catch (IOException) when (OperatingSystem.IsLinux() && !File.Exists("/proc/" + pid.ToString(CultureInfo.InvariantCulture) + "/stat")) { return false; }
   }
 
   private sealed class Fixture : IDisposable
