@@ -1,5 +1,7 @@
 # SoFa
 
+![SoFa: a sofa overlooking the bay, boats and lighthouse.](assets/socialpreview_1.png)
+
 SoFa is evolving into Lighthouse Control Center.
 
 SoFa observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
