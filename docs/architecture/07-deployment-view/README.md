@@ -24,3 +24,15 @@ The supported application entrypoint builds and directly launches the pinned Rel
 The [development identity runbook](../../runbooks/development-identity.md) owns setup, exact callbacks, trusted browser/device certificates and rollback. The [launcher](../../../scripts/start-workspace.mjs) bypasses the CLI run hook so an older Debug output or certificate-setup wizard cannot replace the reviewed Release entrypoint. Existing framework runtime certificates are distinct from the isolated application's CA.
 
 The external profile is configuration/composition coverage, not evidence of production deployment or provider connectivity. Production TLS/DNS, protected storage, backups and recovery belong to infrastructure under [ADR-0007](../09-architecture-decisions/0007-shared-identity-custody-and-recovery.md) and release-readiness work.
+
+## Proposed portable deployment evolution
+
+Retain one configured .NET application and its current native frontend. Aspire composes development dependencies; it does not provision personal production infrastructure by implication. Runtime adapters use independent provider credentials and protected endpoints. The local provider can be colocated for the first acceptance; privileged operations use a reviewed bounded provider API/helper, not elevated web-process permissions. Existing operator-owned runner and model services remain independently managed.
+
+| Deployment | Same application configuration | Evidence before a readiness claim |
+| --- | --- | --- |
+| Personal | One admitted operator, explicit repository list, external/development identity, one local provider, protected application state | New-operator install, source action, one safe provider operation, backup/recovery and independent-workflow test |
+| Small team | Multiple explicitly scoped identities, several hosts/providers and shared pools | Cross-user cache isolation, revocation and provider grants; current owner-only source SDK cannot authorize additional actors |
+| Enterprise target | Bounded fleet pagination, teams, provider instances and separately managed Kubernetes/VMSS/GPU capacity | Representative load, identity/group changes, rate limits, data isolation and provider-specific acceptance; not implied by local contract doubles |
+
+No broker, separate analytics service or database server is required by this proposal. Storage choice and replication depend on accepted retention/availability needs. Start single-instance; the #48 private SQLite/key custody is not a multi-instance write guarantee. Distribution and identity/custody acceptance follow the [roadmap](../../roadmap/lighthouse-control-center.md); renaming infrastructure identifiers is separately gated by the [rename plan](../../roadmap/lighthouse-control-center-rename.md).
