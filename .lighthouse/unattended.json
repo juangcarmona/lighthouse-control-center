@@ -19,5 +19,5 @@
   "allowFivePoint": false,
   "merge": true,
   "maxCorrections": 1,
-  "timeoutSeconds": 3600
+  "timeoutSeconds": 6600
 }

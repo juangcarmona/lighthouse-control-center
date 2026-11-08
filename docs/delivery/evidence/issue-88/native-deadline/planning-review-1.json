@@ -1,0 +1,78 @@
+{
+  "head": "3ad89de2438d178c21d2244bc12123a66f073e17",
+  "verdict": "reject",
+  "findings": [
+    {
+      "severity": "blocking",
+      "finding": "The plan states that 6,600 seconds leaves ten minutes inside the unchanged 120-minute workflow job, but the current .github/workflows/lighthouse-sdlc-unattended.yml sets jobs.deliver.timeout-minutes to 125. Reconcile the baseline and accurately state the remaining slack; 6,600 seconds is 110 minutes and fits either cap, but the plan's assertion is false as written.",
+      "dimension": "Implementation completeness"
+    },
+    {
+      "severity": "blocking",
+      "finding": "The plan identifies the selected merged source revision and explicitly calls for updating the CI App preflight pin, guard, and runbooks, but does not explicitly require updating/verifying the primary unattended workflow's immutable harness pin in .github/workflows/lighthouse-sdlc-unattended.yml. That workflow currently pins 860624fcca7eeb676a8d1945088452a6d321061d; the source adoption must make the execution pin and preflight pin consistent with selected revision ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c, with guards and runbooks updated together.",
+      "dimension": "Architecture / design conformance"
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Acceptance criteria",
+      "status": "planned",
+      "assessment": "The plan requires one fresh native #99 request, trusted verification, independent acceptance, required CI, delegated merge, and post-merge review before #88 qualifies. It correctly treats these as future requirements, not passed results."
+    },
+    {
+      "name": "Implementation completeness",
+      "status": "incomplete",
+      "assessment": "Installer preview/apply, 6,600-second policy change, one correction, #99 precision clarification, source pins, guards and runbooks are covered. The job timeout baseline is misstated (current job is 125 minutes, not 120), and the primary unattended workflow pin is not explicitly included in the update list."
+    },
+    {
+      "name": "Tests",
+      "status": "planned",
+      "assessment": "Calls for npm run verify, foundation verification, all seven installed worker compilations, current forge checks, and later a fresh native request. These are planned checks only; none is established as passed by this review."
+    },
+    {
+      "name": "Quality checks",
+      "status": "planned",
+      "assessment": "The planned repository verification and foundation checks align with the current project verification entrypoint and require current forge checks. Completion and post-merge CI remain outstanding."
+    },
+    {
+      "name": "Security",
+      "status": "planned",
+      "assessment": "The plan preserves owner-only product/security/production and forge-approval boundaries and schedules App, provider, execution-environment, and cleanup rechecks. It does not claim those future preflights passed."
+    },
+    {
+      "name": "Architecture / design conformance",
+      "status": "incomplete",
+      "assessment": "The repository-owned-workflow boundary under ADR-0006 is respected, as are the existing models, resources, checks, and issue-specific scope. However, explicitly reconciling both immutable source pins (including the primary unattended workflow) is necessary for a coherent adoption."
+    },
+    {
+      "name": "Documentation",
+      "status": "planned",
+      "assessment": "The plan requires updating owning runbooks and retaining source, package tuple, policy diff, and prior failed-run evidence. The plan's incorrect 120-minute baseline must be corrected in the documentation."
+    },
+    {
+      "name": "Product / spec consistency",
+      "status": "planned",
+      "assessment": "This is framed as an operational correction, not a product-semantic change; accepted product authority and human decisions remain protected. The existing exact #99 implementation grant is retained rather than broadened."
+    },
+    {
+      "name": "Evidence",
+      "status": "planned",
+      "assessment": "The proposed evidence chain includes current source checks, native candidate and trusted checks, independent acceptance, PR, CI, merge, and post-merge receipts. Upstream #569's independent seven-dimension acceptance and merge at ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c do not replace required source post-merge checks or native evidence."
+    },
+    {
+      "name": "Human review",
+      "status": "planned",
+      "assessment": "Independent planning acceptance is required before applying changes, and an independent audit of all eleven Done dimensions is required before integration. Routine technical acceptance/merges for #88/#51/#52/#57 are within the stated owner authorization; protected decisions and forge approvals remain reserved."
+    },
+    {
+      "name": "Known limitations",
+      "status": "planned",
+      "assessment": "The plan states adoption and a longer finite window do not establish native delivery and preserves the failed 42429047634 evidence. It correctly records that the genuine fractional-number precision correction exhausted 3,600 seconds and produced no candidate PR; neither that run's managed observations nor the prior operator replay qualifies native delivery."
+    }
+  ],
+  "kind": "planning-review-attempt",
+  "protocolStatus": "invalid verdict: reject is outside the accepted enum; material findings retained and implementation remains unaccepted",
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "sourceReadOnly": true
+}

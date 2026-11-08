@@ -1,6 +1,6 @@
 # Bounded Lighthouse delivery
 
-This is the activation procedure for the adoption in [#88](https://github.com/juangcarmona/sofa/issues/88). Adoption installs workflows; it grants no delivery or merge. The first native SoFa delivery requires a separate owner authorization. The [repository workflow runbook](repository-workflows.md) still governs supervised work.
+This is the activation procedure for [#88](https://github.com/juangcarmona/sofa/issues/88). The owner-authorized, reviewed project policy enables unattended FF and delegated merge for the exact #99 override. Activation still requires current merged-source checks and App/provider/environment preflights; the complete native evidence chain must pass before #88 qualifies. The [repository workflow runbook](repository-workflows.md) governs supervised work.
 
 ## Installed policy
 
@@ -12,16 +12,16 @@ The original read-only slice [#90](https://github.com/juangcarmona/sofa/issues/9
 | --- | --- |
 | Execution / merge | `enabled: true`, `merge: true`; exact issue #99 candidate acceptance override only |
 | Route / estimate | Only `ff`; low risk, reversible, dependencies resolved, 1–3 points; no five-point opt-in |
-| Writable modules | `src/observation/`, `src/web/`, `README.md` and the two exact tests below; Lighthouse adds only its issue-specific OpenSpec planning root |
-| Corrections / deadline | One shared planning/candidate correction, 3,600 seconds |
+| Writable modules | Exact paths in `.lighthouse/unattended.json`: Node/browser observations, the .NET observation projection, `README.md` and the three metadata tests below; Lighthouse adds only its issue-specific OpenSpec planning root |
+| Corrections / deadline | One shared planning/candidate correction, 6,600 seconds inside the existing 125-minute job |
 | Implementation | `build`: `openai/gpt-6.1-sol`, `medium` |
 | Independent review | `plan`: `openai/gpt-6-luna`, `high`; planning and candidate review run separately with read-only source |
 | Default acceptance | `.lighthouse/implement.json` retains `reviewRequired: true` and the existing supervised scope and commands |
-| Trusted verification | Complete defaults inventory stays frozen. Only issue #99 may extend `tests/observation.test.mjs` and `tests/browser/observation.spec.mjs` with admitted reasons and independent review; existing safety assertions remain required |
+| Trusted verification | Complete defaults inventory stays frozen. Only issue #99 may extend `tests/observation.test.mjs`, `tests/browser/observation.spec.mjs` and `tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs` with admitted reasons and independent review; existing safety assertions remain required |
 | Required GitHub CI | Existing `verify` check, integration ID 15368, including browser and full host .NET/Docker suites |
 | Recovery | Maintenance installed; maintenance, automatic recovery, CI repair and report publication require separate opt-ins |
 
-Hotfix, authentication, .NET runtime, ProductShape, ArcShape, credentials, workflow changes and policy changes are outside this unattended write scope. Other tests and all verification entrypoints remain frozen. Only the two reviewed issue #99 corrections above are allowed; the agent cannot grant itself another exception. Owner-only product/security decisions and other `future` holds remain binding, except the separately recorded development authorization for #49. All other issues retain `defaults.reviewRequired:true` and cannot enter unattended delivery without another exact reviewed grant.
+Hotfix, authentication, .NET runtime, ProductShape, ArcShape, credentials, workflow changes and policy changes are outside this unattended write scope. Other tests and all verification entrypoints remain frozen. Only the three reviewed issue #99 metadata-test corrections above are allowed; the agent cannot grant itself another exception. Owner-only product/security decisions and other `future` holds remain binding, except the separately recorded development authorization for #49. All other issues retain `defaults.reviewRequired:true` and cannot enter unattended delivery without another exact reviewed grant.
 
 ## Current authorized delivery
 
@@ -80,10 +80,18 @@ Delegated merge requires a later, separate owner grant for another bounded issue
 
 Set `merge: false`; restore `enabled: false` and remove only the qualification issue's override. Supervised defaults and workers remain installed. For an urgent stop of all new work, the owner can set `LIGHTHOUSE_AUTOMATION_ENABLED=false`; inspect active runs before cancellation or reservation cleanup. Do not unset the existing App credentials or alter repository protections. Do not enable `LIGHTHOUSE_MAINTENANCE_ENABLED`, `LIGHTHOUSE_RECOVERY_ENABLED`, a report index or CI repair as part of this adoption. Installing their workflows does not grant their execution.
 
-After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The current workflow source `860624fcca7eeb676a8d1945088452a6d321061d` retains host-prepared OpenSpec discovery and adds the verification/admission correction below; installed package versions and the single correction budget are unchanged.
+After #49 moved the supported observation adapter to .NET, the exact #99 grant includes only its observation source and associated workflow-metadata assertions. Browser access/account code, authentication, token transport, project files and shared compiler/profile inputs remain outside the writable slice or frozen. The current workflow source `ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c` retains host-prepared OpenSpec discovery, the per-command verification correction and the original delivery-deadline correction below; installed package versions and the single correction budget are unchanged.
 
 ## Verification and admission correction
 
 Lighthouse [PR #558](https://github.com/juangcarmona/lighthouse/pull/558), pinned at `860624fcca7eeb676a8d1945088452a6d321061d`, gives each admitted verification command its existing ten-minute deadline independently. Setup and dependency installation no longer consume the following checks’ window. The outer workflow timeout, resource limits, cancellation, fail-stop behavior and exact issue #99 scope remain unchanged. The same source also includes bounded asynchronous engine admission; the private operator may configure its documented wait without increasing concurrent capacity. Do not run manual model reviews or diagnostic engine work during a native qualification run.
 
 A credential-free operator replay of the exact candidate tree from native run [42411980410](https://github.com/juangcarmona/sofa/actions/runs/42411980410) passed all three admitted commands and cleaned its resources with this verifier. That diagnostic result is separate from the still-required native PR, CI, review, integration and postmerge evidence. Prior failures remain retained.
+
+## Original route deadline and bounded retry
+
+Native [run 42429047634](https://github.com/juangcarmona/sofa/actions/runs/42429047634) passed its first trusted checks, then exhausted 3,600 seconds during its single candidate correction for fractional-number precision. It published no PR and remains failed. Its managed correction observations do not replace final host verification or independent acceptance.
+
+The reviewed source of [Lighthouse #569](https://github.com/juangcarmona/lighthouse/pull/569), `ee3f2e591b8ad78db87bc28e6242f1d0f0b7b34c`, shares one original deadline across provider work, CI/mergeability waiting and final authority checks. Source post-merge [verification](https://github.com/juangcarmona/lighthouse/actions/runs/42436609043) and [package checks](https://github.com/juangcarmona/lighthouse/actions/runs/42436608982) passed. The workflow source manifest is SDLC 0.21.11; installed public CLI/SDLC remain 0.12.55/0.21.6.
+
+The project route window is 6,600 seconds (110 minutes), leaving fifteen minutes within the existing 125-minute job for setup and cleanup. The exact #99 grant retains one shared correction, the same models, resources, checks and ten-minute per-command limit. The primary unattended workflow and CI App preflight use the same immutable source. Refresh current merged-source App/provider/environment preflights before one new native request. Native candidate, PR, CI, merge and post-merge review remain required to qualify #88.
