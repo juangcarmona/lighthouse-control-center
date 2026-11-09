@@ -9,7 +9,7 @@ Admit explicitly configured identities while preserving the compatible personal-
 
 ### Requirement: Owner-only operational access
 
-SoFa SHALL authenticate operational reads and writes on the server and admit only exact explicitly configured issuer/subject pairs. With no explicit operator configuration, only the existing configured owner pair SHALL be admitted. Network location, display name, email or provider sign-in alone MUST NOT grant access. Admission MUST NOT imply project, source or provider action authority.
+Lighthouse Control Center SHALL authenticate operational reads and writes on the server and admit only exact explicitly configured issuer/subject pairs. With no explicit operator configuration, only the existing configured owner pair SHALL be admitted. Network location, display name, email or provider sign-in alone MUST NOT grant access. Admission MUST NOT imply project, source or provider action authority.
 
 <!-- pdac:cite id="UC-ACCESS-FACTORY" digest="sha256:a1636b3cd8f0bce9d58c51beca3b349491e8e1f50de2cd10366f9effc9ce46a7" -->
 <!-- pdac:cite id="ACT-OPERATOR" digest="sha256:3c7098ab0c9185df4aa56b88f3837b6aedf1f56362bb3a718e90260c531f47dd" -->
