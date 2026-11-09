@@ -78,10 +78,14 @@ test('live issue context retains actual description conversation and source prov
 });
 
 test('live action authority explains unavailable dependencies without granting a write', async ({ signedPage: page }, info) => {
-  const response = await page.request.get(controlsPath);
-  const source = await response.json();
+  const observation = page.waitForResponse(response => new URL(response.url()).pathname === controlsPath && response.request().method() === 'GET');
   await page.goto(issuePath);
+  const source = await (await observation).json();
   await expect(page.locator('#controls-status')).not.toHaveText(/^(Checking|Refreshing)/i);
+  if (source.availability === 'available' && source.submissionAvailable === true && source.facts?.actions?.comment?.eligible === true) {
+    await expect(page.getByLabel('Your comment or answer')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Review comment', exact: true })).toBeEnabled();
+  }
   const blocked = source.availability !== 'available' || Object.values(source.facts?.actions ?? {}).some(action => !action.eligible);
   test.skip(!blocked, 'This configured source has no unavailable action prerequisite; the negative example needs another scope.');
   await expect(page.locator('#control-actions button:disabled').first()).toBeVisible();
