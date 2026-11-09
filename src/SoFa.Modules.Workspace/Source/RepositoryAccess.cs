@@ -6,7 +6,8 @@ namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal enum SourceAvailability { Available, Denied, Unavailable }
 internal sealed record ControlAuthority(long RepositoryId, long AppId, string DataScope, long Generation,
-    bool? ContentsRead, bool? PullRequestsRead, bool? VariablesRead, bool? ActionsRead, bool? CommentWrite, bool? DispatchWrite);
+    bool? ContentsRead, bool? PullRequestsRead, bool? VariablesRead, bool? ActionsRead, bool? CommentWrite, bool? DispatchWrite,
+    bool PublicRepository);
 internal sealed record RepositoryAuthority(string Repository, SourceAvailability Availability, bool IssuesRead,
     bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt, bool AdministrationRead = false, string? DataScope = null, long? Generation = null,
     SourceAvailability AdministrationAvailability = SourceAvailability.Unavailable, ControlAuthority? Controls = null);
@@ -99,7 +100,8 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
                   && string.Equals(SourceJson.Text(repo.Value, "full_name"), repository, StringComparison.OrdinalIgnoreCase))
                 controlAuthority = new(SourceJson.Number(repo.Value, "id")!.Value, settings.GitHubAppId!.Value, connection.DataScope, generation,
                     ReadGrant(grants, "contents"), ReadGrant(grants, "pull_requests"), ReadGrant(grants, "variables"), ReadGrant(grants, "actions"),
-                    Both(WriteGrant(grants, "issues"), UserWrite(userPermissions)), Both(WriteGrant(grants, "actions"), UserWrite(userPermissions)));
+                    Both(WriteGrant(grants, "issues"), UserWrite(userPermissions)), Both(WriteGrant(grants, "actions"), UserWrite(userPermissions)),
+                    PublicRepository(repo.Value) && PublicRepository(item));
               return new RepositoryAuthority(repository, metadata ? SourceAvailability.Available : SourceAvailability.Denied,
                   metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now, administration == SourceAvailability.Available, connection.DataScope, generation, administration, controlAuthority);
             }
@@ -136,6 +138,8 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     return value.ValueKind == JsonValueKind.Object && value.TryGetProperty(name, out array) && array.ValueKind == JsonValueKind.Array;
   }
   private static bool Permission(JsonElement value, string name) => SourceJson.Text(value, name) is "read" or "write";
+  private static bool PublicRepository(JsonElement value) => SourceJson.Text(value, "visibility") == "public"
+      && value.TryGetProperty("private", out var isPrivate) && isPrivate.ValueKind == JsonValueKind.False;
   private static bool Granted(JsonElement value, string name) => value.ValueKind == JsonValueKind.Object
       && value.TryGetProperty(name, out var permission) && permission.ValueKind == JsonValueKind.True;
   private static bool? ReadGrant(JsonElement value, string name) => Grant(value, name, false);

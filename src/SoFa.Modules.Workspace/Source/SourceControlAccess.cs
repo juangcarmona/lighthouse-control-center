@@ -82,7 +82,10 @@ internal sealed class SourceControlAccess(WorkspaceOptions settings, OwnerSessio
             : path.StartsWith("pulls", StringComparison.Ordinal) ? controls.PullRequestsRead
             : path.StartsWith("actions/variables/", StringComparison.Ordinal) ? controls.VariablesRead
             : path.StartsWith("actions/", StringComparison.Ordinal) ? controls.ActionsRead : true;
-        if (permission != true) return new(false, Status: permission == false ? 403 : 503);
+        var publicRead = permission == false && controls.PublicRepository
+            && (path.StartsWith("contents/", StringComparison.Ordinal) || path.StartsWith("commits/", StringComparison.Ordinal)
+                || path == "pulls?state=open&per_page=100");
+        if (permission != true && !publicRead) return new(false, Status: permission == false ? 403 : 503);
         target = "/repos/" + query.Repository + (path.Length == 0 ? "" : "/" + path);
       }
       else throw new InvalidDataException("Unsupported source read path.");

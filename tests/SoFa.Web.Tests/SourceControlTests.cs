@@ -93,6 +93,102 @@ public sealed class SourceControlTests
     Assert.False(result.Controls.DispatchWrite);
   }
 
+  [Theory]
+  [InlineData("commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
+  [InlineData("contents/.lighthouse/issue-control.json?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "contents/.lighthouse/issue-control.json")]
+  [InlineData("pulls?state=open&per_page=100", "pulls")]
+  public async Task ExplicitlyPublicRepositoryAllowsOnlyDocumentedReadWithoutAppReadGrant(string path, string expectedEndpoint)
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.SetPublicRepository();
+    fixture.Handler.ContentsGrant = null;
+    fixture.Handler.PullRequestsGrant = null;
+    var session = await fixture.Session();
+    var opened = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("available", opened.Availability);
+    Assert.True(opened.Lease!.Controls.PublicRepository);
+    Assert.False(opened.Lease.Controls.ContentsRead);
+    Assert.False(opened.Lease.Controls.PullRequestsRead);
+    using var request = JsonDocument.Parse(JsonSerializer.Serialize(new
+    { type = "request", id = 1, kind = "transport", scope = "repository", path }));
+    var result = await opened.Lease.Callback(request.RootElement, CancellationToken.None);
+    Assert.True(result.Ok);
+    Assert.Contains(fixture.Handler.Paths, sent => sent.EndsWith("/" + expectedEndpoint, StringComparison.Ordinal));
+    Assert.Equal("available", (await opened.Lease.Validate(CancellationToken.None)).Availability);
+  }
+
+  [Theory]
+  [InlineData("private", false, "public", false)]
+  [InlineData("public", false, "private", false)]
+  [InlineData("internal", false, "internal", false)]
+  [InlineData(null, false, "public", false)]
+  [InlineData("public", false, null, false)]
+  [InlineData("public", true, "public", false)]
+  [InlineData("public", false, "public", true)]
+  public async Task PublicReadRequiresExplicitConsistentPublicVisibility(string? metadataVisibility, bool metadataPrivate,
+      string? listedVisibility, bool listedPrivate)
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.MetadataVisibility = metadataVisibility;
+    fixture.Handler.MetadataPrivate = metadataPrivate;
+    fixture.Handler.ListedVisibility = listedVisibility;
+    fixture.Handler.ListedPrivate = listedPrivate;
+    fixture.Handler.ContentsGrant = null;
+    var session = await fixture.Session();
+    var opened = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("available", opened.Availability);
+    Assert.False(opened.Lease!.Controls.PublicRepository);
+    using var request = JsonDocument.Parse("{\"type\":\"request\",\"id\":1,\"kind\":\"transport\",\"scope\":\"repository\",\"path\":\"commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}");
+    var result = await opened.Lease.Callback(request.RootElement, CancellationToken.None);
+    Assert.False(result.Ok);
+    Assert.Equal(403, result.Status);
+    Assert.DoesNotContain(fixture.Handler.Paths, sent => sent.Contains("/commits/", StringComparison.Ordinal));
+  }
+
+  [Fact]
+  public async Task UnknownAppGrantDoesNotUsePublicReadException()
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.SetPublicRepository();
+    fixture.Handler.ContentsGrant = 17;
+    var session = await fixture.Session();
+    var opened = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    using var request = JsonDocument.Parse("{\"type\":\"request\",\"id\":1,\"kind\":\"transport\",\"scope\":\"repository\",\"path\":\"commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}");
+    var result = await opened.Lease!.Callback(request.RootElement, CancellationToken.None);
+    Assert.False(result.Ok);
+    Assert.Equal(503, result.Status);
+    Assert.DoesNotContain(fixture.Handler.Paths, sent => sent.Contains("/commits/", StringComparison.Ordinal));
+
+    fixture.Handler.ContentsGrant = null;
+    fixture.Handler.IssuesGrant = "read";
+    fixture.Handler.ActionsGrant = "read";
+    fixture.Handler.CanWrite = false;
+    var writeAuthority = await fixture.Access.CheckControlsAsync(session, "example/repository", CancellationToken.None);
+    Assert.True(writeAuthority.Controls!.PublicRepository);
+    Assert.False(writeAuthority.Controls.CommentWrite);
+    Assert.False(writeAuthority.Controls.DispatchWrite);
+  }
+
+  [Fact]
+  public async Task UpstreamPublicReadDenialIsReturnedAndPublicToPrivateChangeInvalidatesLease()
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.SetPublicRepository();
+    fixture.Handler.ContentsGrant = null;
+    var session = await fixture.Session();
+    var opened = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    using var request = JsonDocument.Parse("{\"type\":\"request\",\"id\":1,\"kind\":\"transport\",\"scope\":\"repository\",\"path\":\"commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}");
+    fixture.Handler.DenyPublicReads = true;
+    var denied = await opened.Lease!.Callback(request.RootElement, CancellationToken.None);
+    Assert.False(denied.Ok);
+    Assert.Equal(403, denied.Status);
+    Assert.Contains(fixture.Handler.Paths, sent => sent.Contains("/commits/", StringComparison.Ordinal));
+    fixture.Handler.DenyPublicReads = false;
+    fixture.Handler.MetadataVisibility = fixture.Handler.ListedVisibility = "private";
+    fixture.Handler.MetadataPrivate = fixture.Handler.ListedPrivate = true;
+    Assert.Equal("denied", (await opened.Lease.Validate(CancellationToken.None)).Availability);
+  }
+
   [Fact]
   public async Task ForeignAppAndMismatchedRepositoryIdsNeverStartSharedContentReads()
   {
@@ -103,7 +199,11 @@ public sealed class SourceControlTests
     Assert.Equal("denied", denied.Availability);
     Assert.Null(denied.Facts);
     fixture.Handler.AppId = 9001;
+    fixture.Handler.SetPublicRepository();
     fixture.Handler.AccessibleRepositoryId = 999;
+    var unbound = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    Assert.Equal("unavailable", unbound.Availability);
+    Assert.DoesNotContain(fixture.Handler.Paths, path => path.Contains("/commits/", StringComparison.Ordinal));
     var unknown = await fixture.Query.Handle(new(session, "example/repository", 7), CancellationToken.None);
     Assert.Equal("unavailable", unknown.Availability);
     Assert.Null(unknown.Facts);
@@ -133,6 +233,7 @@ public sealed class SourceControlTests
     private readonly OwnerSessions sessions;
     internal Handler Handler { get; } = new();
     internal RepositoryAccess Access { get; }
+    internal SourceControlAccess Source { get; }
     internal GetIssueControlsHandler Query { get; }
     internal Fixture(long? appId = 9001)
     {
@@ -148,6 +249,7 @@ public sealed class SourceControlTests
       };
       var authorization = new GitHubAuthorization(settings, sessions, transport, clock);
       Access = new(settings, sessions, authorization, transport, clock);
+      Source = new(settings, sessions, authorization, Access, transport);
       Query = new(new(settings, sessions, authorization, Access, transport), bridge, journal, clock);
     }
     internal async Task<OwnerSession> Session()
@@ -166,24 +268,47 @@ public sealed class SourceControlTests
     internal long AppId { get; set; } = 9001;
     internal long AccessibleRepositoryId { get; set; } = 22;
     internal object ActionsGrant { get; set; } = "write";
+    internal object? ContentsGrant { get; set; }
+    internal object? PullRequestsGrant { get; set; } = "read";
+    internal object IssuesGrant { get; set; } = "write";
     internal bool CanWrite { get; set; } = true;
+    internal string? MetadataVisibility { get; set; } = "private";
+    internal bool MetadataPrivate { get; set; } = true;
+    internal string? ListedVisibility { get; set; }
+    internal bool ListedPrivate { get; set; } = true;
+    internal bool DenyPublicReads { get; set; }
     internal List<string> Paths { get; } = [];
+    internal void SetPublicRepository()
+    {
+      MetadataVisibility = ListedVisibility = "public";
+      MetadataPrivate = ListedPrivate = false;
+    }
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
       Assert.Equal(HttpMethod.Get, request.Method);
       Assert.Equal("api.github.com", request.RequestUri!.Host);
       Assert.Equal("isolated-source-access", request.Headers.Authorization?.Parameter);
       var path = request.RequestUri.AbsolutePath; Paths.Add(path);
+      if (DenyPublicReads && (path.Contains("/commits/", StringComparison.Ordinal) || path.Contains("/contents/", StringComparison.Ordinal)
+          || path.EndsWith("/pulls", StringComparison.Ordinal)))
+        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = new StringContent("{}", Encoding.UTF8, "application/json") });
+      var grants = new Dictionary<string, object?>
+      { ["metadata"] = "read", ["issues"] = IssuesGrant, ["actions"] = ActionsGrant, ["variables"] = "read" };
+      if (ContentsGrant is not null) grants["contents"] = ContentsGrant;
+      if (PullRequestsGrant is not null) grants["pull_requests"] = PullRequestsGrant;
       object data = path switch
       {
-        "/repos/example/repository" => new { id = 22, full_name = "example/repository", permissions = new { pull = true, push = CanWrite, maintain = false, admin = false } },
+        "/repos/example/repository" => new { id = 22, full_name = "example/repository", visibility = MetadataVisibility, @private = MetadataPrivate, permissions = new { pull = true, push = CanWrite, maintain = false, admin = false } },
         "/user/installations" => new
         {
           total_count = 1,
           installations = new[] { new { id = 9, app_id = AppId, account = new { login = "example" },
-          permissions = new { metadata = "read", issues = "write", actions = ActionsGrant, pull_requests = "read", variables = "read" } } }
+          permissions = grants } }
         },
-        "/user/installations/9/repositories" => new { total_count = 1, repositories = new[] { new { id = AccessibleRepositoryId, full_name = "example/repository" } } },
+        "/user/installations/9/repositories" => new { total_count = 1, repositories = new[] { new { id = AccessibleRepositoryId, full_name = "example/repository", visibility = ListedVisibility, @private = ListedPrivate } } },
+        "/repos/example/repository/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" => new { sha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+        "/repos/example/repository/contents/.lighthouse/issue-control.json" => new { name = "issue-control.json" },
+        "/repos/example/repository/pulls" => new { total_count = 0, items = Array.Empty<object>() },
         _ => throw new InvalidOperationException("Unexpected source read")
       };
       return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json") });
