@@ -23,6 +23,7 @@ document.documentElement.dataset.lhTheme = 'system';
         if (link) { link.textContent = label; nav.append(link); }
       }
       for (const link of main.querySelectorAll('a[href="/workspace/factory"]')) link.textContent = 'Find repository work';
+      for (const link of main.querySelectorAll('a[href="/workspace/operations"]')) link.textContent = 'Open fleet overview';
       accountLink.setAttribute('aria-current', 'page'); rail.append(brand, nav);
       const column = document.createElement('div'); column.className = 'page-column';
       header.before(rail, column); column.append(header, main);
