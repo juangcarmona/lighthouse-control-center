@@ -54,10 +54,22 @@ PR #100 remains draft pending its complete Done gate.
   observations already exist and do not substitute for that user-scoped evidence.
 - #51: an actual pending question and confirmed resolution, including conflict and uncertain cases.
 
-The issuer is reachable again. Rotation of the previously exposed development client secret still
-needs operator confirmation before reuse. Production identity/deployment remain #58; the maintainer
-already waived physical-phone rehearsal. Synthetic browser/security tests remain distinguishable
-from actual source-user acceptance. All five issues stay open until their respective gates pass.
+The development identity/rotation blocker was resolved on 2026-11-09 through local provider
+administration under the maintainer's instruction. The live client secret was rotated, its previous
+value rejected with HTTP 401, and matching private app configurations and realm import updated.
+No secret value is retained in this record. Owner subject, issuer, callbacks, TLS and GitHub
+configuration were preserved. No further owner rotation confirmation is required.
+
+The development preview runs `d7f7cd3b966db9fd8772feab132128f0fa236b58`. A real browser check with TLS
+validation passed owner sign-in/session (200), denied the other development account (401), and opened
+the fleet/runtime pages (200). The session cookie remained Secure/HttpOnly/SameSite. GitHub correctly
+reported `unlinked`; this proves development identity, not actual connected-user source acceptance.
+The safe receipt is [development identity verification](development-identity-verification.json).
+These checks ran locally outside PR/push CI; no long-window E2E requirement was added to CI.
+
+Production identity/deployment remain #58; the maintainer already waived physical-phone rehearsal.
+Synthetic browser/security tests remain distinguishable from actual source-user acceptance.
+All five issues stay open until their respective gates pass.
 
 ## Confirmed feature integration
 
@@ -78,3 +90,11 @@ misread, not a reproduced defect. The existing browser test now also checks the 
 request and its result link after #701. No production correction was made, and existing assertions
 remain intact. Focused browser evidence does not establish actual connected-user source acceptance.
 The new final head must receive its own hosted verification.
+
+## Current-main reconciliation
+
+The integration branch also retains main `4632b94f7a083c3ef45d3c434494503f0d231a3e`, including #132's
+versioned development realm and setup tests. The merge is conflict-free. Workspace production code
+is unchanged from the development preview's checked revision; the complete new source head still
+requires its own hosted CI and independent final review. The preview check above identifies the
+revision actually running and does not claim that the newly reconciled source was deployed.
