@@ -37,3 +37,24 @@ test('a focused suite with no mapped behaviour does not publish an empty verific
     assert.equal(JSON.parse(readFileSync(join(directory, 'structured-behaviours.json'))).uncoveredExamples.length, 9);
   } finally { rmSync(output, { recursive: true, force: true }); }
 });
+
+test('source receipts retain attributable outcomes without copying arbitrary attachments or credentials', () => {
+  const output = mkdtempSync(join(tmpdir(), 'lcc-product-evidence-'));
+  try {
+    const reporter = new Reporter({ kind: 'live', output });
+    reporter.onBegin({}, { allTests: () => [] });
+    reporter.onTestEnd({ title: 'live ordinary comment recovery', titlePath: () => ['recovery'] }, {
+      status: 'passed', duration: 10, attachments: [
+        { name: 'recovered-source-comment', contentType: 'application/json', body: Buffer.from(JSON.stringify({
+          commentId: 123, actingUserId: 456, sourceWritePerformed: false, prepareOrSubmitRequests: 0, token: 'must-not-copy',
+        })) },
+        { name: 'unreviewed-debug', contentType: 'application/json', body: Buffer.from('{"secret":"must-not-copy"}') },
+      ],
+    });
+    reporter.onEnd({ status: 'passed' });
+    const raw = readFileSync(join(output, readdirSync(output)[0], 'structured-behaviours.json'), 'utf8');
+    const evidence = JSON.parse(raw).results[0].sourceEvidence;
+    assert.deepEqual(evidence, [{ name: 'recovered-source-comment', commentId: 123, actingUserId: 456, sourceWritePerformed: false, prepareOrSubmitRequests: 0 }]);
+    assert.equal(raw.includes('must-not-copy'), false);
+  } finally { rmSync(output, { recursive: true, force: true }); }
+});

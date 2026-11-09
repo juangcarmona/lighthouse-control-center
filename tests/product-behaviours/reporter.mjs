@@ -16,7 +16,17 @@ export default class ProductBehaviourReporter {
     if (!bindings.length) return;
     const outcome = result.status === 'passed' ? 'passed' : result.status === 'skipped' ? 'inconclusive' : 'failed';
     const citations = [...new Map(bindings.map(binding => [binding.requirement.id, { id: binding.requirement.id, digest: binding.requirement.digest }])).values()];
-    this.results.push({ testId: test.titlePath().join(' / '), outcome, durationMs: result.duration,
+    const sourceEvidence = (result.attachments ?? []).flatMap(attachment => {
+      if (!['source-authority', 'confirmed-source-comment', 'recovered-source-comment'].includes(attachment.name)
+          || attachment.contentType !== 'application/json' || !attachment.body) return [];
+      try {
+        const data = JSON.parse(attachment.body.toString('utf8'));
+        const fields = ['availability', 'reason', 'missingReadScopes', 'commentId', 'source', 'actingUserId',
+          'questionResolved', 'sourceWritePerformed', 'prepareOrSubmitRequests'];
+        return [{ name: attachment.name, ...Object.fromEntries(fields.filter(field => Object.hasOwn(data, field)).map(field => [field, data[field]])) }];
+      } catch { return []; }
+    });
+    this.results.push({ testId: test.titlePath().join(' / '), outcome, durationMs: result.duration, sourceEvidence,
       citations, examples: bindings.map(binding => ({ id: binding.id, hash: binding.example.hash,
         acceptance: binding.example.acceptance, given: binding.example.given, when: binding.example.when,
         then: binding.example.then, limitations: binding.limitations })) });
