@@ -10,7 +10,21 @@ document.documentElement.dataset.lhTheme = 'system';
     const name = document.createElement('strong'); name.textContent = 'Lighthouse';
     const product = document.createElement('small'); product.textContent = 'Control Center';
     copy.append(name, document.createTextNode(' '), product); brand.setAttribute('aria-label', 'Lighthouse Control Center');
-    brand.replaceChildren(mark, copy);
+    brand.replaceChildren(mark, copy); brand.href = '/workspace/operations';
+    const header = brand.closest('.topbar'), main = document.getElementById('account');
+    const nav = header?.querySelector('nav');
+    if (header && main && nav) {
+      const rail = document.createElement('aside'); rail.className = 'site-sidebar'; rail.setAttribute('aria-label', 'Workspace');
+      nav.classList.add('workspace-nav');
+      let accountLink = [...nav.querySelectorAll('a')].find(link => link.getAttribute('href') === '/workspace');
+      if (!accountLink) { accountLink = document.createElement('a'); accountLink.href = '/workspace'; accountLink.textContent = 'Account'; nav.append(accountLink); }
+      accountLink.setAttribute('aria-current', 'page'); rail.append(brand, nav);
+      const column = document.createElement('div'); column.className = 'page-column';
+      header.before(rail, column); column.append(header, main);
+      const location = document.createElement('div'); location.className = 'header-context';
+      const kicker = document.createElement('span'); kicker.className = 'header-kicker'; kicker.textContent = 'WORKSPACE';
+      location.append(kicker, document.createTextNode(' / Account')); header.replaceChildren(location);
+    }
   }
 }
 const status = document.getElementById('account-status');
