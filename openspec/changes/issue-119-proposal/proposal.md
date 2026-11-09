@@ -59,7 +59,7 @@ Impact neighbours checked include the external identity-provider actor, reposito
 
 Estimate remains the refined 8 points. Organization provisioning, SCIM, tenant administration, an identity service, upstream dispatch, provider operation implementation and production custody are excluded. Lighthouse v1 non-owner source writes remain unsupported without bot/CLI fallback. GitHub workflows keep executing independently of Control Center. #58 remains the production gate.
 
-This is a candidate at `planned`, not an approved design. Juan García Carmona must review the exact matrix, configuration and invalidation semantics before implementation; the `future` hold remains. Existing active changes `issue-121-proposal` and `issue-123-proposal` contain metadata only in this checkout and are not rewritten.
+This is a candidate at `planned`, not an approved design. The maintainer must review the exact matrix, configuration and invalidation semantics before implementation; the `future` hold remains. Existing active changes `issue-121-proposal` and `issue-123-proposal` contain metadata only in this checkout and are not rewritten.
 
 ### Recovery provenance
 

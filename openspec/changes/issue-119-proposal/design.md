@@ -103,7 +103,7 @@ Repeat A/B with the same GitHub user ID and with identical resource names in dif
 
 ## Migration Plan
 
-1. Before implementation, record Juan García Carmona's review of this configuration, grant matrix and restart/invalidation semantics; preserve `future` until separately released through the lifecycle. Reconcile current #48/#117 heads, integration and protected architecture decisions through the host/owner.
+1. Before implementation, record the maintainer's review of this configuration, grant matrix and restart/invalidation semantics; preserve `future` until separately released through the lifecycle. Reconcile current #48/#117 heads, integration and protected architecture decisions through the host/owner.
 2. Add legacy fixtures first. Introduce explicit policy and own-scope projections without changing personal configuration. Provide synthetic credential-free examples for A/B/C and named action grants.
 3. Integrate scoped reads, then available intentions/receipts and action guards, with tests and documentation in each slice. No new operation is enabled to demonstrate a grant.
 4. Rehearse changing/removing grants by restarting the candidate; require fresh authentication/linking and demonstrate that old cookies/receipts cannot be reused.

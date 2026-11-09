@@ -14,7 +14,7 @@ The grants and authority intersections below implement the existing operator and
 
 ## 1. Protected pickup and dependency reconciliation
 
-- [ ] 1.1 Record Juan García Carmona's review of exact admission, non-inheriting read/operate/admin semantics, target mappings, personal compatibility and restart-applied revocation; verify an explicit review receipt exists before implementation (AC1).
+- [ ] 1.1 Record the maintainer's review of exact admission, non-inheriting read/operate/admin semantics, target mappings, personal compatibility and restart-applied revocation; verify an explicit review receipt exists before implementation (AC1).
 - [ ] 1.2 Reconcile integrated #48/#117 source heads, source acceptance, action classifications, qualified provider IDs and ADR statuses through the authorized host/owner; deliver a dependency/API inventory retaining existing budgets and identify unavailable surfaces without duplicating work (AC4, AC5).
 - [ ] 1.3 Obtain separate implementation authorization and resolution of `future` through the existing lifecycle; verify protected decisions are recorded, not inferred from this proposal or any label (AC1).
 
@@ -62,7 +62,7 @@ Provider effect qualification remains outside this change; local grants cannot b
 - [ ] 6.1 Run the full direct API matrix and controlled race suites independently of UI assertions, including provider outage, permission loss, CSRF, no-store, host checks and token custody; verify zero unauthorized reads/mutations and no cancellation of independent repository execution (AC2–AC6).
 - [ ] 6.2 Run `npm run verify` and required exact-head CI; link actual results and resolve or explicitly block on failures rather than treating missing checks as passes (AC6).
 - [ ] 6.3 Arrange authorized real identity/source acceptance and provider read acceptance where supported; retain actual A/B/C evidence and distinguish doubles from real authority. Run separate `npm run verify:identity:host` outside PR/push CI where required and record remaining physical-device limitations (AC3, AC6).
-- [ ] 6.4 Obtain independent security review of scope enforcement, provenance, invalidation/races, disclosure and credential boundaries; verify findings are resolved and Juan García Carmona records every protected acceptance/DoD judgement before integration (AC1, AC5, AC6).
+- [ ] 6.4 Obtain independent security review of scope enforcement, provenance, invalidation/races, disclosure and credential boundaries; verify findings are resolved and the maintainer records every protected acceptance/DoD judgement before integration (AC1, AC5, AC6).
 
 ## Workflow follow-up
 
