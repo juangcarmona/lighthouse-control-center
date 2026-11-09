@@ -18,12 +18,18 @@ document.documentElement.dataset.lhTheme = 'system';
       nav.classList.add('workspace-nav');
       let accountLink = [...nav.querySelectorAll('a')].find(link => link.getAttribute('href') === '/workspace');
       if (!accountLink) { accountLink = document.createElement('a'); accountLink.href = '/workspace'; accountLink.textContent = 'Account'; nav.append(accountLink); }
+      for (const [href, label] of [['/workspace/operations', 'Fleet overview'], ['/workspace/factory', 'Find repository work'], ['/workspace/attention', 'Intervention inbox'], ['/workspace/issues', 'Issues'], ['/workspace/runtime', 'Runtime'], ['/workspace', 'Account']]) {
+        const link = [...nav.querySelectorAll('a')].find(item => item.getAttribute('href') === href);
+        if (link) { link.textContent = label; nav.append(link); }
+      }
+      for (const link of main.querySelectorAll('a[href="/workspace/factory"]')) link.textContent = 'Find repository work';
       accountLink.setAttribute('aria-current', 'page'); rail.append(brand, nav);
       const column = document.createElement('div'); column.className = 'page-column';
       header.before(rail, column); column.append(header, main);
       const location = document.createElement('div'); location.className = 'header-context';
       const kicker = document.createElement('span'); kicker.className = 'header-kicker'; kicker.textContent = 'WORKSPACE';
       location.append(kicker, document.createTextNode(' / Account')); header.replaceChildren(location);
+      accountLink.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }
 }
