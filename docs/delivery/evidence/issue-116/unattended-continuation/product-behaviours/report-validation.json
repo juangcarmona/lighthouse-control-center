@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-11-09T21:24:05.753400+00:00",
-  "command": "prodshape --serialization-version v1alpha2 evidence verify <three explicit reports> --format json",
+  "checkedAt": "2026-11-09T21:49:15.014977+00:00",
+  "command": "prodshape --serialization-version v1alpha2 evidence verify <four explicit reports> --format json",
   "exitCode": 0,
   "validationContext": "Disposable v1alpha2 configuration; tracked v1alpha1 adoption unchanged.",
   "byteIdenticalBaselineMarkdownFiles": 87,
-  "documents": 3,
+  "documents": 4,
   "diagnostics": [],
   "invalidPredecessor": "live-c8f8231/verification-evidence.json cited BR-LAN-PRIVILEGE-BOUNDARY; retained original, superseded by live-498da8c with QR-EXECUTION-SECURITY."
 }

@@ -1,0 +1,61 @@
+{
+  "revision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
+  "runId": "2026-11-09T21:43:39.641Z",
+  "suiteStatus": "passed",
+  "evidenceKind": "live",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productAcceptance": "Draft examples; execution does not approve the Product Change.",
+  "runProvenance": "The revision identifies HEAD; uncommitted harness changes, if present, are not attested by this field.",
+  "results": [
+    {
+      "testId": " /  / product-behaviours.spec.mjs / live ordinary comment is confirmed by its source identity without continuation",
+      "outcome": "passed",
+      "durationMs": 60368,
+      "sourceEvidence": [
+        {
+          "name": "confirmed-source-comment",
+          "commentId": 6752272812,
+          "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752272812",
+          "actingUserId": 2834629,
+          "questionResolved": false,
+          "sourceWritePerformed": true,
+          "prepareOrSubmitRequests": 2
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-ORDINARY-ISSUE-COMMENT",
+          "hash": "sha256:1fff54e5dee8a79cc38ea76e617ebda26dd05891a7337a2a25b2488060e47289",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The acting GitHub user has current issue comment authority",
+            "The repository supports ordinary comments distinct from continuation"
+          ],
+          "when": "The operator explicitly confirms an ordinary comment",
+          "then": [
+            "The conversation contains the confirmed GitHub comment identity",
+            "The comment is attributed to the verified GitHub user",
+            "The action does not request continuation"
+          ],
+          "limitations": "Fixture confirmation does not establish a GitHub App-user effect. Live confirmation requires an explicit selected issue and source write opt-in."
+        }
+      ]
+    }
+  ],
+  "uncoveredExamples": [
+    "SB-ANONYMOUS-WORKSPACE-DENIAL",
+    "SB-EXPLICIT-QUESTION-CONTINUATION",
+    "SB-FIND-REPOSITORY-ISSUE",
+    "SB-PARTIAL-REPOSITORY-COLLECTION",
+    "SB-READ-ISSUE-CONTEXT",
+    "SB-UNAVAILABLE-ISSUE-ACTION",
+    "SB-UNCERTAIN-ISSUE-COMMENT",
+    "SB-UNRESOLVED-INTERVENTION"
+  ]
+}

@@ -15,11 +15,43 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "5c042bc3d385f5d11bc95aa63f39ceef15b3082dfeb4a73bb8a03a9e53e062d4"
+      "sha256": "06e5df585b264d8797e0bae0136e77a043326e7b175ead259fb8a4a46f0fb4e3"
     },
     {
       "path": "actual-source-authority.json",
       "sha256": "90f062a3921472cdb492a734829fcd9321b2bf37e39f1f2c79866240ed473fcb"
+    },
+    {
+      "path": "confirmed-comment.png",
+      "sha256": "46abe79fd00786f79ba0d00a2bd7635c45d7b31019fb8cbcc91174869f6318e3"
+    },
+    {
+      "path": "confirmed-source-comments.json",
+      "sha256": "13a44ccf6d764e35d365caabe190ed802e8343fa04a719c404e5ee1955b42d0d"
+    },
+    {
+      "path": "failed-existing-confirmation/structured-behaviours.json",
+      "sha256": "2d5cb0e6daacd68e962dbf29f6dbc1a7d5ce5a4dbf34ecc0455fc3b0cc328524"
+    },
+    {
+      "path": "failed-existing-confirmation/verification-evidence.json",
+      "sha256": "a8f30b68da72470c2f827dcf8846482f4920a1c3247712fea6aa6d8ca6f6a18e"
+    },
+    {
+      "path": "failed-existing-preparation/structured-behaviours.json",
+      "sha256": "7edd7f67284b1113fdb64ad6b51e8d882545002395db549fc8092e2ecf3f299a"
+    },
+    {
+      "path": "failed-existing-preparation/verification-evidence.json",
+      "sha256": "10562e5ea9edf40401d83d1f810664bf0a1156d2abffedc4ae10af54b915104b"
+    },
+    {
+      "path": "failed-prepared-capture/structured-behaviours.json",
+      "sha256": "cb82baff35db493eb8fcdfe7024ee0a99cbad4de21c262b1c9f721bb2822baca"
+    },
+    {
+      "path": "failed-prepared-capture/verification-evidence.json",
+      "sha256": "bfccb5774bee248b493dc9227dfecd563b623bb0941ec105050b8c022e19c57b"
     },
     {
       "path": "failed-publication-first/structured-behaviours.json",
@@ -70,6 +102,14 @@
       "sha256": "8b6626b23d34c1079e19e0057e4f524741c2eb7ae4bb7d14664d87a68a57e854"
     },
     {
+      "path": "live-publication-4a7ca88/structured-behaviours.json",
+      "sha256": "d35f54e4d2516ebe145c803ef39894c33d4a7a34420a684a2fa4b3cd8912a865"
+    },
+    {
+      "path": "live-publication-4a7ca88/verification-evidence.json",
+      "sha256": "81da92cb0bd162c27a2e6916eb044b5b469b53c21e9bce382dbae74a5ee9090c"
+    },
+    {
       "path": "live-recovery-f3b382a/structured-behaviours.json",
       "sha256": "fff1f7e4870439c32aa97780726c8c11f0628a877261e4d6947d9c4adf89718f"
     },
@@ -79,7 +119,7 @@
     },
     {
       "path": "productshape-validator-output.json",
-      "sha256": "7f479196591e477dc59bc63cfb6147413ee50bda20e0aa022749d4843f7ae5f1"
+      "sha256": "e5e3f9d6b0f64bc56e13e6f19638d4cbd1b5b3a0c7bab5b2c85619a1e2931dae"
     },
     {
       "path": "recovered-comment.png",
@@ -87,12 +127,37 @@
     },
     {
       "path": "report-validation.json",
-      "sha256": "d841e9195b4fa00c691f2379deb6b38dea84d71386467fa8e34c7c38982746a9"
+      "sha256": "563ffa5b29fd11456700448e534de74641d66adf403ef7246233ed1056d640c8"
     },
     {
       "path": "repository.png",
       "sha256": "df4db9659249c164b1eeb8dc73d3477591da9f1a641906d0da3b16488c36dae2"
+    },
+    {
+      "path": "source-comment.png",
+      "sha256": "bb8c4ea6e20dcfd41fb95c3c79667b9beb3d0042de0cef38108d780a6ce20a15"
     }
   ],
-  "finalLiveHarnessRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d"
+  "finalLiveHarnessRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d",
+  "publicationHarnessRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
+  "confirmedSourceComments": [
+    {
+      "actorId": 2834629,
+      "createdAt": "2026-11-09T21:13:57Z",
+      "id": 6751624256,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6751624256"
+    },
+    {
+      "actorId": 2834629,
+      "createdAt": "2026-11-09T21:41:49Z",
+      "id": 6752210620,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752210620"
+    },
+    {
+      "actorId": 2834629,
+      "createdAt": "2026-11-09T21:44:35Z",
+      "id": 6752272812,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752272812"
+    }
+  ]
 }

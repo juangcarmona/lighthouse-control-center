@@ -2,7 +2,7 @@
   "documents": [
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/fixture-6079e6f/verification-evidence.json",
-      "modelRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d",
+      "modelRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
       "evidenceResults": [
         {
           "testId": " /  / attention.spec.mjs / inbox label removal and failed refresh preserve uncertainty; denial and account switch clear private history",
@@ -332,7 +332,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-498da8c/verification-evidence.json",
-      "modelRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d",
+      "modelRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
       "evidenceResults": [
         {
           "testId": " /  / product-behaviours.spec.mjs / live repository discovery preserves source identity and collection coverage",
@@ -422,7 +422,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-recovery-f3b382a/verification-evidence.json",
-      "modelRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d",
+      "modelRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
       "evidenceResults": [
         {
           "testId": " /  / product-behaviours.spec.mjs / live ordinary comment recovery confirms the existing source result without resending",
@@ -445,6 +445,32 @@
       ],
       "diagnostics": [],
       "runRevision": "f3b382a02724fa6d01aa0fa6973cee078afb451e"
+    },
+    {
+      "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-publication-4a7ca88/verification-evidence.json",
+      "modelRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
+      "evidenceResults": [
+        {
+          "testId": " /  / product-behaviours.spec.mjs / live ordinary comment is confirmed by its source identity without continuation",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463",
+          "source": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-publication-4a7ca88/verification-evidence.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4"
     }
   ],
   "diagnostics": []
