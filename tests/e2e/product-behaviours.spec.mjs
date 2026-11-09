@@ -32,9 +32,17 @@ const test = base.extend({
       await use(context);
     } finally { await context.close(); }
   }, { scope: 'worker' }],
-  signedPage: async ({ owner }, use) => {
+  signedPage: async ({ owner }, use, info) => {
     const page = await owner.newPage();
     await use(page);
+    if (info.status !== info.expectedStatus && page.url().startsWith(origin + '/workspace/')) {
+      await page.screenshot({ path: info.outputPath('authenticated-failure.png') });
+      await info.attach('authenticated-action-state', { body: Buffer.from(JSON.stringify(await page.evaluate(() => ({
+        sourceStatus: document.querySelector('#issue-status')?.textContent,
+        controlsStatus: document.querySelector('#controls-status')?.textContent,
+        actionMessage: document.querySelector('.action-message')?.textContent,
+      })))), contentType: 'application/json' });
+    }
     await page.close();
   },
 });
@@ -117,8 +125,15 @@ test('live ordinary comment is confirmed by its source identity without continua
   const confirmation = page.getByRole('region', { name: 'Action confirmation', exact: true });
   await test.step('Prepare an ordinary comment without dispatching continuation', async () => {
     await page.getByLabel('Your comment or answer').fill(body);
+    const prepared = page.waitForResponse(response => new URL(response.url()).pathname === controlsPath
+      && response.request().method() === 'POST' && response.request().postDataJSON()?.operation === 'prepare', { timeout: 45000 });
     await page.getByRole('button', { name: 'Review comment', exact: true }).click();
+    const preparation = await (await prepared).json();
+    expect(preparation.availability, preparation.reason ?? 'Current preparation must be verified.').toBe('available');
+    expect(preparation.journalState).toBe('prepared');
+    expect(preparation.intent?.body).toBe(body);
     await expect(confirmation).toContainText('does not resume work');
+    await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toBeEnabled();
   });
   const result = await test.step('Send once and inspect the actual source receipt', async () => {
     const submitted = page.waitForResponse(response => response.url().endsWith(controlsPath) && response.request().method() === 'POST'
