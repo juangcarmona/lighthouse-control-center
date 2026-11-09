@@ -1,5 +1,9 @@
 # Operational workspace integration candidate
 
+The latest development activation and access/UX verification are in the
+[2026-11-09 access and experience checkpoint](../access-experience/README.md). Earlier runtime
+revisions below are historical receipts. Actual connected-user source acceptance remains open.
+
 ## Scope and authority
 
 The maintainer requested parallel delivery and autonomous orchestration. The five existing workspace
