@@ -15,7 +15,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "6d73cb2e451d8130159862f63a8939d79b32e0b2000b80bee25ad1ed4841d9c8"
+      "sha256": "94b05b805a393bf71f6741852b1dc8ed9ab8152ece391774fa11bbb09b72a3cb"
     },
     {
       "path": "actual-source-authority.json",
@@ -98,6 +98,10 @@
       "sha256": "709d4bb3bb43eea3a34cc0502f9ec83cbbd297a0d2c574057319233a20f23857"
     },
     {
+      "path": "independent-review-receipts.json",
+      "sha256": "0139d0ddf8a6f3af06504a47083e76487d8d9d1a37aff7525c46b8d61d4f0128"
+    },
+    {
       "path": "issue-narrow.png",
       "sha256": "bd78e5ed2d1fb0565cab3438ab8daa49725882618146c02a44ed93faa36c7dd5"
     },
@@ -112,6 +116,26 @@
     {
       "path": "live-498da8c/verification-evidence.json",
       "sha256": "97fab26bc7a8a811f1516bc85abce624e28c93af4964c4eb885eb33edc7ade57"
+    },
+    {
+      "path": "live-authority-2d7f3f8/structured-behaviours.json",
+      "sha256": "6bec5cde84e3e34ceb885190ac7d810fb8a828d0830551cfe756de94c079649a"
+    },
+    {
+      "path": "live-authority-2d7f3f8/verification-evidence.json",
+      "sha256": "6f690e221880b1ec042bf8bc619546f4702c255ba81ba953ff76f1664dada4f4"
+    },
+    {
+      "path": "live-authority-be24388/action-authority.png",
+      "sha256": "22f952401ea0034ec86139392843b763fe64946a6bf9804190803eb5ab2860a9"
+    },
+    {
+      "path": "live-authority-be24388/structured-behaviours.json",
+      "sha256": "d489ba28e476e09174ba07edd3a2cf9105a7da90a23b3bbb9b07ad934f27db83"
+    },
+    {
+      "path": "live-authority-be24388/verification-evidence.json",
+      "sha256": "a78ccab91c676b4574e3d8cfd4154f1cf82d1b614093e077392ca0db5c987d5e"
     },
     {
       "path": "live-c8f8231/structured-behaviours.json",
@@ -162,8 +186,24 @@
       "sha256": "bf276c5fe024e31c4ee2af4bf6a867a0a16296598606d25517ff7b5bcc760214"
     },
     {
+      "path": "live-settled-78f40e6/issue-narrow.png",
+      "sha256": "c3b7d9dbc73071af5f5c282e3ebccd59ebb36fdbdad8fcbe7ed04f541c19e838"
+    },
+    {
+      "path": "live-settled-78f40e6/issue.png",
+      "sha256": "3259d06a0dcb4a0de52730142e473187d478ed2aaee9997660171e58ff4141bf"
+    },
+    {
+      "path": "live-settled-78f40e6/structured-behaviours.json",
+      "sha256": "167602ee45deb8616084b1a64936ea55ab5fee6bcff536e53dc4f2bee56830b0"
+    },
+    {
+      "path": "live-settled-78f40e6/verification-evidence.json",
+      "sha256": "96ce26b79875e752c38a5fec10d28d7667f3497adad9e0c502309af5d15ceb9a"
+    },
+    {
       "path": "productshape-validator-output.json",
-      "sha256": "3a08d14a26d695105b982d0cc3e3b12028e4d2fa694660b5180651474997cd59"
+      "sha256": "d569ef1afcd03936a59b59f718251b95a7a8311f2ee2779bdee9d6c217414c44"
     },
     {
       "path": "recovered-comment.png",
@@ -171,7 +211,7 @@
     },
     {
       "path": "report-validation.json",
-      "sha256": "716dcd483959e5bcd0c8d358f2dbb9b48084446ffbeaea663c5f18adb580193c"
+      "sha256": "a73cb2a468be727e6774ae6c6a01a027b5308b95a557cfbde86d23349024261f"
     },
     {
       "path": "repository.png",
@@ -204,7 +244,8 @@
       "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752272812"
     }
   ],
-  "updatedAt": "2026-11-09T22:09:44.125726+00:00",
+  "updatedAt": "2026-11-09T22:24:02.483151+00:00",
   "currentApplicationRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
-  "guidanceReadSuiteRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f"
+  "guidanceReadSuiteRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "latestAuthorityHarnessRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75"
 }

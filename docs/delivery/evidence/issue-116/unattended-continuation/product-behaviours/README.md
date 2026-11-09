@@ -19,6 +19,9 @@ The initial full fixture browser run passed 89 cases; 20 executed cases contribu
 | `fixture-eccdcac/` | Updated full browser suite: 90 passed, with 20 mapped cases under the earlier binding ledger. |
 | `fixture-guidance-9f1e2f8/` | New existing-action guidance case passed at the clean head with its explicit partial ordinary-comment binding. |
 | `live-guidance-9f1e2f8/` | Five read/recovery cases passed against the updated development binary in 1.1 minutes; recovery matched comment 6752272812 with zero prepare/submit requests. |
+| `live-settled-78f40e6/` | Two read-only cases passed after requiring source checks to settle. The context capture shows a settled unavailable-controls state; it establishes issue reading, not comment readiness. |
+| `live-authority-2d7f3f8/` | The stricter case passed using the actual browser controls response. An eligible comment requires a visible editor and enabled Review comment; a generic fallback cannot satisfy that branch. |
+| `live-authority-be24388/` | The same stricter case passed with an explicit settled action-authority capture. Actual Refine/Propose/Continue restrictions remain visible; no source write occurred. |
 | `live-publication-4a7ca88/` | Fresh full publishing case passed: one prepare, one submit, confirmed GitHub receipt, refreshed conversation and explicit receipt/comment captures. Together with the five read/recovery cases, six real-service cases have passed across the recorded runs. |
 | `failed-existing-confirmation/` | A preparation left an unsubmitted intent; the test inspected stale confirmation text and could not click send. No source effect occurred. |
 | `failed-existing-preparation/` | The corrected preparation assertion exposed `existing`, preventing substitution of the prior intent. No source effect occurred. |
@@ -44,10 +47,12 @@ The full application verification at `6079e6f` passed 104 Node tests, 267 worksp
 
 Actual identity/source E2E remains outside PR/push CI. Private CA validation is enabled. Live tracing, video and automatic screenshots are disabled; retained images were explicitly captured after authentication. No cookies, passwords, raw private configuration or token-bearing traces are included. The previous development binary and service override remain available for rollback.
 
+A settled unavailable-controls state occurred in one context capture while a separate API preflight was available. A later direct browser observation and the stricter response-bound case both showed available comment controls. The cause of that intermittent unavailability is unresolved; these passing checks do not establish its correction. Original captures remain intact. Independent review approved the stricter harness at `be24388a56933c75f61ea7a28f64f6542b2eff75`.
+
 ## Artifacts and reproduction
 
 Use the explicit parameters in [the test instructions](../../../../../../tests/README.md). The existing publishing failures must not be replayed as automatic write retries. The read/recovery suite uses `--grep-invert 'live ordinary comment is confirmed'`, the selected repository/issue and exact recovery comment ID.
 
 [Repository](repository.png), [issue](issue.png), [narrow issue](issue-narrow.png) and [recovered comment](recovered-comment.png), [fresh confirmed receipt](confirmed-comment.png) and [exact source comment](source-comment.png) are Playwright captures. [The manifest](manifest.json) identifies application/harness revisions and hashes the copied artifacts. Reports are original reporter outputs, not reconstructed passing claims.
 
-ProductShape's current evidence verifier requires v1alpha2 configuration. Verification uses a disposable view containing 87 byte-identical baseline Markdown artifacts; tracked v1alpha1 adoption remains unchanged. Seven passing report documents validate with zero diagnostics; the report validation outcome is recorded alongside the final run. A valid report schema does not replace application/source acceptance.
+ProductShape's current evidence verifier requires v1alpha2 configuration. Verification uses a disposable view containing 87 byte-identical baseline Markdown artifacts; tracked v1alpha1 adoption remains unchanged. Ten passing report documents validate with zero diagnostics; the report validation outcome is recorded alongside the final run. A valid report schema does not replace application/source acceptance.

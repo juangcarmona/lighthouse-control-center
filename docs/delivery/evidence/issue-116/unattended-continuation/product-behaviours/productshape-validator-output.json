@@ -2,7 +2,7 @@
   "documents": [
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/fixture-6079e6f/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / attention.spec.mjs / inbox label removal and failed refresh preserve uncertainty; denial and account switch clear private history",
@@ -332,7 +332,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-498da8c/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / product-behaviours.spec.mjs / live repository discovery preserves source identity and collection coverage",
@@ -422,7 +422,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-recovery-f3b382a/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / product-behaviours.spec.mjs / live ordinary comment recovery confirms the existing source result without resending",
@@ -448,7 +448,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-publication-4a7ca88/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / product-behaviours.spec.mjs / live ordinary comment is confirmed by its source identity without continuation",
@@ -474,7 +474,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/fixture-eccdcac/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / attention.spec.mjs / inbox label removal and failed refresh preserve uncertainty; denial and account switch clear private history",
@@ -804,7 +804,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/fixture-guidance-9f1e2f8/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / issue.spec.mjs / existing action explains recovery, keeps the new draft and requires explicit confirmation",
@@ -830,7 +830,7 @@
     },
     {
       "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-guidance-9f1e2f8/verification-evidence.json",
-      "modelRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
       "evidenceResults": [
         {
           "testId": " /  / product-behaviours.spec.mjs / live repository discovery preserves source identity and collection coverage",
@@ -917,6 +917,100 @@
       ],
       "diagnostics": [],
       "runRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f"
+    },
+    {
+      "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-settled-78f40e6/verification-evidence.json",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
+      "evidenceResults": [
+        {
+          "testId": " /  / product-behaviours.spec.mjs / live issue context retains actual description conversation and source provenance",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        },
+        {
+          "testId": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73",
+          "source": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-settled-78f40e6/verification-evidence.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        },
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73",
+          "source": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-settled-78f40e6/verification-evidence.json",
+          "line": 2,
+          "form": "verification-evidence",
+          "evidenceField": "results[2].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "78f40e67b5dbd65deaf86e674eec935f853aaaf2"
+    },
+    {
+      "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-authority-2d7f3f8/verification-evidence.json",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
+      "evidenceResults": [
+        {
+          "testId": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73",
+          "source": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-authority-2d7f3f8/verification-evidence.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "2d7f3f8a7868246bf449e965fe0445108486b209"
+    },
+    {
+      "file": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-authority-be24388/verification-evidence.json",
+      "modelRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
+      "evidenceResults": [
+        {
+          "testId": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73",
+          "source": "/srv/workspaces/juangcarmona/sofa/lcc-stack-integration/docs/delivery/evidence/issue-116/unattended-continuation/product-behaviours/live-authority-be24388/verification-evidence.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75"
     }
   ],
   "diagnostics": []

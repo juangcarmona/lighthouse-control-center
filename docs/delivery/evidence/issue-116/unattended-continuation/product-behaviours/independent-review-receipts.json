@@ -1,0 +1,31 @@
+{
+  "kind": "delegated-session-review",
+  "reviewer": "/root/night_independent_review",
+  "configuredModel": "gpt-6-luna",
+  "providerModelAttestation": false,
+  "forgeApproval": false,
+  "records": [
+    {
+      "revision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+      "verdict": "approved-for-partial-integration-and-development-qualification",
+      "scope": "Existing-action guidance, constrained publication harness, preserved failed and passing evidence."
+    },
+    {
+      "revision": "78f40e67b5dbd65deaf86e674eec935f853aaaf2",
+      "verdict": "approved-for-live-harness-correction",
+      "scope": "Wait through Checking and Refreshing before screenshots and authority assertions."
+    },
+    {
+      "revision": "be24388a56933c75f61ea7a28f64f6542b2eff75",
+      "verdict": "approved-for-live-harness-correction",
+      "scope": "Bind authority assertions to browser response; require comment UI for actual eligible source; explicit sanitized capture."
+    }
+  ],
+  "openGates": [
+    "Product Change approval",
+    "Proposed ADR decisions",
+    "Full issue48 source dispatch and pending-question acceptance",
+    "Integration and production custody"
+  ],
+  "intermittentControlsFailure": "Cause unresolved; later available observations do not prove correction."
+}
