@@ -1,3 +1,5 @@
+<!-- pdac-scope: none reason="Operator-authorized verification of existing browser module ownership; no product semantics or accepted model are changed." -->
+
 # Change: enforce frontend module boundaries
 
 ## Linked issue

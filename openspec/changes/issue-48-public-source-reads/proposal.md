@@ -22,9 +22,9 @@ Regression cases must prove public false-grant reads use the same user token; pr
 
 ## Source references
 
-- https://docs.github.com/en/rest/commits/commits#get-a-commit
-- https://docs.github.com/en/rest/repos/contents#get-repository-content
-- https://docs.github.com/en/rest/pulls/pulls#list-pull-requests
+- [Get a commit](https://docs.github.com/en/rest/commits/commits#get-a-commit)
+- [Get repository content](https://docs.github.com/en/rest/repos/contents#get-repository-content)
+- [List pull requests](https://docs.github.com/en/rest/pulls/pulls#list-pull-requests)
 
 ## Rollback
 

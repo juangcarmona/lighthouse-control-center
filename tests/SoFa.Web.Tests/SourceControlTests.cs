@@ -118,6 +118,7 @@ public sealed class SourceControlTests
   }
 
   [Theory]
+  [InlineData("private", true, "private", true)]
   [InlineData("private", false, "public", false)]
   [InlineData("public", false, "private", false)]
   [InlineData("internal", false, "internal", false)]

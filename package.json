@@ -25,7 +25,8 @@
     "identity:setup": "node scripts/setup-development-identity.mjs",
     "verify:identity:host": "node scripts/verify-identity-host.mjs",
     "prepare:aspire": "node scripts/prepare-aspire.mjs",
-    "test:visual": "playwright test --grep \"visual contract\""
+    "test:visual": "playwright test --grep \"visual contract\"",
+    "test:e2e:live": "playwright test --config playwright.e2e.config.mjs"
   },
   "repository": {
     "type": "git",
@@ -54,7 +55,8 @@
     "acorn": "8.15.0",
     "fflate": "0.8.3",
     "husky": "9.1.7",
-    "markdownlint-cli2": "0.24.0"
+    "markdownlint-cli2": "0.24.0",
+    "yaml": "2.9.1"
   },
   "dependencies": {
     "@juangcarmona/lighthouse-ui": "0.2.1"

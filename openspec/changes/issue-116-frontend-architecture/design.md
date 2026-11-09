@@ -1,3 +1,5 @@
+<!-- pdac-scope: none reason="Operator-authorized verification of existing browser module ownership; no product semantics or accepted model are changed." -->
+
 # Design: frontend boundary checks
 
 ## Approach

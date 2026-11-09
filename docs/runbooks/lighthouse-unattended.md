@@ -1,5 +1,15 @@
 # Autonomous Lighthouse delivery
 
+## Operator continuation grant — 2026-11-09
+
+The maintainer explicitly requested the complete ordered #116 queue, quality and architecture tests (including Roslyn and frontend boundaries), feature slices, fully unattended operation and executed Playwright evidence grounded in ProductShape structured behaviours. The [current execution plan](../delivery/plans/116-unattended-continuation.md) records this operator-directed continuation. Routine engineering review and integration may be delegated to the configured different-model reviewer after actual acceptance and exact-head checks pass. The current #50/#100 candidate receives a newly authorized bounded acceptance review; earlier exhausted attempts remain historical and are not reset or relabelled successful.
+
+This session grant is distinct from the narrower native-worker path policy below. For the #116 quality increments, the operator may add architecture/behaviour tests, their explicit parser dependency and lock, additive test-project references, evaluated analyzer-activation checks, separate live-E2E configuration/reporting and their plans/evidence/documentation. Preserve existing assertions and verification execution. A worker may not extend its own policy, alter security/product authority or turn a failed real-source gate into fixture acceptance. Each new quality gate has at most three correction rounds; a stopped gate remains stopped while independent work continues. Native workers retain their checked-in admission limits until a separately reviewed policy update is integrated.
+
+Current source permissions, consent, pending product/security decisions, resource-specific provider authorization, forge requirements and production deployment retain their existing authorities. Real-provider E2E stays outside PR/push CI. A queued label or running worker is not accepted delivery.
+
+## Native worker grant — 2026-11-08
+
 The maintainer requested autonomous repository continuation on 2026-11-08. This updates the earlier exact-#99 pilot below; historical qualification receipts retain their original scope.
 
 The current grant uses the existing native FF implementation, independent plan/candidate reviewer, one shared correction and 6,600-second deadline. Eligible work must be low risk, reversible, dependency-resolved and 1–3 points. It can change only the observation/frontend, asset and operational-documentation paths declared in `.lighthouse/unattended.json`; verification inputs stay frozen except existing explicitly reasoned issue-specific corrections. Larger work is refined into verifiable increments rather than bypassing admission.
