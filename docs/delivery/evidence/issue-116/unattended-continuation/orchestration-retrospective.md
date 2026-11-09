@@ -25,3 +25,11 @@ The real publishing tests include failed waits and captures with actual confirme
 ## Maintenance does not retry every failed publication
 
 A read-only source/runtime audit found that the recovered draft proposals #147/#148/#144/#143 did not meet the installed automatic-retry gate: their agents succeeded and publishers failed, whereas retry eligibility requires a failed worker and skipped publisher; `future` independently blocks recovery. Leave their requests, holds and maintenance scope intact. A draft PR is not acceptance. The [pinned recovery implementation](https://github.com/juangcarmona/lighthouse/blob/879c4e75efebd945f8aea5b8ee09b97db62edbea/src/packages/sdlc/src/worker-recovery.mjs) owns these checks; no duplicate scheduler or recovery override was added.
+
+## A generated proposal can still fail publication
+
+Fresh #55 proposal [42714650903](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42714650903) passed its agent result but failed the publisher's strict OpenSpec check: four requirement summaries exceeded 500 characters. Fresh #54 proposal [42715631710](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42715631710) failed the publisher because text before the first `##` spec section would be lost on archive. These were format failures after fresh refinement, not stale owner intent or inference-provider failures.
+
+Recovery used only each normalized candidate's admitted proposal documents in an isolated branch from the recorded main revision. For #55, requirement summaries were shortened and all clauses retained in scenarios. For #54, the preamble was preserved in the proposal and the scope marker moved below the first spec section. Strict OpenSpec, product citations, Markdown and diff checks ran again; independent review precedes draft publication. The native failures remain failed, and `future` remains. Repeating the native agent or relaxing the publisher would not establish a valid proposal.
+
+For subsequent proposals, validate the actual archive-safe specification structure and requirement-text limit before publication, including citation comments in that text budget. Keep citations after the requirement statement and before its first scenario. A passing normalized agent envelope alone does not establish OpenSpec validity or publication.

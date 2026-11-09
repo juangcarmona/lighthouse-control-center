@@ -15,7 +15,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "94b05b805a393bf71f6741852b1dc8ed9ab8152ece391774fa11bbb09b72a3cb"
+      "sha256": "9915f0b4afc177e74598417e7827b5715b89ba5ae4de87705e5a1d676466bd73"
     },
     {
       "path": "actual-source-authority.json",
@@ -34,6 +34,10 @@
       "sha256": "7b78651d264acbec5c62a38d47fcb09d8b57801c42e87f870cc981aee5583fee"
     },
     {
+      "path": "development-identity-activation.json",
+      "sha256": "6d024faa2b1387f5d5702673ae830c6b7efe8cd023946c43732e968ebcde6efa"
+    },
+    {
       "path": "failed-existing-confirmation/structured-behaviours.json",
       "sha256": "2d5cb0e6daacd68e962dbf29f6dbc1a7d5ce5a4dbf34ecc0455fc3b0cc328524"
     },
@@ -48,6 +52,18 @@
     {
       "path": "failed-existing-preparation/verification-evidence.json",
       "sha256": "10562e5ea9edf40401d83d1f810664bf0a1156d2abffedc4ae10af54b915104b"
+    },
+    {
+      "path": "failed-fixture-1dbcfb4/playwright.log",
+      "sha256": "1cc82ae5229a85641301e6d2e9188ca9e5c266f0621df0292842450aa93f08a7"
+    },
+    {
+      "path": "failed-fixture-1dbcfb4/structured-behaviours.json",
+      "sha256": "551c88e7ad97d650b79ffc6e659110db0c0580c122dba1427534127fa74fdb72"
+    },
+    {
+      "path": "failed-fixture-1dbcfb4/verification-evidence.json",
+      "sha256": "668c9cb3fec9825ee4e969ce08412775f1ca4ff4c78a7cdea598ca0eb3aba1e5"
     },
     {
       "path": "failed-prepared-capture/structured-behaviours.json",
@@ -98,16 +114,40 @@
       "sha256": "709d4bb3bb43eea3a34cc0502f9ec83cbbd297a0d2c574057319233a20f23857"
     },
     {
+      "path": "fixture-identity-399fcd7/playwright.log",
+      "sha256": "193017632a026613cbdd0dc27f54c020aa7322aa962ef4f2b0203ba3a354d2c4"
+    },
+    {
+      "path": "fixture-identity-399fcd7/structured-behaviours.json",
+      "sha256": "2881eec40bb5a92dbf3280a79f1d7a10bb991f564df5893b17a2cfc6eb9e26e7"
+    },
+    {
+      "path": "fixture-identity-399fcd7/verification-evidence.json",
+      "sha256": "33a3db4111d9e30bee96547f5b30272f8b9bf88c60192400af65f7ef1b824684"
+    },
+    {
+      "path": "identity-qualification-summary.json",
+      "sha256": "724a526184c67626d3698dd570a43712c328dfe000455e0e0cc43d8535209310"
+    },
+    {
       "path": "independent-review-receipts.json",
-      "sha256": "0139d0ddf8a6f3af06504a47083e76487d8d9d1a37aff7525c46b8d61d4f0128"
+      "sha256": "6716c3969862fda74f254fee6fc7a5a5ab4093a10a2cb880787f6e0d3fd26865"
+    },
+    {
+      "path": "interrupted-live-identity-399fcd7/structured-behaviours.json",
+      "sha256": "751836c617f705f00ff5ee4436e2f1e3495769ae91fb537808b85de1126ef543"
+    },
+    {
+      "path": "interrupted-live-identity-399fcd7/verification-evidence.json",
+      "sha256": "e1dc70aefd3efb22697324525cbf405bb7cae31010cc9ac3f9a71eb3925201f5"
     },
     {
       "path": "issue-narrow.png",
-      "sha256": "bd78e5ed2d1fb0565cab3438ab8daa49725882618146c02a44ed93faa36c7dd5"
+      "sha256": "d7f92bf1c099983c0e537ca549254fd4c938f2d44626981541aa60f487f56d30"
     },
     {
       "path": "issue.png",
-      "sha256": "8cde8f630b396b157a2060322a78ee404149159eefbf89fa21bd3dcd901a7069"
+      "sha256": "b8a43fd624a422b10fd11205679821787ff558acaad6339d386f1549cd5461ea"
     },
     {
       "path": "live-498da8c/structured-behaviours.json",
@@ -170,6 +210,38 @@
       "sha256": "25fcc84deda95c9c2721937896e68ed85b4ae27540262abb24357cc07aa9b1f7"
     },
     {
+      "path": "live-identity-399fcd7/action-authority.png",
+      "sha256": "b8a43fd624a422b10fd11205679821787ff558acaad6339d386f1549cd5461ea"
+    },
+    {
+      "path": "live-identity-399fcd7/issue-narrow.png",
+      "sha256": "d7f92bf1c099983c0e537ca549254fd4c938f2d44626981541aa60f487f56d30"
+    },
+    {
+      "path": "live-identity-399fcd7/issue.png",
+      "sha256": "b8a43fd624a422b10fd11205679821787ff558acaad6339d386f1549cd5461ea"
+    },
+    {
+      "path": "live-identity-399fcd7/playwright.log",
+      "sha256": "a5046037c9c70e0d8e7e13250d3f107171036c5f63d1916e0ef2007830e0e821"
+    },
+    {
+      "path": "live-identity-399fcd7/recovered-comment.png",
+      "sha256": "06396602f3b9aedf1710833e1ccbeb4b307754bea93524178a75dd717775bc8c"
+    },
+    {
+      "path": "live-identity-399fcd7/repository.png",
+      "sha256": "8abe0b9dceda94075e4f0615ccd2a5efa39653ab1ea37d0db54bc3a3125ea64c"
+    },
+    {
+      "path": "live-identity-399fcd7/structured-behaviours.json",
+      "sha256": "d1c49772a7bf0719b6564a985475491751ba354ac0f007c7f083c425143627d9"
+    },
+    {
+      "path": "live-identity-399fcd7/verification-evidence.json",
+      "sha256": "e6112fbafe112485858481a07581f1794f8c72de7a5fabc1fb26defc5ff68d62"
+    },
+    {
       "path": "live-publication-4a7ca88/structured-behaviours.json",
       "sha256": "d35f54e4d2516ebe145c803ef39894c33d4a7a34420a684a2fa4b3cd8912a865"
     },
@@ -203,26 +275,30 @@
     },
     {
       "path": "productshape-validator-output.json",
-      "sha256": "d569ef1afcd03936a59b59f718251b95a7a8311f2ee2779bdee9d6c217414c44"
+      "sha256": "84826a2448fb13c80567da318551360be2a4633f5da48377e145f105edcdbe0c"
     },
     {
       "path": "recovered-comment.png",
-      "sha256": "5fd7169908bab51abb2224096ba03e35aaf934e31ce0da995067ba7cecf17e49"
+      "sha256": "06396602f3b9aedf1710833e1ccbeb4b307754bea93524178a75dd717775bc8c"
     },
     {
       "path": "report-validation.json",
-      "sha256": "a73cb2a468be727e6774ae6c6a01a027b5308b95a557cfbde86d23349024261f"
+      "sha256": "d6105303c4b74a2c4c96bd423b821782897cb1bea0ea2ef6b2d99fd2d642f977"
     },
     {
       "path": "repository.png",
-      "sha256": "df4db9659249c164b1eeb8dc73d3477591da9f1a641906d0da3b16488c36dae2"
+      "sha256": "8abe0b9dceda94075e4f0615ccd2a5efa39653ab1ea37d0db54bc3a3125ea64c"
+    },
+    {
+      "path": "signin-readiness-diagnostic.json",
+      "sha256": "64822bcd7d7a08bbd63de6aa743dd962979e459645db892c2d86b510e6ebd8a1"
     },
     {
       "path": "source-comment.png",
       "sha256": "bb8c4ea6e20dcfd41fb95c3c79667b9beb3d0042de0cef38108d780a6ce20a15"
     }
   ],
-  "finalLiveHarnessRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d",
+  "finalLiveHarnessRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
   "publicationHarnessRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
   "confirmedSourceComments": [
     {
@@ -244,8 +320,16 @@
       "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752272812"
     }
   ],
-  "updatedAt": "2026-11-09T22:24:02.483151+00:00",
-  "currentApplicationRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "updatedAt": "2026-11-09T23:31:03.956607+00:00",
+  "currentApplicationRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
   "guidanceReadSuiteRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
-  "latestAuthorityHarnessRevision": "be24388a56933c75f61ea7a28f64f6542b2eff75"
+  "latestAuthorityHarnessRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "latestFixtureRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "latestFullFixtureCasesPassed": 97,
+  "latestActualReadRecoveryCasesPassed": 5,
+  "passingSuiteReportDocuments": 12,
+  "unresolvedObservations": [
+    "Initial latest-activation sign-in failure; later diagnostic and five-case pass do not establish its cause.",
+    "Earlier intermittent controls unavailability; later available observations do not establish its cause."
+  ]
 }
