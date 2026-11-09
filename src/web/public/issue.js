@@ -106,12 +106,12 @@ async function read(append = false) {
     const data = await response.json().catch(() => null);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      else if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+      else if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
       clear();
       const reason = typeof data?.reason === 'string' ? data.reason : 'Source authority changed. Verify the account and refresh.';
       status(reason, true); controlsStatus('Actions unavailable. ' + reason); return;
     }
-    if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+    if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
     if (current && data.dataScope && data.dataScope !== current.dataScope) {
       clear();
       if (append) { status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
@@ -170,10 +170,10 @@ async function readEvidence(target, page, snapshot, operation) {
     const data = await response.json().catch(() => null);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
       clear(); status('Source authority changed; previous context was removed.', true); return;
     }
-    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
     if (!response.ok) throw Error('Unavailable evidence');
     if (!data.dataScope || data.dataScope !== current.dataScope) {
       clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return;
@@ -231,12 +231,12 @@ async function readControls(target, operation, initialBody = '') {
     const reason = controlReason(data);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); controlsStatus('Actions unavailable. ' + reason); return; }
+      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); controlsStatus('Actions unavailable. ' + reason); return; }
       clear(); status('Source authority changed; previous context was removed. ' + reason, true);
       controlsStatus('Actions unavailable. ' + reason);
       return;
     }
-    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
     if (!response.ok) {
       controlsStatus('Action checks are unavailable. Previous observations may be stale. ' + reason);
       if (typeof data?.reason === 'string') {

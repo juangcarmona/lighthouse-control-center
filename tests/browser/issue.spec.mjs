@@ -610,7 +610,7 @@ test('verified identity falls back when a source response reports a replacement 
 
   harness.replaceAccount();
   await page.getByRole('button', { name: 'Refresh source' }).click();
-  await expect(page.locator('#issue-status')).toContainText('identity or source scope changed');
+  await expect(page.locator('#issue-status')).toContainText('connected account changed');
   await expect(page.locator('.sidebar-identity')).toContainText('Session owner');
   await expect(page.locator('.sidebar-identity')).not.toContainText('verified-source-login');
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
