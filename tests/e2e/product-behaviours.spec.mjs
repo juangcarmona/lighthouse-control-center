@@ -82,6 +82,9 @@ test('live action authority explains unavailable dependencies without granting a
   await page.goto(issuePath);
   const source = await (await observation).json();
   await expect(page.locator('#controls-status')).not.toHaveText(/^(Checking|Refreshing)/i);
+  if (source.availability === 'available' && typeof source.facts?.actor?.login === 'string' && source.facts.actor.login.trim()) {
+    await expect(page.locator('.header-identity strong')).toHaveText(source.facts.actor.login.trim());
+  }
   if (source.availability === 'available' && source.submissionAvailable === true && source.facts?.actions?.comment?.eligible === true) {
     await expect(page.getByLabel('Your comment or answer')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Review comment', exact: true })).toBeEnabled();

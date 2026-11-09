@@ -244,6 +244,9 @@ async function readControls(target, operation, initialBody = '') {
     const facts = data.facts;
     if (!facts || facts.repository?.name?.toLowerCase() !== target.repository.toLowerCase() || facts.issue?.number !== target.number
         || facts.actor?.id !== data.actingUserId || typeof data.observedAt !== 'string') throw Error('Unverified shared source identity');
+    if (typeof facts.actor.login === 'string' && facts.actor.login.trim()) {
+      updateWorkspaceAccount({ state: 'linked', login: facts.actor.login.trim() });
+    }
     const area = byId('issue-controls'), question = facts.question;
     const eligible = ['comment', 'refine', 'propose', 'continue'].some(name => facts.actions?.[name]?.eligible === true);
     byId('source-eligibility').open = !data.submissionAvailable || !eligible || question?.current === true;

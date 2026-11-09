@@ -313,6 +313,26 @@ test('shared workflow restrictions appear once while distinct restrictions keep 
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });
 
+test('workflow dispatch denial keeps comment permission distinct and sends no request', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71, login: 'verified-owner' },
+    actions: {
+      comment: { eligible: true },
+      refine: { eligible: false, reason: 'write-authority-denied' },
+      propose: { eligible: false, reason: 'write-authority-denied' }
+    }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#control-actions')).toContainText('Refine, Propose unavailable: Workflow dispatch is unavailable');
+  await expect(page.locator('#control-actions')).toContainText('Actions: write');
+  await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review Propose' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeEnabled();
+  await expect(page.locator('#comment-composer')).toContainText('Publishes a GitHub comment as the connected account');
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
 test('timestamps and source identifiers stay inside collapsed provenance details', async ({ page }) => {
   await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
@@ -502,11 +522,27 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
 
 test('owner expiry clears the signed-in identity on an open issue page', async ({ page }) => {
   const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71, login: 'verified-source-login' }, actions: {}
+  } });
   await page.route('**/api/session', route => route.fulfill({ json: { authenticated: true, displayName: 'Verified owner' } }));
   await page.goto(origin + '/workspace/issues/example/repository/7');
-  await expect(page.locator('.sidebar-identity')).toContainText('Verified owner');
+  await expect(page.locator('.sidebar-identity')).toContainText('verified-source-login');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('Verified owner');
   harness.fail(401); await page.getByRole('button', { name: 'Refresh source' }).click();
   await expect(page.locator('#issue-body')).toBeEmpty();
-  await expect(page.locator('.sidebar-identity')).not.toContainText('Verified owner');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('verified-source-login');
   await expect(page.locator('.sidebar-identity')).not.toContainText('Signed in');
+});
+
+test('unverified actor login cannot replace the authenticated identity', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 72, login: 'mismatched-source-login' }, actions: {}
+  } });
+  await page.route('**/api/session', route => route.fulfill({ json: { authenticated: true, displayName: 'Session owner' } }));
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('.sidebar-identity')).toContainText('Session owner');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('mismatched-source-login');
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });

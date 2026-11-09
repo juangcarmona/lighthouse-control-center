@@ -10,8 +10,8 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   let busy = false, preparation = null;
   const allowed = action => submissionAvailable && facts.actions?.[action]?.eligible === true;
   const actionReasons = {
-    'write-authority-denied': 'The connected GitHub user or GitHub App installation lacks issue-write permission. Check the connected account and repository access, then refresh.',
-    'write-authority-unavailable': 'Issue-write permission could not be verified for the connected GitHub user and App installation. Check the connection and repository access, then refresh.',
+    'write-authority-denied': 'Workflow dispatch is unavailable. Verify repository access and the GitHub App Actions: write grant/current dispatch authority, then refresh.',
+    'write-authority-unavailable': 'Workflow dispatch authority could not be verified. Verify repository access and the GitHub App Actions: write grant/current dispatch authority, then refresh.',
     'installed-contract-unsupported': 'This repository does not expose a supported Lighthouse issue-control contract at its current revision.',
     'stage-contract-unsupported': 'The installed Lighthouse contract does not support this action for the repository.',
     'policy-unavailable': 'The repository automation policy could not be verified, so this action is unavailable.',
@@ -23,7 +23,12 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     'source-wait-not-current': 'The source no longer shows this question as the current wait.',
     'reservation-evidence-unavailable': 'Current source activity could not be verified. Refresh later; no new action can be prepared safely.',
   };
+  const commentWriteReasons = {
+    'write-authority-denied': 'The connected GitHub user or GitHub App installation lacks issue-write permission. Check the connected account and repository access, then refresh.',
+    'write-authority-unavailable': 'Issue-write permission could not be verified for the connected GitHub user and App installation. Check the connection and repository access, then refresh.',
+  };
   const explain = value => actionReasons[value] ?? (typeof value === 'string' ? value.replaceAll('-', ' ') : 'The source did not confirm this action. Refresh the issue and review current source checks.');
+  const explainComment = value => commentWriteReasons[value] ?? explain(value);
   const message = document.createElement('p'); message.className = 'action-message'; message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
   const body = document.createElement('textarea'); body.className = 'lh-textarea'; body.rows = 5; body.maxLength = 12288;
   body.placeholder = 'Write a comment for this issue…';
@@ -36,7 +41,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     ? submissionAvailable ? 'Publishes a GitHub comment as the connected account. It does not resume work. Review it before sending.'
       : 'The source permits ordinary comments, but protected command storage is unavailable. You can keep a draft here; sending and recovery are disabled.'
     : allowed('continue') ? 'Enter an answer for the verified question, then review answer and continue. Ordinary commenting is unavailable.'
-      : explain(facts.actions?.comment?.reason || reason || 'write-authority-unavailable');
+      : explainComment(facts.actions?.comment?.reason || reason || 'write-authority-unavailable');
   if (!commentEligible && (!facts.actions?.comment || ['write-authority-denied', 'write-authority-unavailable'].includes(facts.actions.comment.reason))) {
     const link = document.createElement('a'); link.href = '/workspace'; link.textContent = 'Review connected account'; hint.append(' ', link);
   }
