@@ -1,8 +1,8 @@
-import { readFile, writeFile, mkdir, realpath } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, lstat, realpath } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { isIP } from 'node:net';
-import { resolve, dirname, basename, sep, isAbsolute } from 'node:path';
+import { resolve, sep, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 process.umask(0o077);
@@ -21,12 +21,29 @@ function address(key, issuer = false) {
 const origin = address('--origin');
 const issuer = address('--issuer', true);
 if (!values.get('--directory') || !isAbsolute(values.get('--directory'))) throw Error('Select an absolute private directory outside the repository.');
-const directory = resolve(await realpath(dirname(resolve(values.get('--directory')))), basename(values.get('--directory')));
+const directory = resolve(values.get('--directory'));
 const repository = await realpath(fileURLToPath(new URL('..', import.meta.url)));
 if (directory === repository || directory.startsWith(repository + sep)) throw Error('Keep development secrets outside the checkout.');
 const testAccounts = values.get('--test-accounts') === true;
 if (typeof process.getuid !== 'function' || process.getuid() === 0) throw Error('Create the private development setup as a non-root POSIX user.');
 if (!testAccounts && !values.get('--owner-subject')) throw Error('Supply the exact provider owner subject, or request isolated synthetic test accounts.');
+async function checkPrivateAncestors(target) {
+  const parts = target.slice(1).split(sep).filter(Boolean);
+  let current = '/';
+  for (const part of parts.slice(0, -1)) {
+    current = resolve(current, part);
+    let details;
+    try { details = await lstat(current); }
+    catch { throw Error('The selected directory parent must already exist and be private.'); }
+    const rootSticky = details.uid === 0 && (details.mode & 0o1000) !== 0;
+    if (details.isSymbolicLink() || !details.isDirectory() || ![0, process.getuid()].includes(details.uid)
+      || ((details.mode & 0o022) !== 0 && !rootSticky))
+      throw Error('Use existing parent directories owned by root or this user without group or world write access.');
+  }
+  try { await lstat(target); throw Error('The selected setup directory already exists.'); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+}
+await checkPrivateAncestors(directory);
 await mkdir(directory, { mode: 0o700 }); // Refuse to overwrite an existing private setup.
 const tls = resolve(directory, 'tls');
 await mkdir(tls, { mode: 0o700 });

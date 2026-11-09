@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, stat, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, stat, rm, chmod } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -85,4 +85,16 @@ test('development setup refuses a checkout or relative destination before creati
     assert.notEqual(setup(name).status, 0);
     assert.equal(existsSync(target), false);
   } finally { await rm(target, { recursive: true, force: true }); }
+});
+
+test('development setup rejects a group-writable ancestor before creating credentials', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'sofa-unsafe-parent-'));
+  const directory = join(parent, 'identity');
+  try {
+    await chmod(parent, 0o770);
+    const result = setup(directory);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /parent directories owned by root or this user/);
+    assert.equal(existsSync(directory), false);
+  } finally { await chmod(parent, 0o700); await rm(parent, { recursive: true, force: true }); }
 });

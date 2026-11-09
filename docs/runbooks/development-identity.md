@@ -6,13 +6,13 @@ The supported application uses one HTTPS workspace and a separate development Ke
 
 On the verified Linux x64 development host, install Node 22+, .NET 10, Docker, OpenSSL and Chromium prerequisites. `npm ci` supplies the exact Linux x64 Aspire CLI paired with the AppHost SDK, including SDK 10.0.100 environments; no global CLI installation is required. Public bundle files stay under ignored `node_modules/.cache/sofa/`; runtime state stays in the user cache outside the checkout. The setup process receives no workspace/provider/source credentials. Create the private setup as a non-root user. The generated `ProviderUser` matches that user UID with the image group 0 so 0600 files remain private and readable on GitHub runners as well as local hosts. Recreate the isolated setup when moving between OS users; do not make its keys world-readable. Keep Docker available to the AppHost host. Choose stable HTTPS application and issuer addresses reachable from the intended browser or phone. Both must use the same registered issuer hostname; an internal container hostname is not a replacement.
 
-For a loopback development example:
+For a loopback development example, use a private location directly under your home directory. The destination must not exist yet. Every existing parent must be a real directory owned by root or the current user and must not be group- or world-writable; the root-owned sticky system temporary directory is allowed. The setup checks these conditions before creating any files. Avoid shared configuration trees such as `~/.config` when their mode permits group writes.
 
 ```sh
 npm ci
 npx playwright install --with-deps chromium
 node scripts/setup-development-identity.mjs \
-  --directory "$HOME/.config/sofa-dev" \
+  --directory "$HOME/.lighthouse-control-center-private" \
   --origin https://127.0.0.1:5443 \
   --issuer https://127.0.0.1:8443/realms/sofa-dev \
   --test-accounts
