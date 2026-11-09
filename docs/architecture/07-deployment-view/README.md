@@ -12,7 +12,7 @@ The supported application entrypoint builds and directly launches the pinned Rel
 | --- | --- | --- |
 | Workspace | One .NET process composed by Aspire | Same selected external-issuer profile; final production packaging remains release work |
 | Identity provider | Isolated pinned Keycloak image, private test realm and credentials | No provider provisioned by AppHost |
-| Application state | Bounded process-memory authentication/observations; optional protected SQLite command journal and separate key ring | Protected durable custody/recovery remains unresolved release work |
+| Application state | Protected session/source credential store and separate key ring in the access-continuity candidate; bounded memory observations and optional independent command journal | Protected durable custody/recovery remains unresolved release work |
 | Repository delivery | Independently operated workflows and executor | Independent of either workspace or development provider |
 
 <!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
@@ -46,3 +46,7 @@ Retain one configured .NET application and its current native frontend. Aspire c
 | Enterprise target | Bounded fleet pagination, teams, provider instances and separately managed Kubernetes/VMSS/GPU capacity | Representative load, identity/group changes, rate limits, data isolation and provider-specific acceptance; not implied by local contract doubles |
 
 No broker, separate analytics service or database server is required by this proposal. Storage choice and replication depend on accepted retention/availability needs. Start single-instance; the #48 private SQLite/key custody is not a multi-instance write guarantee. Distribution and identity/custody acceptance follow the [roadmap](../../roadmap/lighthouse-control-center.md); renaming infrastructure identifiers is separately gated by the [rename plan](../../roadmap/lighthouse-control-center-rename.md).
+
+## Candidate access-continuity custody
+
+[Proposed ADR-0011](../09-architecture-decisions/0011-preserve-verified-access.md) adds separately provisioned private session data and key directories through `SoFa:Identity:SessionDirectory` and `SoFa:Identity:SessionKeyDirectory`. The development generator provisions them outside the checkout; they must also remain outside the published application and separate from command-journal custody. Provider and source revalidation remain required after restart. Initial migration from the former process-local binary needs fresh login/linking; subsequent restart recovery is a separate acceptance check. Production backup, recovery and multi-instance operation remain unqualified.

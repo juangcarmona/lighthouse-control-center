@@ -6,7 +6,7 @@ description: Important architecture decisions and links to their records.
 
 # 9. Architecture decisions
 
-This directory is the canonical ADR collection for SoFa. It owns the decision records and their index; no parallel `docs/adr/` directory is used. The section remains part of the ArcShape twelve-section architecture.
+This directory is the canonical ADR collection for Lighthouse Control Center. It owns the decision records and their index; no parallel `docs/adr/` directory is used. The section remains part of the ArcShape twelve-section architecture.
 
 | Decision | Status | Date | Record |
 | --- | --- | --- | --- |
@@ -28,6 +28,7 @@ ADR-0008 accepts the journal design for the issue-command adapter and recovery m
 
 | Proposed record | Scope |
 | --- | --- |
+| [ADR-0011](0011-preserve-verified-access.md) | Bounded persistent owner sessions and independently retained source connection under the requested access-continuity change |
 | [ADR-0010](0010-administer-independent-runtime-providers.md) | Separately authorized provider administration; extends ADR-0006 without moving delivery orchestration |
 
 This is a proposal inventory, not the accepted-decision table. ADR-0006 remains accepted. ADR-0008's owner acceptance and candidate integration are preserved in #48/#112 and must be reconciled through that existing delivery rather than changed here.

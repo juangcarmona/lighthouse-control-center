@@ -18,7 +18,7 @@ The browser refreshes observations while visible. Transport failures preserve ol
 
 ## Session failure and source-account transitions
 
-Due provider revalidation blocks the protected request until it succeeds. Recognized revocation removes local authority; temporary failure preserves the original session deadlines but grants no stale access. CSRF-protected local logout/disconnect remain available during provider outage. A late refresh cannot restore removed authority.
+Due provider revalidation blocks the protected request until it succeeds. Recognized revocation removes local authority; temporary failure preserves the original session deadlines but grants no stale access. CSRF-protected local logout/disconnect remain available during provider outage. In the access-continuity candidate, logout removes the local session; explicit source disconnect removes the independently retained grant. Restart restores valid records only for online revalidation, and a fresh session for the same owner can reuse that grant after source verification. A late refresh cannot restore removed authority.
 
 GitHub callback state is single-use and bound to the owner session and connection attempt. A verified different account requires explicit confirmation; failed or cancelled replacement preserves an otherwise valid existing connection. Reference rotation preserves the original deadlines and the latest server-held provider tokens. Shared mechanisms are described in [section 08](../08-crosscutting-concepts/README.md).
 
