@@ -70,7 +70,7 @@ Typed pool-member, runner-host, job-runner, execution-runtime and runtime-model-
 
 ### Requirement: Existing inventory authority and bounds
 
-The local adapter SHALL preserve accepted #57 local-registration and GitHub permission checks, configured-root and file/process read bounds, session/source isolation and explicit denied/unavailable/partial evidence. Registration MUST NOT confer authority, and denied or incomplete reads MUST NOT become empty success.
+After #57 integration and acceptance, the local adapter SHALL preserve its local-registration and GitHub permission checks, configured-root and file/process bounds, session/source isolation and denied/unavailable/partial evidence. Registration MUST NOT confer authority; denied or incomplete reads MUST NOT become empty success.
 <!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
 
 #### Scenario: Permission loss or source disconnection

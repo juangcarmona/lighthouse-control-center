@@ -12,7 +12,7 @@ Operators need to distinguish runtime providers and their capabilities without c
 
 - Introduce versioned read-only inventory, telemetry-discovery and operation-capability discovery within the current .NET application.
 - Represent provider instances, pools, hosts, GitHub runners, agent runtimes and model providers with scoped identities; correlate jobs and executions only through established source IDs.
-- Wrap the accepted #57 local/GitHub inventory reads without replacing their collectors or changing their permissions, budgets or evidence semantics.
+- Wrap the existing #57 local/GitHub inventory reads only after their integration and acceptance, without replacing their collectors or changing their permissions, budgets or evidence semantics.
 - Exercise Kubernetes and VMSS contract doubles for divergent capacity counts, bounded pagination, unknown measurements, unsupported capabilities and asynchronous outcome observations.
 - Document the contract, source-preservation map and separate real-local versus contract-only evidence. No breaking consumer change is intended.
 
@@ -50,7 +50,7 @@ The supplied product impact reports connect this work to runtime maintenance, pr
 
 ### Dependencies and authority
 
-This is a proposal candidate, not accepted architecture or implementation. The maintainer must separately decide Proposed ADR-0010 and review this candidate. The existing #57/#105 developer must reconcile integrated inventory source, exact bounds and preservation tests before adapter work; those handlers are absent from this checkout. Dated roadmap PR states are not live integration evidence. If that baseline changes the contract or estimate materially, revise/re-refine instead of rebuilding it here.
+This is a proposal candidate, not accepted architecture or implementation. The maintainer must separately decide Proposed ADR-0010 and review this candidate. The current PR #100 feature candidate at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4` already assembles the #57/#105 runner-inventory implementation, including the bounded local/GitHub handlers; those changes are not on `main` at `d24953debaab37dfedf7745add1b47dae538a6d7`, and #57 acceptance remains open. Reuse the candidate inventory after PR #100 integration and source acceptance; revalidate exact bounds and preservation tests before adapter work rather than rebuilding it. Dated roadmap PR states are not live integration evidence. If that baseline changes the contract or estimate materially, revise/re-refine instead of duplicating it here.
 
 The `future` hold stays active until the maintainer explicitly releases implementation through Lighthouse. The five-point estimate remains conditional on reuse. No scheduler, administrative command, shell fallback, privileged web process, Docker socket, new telemetry collection or production platform adapter belongs to this increment.
 

@@ -6,7 +6,7 @@ pdac-scope: cited
 
 ## Context
 
-See proposal.md for motivation and specs/runtime-provider-discovery/spec.md for behavior. Workspace currently contains Identity and Source code. RepositoryAccess.cs demonstrates configured-repository admission, current connection/generation checks, effective user/app permission intersection and bounded enumeration. Its installation/repository page limits are permission-discovery limits, not evidence of #57 inventory budgets. The local inventory handlers and their accepted limits are absent from this checkout.
+See proposal.md for motivation and specs/runtime-provider-discovery/spec.md for behavior. `main` at `d24953debaab37dfedf7745add1b47dae538a6d7` contains Identity and Source code. RepositoryAccess.cs demonstrates configured-repository admission, current connection/generation checks, effective user/app permission intersection and bounded enumeration. Its installation/repository page limits are permission-discovery limits, not evidence of #57 inventory budgets. The local inventory handlers are absent from that main revision but already assembled in PR #100's feature candidate at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4`; their exact bounds and source acceptance must be revalidated before the new adapter uses them.
 
 Accepted ADR-0006 preserves independent repository delivery. Proposed ADR-0010 and building-block view section 05 describe the candidate provider boundary; neither is treated as accepted implementation authority. Product CHG-LCC-EVOLUTION-001 is applied; its #126 integration is supplied host provenance.
 
@@ -20,9 +20,9 @@ Accepted ADR-0006 preserves independent repository delivery. Proposed ADR-0010 a
 
 ### 1. Wrap the accepted reader inside Workspace
 
-Propose internal immutable records and cancellable asynchronous discovery/inventory reads under a Runtime provider area of the existing Workspace module. Keep handlers internal/sealed and retain compiler-enforced module boundaries. The local implementation delegates to accepted #57 readers and maps their results; GitHub remains a read source, not owner of a host. The provider registry contains only explicitly configured instances and exposes no arbitrary endpoint/discovery input.
+Propose internal immutable records and cancellable asynchronous discovery/inventory reads under a Runtime provider area of the existing Workspace module. Keep handlers internal/sealed and retain compiler-enforced module boundaries. After #57 is integrated and accepted, the local implementation delegates to its existing readers and maps their results; GitHub remains a read source, not owner of a host. The provider registry contains only explicitly configured instances and exposes no arbitrary endpoint/discovery input.
 
-Alternative: a separate service/plugin host would add deployment and credential boundaries without helping this slice. Rebuilding the absent #57 collector would duplicate active work and invalidate the reuse estimate. Do neither. Exact handler wiring is bound to the accepted source before coding; material incompatibility returns this proposal for revision.
+Alternative: a separate service/plugin host would add deployment and credential boundaries without helping this slice. Rebuilding the #57 collector from scratch would duplicate work already assembled in PR #100 and invalidate the reuse estimate. Do neither. Revalidate the feature-candidate handlers, budgets and acceptance after PR #100 is integrated to `main`; material incompatibility returns this proposal for revision.
 <!-- pdac:cite id="BC-RUNTIME-OPERATIONS" digest="sha256:07a2f3d2b6f5a25d22deda174fe9c35169d65a8a02ddfb15ef8658c2fe1c9144" -->
 
 ### 2. Separate resource identity from presentation and correlation
@@ -65,11 +65,11 @@ Tests read accepted/pending/uncertain/failed/completed sequences without any sub
 
 Logical requests are Discover(provider, requested versions, authorized scope) and ReadInventory(provider, scope, bounded continuation, cancellation). Results carry explicit evidence state, never exception text or credentials as public data. These are design-level signatures, not a promised public SDK or new HTTP route. Existing inventory consumers receive compatibility projections through their accepted query path. No persisted schema or source-side data changes; session invalidation and restart semantics remain unchanged.
 
-The adapter adds no process command. Any bounded process observation already accepted under #57 remains owned by that reader, not reimplemented as shell execution. No arbitrary path, source URL or privilege input is accepted by the new boundary.
+The adapter adds no process command. Any bounded process observation included in #57, if accepted and integrated, remains owned by that reader, not reimplemented as shell execution. No arbitrary path, source URL or privilege input is accepted by the new boundary.
 
 ## Risks / Trade-offs
 
-- Missing prerequisite API → developer maps accepted #57/#105 source and negative tests first; maintainer reviews any material plan change. The five-point estimate assumes this reuse.
+- Prerequisite API or source acceptance differs → developer maps the #57/#105 implementation already assembled in PR #100 and its negative tests after main integration; maintainer reviews any material plan change. The five-point estimate assumes this reuse.
 - Identity confusion → structured scoped keys, rename/collision tests and source-established edges.
 - Authority leakage through cached pages → preserve live session/connection checks and test disconnect/reconnect during reads.
 - Unknown measurements presented as capacity → explicit unknowns and divergent-count doubles.
@@ -81,12 +81,12 @@ The adapter adds no process command. Any bounded process observation already acc
 1. Before implementation, obtain the maintainer's proposal decision and ADR-0010 decision, integrate/reconcile #57/#105 and freeze the source-preservation map. Keep `future` until explicit implementation release. These are entry gates, not approvals supplied by this document.
 2. Land contract and conformance tests, then adapt existing readers without changing their externally consumed results. Bind exact source files after prerequisite integration.
 3. Add platform doubles and run preservation/integration checks on the actual candidate. No cloud deployment is involved.
-4. If a regression occurs, revert only this increment through normal review to the accepted #57 projection; no database rollback, provider command or resource migration is needed. Repository workflows remain independent throughout.
+4. If a regression occurs, revert only this increment through normal review to the existing #57 projection after its own integration and acceptance; no database rollback, provider command or resource migration is needed. Repository workflows remain independent throughout.
 <!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 
 ## Validation and Evidence Plan
 
-Each slice lands its own tests and contract documentation. Cover identity collisions/renames, positive and contradictory joins, version/support combinations, stale/partial/denied/unavailable/failed reads, page and budget boundaries, unsafe path fixtures, scope-confused continuations and mid-read authority loss. Reuse existing SourceRequestGateTests, owner/session tests and the accepted #57 preservation suite. Negative tests use controlled fixtures; no host probing or privileged infrastructure testing is required.
+Each slice lands its own tests and contract documentation. Cover identity collisions/renames, positive and contradictory joins, version/support combinations, stale/partial/denied/unavailable/failed reads, page and budget boundaries, unsafe path fixtures, scope-confused continuations and mid-read authority loss. Reuse existing SourceRequestGateTests, owner/session tests and the #57 candidate preservation suite after main integration and source acceptance. Negative tests use controlled fixtures; no host probing or privileged infrastructure testing is required.
 
 Retain `npm run verify` and configured exact-candidate CI, including strict OpenSpec/citation checks and module-boundary checks, in the supported delivery environment. This proposal engine runs none of those checks; the publisher validates artifacts separately. Independent review must assess contract consistency, safe reads and absence of mutation/privilege expansion.
 
