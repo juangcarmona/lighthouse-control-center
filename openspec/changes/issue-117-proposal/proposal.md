@@ -50,7 +50,7 @@ The supplied product impact reports connect this work to runtime maintenance, pr
 
 ### Dependencies and authority
 
-This is a proposal candidate, not accepted architecture or implementation. Maintainer Juan García Carmona must separately decide Proposed ADR-0010 and review this candidate. The existing #57/#105 developer must reconcile integrated inventory source, exact bounds and preservation tests before adapter work; those handlers are absent from this checkout. Dated roadmap PR states are not live integration evidence. If that baseline changes the contract or estimate materially, revise/re-refine instead of rebuilding it here.
+This is a proposal candidate, not accepted architecture or implementation. The maintainer must separately decide Proposed ADR-0010 and review this candidate. The existing #57/#105 developer must reconcile integrated inventory source, exact bounds and preservation tests before adapter work; those handlers are absent from this checkout. Dated roadmap PR states are not live integration evidence. If that baseline changes the contract or estimate materially, revise/re-refine instead of rebuilding it here.
 
 The `future` hold stays active until the maintainer explicitly releases implementation through Lighthouse. The five-point estimate remains conditional on reuse. No scheduler, administrative command, shell fallback, privileged web process, Docker socket, new telemetry collection or production platform adapter belongs to this increment.
 

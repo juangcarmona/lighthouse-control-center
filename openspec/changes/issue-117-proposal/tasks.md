@@ -8,7 +8,7 @@ All boxes are future work. This candidate neither accepts ADR-0010 nor releases 
 
 ## 1. Establish implementation entry evidence
 
-- [ ] 1.1 Maintainer Juan García Carmona records the proposal decision, ADR-0010 disposition and explicit implementation-hold release through Lighthouse; verify linked owner decisions before implementation starts. If the accepted architecture changes this design, revise the proposal first.
+- [ ] 1.1 The maintainer records the proposal decision, ADR-0010 disposition and explicit implementation-hold release through Lighthouse; verify linked owner decisions before implementation starts. If the accepted architecture changes this design, revise the proposal first.
 - [ ] 1.2 Existing #57/#105 developer reconciles accepted integration and delivers a source-preservation map of handlers, configured roots, permission checks, session/source isolation, file/process/page/item/byte/time budgets, cursors and regression tests; verify every adapter dependency against accepted source and preserve existing correction/review history. Material mismatch requires re-refinement, not a replacement collector. (AC1, AC4)
 
 ## 2. Define the read contract and conformance fixtures
