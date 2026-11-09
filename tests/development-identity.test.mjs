@@ -13,7 +13,7 @@ function setup(directory) {
     '--origin', 'https://127.0.0.1:5443', '--issuer', 'https://127.0.0.1:8443/realms/sofa-dev', '--test-accounts'], { cwd: root, encoding: 'utf8' });
 }
 
-test('development setup keeps credentials private, emits trusted certificates and refuses overwriting an existing setup', async () => {
+test('development setup imports simple shared test credentials, protects generated secrets and refuses overwriting an existing setup', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'sofa-private-identity-'));
   const directory = join(parent, 'identity');
   try {
@@ -26,10 +26,14 @@ test('development setup keeps credentials private, emits trusted certificates an
     const realm = JSON.parse(await readFile(join(directory, "import/sofa-dev-realm.json"), "utf8"));
     const seeded = JSON.parse(await readFile(join(root, '.config/keycloak/sofa-dev-realm.json'), 'utf8'));
     assert.deepEqual(accounts.map(account => account.username), seeded.users.map(user => user.username));
-    assert.ok(seeded.users.every(user => !('credentials' in user)));
+    assert.deepEqual(accounts.map(account => account.username), ['admin', 'test']);
+    assert.ok(!('secret' in seeded.clients[0]));
     for (const [index, account] of accounts.entries()) {
       assert.equal(realm.users[index].id, account.subject);
       assert.equal(realm.users[index].credentials[0].value, account.password);
+      assert.equal(account.password, seeded.users[index].credentials[0].value);
+      assert.equal(account.password, 'Test1234@');
+      assert.equal(seeded.users[index].credentials[0].temporary, false);
     }
     assert.equal(realm.clients[0].attributes["minimum.acr.value"], "1");
     assert.ok(realm.users.every(user => !user.requiredActions.includes("CONFIGURE_TOTP")));
@@ -37,7 +41,6 @@ test('development setup keeps credentials private, emits trusted certificates an
     assert.equal(configuration.SoFa.Identity.Development.OwnerSubject, accounts[0].subject);
     assert.ok(!result.stdout.includes(configuration.SoFa.Identity.Development.ClientSecret));
     for (const account of accounts) {
-      assert.ok(account.password.length >= 32);
       assert.ok(!result.stdout.includes(account.password));
     }
     assert.equal((await stat(directory)).mode & 0o777, 0o700);
