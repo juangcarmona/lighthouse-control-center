@@ -7,19 +7,19 @@ function source(page = 1) {
     conversation: { availability: 'available', items: Array.from({ length: page === 1 ? 100 : 1 }, (_, index) => ({ id: page === 1 ? index + 1 : 101, author: 'participant', body: 'Conversation evidence ' + (index + 1) + '\n```\n' + 'long-source-value'.repeat(12) + '\n```', updatedAt: '2026-11-07T11:00:00Z', sourceUrl: `https://github.com/example/repository/issues/7#issuecomment-${page === 1 ? index + 1 : 101}` })), page, perPage: 100, sourceCount: 101, nextPage: page === 1 ? 2 : null, complete: page === 2, reason: 'Source pagination is not atomic.' } };
 }
 async function fixture(page, { unavailable = false } = {}) {
-  let failure = unavailable, restricted = false, conversationUnavailable = false, scope = 'fixture-71', controls = { availability: 'unsupported', reason: 'Installed contract unavailable.' };
+  let failure = unavailable, restricted = false, conversationUnavailable = false, scope = 'fixture-71', actingUserId = 71, controls = { availability: 'unsupported', reason: 'Installed contract unavailable.' };
   const methods = [];
   await page.route('**/api/issues/**', async route => {
     methods.push(route.request().method());
     const url = new URL(route.request().url());
-    if (url.pathname.endsWith('/controls')) return route.fulfill({ json: { ...controls, dataScope: scope, actingUserId: 71, observedAt: '2026-11-08T06:00:00Z' } });
+    if (url.pathname.endsWith('/controls')) return route.fulfill({ json: { ...controls, dataScope: scope, actingUserId, observedAt: '2026-11-08T06:00:00Z' } });
     if (url.pathname.endsWith('/evidence') && restricted) return route.fulfill({ json: { availability: 'restricted', dataScope: scope, reports: [], reason: 'Actions-read access was removed.' } });
     if (url.pathname.endsWith('/evidence')) return route.fulfill({ json: { availability: 'available', dataScope: 'fixture-71', reports: [{ commentId: 90, sourceUrl: 'https://github.com/example/repository/issues/7#issuecomment-90', availability: 'available', stage: 'propose', result: 'blocked', sourceRevision: 'a'.repeat(40), runId: 500, attempt: 2, executionStatus: 'completed', executionConclusion: 'success', reason: 'Published result; current host lease unavailable.', missingEvidence: ['Proposal artifact has expired.'], pendingReview: ['Answer the source question.'] }], scope: 'Synthetic fixture: one source-associated report; other evidence unavailable.' } });
     const data = { ...source(Number(url.searchParams.get('page') || 1)), dataScope: scope, evidenceReadAllowed: !restricted };
     if (conversationUnavailable) data.conversation = { ...data.conversation, availability: 'unavailable', items: [], reason: 'Temporary conversation outage.' };
     return failure ? route.fulfill({ status: failure === true ? 503 : failure, json: {} }) : route.fulfill({ json: data });
   });
-  return { methods, fail(value = true) { failure = value; }, restrictEvidence() { restricted = true; }, replaceAccount() { scope = 'replacement-71'; }, failConversation() { conversationUnavailable = true; }, controls(value) { controls = value; } };
+  return { methods, fail(value = true) { failure = value; }, restrictEvidence() { restricted = true; }, replaceAccount() { scope = 'replacement-71'; }, failConversation() { conversationUnavailable = true; }, controls(value) { controls = value; actingUserId = Object.hasOwn(value, 'actingUserId') ? value.actingUserId : 71; } };
 }
 for (const width of [1280, 390]) test(`issue context ${width}: paginated, inert Markdown, blocked result, keyboard and accessibility`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
@@ -544,5 +544,20 @@ test('unverified actor login cannot replace the authenticated identity', async (
   await page.goto(origin + '/workspace/issues/example/repository/7');
   await expect(page.locator('.sidebar-identity')).toContainText('Session owner');
   await expect(page.locator('.sidebar-identity')).not.toContainText('mismatched-source-login');
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
+test('missing source actor IDs fail closed before identity or controls are projected', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, actingUserId: undefined, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { login: 'unverified-source-login' },
+    actions: { comment: { eligible: true } }
+  } });
+  await page.route('**/api/session', route => route.fulfill({ json: { authenticated: true, displayName: 'Session owner' } }));
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('.sidebar-identity')).toContainText('Session owner');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('unverified-source-login');
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
+  await expect(page.locator('#controls-status')).toContainText('Shared source refresh unavailable');
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });

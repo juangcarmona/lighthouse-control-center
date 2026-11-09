@@ -243,7 +243,9 @@ async function readControls(target, operation, initialBody = '') {
     }
     const facts = data.facts;
     if (!facts || facts.repository?.name?.toLowerCase() !== target.repository.toLowerCase() || facts.issue?.number !== target.number
-        || facts.actor?.id !== data.actingUserId || typeof data.observedAt !== 'string') throw Error('Unverified shared source identity');
+        || !Number.isSafeInteger(data.actingUserId) || data.actingUserId <= 0
+        || !Number.isSafeInteger(facts.actor?.id) || facts.actor.id <= 0 || facts.actor.id !== data.actingUserId
+        || typeof data.observedAt !== 'string') throw Error('Unverified shared source identity');
     if (typeof facts.actor.login === 'string' && facts.actor.login.trim()) {
       updateWorkspaceAccount({ state: 'linked', login: facts.actor.login.trim() });
     }
