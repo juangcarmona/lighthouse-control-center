@@ -36,7 +36,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       : 'The source permits ordinary comments, but protected command storage is unavailable. You can keep a draft here; sending and recovery are disabled.'
     : allowed('continue') ? 'Enter an answer for the verified question, then review answer and continue. Ordinary commenting is unavailable.'
       : explain(facts.actions?.comment?.reason || reason || 'write-authority-unavailable');
-  if (!commentEligible && ['write-authority-denied', 'write-authority-unavailable'].includes(facts.actions?.comment?.reason)) {
+  if (!commentEligible && (!facts.actions?.comment || ['write-authority-denied', 'write-authority-unavailable'].includes(facts.actions.comment.reason))) {
     const link = document.createElement('a'); link.href = '/workspace'; link.textContent = 'Review connected account'; hint.append(' ', link);
   }
   body.setAttribute('aria-describedby', hint.id); field.append(label, hint);

@@ -246,6 +246,7 @@ test('a failed current-revision read exposes the bounded diagnostic and missing 
   await expect(page.locator('#controls-status')).toContainText('Contents: read');
   await expect(page.locator('#issue-controls')).toContainText('source-read-commits-http-403');
   await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
+  await expect(page.locator('#comment-composer').getByRole('link', { name: 'Review connected account' })).toHaveAttribute('href', '/workspace');
   await expect(page.locator('#control-actions button:enabled')).toHaveCount(0);
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });
