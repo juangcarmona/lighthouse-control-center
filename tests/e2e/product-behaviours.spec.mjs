@@ -159,12 +159,12 @@ test('live ordinary comment is confirmed by its source identity without continua
   expect(operations.filter(value => value === 'prepare')).toHaveLength(confirmPrepared ? 0 : 1);
   await expect(confirmation).toContainText('GitHub confirmed that the comment was published.');
   await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toHaveCount(0);
+  await confirmation.screenshot({ path: info.outputPath('confirmed-comment.png') });
   await page.getByRole('button', { name: 'Refresh source', exact: true }).click();
   await expect(page.locator('#issue-comments')).toContainText(body);
   await info.attach('confirmed-source-comment', { body: Buffer.from(JSON.stringify({ commentId: result.receipt.commentId,
     source: result.receipt.source, actingUserId: result.actingUserId, questionResolved: false, sourceWritePerformed: true,
     prepareOrSubmitRequests: operations.filter(value => ['prepare', 'submit'].includes(value)).length })), contentType: 'application/json' });
-  await confirmation.screenshot({ path: info.outputPath('confirmed-comment.png') });
   await page.locator('#source-comment-' + result.receipt.commentId).screenshot({ path: info.outputPath('source-comment.png') });
 });
 
