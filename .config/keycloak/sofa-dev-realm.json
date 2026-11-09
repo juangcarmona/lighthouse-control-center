@@ -156,14 +156,18 @@
       "enabled": true,
       "firstName": "Development",
       "lastName": "Owner",
-      "email": "development-owner@example.invalid"
+      "email": "development-owner@example.invalid",
+      "credentials": [{ "type": "password", "value": "LocalDevOwner2026!", "temporary": false }],
+      "requiredActions": []
     },
     {
       "username": "development-other",
       "enabled": true,
       "firstName": "Development",
       "lastName": "Other",
-      "email": "development-other@example.invalid"
+      "email": "development-other@example.invalid",
+      "credentials": [{ "type": "password", "value": "LocalDevOther2026!", "temporary": false }],
+      "requiredActions": []
     }
   ]
 }
