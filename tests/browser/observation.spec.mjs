@@ -111,7 +111,7 @@ test('operations retains account navigation when GitHub needs reconnecting', asy
   await expect(page.locator('#repositories')).not.toContainText('Source revision:');
 });
 
-test('operations navigation opens source-backed mission context and a repository-specific issue picker', async ({ page }) => {
+test('operations navigation opens source-backed mission context and repository-scoped mission discovery', async ({ page }) => {
   const current = operationalPayload();
   const issueFixture = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'}`;
   await page.route('**/api/observations', route => route.fulfill({ json: current }));
@@ -119,12 +119,18 @@ test('operations navigation opens source-backed mission context and a repository
     const root = await route.fetch({ url: new URL('/', route.request().url()).href });
     await route.fulfill({ response: root });
   });
+  await page.route('**/workspace/factory**', async route => {
+    const target = new URL(route.request().url()); target.port = new URL(issueFixture).port;
+    await route.fulfill({ response: await route.fetch({ url: target.href }) });
+  });
+  await page.route('**/api/connections/github', route => route.fulfill({ json: { state: 'linked', dataScope: 'navigation-fixture', repositories: [{ repository: 'owner/lighthouse', availability: 'available', issuesRead: true, actionsRead: true }] } }));
+  await page.route('**/api/factory/**', route => route.fulfill({ json: { repository: 'owner/lighthouse', availability: 'available', dataScope: 'navigation-fixture', observedAt: '2026-11-09T10:00:00Z', issues: current.repositories[0].attention.map(issue => ({ ...issue, id: 1000 + issue.number, state: 'open', labelsComplete: true })), page: 1, nextPage: null, complete: true, sourceRecords: 4 } }));
   await page.route('**/workspace/issues**', async route => {
     const target = new URL(route.request().url()); target.port = new URL(issueFixture).port;
     const response = await route.fetch({ url: target.href });
     await route.fulfill({ response });
   });
-  for (const asset of ['issue.js', 'issue-actions.js', 'markdown.js', 'issue.css']) {
+  for (const asset of ['issue.js', 'issue-actions.js', 'markdown.js', 'issue.css', 'factory.js', 'factory.css', 'attention.js', 'attention-controls.js']) {
     await page.route(`**/${asset}`, async route => {
       const target = new URL(route.request().url()); target.port = new URL(issueFixture).port;
       const response = await route.fetch({ url: target.href });
@@ -147,16 +153,15 @@ test('operations navigation opens source-backed mission context and a repository
   expect((await mission.boundingBox()).width).toBeGreaterThanOrEqual(44);
   await expect(issueCard.getByRole('button')).toHaveCount(0);
 
-  const picker = page.getByRole('navigation', { name: 'owner/lighthouse actions' }).getByRole('link', { name: 'Choose an issue' });
-  await expect(picker).toHaveAttribute('href', '/workspace/issues?repository=owner%2Flighthouse');
+  const picker = page.getByRole('navigation', { name: 'owner/lighthouse actions' }).getByRole('link', { name: 'Browse missions' });
+  await expect(picker).toHaveAttribute('href', '/workspace/factory?repository=owner%2Flighthouse');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await picker.click();
-  await expect(page).toHaveURL(/\/workspace\/issues\?repository=owner%2Flighthouse$/);
-  await expect(page.locator('#issue-repository')).toHaveValue('owner/lighthouse');
-  await expect(page.locator('#issue-number')).toHaveValue('');
-  await expect(page.locator('#issue-status')).toContainText('Choose a configured repository and ordinary issue number');
+  await expect(page).toHaveURL(/\/workspace\/factory\?repository=owner%2Flighthouse$/);
+  await expect(page.locator('#factory-repository')).toHaveValue('owner/lighthouse');
+  await expect(page.getByRole('link', { name: 'owner/lighthouse#1 · Information', exact: true })).toBeVisible();
 
   await page.goto('/workspace/operations');
   await page.getByRole('link', { name: 'Open mission' }).first().click();

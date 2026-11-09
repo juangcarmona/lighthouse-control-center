@@ -155,8 +155,8 @@ function render(data) {
     const provenance = node('details', undefined, 'record-details'); provenance.dataset.key = sourceKey(repo.repository, 'observation', ''); provenance.append(node('summary', 'Observation details'), node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp')); card.append(provenance);
     const actions = node('nav', undefined, 'repo-actions'); actions.setAttribute('aria-label', `${repo.repository} actions`);
     if (location.pathname === '/workspace/operations') {
-      const href = '/workspace/issues?repository=' + encodeURIComponent(repo.repository);
-      actions.append(workspaceLink('Choose an issue', href, repo.repository, 'repository-mission-link', sourceKey(repo.repository, 'mission-picker', '')));
+      const href = '/workspace/factory?repository=' + encodeURIComponent(repo.repository);
+      actions.append(workspaceLink('Browse missions', href, repo.repository, 'repository-mission-link', sourceKey(repo.repository, 'mission-picker', '')));
     }
     actions.append(link('Open workflow actions ↗', `https://github.com/${repo.repository}/actions/workflows/lighthouse-sdlc-router.yml`, repo.repository, 'actions/', sourceKey(repo.repository, 'actions', '')), link('Issues ↗', `https://github.com/${repo.repository}/issues`, repo.repository, undefined, sourceKey(repo.repository, 'issues', '')));
     card.append(actions);
