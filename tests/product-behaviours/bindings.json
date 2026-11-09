@@ -18,10 +18,10 @@
         ]
       },
       "requirement": {
-        "id": "BR-LAN-PRIVILEGE-BOUNDARY",
-        "path": "docs/product/model/business-rules/br-lan-privilege-boundary.md",
-        "digest": "sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac",
-        "hash": "sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac"
+        "id": "QR-EXECUTION-SECURITY",
+        "path": "docs/product/model/requirements/quality/qr-execution-security.md",
+        "digest": "sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790",
+        "hash": "sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790"
       },
       "cases": {
         "fixture": [],

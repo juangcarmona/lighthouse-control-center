@@ -25,7 +25,8 @@ export function validateBindings(ledger, read = path => readFileSync(resolve(roo
             || !clauses(model.given) || typeof model.when !== 'string' || !model.when.trim() || !clauses(model.then)
             || JSON.stringify([model.given, model.when, model.then]) !== JSON.stringify([item.given, item.when, item.then])
             || item.acceptance !== 'draft-overlay') throw Error('Structured behaviour binding changed: ' + binding.id);
-      } else if (model?.id !== item.id || !/^sha256:[a-f0-9]{64}$/.test(item.digest)) throw Error('Invalid requirement citation');
+      } else if (model?.id !== item.id || !['functional-requirement', 'quality-requirement'].includes(model.type)
+          || !/^sha256:[a-f0-9]{64}$/.test(item.digest)) throw Error('Invalid requirement citation');
     }
     for (const kind of ['fixture', 'live']) {
       if (!Array.isArray(binding.cases?.[kind]) || binding.cases[kind].some(value => typeof value !== 'string' || !value.trim()))

@@ -22,6 +22,13 @@ test('stale sources, duplicate identities and missing discovered cases are rejec
   assert.doesNotThrow(() => validateCaseCoverage(ledger, titles, 'fixture'));
   assert.ok(bindingsFor(ledger, 'explicit source action 390: confirmation', 'fixture').some(binding => binding.id === 'SB-UNCERTAIN-ISSUE-COMMENT'));
   assert.deepEqual(bindingsFor(ledger, 'unrelated test', 'live'), []);
+  const businessRule = structuredClone(ledger);
+  businessRule.bindings[0].requirement = {
+    id: 'BR-LAN-PRIVILEGE-BOUNDARY', path: 'docs/product/model/business-rules/br-lan-privilege-boundary.md',
+    digest: 'sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac',
+    hash: 'sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac',
+  };
+  assert.throws(() => validateBindings(businessRule), /Invalid requirement citation/);
 });
 test('every declared fixture case is discoverable by the actual Playwright runner', () => {
   const listing = JSON.parse(execFileSync(process.execPath, ['node_modules/@playwright/test/cli.js', 'test', '--list', '--reporter=json'], { cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 }));
