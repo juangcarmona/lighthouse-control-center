@@ -149,5 +149,21 @@
         }
       ]
     }
+  ],
+  "users": [
+    {
+      "username": "development-owner",
+      "enabled": true,
+      "firstName": "Development",
+      "lastName": "Owner",
+      "email": "development-owner@example.invalid"
+    },
+    {
+      "username": "development-other",
+      "enabled": true,
+      "firstName": "Development",
+      "lastName": "Other",
+      "email": "development-other@example.invalid"
+    }
   ]
 }

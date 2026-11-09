@@ -34,19 +34,19 @@ const privateWrite = (path, data) => writeFile(path, data, { mode: 0o600, flag: 
 const secret = () => randomBytes(32).toString('base64url');
 const ownerSubject = testAccounts ? randomUUID() : values.get('--owner-subject');
 const clientSecret = secret();
-const realm = JSON.parse(await readFile(new URL('../src/identity/development/realm.template.json', import.meta.url), 'utf8'));
+const realm = JSON.parse(await readFile(new URL('../.config/keycloak/sofa-dev-realm.json', import.meta.url), 'utf8'));
 realm.clients[0].secret = clientSecret;
 realm.clients[0].redirectUris = [new URL('/signin-oidc', origin).href];
 realm.clients[0].attributes['post.logout.redirect.uris'] = origin.href;
-const accounts = testAccounts ? [
-  { subject: ownerSubject, username: 'development-owner', password: secret() },
-  { subject: randomUUID(), username: 'development-other', password: secret() },
-] : [];
-if (testAccounts) realm.users = accounts.map(account => ({
-  id: account.subject, username: account.username, enabled: true,
-  firstName: 'Development', lastName: 'Account', email: `${account.username}@example.invalid`,
-  credentials: [{ type: 'password', value: account.password, temporary: false }], requiredActions: [],
-}));
+const accounts = testAccounts ? realm.users.map(user => ({
+  subject: user.username === 'development-owner' ? ownerSubject : randomUUID(), username: user.username, password: secret(),
+})) : [];
+if (testAccounts && (accounts.length !== 2 || accounts[0].username !== 'development-owner' || accounts[1].username !== 'development-other'))
+  throw Error('The development realm must seed the owner and denied test user.');
+realm.users = testAccounts ? realm.users.map((user, index) => ({
+  ...user, id: accounts[index].subject,
+  credentials: [{ type: 'password', value: accounts[index].password, temporary: false }], requiredActions: [],
+})) : [];
 await mkdir(resolve(directory, 'import'), { mode: 0o700 });
 await privateWrite(resolve(directory, 'import', 'sofa-dev-realm.json'), JSON.stringify(realm));
 await privateWrite(resolve(directory, 'test-accounts.json'), JSON.stringify(accounts));

@@ -24,6 +24,13 @@ test('development setup keeps credentials private, emits trusted certificates an
     const accounts = JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8'));
     assert.equal(accounts.length, 2);
     const realm = JSON.parse(await readFile(join(directory, "import/sofa-dev-realm.json"), "utf8"));
+    const seeded = JSON.parse(await readFile(join(root, '.config/keycloak/sofa-dev-realm.json'), 'utf8'));
+    assert.deepEqual(accounts.map(account => account.username), seeded.users.map(user => user.username));
+    assert.ok(seeded.users.every(user => !('credentials' in user)));
+    for (const [index, account] of accounts.entries()) {
+      assert.equal(realm.users[index].id, account.subject);
+      assert.equal(realm.users[index].credentials[0].value, account.password);
+    }
     assert.equal(realm.clients[0].attributes["minimum.acr.value"], "1");
     assert.ok(realm.users.every(user => !user.requiredActions.includes("CONFIGURE_TOTP")));
     assert.equal(configuration.SoFa.Identity.Development.ProviderUser, `${process.getuid()}:0`);
@@ -40,6 +47,21 @@ test('development setup keeps credentials private, emits trusted certificates an
     assert.equal(chain.status, 0);
     assert.equal(setup(directory).status === 0, false);
     assert.equal(await readFile(join(directory, 'development.json'), 'utf8'), original);
+  } finally { await rm(parent, { recursive: true, force: true }); }
+});
+
+test('operator-provisioned development setup does not import test users', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'sofa-private-identity-'));
+  const directory = join(parent, 'identity');
+  const subject = randomUUID();
+  try {
+    const result = spawnSync(process.execPath, ['scripts/setup-development-identity.mjs', '--directory', directory,
+      '--origin', 'https://127.0.0.1:5443', '--issuer', 'https://127.0.0.1:8443/realms/sofa-dev', '--owner-subject', subject],
+    { cwd: root, encoding: 'utf8' });
+    assert.equal(result.status, 0);
+    assert.deepEqual(JSON.parse(await readFile(join(directory, 'import/sofa-dev-realm.json'), 'utf8')).users, []);
+    assert.deepEqual(JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8')), []);
+    assert.equal(JSON.parse(await readFile(join(directory, 'development.json'), 'utf8')).SoFa.Identity.Development.OwnerSubject, subject);
   } finally { await rm(parent, { recursive: true, force: true }); }
 });
 
