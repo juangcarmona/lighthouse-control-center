@@ -325,7 +325,7 @@ public sealed class OwnerBoundaryTests
     var connectedAccount = await client.GetStringAsync("/workspace");
     Assert.Contains("href=\"https://github.com/verified-user\"", connectedAccount, StringComparison.Ordinal);
     var operations = await client.GetStringAsync("/workspace/operations");
-    Assert.Contains("Fleet operations", operations, StringComparison.Ordinal);
+    Assert.Contains("Your fleet at a glance", operations, StringComparison.Ordinal);
     using var anonymous = app.Client();
     Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/app.js")).StatusCode);
     Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/tokens.css")).StatusCode);
