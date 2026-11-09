@@ -6,7 +6,7 @@ description: Runtime behavior and important interactions between building blocks
 
 # 06. Repository execution and observation
 
-An authorized GitHub event reaches the repository router and one stage worker. The worker reserves the issue, collects current source and owner answers, invokes the independent executor, validates the result, rechecks authority and publishes through GitHub. Named Actions steps, progress metadata, a summary and artifacts expose the run. SoFa may refresh observations at any time, including after the run; its availability does not affect execution. An owner answer to a pending refinement resumes through the same repository route.
+An authorized GitHub event reaches the repository router and one stage worker. The worker reserves the issue, collects current source and owner answers, invokes the independent executor, validates the result, rechecks authority and publishes through GitHub. Named Actions steps, progress metadata, a summary and artifacts expose the run. Lighthouse Control Center may refresh observations at any time, including after the run; its availability does not affect execution. An owner answer to a pending refinement resumes through the same repository route.
 
 ## Authenticated observation
 
@@ -42,11 +42,11 @@ The #48 candidate uses the released public Lighthouse SDK 0.22.0 with its offici
 2. Explicit preparation creates a server-generated request identity and stores the immutable SDK intent/effect under a protected scope. The browser reviews the action and comment text; it submits only the opaque local confirmation ID.
 3. On confirmation, the SDK requests an atomic durable claim, rechecks source eligibility and asks for its prepared POST. The parent independently matches the exact path, body and API version, verifies unchanged grants and initiates HTTP under the live connection/session lock. Each invocation can consume only one effect attempt.
 4. The SDK receipt separately describes submission, source admission, worker/run identity and verified stage result. Requesting Refine or Propose never grants implementation or merge. Ordinary comments and Continue use distinct typed source intents.
-5. A lost response or existing claim leads to SDK source reconciliation. Reload/restart exposes recovery of the latest confirmation only after fresh owner/source authorization. Restarted or restored preparations cannot send. Closing SoFa does not stop admitted repository execution.
+5. A lost response or existing claim leads to SDK source reconciliation. Reload/restart exposes recovery of the latest confirmation only after fresh owner/source authorization. Restarted or restored preparations cannot send. Closing Lighthouse Control Center does not stop admitted repository execution.
 
 ### Failure behavior
 
-A timeout after sending records an uncertain command. Reconciliation uses the source run receipt or the shared request identifier, never proximity in time. Until admission or rejection is proven, SoFa does not silently resend. Failed or cancelled runs retain their identity and result. A source run with no stage result remains incomplete evidence. Session expiry blocks new actions but does not cancel admitted work.
+A timeout after sending records an uncertain command. Reconciliation uses the source run receipt or the shared request identifier, never proximity in time. Until admission or rejection is proven, Lighthouse Control Center does not silently resend. Failed or cancelled runs retain their identity and result. A source run with no stage result remains incomplete evidence. Session expiry blocks new actions but does not cancel admitted work.
 
 ### Comments and continuation
 

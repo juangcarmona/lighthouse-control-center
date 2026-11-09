@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SoFa · Software factory</title>
+  <title>Lighthouse Control Center · Fleet overview</title>
   <link rel="stylesheet" href="/tokens.css">
   <link rel="stylesheet" href="/app.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
   <a class="skip" href="#workspace">Skip to repositories</a>
-  <header class="topbar"><a class="brand" href="/"><span class="mark" aria-hidden="true">S</span>SoFa<span class="brand-note">Software factory</span></a><label class="appearance">Appearance <select id="appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label></header>
+  <header class="topbar"><a class="brand" href="/"><span class="mark" aria-hidden="true">S</span>Lighthouse Control Center<span class="brand-note">Fleet operations</span></a><label class="appearance">Appearance <select id="appearance"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select></label></header>
   <main id="workspace" tabindex="-1">
-    <section class="intro"><div><p class="eyebrow">FACTORY OVERVIEW</p><h1>Factory operations</h1><p class="lead">Workflow activity and human waits observed in GitHub.</p></div><button id="refresh" type="button">Refresh observations</button></section>
+    <section class="intro"><div><p class="eyebrow">FLEET OVERVIEW</p><h1>Fleet operations</h1><p class="lead">Workflow activity and human waits observed in GitHub.</p></div><button id="refresh" type="button">Refresh observations</button></section>
     <p id="connection" role="status" aria-live="polite">Connecting to GitHub…</p>
     <label class="repository-filter">Repository <select id="repository-filter"><option value="">All repositories</option></select></label>
     <p id="count-scope" class="muted">Counts describe collected evidence in the selected repositories.</p>
@@ -21,6 +21,6 @@
     <div id="repositories" aria-busy="true"><p class="loading">Loading repository observations…</p></div>
     <aside class="boundary"><strong>Repository workflows own execution.</strong><p>Use “Open workflow actions” to request a stage or review a delivery in GitHub. This observation page cannot start agents or approve changes.</p></aside>
   </main>
-  <footer>SoFa <span>Observed evidence · Independent repository execution</span></footer>
+  <footer>Lighthouse Control Center <span>Observed evidence · Independent repository execution</span></footer>
 </body>
 </html>

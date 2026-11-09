@@ -2,9 +2,7 @@
 
 ![Lighthouse Control Center: a bench overlooking the blue bay, sailboats and lighthouse.](assets/lighthouse-control-center/readme-banner.png)
 
-SoFa is evolving into Lighthouse Control Center.
-
-SoFa observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
+Lighthouse Control Center observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and independent runtimes execute agents. Lighthouse Control Center presents source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
 
 ## Open the authenticated workspace
 

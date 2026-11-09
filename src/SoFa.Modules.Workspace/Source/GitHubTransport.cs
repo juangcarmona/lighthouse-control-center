@@ -41,7 +41,7 @@ internal sealed partial class GitHubTransport : IDisposable
   {
     using (request)
     {
-      request.Headers.UserAgent.ParseAdd("SoFa-Development/1.0");
+      request.Headers.UserAgent.ParseAdd("Lighthouse-Control-Center/1.0");
       request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
       try
       {

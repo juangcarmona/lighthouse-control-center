@@ -2,7 +2,7 @@
 
 ## Contract and permissions
 
-The #48 candidate selects public CLI 0.12.61 / SDLC 0.22.0 and officially installs the issue-control projection from release commit `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`. The source repository must adopt that contract before dispatch controls become eligible. Source policy and runtime own admission and execution; SoFa remains optional.
+The #48 candidate selects public CLI 0.12.61 / SDLC 0.22.0 and officially installs the issue-control projection from release commit `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`. The source repository must adopt that contract before dispatch controls become eligible. Source policy and runtime own admission and execution; Lighthouse Control Center remains optional.
 
 Keep the existing development App, numeric `SoFa:GitHub:AppId`, owner identity and selected repository installation. Source controls require effective connected-user write permission together with App Issues/write and Actions/write; shared fact/provenance reads additionally need Contents/read, Pull requests/read and Variables/read. Metadata/read is retained. Administration/read is a separate runner-view concern. Never substitute the operator CLI, a PAT or an installation token for the acting user. Registration/install permission changes and GitHub user consent remain separate owner actions. A missing contract or grant remains visible and unavailable.
 
@@ -35,4 +35,4 @@ The logical SQLite database cap is 50 MiB and 10,000 retained intentions, includ
 
 For a private backup, stop the single workspace instance and capture **both** the database directory (including any WAL) and its separate key-ring/marker directory with ownership/modes intact. Store backups privately; do not attach them as evidence. Restore both as a pair while stopped. Restored claims/preparations cannot authorize another send. Missing/wrong keys, marker or schema block actions; do not delete the journal to resolve an unknown transmission. Production custody and disaster recovery need their separate acceptance.
 
-Rollback the application/projection through reviewed commits. Preserve the private journal and keys. Stopping or rolling back SoFa does not cancel repository work; inspect retained source receipts in GitHub. Consumer fixtures cover real SQLite, the released SDK and synthetic GitHub responses/browser layouts. They do not replace actual connected App-user consent or source acceptance.
+Rollback the application/projection through reviewed commits. Preserve the private journal and keys. Stopping or rolling back Lighthouse Control Center does not cancel repository work; inspect retained source receipts in GitHub. Consumer fixtures cover real SQLite, the released SDK and synthetic GitHub responses/browser layouts. They do not replace actual connected App-user consent or source acceptance.

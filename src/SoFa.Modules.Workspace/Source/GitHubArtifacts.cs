@@ -17,7 +17,7 @@ internal sealed partial class GitHubTransport
     using var request = new HttpRequestMessage(HttpMethod.Get,
         "https://api.github.com/repos/" + repository + "/actions/artifacts/" + artifactId.ToString(System.Globalization.CultureInfo.InvariantCulture) + "/zip");
     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-    request.Headers.UserAgent.ParseAdd("SoFa-Development/1.0");
+      request.Headers.UserAgent.ParseAdd("Lighthouse-Control-Center/1.0");
     request.Headers.Add("X-GitHub-Api-Version", "2026-03-10");
     try
     {

@@ -169,7 +169,7 @@ internal static class OwnerIdentity
     if (context.Request.Path.StartsWithSegments("/api")) return Task.CompletedTask;
     var title = status == 401 ? "Sign in required" : status == 403 ? "Access denied" : "Verification unavailable";
     context.Response.ContentType = "text/html; charset=utf-8";
-    return context.Response.WriteAsync("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>SoFa · "
+    return context.Response.WriteAsync("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Lighthouse Control Center · "
       + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\"></head><body><main class=\"account-panel\"><h1>"
       + title + "</h1><p>Protected workspace data requires a current owner session and successful identity verification.</p><a href=\"/\">Open sign-in and local session controls</a></main></body></html>");
   }

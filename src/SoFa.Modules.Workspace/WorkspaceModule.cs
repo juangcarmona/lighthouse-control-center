@@ -84,7 +84,7 @@ public static class WorkspaceModule
     app.MapGet("/", (HttpContext context, IAntiforgery antiforgery) =>
     {
       var token = antiforgery.GetAndStoreTokens(context).RequestToken!;
-      return Html("SoFa", "<p>Sign in with your configured identity provider. Factory data requires an owner session.</p>"
+      return Html("Lighthouse Control Center", "<p>Sign in with your configured identity provider. Fleet data requires an owner session.</p>"
               + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required sign-in.</p>" : "")
               + Form("/auth/login", token, "Sign in")
               + (context.User.Identity?.IsAuthenticated == true
@@ -141,7 +141,7 @@ public static class WorkspaceModule
                   : Form("/connections/github/start", token, "Connect GitHub account"))
               + "<div id=\"github-disconnect\"" + (canDisconnect ? "" : " hidden") + ">"
               + Form("/connections/github/disconnect", token, "Disconnect GitHub") + "</div>"
-              + "<p><a href=\"/workspace/operations\">Open factory operations</a></p>"
+              + "<p><a href=\"/workspace/operations\">Open fleet operations</a></p>"
               + "<p>Local disconnect removes this session's source credentials. To revoke the separate GitHub grant, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
               + "<p>Sessions expire after 15 minutes without user activity, or four hours after authentication. Provider authority is checked at least every five minutes; a failed due check blocks access.</p>"
               + "<p>Sign out ends this local session. Your identity provider may retain its own session; the next sign-in requires fresh authentication.</p>"
@@ -356,10 +356,10 @@ public static class WorkspaceModule
   }
 
   private static IResult Html(string title, string body, bool account = false) => Results.Content(
-      "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>SoFa · "
+      "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Lighthouse Control Center · "
       + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
       + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
-      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">SoFa</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Factory</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
+      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">Lighthouse Control Center</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Fleet</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
   private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action
       + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token)

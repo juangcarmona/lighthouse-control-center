@@ -22,7 +22,7 @@ function clearSource(message) {
   epoch++; repositories.clear(); evidence.clear(); attentionHistory.clear(); dataScope = undefined; render();
   byId('factory-count').textContent = 'No authorized collection is available.';
   const account = node('a', 'Open account'); account.href = '/workspace';
-  byId('factory-results').replaceChildren(node('p', 'Verify your account to read factory work.'), account);
+  byId('factory-results').replaceChildren(node('p', 'Verify your account to read fleet work.'), account);
   status(message);
 }
 function denyRepository(repository) {
@@ -189,7 +189,7 @@ async function refresh() {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
     if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.'); return; }
     const account = await response.json();
-    if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading factory work.'); return; }
+    if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading fleet work.'); return; }
     const configured = new Set(account.repositories.map(row => row.repository));
     for (const repository of repositories.keys()) if (!configured.has(repository)) repositories.delete(repository);
     if (dataScope !== account.dataScope) { repositories.clear(); evidence.clear(); attentionHistory.clear(); }
@@ -207,7 +207,7 @@ async function refresh() {
       try { await getPage(row.repository, 1, requestEpoch, exactNumber(byId('factory-search').value)); }
       catch { if (requestEpoch !== epoch) return; const previous = repositories.get(row.repository); repositories.set(row.repository, { ...previous, availability: 'unavailable', stale: !!previous?.issues?.length, complete: false, reason: 'Source refresh failed. Previous same-scope rows retain their original times and may be stale; this is not an empty backlog.' }); }
     }));
-    if (requestEpoch === epoch) { render(); status(`Factory collection received for ${account.login}. Source times and coverage are shown per project.`); }
+    if (requestEpoch === epoch) { render(); status(`Fleet collection received for ${account.login}. Source times and coverage are shown per project.`); }
   } catch { if (requestEpoch === epoch) { for (const collection of repositories.values()) { collection.stale = true; collection.complete = false; } render(); status('Source refresh failed. Previously collected rows may be stale; no current authority or empty-backlog conclusion is inferred.'); } }
   finally { setBusy(false); }
 }

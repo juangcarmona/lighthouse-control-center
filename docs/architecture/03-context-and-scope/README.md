@@ -6,15 +6,15 @@ description: The system boundary, its users, and its external interfaces.
 
 # 03. System context
 
-The owner uses an authenticated SoFa browser workspace or GitHub directly. GitHub owns issue, conversation, run, PR and artifact records. Lighthouse owns shared lifecycle and evidence semantics; repository workflows and the independent executor own delivery.
+The owner uses an authenticated Lighthouse Control Center browser workspace or GitHub directly. GitHub owns issue, conversation, run, PR and artifact records. Lighthouse owns shared lifecycle and evidence semantics; repository workflows and the independent executor own delivery.
 
 <!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
 
 ```mermaid
 flowchart LR
   accTitle: Authenticated observation and independent repository delivery
-  accDescr: The owner accesses SoFa through HTTPS. SoFa authenticates with its configured provider and reads GitHub using a separately connected user. Repository workflows execute independently of SoFa.
-  Owner[Owner browser] -->|HTTPS| Workspace[SoFa workspace]
+  accDescr: The owner accesses Lighthouse Control Center through HTTPS. Lighthouse Control Center authenticates with its configured provider and reads GitHub using a separately connected user. Repository workflows execute independently of Lighthouse Control Center.
+  Owner[Owner browser] -->|HTTPS| Workspace[Lighthouse Control Center workspace]
   Workspace -->|OIDC and S256| Identity[Configured identity provider]
   Workspace -->|GitHub App user reads| GitHub[GitHub source APIs]
   Workflows[Repository workflows] --> Executor[Independent executor]

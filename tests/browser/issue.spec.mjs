@@ -128,7 +128,7 @@ for (const width of [1280, 390]) test(`shared source question ${width}: safe tex
   await expect(page.locator('#issue-controls')).toContainText('Verified current question');
   await expect(page.locator('#issue-controls')).toContainText('<script>window.questionExecuted=true</script>');
   await expect(page.locator('#issue-controls')).toContainText('Question source updated: 2026-11-07T10:00:00Z · Observed: 2026-11-08T06:00:00Z');
-  await expect(page.locator('#issue-controls')).toContainText('Ordinary comment · Source: eligible · SoFa submission: unavailable');
+  await expect(page.locator('#issue-controls')).toContainText('Ordinary comment · Source: eligible · Lighthouse Control Center submission: unavailable');
   await expect(page.locator('#issue-controls button, #issue-controls script')).toHaveCount(0);
   expect(await page.evaluate(() => window.questionExecuted)).toBeUndefined();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

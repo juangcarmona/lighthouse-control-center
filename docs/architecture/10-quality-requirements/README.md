@@ -6,7 +6,7 @@ description: Quality goals and concrete scenarios for evaluating them.
 
 # 10. Acceptance scenarios
 
-Stop SoFa and run repository refinement: the workflow must publish its result. Refresh an inaccessible repository: the observer must report unavailable evidence. Inspect a run: preparation, execution, validation, publication and cleanup must be distinguishable. Change the issue during execution: publication must stop. A read refresh must never dispatch or cancel work.
+Stop Lighthouse Control Center and run repository refinement: the workflow must publish its result. Refresh an inaccessible repository: the observer must report unavailable evidence. Inspect a run: preparation, execution, validation, publication and cleanup must be distinguishable. Change the issue during execution: publication must stop. A read refresh must never dispatch or cancel work.
 
 <!-- pdac:cite id="QR-EXECUTION-RECOVERY" digest="sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6" -->
 
@@ -30,7 +30,7 @@ Phone-width browser automation remains distinct from a physical device. Actual G
 | Context | Real issue with paginated conversation, previous stage result, missing artifact and stale refresh shown honestly |
 | Command | Eligible Refine and Propose, changed-state denial, repeated click, lost response, restart, competing source reservation and exact run mapping |
 | Conversation | Ordinary comment on needs-info does not resume; explicit supported reply does; uncertain post creates at most one source comment |
-| Independent execution | Close SoFa after source admission and recover the same result after reopening |
+| Independent execution | Close Lighthouse Control Center after source admission and recover the same result after reopening |
 | Mobile and accessibility | Complete the real issue journey on a phone over LAN/VPN; keyboard/focus behavior and readable status without color-only meaning |
 | Later capabilities | Inbox resolution uses source evidence; search includes non-attention issues; boards preserve scope; signal inputs reproduce a calculation; idea promotion reconciles a lost response |
 

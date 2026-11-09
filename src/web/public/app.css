@@ -49,6 +49,8 @@ button:disabled {
   gap:1rem}
 .brand {
   display:flex;
+  min-width:0;
+  flex-wrap:wrap;
   align-items:center;
   gap:.8rem;
   color:var(--lh-text);

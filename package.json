@@ -1,7 +1,7 @@
 {
-  "name": "sofa",
+  "name": "lighthouse-control-center",
   "version": "0.0.0",
-  "description": "SoFa — my software factory.",
+  "description": "Lighthouse Control Center observes engineering activity and delivery evidence across configured repositories.",
   "scripts": {
     "prepare": "husky",
     "test": "node --test",
@@ -28,13 +28,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/juangcarmona/sofa.git"
+    "url": "git+https://github.com/juangcarmona/lighthouse-control-center.git"
   },
   "keywords": [],
   "bugs": {
-    "url": "https://github.com/juangcarmona/sofa/issues"
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/issues"
   },
-  "homepage": "https://github.com/juangcarmona/sofa#readme",
+  "homepage": "https://github.com/juangcarmona/lighthouse-control-center#readme",
   "private": true,
   "type": "module",
   "engines": {

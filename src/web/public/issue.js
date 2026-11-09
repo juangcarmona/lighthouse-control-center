@@ -207,7 +207,7 @@ async function readControls(target, operation) {
     for (const [name, label] of [['comment', 'Ordinary comment'], ['refine', 'Refine'], ['propose', 'Propose'], ['continue', 'Continue']]) {
       const action = facts.actions?.[name];
       area.append(paragraph(label + ' · Source: ' + (action?.eligible === true ? 'eligible' : action?.availability ?? 'unavailable')
-        + (action?.reason ? ' · ' + action.reason : '') + ' · SoFa submission: ' + (data.submissionAvailable ? 'available with confirmation' : 'unavailable')));
+        + (action?.reason ? ' · ' + action.reason : '') + ' · Lighthouse Control Center submission: ' + (data.submissionAvailable ? 'available with confirmation' : 'unavailable')));
     }
     if (data.submissionAvailable) renderActions(byId('control-actions'), facts, target, data.dataScope,
       () => operation === revision && current?.key === target.key && current?.dataScope === data.dataScope,

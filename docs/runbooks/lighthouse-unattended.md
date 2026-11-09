@@ -57,7 +57,7 @@ Project profiles are declarations. Operator overrides have precedence; a differe
 2. From the default branch, run the safe App-only preflight:
 
    ```sh
-   gh workflow run lighthouse-ci-app-preflight.yml --repo juangcarmona/sofa --ref main
+   gh workflow run lighthouse-ci-app-preflight.yml --repo juangcarmona/lighthouse-control-center --ref main
    ```
 
    Inspect **Lighthouse CI App preflight** in Actions and retain the run link. It admits only the owner as original and triggering actor, on the default branch. The pinned trusted harness checks the existing App installation, requests one-repository `contents: write` scope and revokes the token. A separate step requires `tokenRevoked: true`. The safe summary includes installation, permissions and expiry, never the token or key. No verification ref, commit, PR, model or delivery is created. Missing credentials, excess scope or unconfirmed revocation fail the job. Do not recreate the App or print secrets to diagnose it.
@@ -65,7 +65,7 @@ Project profiles are declarations. Operator overrides have precedence; a differe
 4. Recheck effective `main` rules: required `verify` / integration 15368, strict checks, no bypass; retain the protected evidence branch. Reobserve evidence protection if rules changed:
 
    ```sh
-   node node_modules/@juangcarmona/lighthouse-sdlc/src/observe-protection.mjs juangcarmona/sofa process/retrospectives
+   node node_modules/@juangcarmona/lighthouse-sdlc/src/observe-protection.mjs juangcarmona/lighthouse-control-center process/retrospectives
    ```
 
    Review any changed digest before recording it in `.lighthouse/github.json`. Reconciliation observes rules; it must not weaken them.
@@ -82,7 +82,7 @@ The owner replaced the staged first-delivery/merge sequence below with the origi
 3. After approval and all preflights, dispatch exactly once from the current default branch:
 
    ```sh
-   gh workflow run lighthouse-sdlc-unattended.yml --repo juangcarmona/sofa --ref main -f issue="$SOFA_FF_ISSUE" -f route=ff
+   gh workflow run lighthouse-sdlc-unattended.yml --repo juangcarmona/lighthouse-control-center --ref main -f issue="$SOFA_FF_ISSUE" -f route=ff
    ```
 
    Set `SOFA_FF_ISSUE` to the separately approved issue number. Do not rerun an uncertain attempt: inspect its effects and receipt first.

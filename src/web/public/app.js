@@ -37,7 +37,7 @@ function issueCard(repo, issue) {
   const labels = node('div', undefined, 'labels');
   for (const label of issue.labels) labels.append(badge(label, ['waiting-review', 'needs-info'].includes(label) ? 'caution' : label === 'agent-working' ? 'activity' : ''));
   if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
-    const local = node('a', 'Read issue in SoFa'); local.href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number; li.append(local);
+    const local = node('a', 'Open issue in Lighthouse Control Center'); local.href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number; li.append(local);
   }
   li.append(labels, timing('Since source update (not wait duration)', issue.updatedAt, repo.observedAt));
   return li;
@@ -142,7 +142,7 @@ async function refresh() {
       const account = node('a', 'Open account'); account.href = '/workspace';
       const heading = node('h2', setupRequired ? 'Complete the GitHub connection' : 'Account verification required');
       const explanation = node('p', setupRequired
-        ? 'Your SoFa sign-in is verified. Register the development GitHub App, install it on the selected repositories, then connect your account.'
+        ? 'Your Lighthouse Control Center sign-in is verified. Register the development GitHub App, install it on the selected repositories, then connect your account.'
         : 'Open your account to check the connection and repository access.');
       $('repositories').replaceChildren(heading, explanation, account);
       if (heldFocus) account.focus({ preventScroll: true });
@@ -166,8 +166,8 @@ $('appearance').addEventListener('change', event => { document.documentElement.d
 if (location.pathname === '/workspace/operations') {
   const account = node('a', 'Account'); account.href = '/workspace';
   const issues = node('a', 'Issues'); issues.href = '/workspace/issues';
-  const factory = node('a', 'Factory'); factory.href = '/workspace/factory';
-  document.querySelector('.topbar').append(factory, account, issues);
+  const fleet = node('a', 'Fleet'); fleet.href = '/workspace/factory';
+  document.querySelector('.topbar').append(fleet, account, issues);
 }
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);
