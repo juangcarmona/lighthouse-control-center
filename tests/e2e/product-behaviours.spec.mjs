@@ -105,6 +105,10 @@ test('live anonymous denial returns no protected issue information', async ({ re
 
 test('live ordinary comment is confirmed by its source identity without continuation', async ({ signedPage: page }, info) => {
   test.skip(process.env.LCC_E2E_ALLOW_COMMENT !== 'true', 'Actual comment publication requires explicit opt-in on the selected issue.');
+  const operations = [];
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === controlsPath && request.method() === 'POST') operations.push(request.postDataJSON()?.operation);
+  });
   const source = await (await page.request.get(controlsPath)).json();
   expect(source.availability, 'Actual source preflight is required; unavailable authority is not a successful comment test.').toBe('available');
   expect(source.facts?.actions?.comment?.eligible).toBe(true);
@@ -113,26 +117,41 @@ test('live ordinary comment is confirmed by its source identity without continua
     await page.goto(issuePath, { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('button', { name: 'Review comment', exact: true })).toBeEnabled();
   });
-  await test.step('Recover the existing journal before preparing another action', async () => {
+  const previous = await test.step('Recover the existing journal before preparing another action', async () => {
     const recovered = page.waitForResponse(response => response.url().endsWith(controlsPath) && response.request().method() === 'POST'
       && response.request().postDataJSON()?.operation === 'receipt');
     await page.getByRole('button', { name: 'Recover previous action', exact: true }).click();
     const previous = await (await recovered).json();
     expect(previous.availability).toBe('available');
     if (previous.receipt?.state !== 'comment-published') expect(['claimed', 'uncertain']).not.toContain(previous.journalState);
+    return previous;
   });
-  const body = 'Lighthouse Control Center E2E: ordinary comment confirmation ' + new Date().toISOString() + '. This action requests no continuation.';
+  const confirmPrepared = process.env.LCC_E2E_CONFIRM_PREPARED === 'true';
+  if (confirmPrepared) {
+    expect(previous.journalState).toBe('prepared');
+    expect(previous.intent?.action).toBe('comment');
+    expect(previous.intent?.actorId).toBe(source.facts.actor.id);
+    expect(previous.intent?.repository?.name).toBe(repository.toLowerCase());
+    expect(previous.intent?.issue?.number).toBe(issue);
+    expect(previous.intent?.scope).toBe('comment-only');
+    expect(previous.intent?.body).toMatch(/^Lighthouse Control Center E2E: ordinary comment confirmation \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\. This action requests no continuation\.$/);
+  }
+  const body = confirmPrepared ? previous.intent.body
+    : 'Lighthouse Control Center E2E: ordinary comment confirmation ' + new Date().toISOString() + '. This action requests no continuation.';
   const confirmation = page.getByRole('region', { name: 'Action confirmation', exact: true });
   await test.step('Prepare an ordinary comment without dispatching continuation', async () => {
-    await page.getByLabel('Your comment or answer').fill(body);
-    const prepared = page.waitForResponse(response => new URL(response.url()).pathname === controlsPath
-      && response.request().method() === 'POST' && response.request().postDataJSON()?.operation === 'prepare', { timeout: 45000 });
-    await page.getByRole('button', { name: 'Review comment', exact: true }).click();
-    const preparation = await (await prepared).json();
-    expect(preparation.availability, preparation.reason ?? 'Current preparation must be verified.').toBe('available');
-    expect(preparation.journalState).toBe('prepared');
-    expect(preparation.intent?.body).toBe(body);
+    if (!confirmPrepared) {
+      await page.getByLabel('Your comment or answer').fill(body);
+      const prepared = page.waitForResponse(response => new URL(response.url()).pathname === controlsPath
+        && response.request().method() === 'POST' && response.request().postDataJSON()?.operation === 'prepare', { timeout: 45000 });
+      await page.getByRole('button', { name: 'Review comment', exact: true }).click();
+      const preparation = await (await prepared).json();
+      expect(preparation.availability, preparation.reason ?? 'Current preparation must be verified.').toBe('available');
+      expect(preparation.journalState).toBe('prepared');
+      expect(preparation.intent?.body).toBe(body);
+    }
     await expect(confirmation).toContainText('does not resume work');
+    await expect(confirmation).toContainText(body);
     await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toBeEnabled();
   });
   const result = await test.step('Send once and inspect the actual source receipt', async () => {
@@ -144,12 +163,15 @@ test('live ordinary comment is confirmed by its source identity without continua
   expect(result.receipt?.state).toBe('comment-published');
   expect(result.intent?.action).toBe('comment');
   expect(result.receipt?.questionResolved).toBe(false);
+  expect(operations.filter(value => value === 'submit')).toHaveLength(1);
+  expect(operations.filter(value => value === 'prepare')).toHaveLength(confirmPrepared ? 0 : 1);
   await expect(confirmation).toContainText('GitHub confirmed that the comment was published.');
   await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Refresh source', exact: true }).click();
   await expect(page.locator('#issue-comments')).toContainText(body);
   await info.attach('confirmed-source-comment', { body: Buffer.from(JSON.stringify({ commentId: result.receipt.commentId,
-    source: result.receipt.source, actingUserId: result.actingUserId, questionResolved: false, sourceWritePerformed: true })), contentType: 'application/json' });
+    source: result.receipt.source, actingUserId: result.actingUserId, questionResolved: false, sourceWritePerformed: true,
+    prepareOrSubmitRequests: operations.filter(value => ['prepare', 'submit'].includes(value)).length })), contentType: 'application/json' });
   await page.locator('#conversation-panel').screenshot({ path: info.outputPath('confirmed-comment.png') });
 });
 
