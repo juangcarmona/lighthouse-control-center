@@ -65,6 +65,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     const heading = document.createElement(contextLabel ? 'h5' : 'h3'); heading.textContent = data.journalState === 'prepared' ? 'Review before sending' : 'Action result'; confirmation.append(heading);
     confirmation.append(text('Destination: ' + target.repository + ' #' + target.number));
     const progress = data.journalState === 'prepared' ? 'Ready for your confirmation.'
+      : data.journalState === 'existing' ? 'An earlier action already exists for this issue. This new draft was not prepared; the existing intent is unchanged. Recover previous action to review its current status and available next step. Your current draft remains here.'
       : action === 'comment' && data.receipt?.state === 'comment-published' ? 'GitHub confirmed that the comment was published.'
         : data.receipt ? 'A source receipt was observed. Review its details; the result may still be unconfirmed.'
           : 'Request recorded. Reconcile to check its source result.';

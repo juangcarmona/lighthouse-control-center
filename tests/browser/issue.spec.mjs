@@ -407,6 +407,50 @@ test('failed prepare displays its reason and does not automatically retry or sub
   expect(operations).toEqual(['prepare']);
 });
 
+test('existing action explains recovery, keeps the new draft and requires explicit confirmation', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true } }
+  } });
+  await page.route('**/api/controls/csrf', route => route.fulfill({ json: { token: 'browser-test-csrf' } }));
+  const original = { availability: 'available', dataScope: 'fixture-71', actingUserId: 71,
+    observedAt: '2026-11-08T08:00:00Z', id: 'b'.repeat(32), journalState: 'prepared',
+    intent: { action: 'comment', body: 'Original prepared comment.' }, effect: { kind: 'comment' } };
+  const operations = [];
+  await page.route('**/api/issues/**/controls', async route => {
+    if (route.request().method() === 'GET') return route.fallback();
+    const operation = route.request().postDataJSON().operation; operations.push(operation);
+    if (operation === 'prepare') return route.fulfill({ json: operations.filter(value => value === 'prepare').length === 1
+      ? original : { ...original, journalState: 'existing' } });
+    if (operation === 'receipt') return route.fulfill({ json: original });
+    return route.fulfill({ status: 500, json: { reason: 'Unexpected operation in recovery test.' } });
+  });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  const composer = page.getByLabel('Your comment or answer');
+  await composer.fill(original.intent.body);
+  await page.getByRole('button', { name: 'Review comment' }).click();
+  await expect(page.getByRole('button', { name: 'Confirm and send' })).toBeVisible();
+
+  await composer.fill('Replacement draft stays editable.');
+  await page.getByRole('button', { name: 'Review comment' }).click();
+  const confirmation = page.getByRole('region', { name: 'Action confirmation' });
+  await expect(confirmation).toContainText('This new draft was not prepared');
+  await expect(confirmation).toContainText('the existing intent is unchanged');
+  await expect(confirmation).toContainText('Original prepared comment.');
+  await expect(confirmation).toContainText('Recover previous action to review its current status and available next step');
+  await expect(composer).toHaveValue('Replacement draft stays editable.');
+  await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
+  expect(operations).toEqual(['prepare', 'prepare']);
+
+  await page.getByRole('button', { name: 'Recover previous action' }).click();
+  await expect(confirmation).toContainText('Ready for your confirmation.');
+  await expect(confirmation).toContainText('Original prepared comment.');
+  await expect(page.getByRole('button', { name: 'Confirm and send' })).toBeVisible();
+  await expect(composer).toHaveValue('Replacement draft stays editable.');
+  expect(operations).toEqual(['prepare', 'prepare', 'receipt']);
+});
+
 for (const width of [1280, 390]) test(`explicit source action ${width}: confirmation, lost response and recovery without another send`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   const harness = await fixture(page);
