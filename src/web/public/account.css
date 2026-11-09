@@ -26,3 +26,23 @@
     margin:1rem}
   .account-panel form,.account-panel button {
     width:100%}}
+
+/* The account surface is server-rendered; keep its navigation and content in the same shell. */
+body { min-width:320px; background:var(--lh-canvas); color:var(--lh-text); font:var(--lh-text-base)/var(--lh-leading) var(--lh-font-sans); }
+body > .topbar { position:fixed; inset:0 0 auto 236px; z-index:10; min-height:64px; display:flex; justify-content:flex-end; border-bottom:1px solid var(--lh-border); background:color-mix(in srgb,var(--lh-surface) 94%,transparent); backdrop-filter:blur(12px); }
+body > .topbar .brand { position:fixed; inset:0 auto auto 0; width:236px; min-height:64px; justify-content:flex-start; padding:.75rem; border-right:1px solid var(--lh-border); border-bottom:1px solid var(--lh-border); background:var(--lh-surface); color:var(--lh-text); font-size:.8rem; font-weight:650; }
+body > .topbar nav { position:fixed; inset:64px auto 0 0; width:236px; display:flex; flex-direction:column; align-items:stretch; gap:.2rem; overflow-x:hidden; overflow-y:auto; padding:1rem .5rem; border-right:1px solid var(--lh-border); background:var(--lh-surface); }
+body > .topbar nav a { min-height:42px; display:flex; align-items:center; padding:.55rem .7rem; border-left:2px solid transparent; color:var(--lh-text-muted); font-size:.8125rem; font-weight:600; text-decoration:none; }
+body > .topbar nav a[href="/workspace"] { border-left-color:var(--lh-action); background:var(--lh-action-soft); color:var(--lh-text); }
+.account-panel { width:min(1160px,calc(100vw - 236px - 3rem)); max-width:1160px; margin:80px auto 2rem; transform:translateX(118px); padding:1.5rem; border-radius:2px; background:var(--lh-surface); }
+.account-panel h1 { font-size:clamp(1.65rem,3vw,2.1rem); font-weight:650; letter-spacing:-.045em; line-height:1.12; }
+.account-panel input, .account-panel select, .account-panel button { border-radius:2px; }
+@media(max-width:900px) {
+  body > .topbar { inset:0 0 auto; min-height:56px; height:56px; justify-content:flex-start; }
+  body > .topbar .brand { position:fixed; width:54px; min-height:56px; justify-content:center; padding:.5rem; border-right:0; border-bottom:0; }
+  body > .topbar nav { inset:0 0 auto 54px; width:auto; height:56px; flex-direction:row; align-items:stretch; overflow-x:auto; overflow-y:hidden; padding:.35rem .5rem; border-right:0; border-bottom:1px solid var(--lh-border); scrollbar-width:thin; }
+  body > .topbar nav a { min-width:max-content; border-left:0; border-bottom:2px solid transparent; }
+  body > .topbar nav a[href="/workspace"] { border-bottom-color:var(--lh-action); }
+  .account-panel { width:calc(100% - 2rem); margin:72px auto 1rem; transform:none; }
+}
+body > .topbar .brand-mark { width:34px; height:34px; flex:0 0 34px; display:block; }

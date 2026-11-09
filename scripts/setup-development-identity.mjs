@@ -71,7 +71,7 @@ await privateWrite(resolve(directory, 'development.json'), JSON.stringify({
   Kestrel: { Endpoints: { Https: { Url: origin.origin, Certificate: { Path: resolve(tls, 'app.crt'), KeyPath: resolve(tls, 'app.key') } } } },
   SoFa: { Origin: origin.origin, Identity: { Mode: 'Development', Development: {
     ProviderUser: `${process.getuid()}:0`, Issuer: issuer.href, ClientId: 'sofa-development', ClientSecret: clientSecret, OwnerSubject: ownerSubject,
-  } }, Repositories: ['juangcarmona/lighthouse', 'juangcarmona/sofa'] },
+  } }, Repositories: ['juangcarmona/lighthouse', 'juangcarmona/lighthouse-control-center'] },
 }, null, 2));
 await privateWrite(resolve(directory, 'provider.env'), [
   'KC_BOOTSTRAP_ADMIN_USERNAME=development-admin', 'KC_BOOTSTRAP_ADMIN_PASSWORD=' + secret(),

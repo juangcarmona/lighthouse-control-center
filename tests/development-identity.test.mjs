@@ -21,6 +21,8 @@ test('development setup imports simple shared test credentials, protects generat
     assert.equal(result.status, 0);
     const original = await readFile(join(directory, 'development.json'), 'utf8');
     const configuration = JSON.parse(original);
+    assert.ok(configuration.SoFa.Repositories.includes('juangcarmona/lighthouse-control-center'));
+    assert.ok(!configuration.SoFa.Repositories.includes('juangcarmona/sofa'));
     const accounts = JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8'));
     assert.equal(accounts.length, 2);
     const realm = JSON.parse(await readFile(join(directory, "import/sofa-dev-realm.json"), "utf8"));

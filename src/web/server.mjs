@@ -57,6 +57,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const host = process.env.SOFA_HOST || '127.0.0.1';
   const port = Number(process.env.SOFA_PORT || 5168);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw Error('SOFA_PORT must be between 1024 and 65535');
-  const repositories = (process.env.SOFA_REPOSITORIES || 'juangcarmona/lighthouse,juangcarmona/sofa').split(',').map(r => r.trim());
+  const repositories = (process.env.SOFA_REPOSITORIES || 'juangcarmona/lighthouse,juangcarmona/lighthouse-control-center').split(',').map(r => r.trim());
   createObservationServer({ repositories, hosts: [host, 'localhost', '127.0.0.1'] }).listen(port, host, () => console.log(`SoFa observation: http://${host}:${port}`));
 }

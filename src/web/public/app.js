@@ -3,6 +3,26 @@ const node = (tag, text, className) => { const n = document.createElement(tag); 
 function showObservationControls(visible) {
   document.querySelectorAll('.metrics, .repository-filter, .scope, .boundary').forEach(element => { element.hidden = !visible; });
 }
+function showWorkspaceNavigation(visible) {
+  const navigation = $('workspace-navigation');
+  if (!navigation || !['/workspace', '/workspace/operations'].includes(location.pathname)) return;
+  if (!visible) { navigation.hidden = true; return; }
+  if (!navigation.childElementCount) {
+    for (const [label, href, key] of [
+      ['Fleet overview', '/workspace/operations', 'workspace:operations'],
+      ['Find repository work', '/workspace/factory', 'workspace:factory'],
+      ['Intervention inbox', '/workspace/attention', 'workspace:attention'],
+      ['Issues', '/workspace/issues', 'workspace:issues'],
+      ['Runtime', '/workspace/runtime', 'workspace:runtime'],
+      ['Account', '/workspace', 'workspace:account'],
+    ]) {
+      const item = workspaceLink(label, href, '', '', key);
+      if (location.pathname === href || (href === '/workspace' && location.pathname === '/workspace')) item.setAttribute('aria-current', 'page');
+      navigation.append(item);
+    }
+  }
+  navigation.hidden = false;
+}
 const active = run => ['queued', 'in_progress', 'waiting', 'pending', 'requested'].includes(run.status);
 const humanWait = issue => issue.labels.some(label => ['needs-info', 'waiting-review'].includes(label));
 const sourceKey = (repository, kind, id) => JSON.stringify([repository, kind, id]);
@@ -145,6 +165,7 @@ async function refresh() {
       const setupRequired = response.status === 409 && failure?.state === 'unconfigured';
       const heldFocus = $('repositories').contains(document.activeElement);
       showObservationControls(false);
+      showWorkspaceNavigation(false);
       snapshot = undefined;
       $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
       for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
@@ -164,7 +185,7 @@ async function refresh() {
     if (!response.ok) throw Error();
     const data = await response.json();
     if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (['available', 'stale'].includes(r.availability) && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
-    showObservationControls(true); render(data); snapshot = data;
+    showObservationControls(true); showWorkspaceNavigation(true); render(data); snapshot = data;
     $('connection').textContent = `Observation received ${new Date().toISOString()}. Refreshes every 30 seconds; source observation times are shown below.`;
   } catch {
     $('connection').textContent = snapshot ? 'Refresh failed. Previously shown observations may be stale. Try refreshing again.' : 'Refresh failed. No observation is available. Try refreshing again.';
@@ -176,17 +197,5 @@ async function refresh() {
 $('refresh').addEventListener('click', refresh);
 $('repository-filter').addEventListener('change', () => { if (snapshot) render(snapshot); });
 $('appearance').addEventListener('change', event => { document.documentElement.dataset.lhTheme = event.target.value; });
-if (location.pathname === '/workspace/operations') {
-  const navigation = $('workspace-navigation');
-  navigation.hidden = false;
-  navigation.append(
-    workspaceLink('Fleet overview', '/workspace/operations', '', '', 'workspace:operations'),
-    workspaceLink('Find repository work', '/workspace/factory', '', '', 'workspace:factory'),
-    workspaceLink('Intervention inbox', '/workspace/attention', '', '', 'workspace:attention'),
-    workspaceLink('Issues', '/workspace/issues', '', '', 'workspace:issues'),
-    workspaceLink('Runtime', '/workspace/runtime', '', '', 'workspace:runtime'),
-    workspaceLink('Account', '/workspace', '', '', 'workspace:account'),
-  );
-}
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);

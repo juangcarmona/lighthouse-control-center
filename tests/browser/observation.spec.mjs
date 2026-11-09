@@ -151,7 +151,7 @@ test('operations navigation opens source-backed mission context and a repository
   await expect(page.locator('#control-actions button:enabled')).toHaveCount(0);
   await expect(page.getByLabel('Your comment or answer')).toBeVisible();
   await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
-  await expect(page.locator('#comment-composer')).toContainText('Synthetic source denial for the navigation fixture.');
+  await expect(page.locator('#controls-status')).toContainText('Synthetic source denial for the navigation fixture.');
 });
 
 test('source-keyed focus survives same titles, changed href, reorder, history and removal', async ({ page }) => {

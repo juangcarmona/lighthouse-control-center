@@ -16,6 +16,17 @@ function controlsStatus(text) {
   byId('controls-status').textContent = text;
   renderUnavailableActions(byId('control-actions'), text);
 }
+function controlReason(data) {
+  const reason = typeof data?.reason === 'string' ? data.reason : 'Shared source facts are unavailable.';
+  const diagnostic = reason.match(/^source-read-(actor|repository|issue|commits|comments)-(http-(?:401|403|404|408|409|429|500|502|503)|status-unknown)$/);
+  if (!diagnostic) return reason;
+  const names = { actor: 'the connected GitHub identity', repository: 'the repository', issue: 'this issue', commits: "the repository's current revision", comments: 'the issue conversation' };
+  const scopes = { contents: 'Contents: read', pull_requests: 'Pull requests: read', variables: 'Variables: read', actions: 'Actions: read' };
+  const missing = (Array.isArray(data.missingReadScopes) ? data.missingReadScopes : []).filter(scope => Object.hasOwn(scopes, scope)).map(scope => scopes[scope]);
+  return 'Could not read ' + names[diagnostic[1]] + ' (' + diagnostic[2].replace('http-', 'HTTP ') + '). '
+    + (missing.length ? 'Missing or unverified GitHub App access: ' + missing.join(', ') + '. Verify installation permissions and reconnect GitHub after authorization changes.'
+      : diagnostic[2] === 'http-429' ? 'GitHub is rate limiting these checks. Refresh after the source limit resets.' : 'Refresh the source. If this persists, check the GitHub connection and source availability.');
+}
 function clear() {
   renderingBudget = { remaining: 5000 };
   current = null; comments = []; bytes = 0; nextPage = null;
@@ -195,7 +206,7 @@ async function readControls(target, operation, initialBody = '') {
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
     if (operation !== revision || current?.key !== target.key) return;
     const data = await response.json().catch(() => null);
-    const reason = typeof data?.reason === 'string' ? data.reason : 'Shared source facts are unavailable.';
+    const reason = controlReason(data);
     if ([401, 403, 409].includes(response.status)) {
       clear(); status('Source authority changed; previous context was removed. ' + reason, true);
       controlsStatus('Actions unavailable. ' + reason);
@@ -203,6 +214,10 @@ async function readControls(target, operation, initialBody = '') {
     }
     if (!response.ok) {
       controlsStatus('Action checks are unavailable. Previous observations may be stale. ' + reason);
+      if (typeof data?.reason === 'string') {
+        byId('issue-controls').replaceChildren(paragraph('Source diagnostic: ' + data.reason));
+        byId('source-eligibility').open = true;
+      }
       return;
     }
     if (!data) throw Error('Shared source facts unavailable');

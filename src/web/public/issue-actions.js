@@ -16,7 +16,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   const label = document.createElement('label'); label.textContent = 'Your comment or answer'; label.append(body);
   const hint = document.createElement('p'); hint.className = 'lh-hint'; hint.id = 'comment-hint-' + ++composerId;
   hint.textContent = !allowed('comment') && allowed('continue') ? 'Enter an answer for the verified question, then review answer and continue. Ordinary commenting is unavailable.'
-    : !allowed('comment') ? reason || facts.actions?.comment?.reason || 'Commenting is unavailable until source permissions and action checks are confirmed.'
+    : !allowed('comment') ? (reason ? 'Commenting is unavailable. See the source status above.' : facts.actions?.comment?.reason || 'Commenting is unavailable until source permissions and action checks are confirmed.')
     : 'Publishes a GitHub comment as the connected account. It does not resume work. Review it before sending.';
   body.setAttribute('aria-describedby', hint.id); field.append(label, hint);
   const composer = document.createElement('section'); composer.className = 'comment-composer';
@@ -106,8 +106,8 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       if (['comment', 'continue'].includes(action) && !body.value.trim()) { message.textContent = 'Enter your comment or answer first.'; body.focus(); return; }
       void command({ operation: 'prepare', action, body: ['comment', 'continue'].includes(action) ? body.value : '' });
     }, group, !allowed(action), action !== 'comment');
-    if (action !== 'comment') {
-      const help = text(!allowed(action) ? reason || facts.actions?.[action]?.reason || 'Not currently permitted by source checks.'
+    if (action !== 'comment' && (allowed(action) || !reason && facts.actions?.[action]?.reason)) {
+      const help = text(!allowed(action) ? facts.actions[action].reason
         : action === 'continue' ? 'Use your answer above to explicitly resume the verified question under its original grant.' : 'Review a ' + action + ' request before sending it to Lighthouse.');
       help.className = 'lh-hint'; group.append(help);
     }

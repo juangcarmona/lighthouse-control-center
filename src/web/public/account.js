@@ -1,3 +1,18 @@
+// Use the same source-owned Lighthouse mark as the other workspace pages.
+document.body.classList.add('lh-root');
+document.documentElement.dataset.lhTheme = 'system';
+{
+  const brand = document.querySelector('.topbar .brand');
+  if (brand) {
+    const mark = new DOMParser().parseFromString("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 128 128\" role=\"img\" aria-labelledby=\"title desc\">\n  <title id=\"title\">Lighthouse</title>\n  <desc id=\"desc\">A blue and white lighthouse with its light source casting a beam to the right.</desc>\n  <rect x=\"1\" y=\"1\" width=\"126\" height=\"126\" rx=\"18\" fill=\"#F8FAFF\" stroke=\"#DCE1EB\" stroke-width=\"2\"/>\n  <path d=\"M76 31 128 15v37L76 42Z\" fill=\"#4DA3FF\" opacity=\".2\"/>\n  <path d=\"M78 33 128 18M78 40l50 6\" fill=\"none\" stroke=\"#1F6FD1\" stroke-width=\"1.5\" opacity=\".68\"/>\n  <g transform=\"translate(-5 0)\">\n    <path d=\"M54 49h32l9 58H44l10-58Z\" fill=\"#1F6FD1\"/>\n    <path d=\"M58 53h13l8 50H51l7-50Z\" fill=\"#F8FAFF\"/>\n    <path d=\"M73 53h9l9 50H79l-6-50Z\" fill=\"#4DA3FF\"/>\n    <path d=\"M58 72h25l2 5H57l1-5Zm-3 18h31l1 5H54l1-5Z\" fill=\"#1F6FD1\"/>\n    <path d=\"M51 49h38l-5-8H56l-5 8Z\" fill=\"#8FC2FF\"/>\n    <rect x=\"59\" y=\"27\" width=\"22\" height=\"15\" rx=\"2\" fill=\"#4DA3FF\" stroke=\"#1F6FD1\" stroke-width=\"2\"/>\n    <path d=\"M56 28h28l-4-6H60l-4 6Z\" fill=\"#1F6FD1\"/>\n    <circle cx=\"70\" cy=\"34.5\" r=\"3.4\" fill=\"#FFFFFF\"/>\n    <path d=\"M61 22v-4h18v4M53 109h34l8 6H45l8-6Z\" fill=\"#1F6FD1\"/>\n    <path d=\"M64 18v-4m-9 10-4-4\" stroke=\"#1F6FD1\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  </g>\n</svg>\n", 'image/svg+xml').documentElement;
+    mark.setAttribute('class', 'brand-mark'); mark.setAttribute('aria-hidden', 'true');
+    const copy = document.createElement('span'); copy.className = 'brand-copy';
+    const name = document.createElement('strong'); name.textContent = 'Lighthouse';
+    const product = document.createElement('small'); product.textContent = 'Control Center';
+    copy.append(name, document.createTextNode(' '), product); brand.setAttribute('aria-label', 'Lighthouse Control Center');
+    brand.replaceChildren(mark, copy);
+  }
+}
 const status = document.getElementById('account-status');
 const identity = document.getElementById('github-account');
 const repositories = document.getElementById('repository-authority');

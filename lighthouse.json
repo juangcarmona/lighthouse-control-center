@@ -4,7 +4,8 @@
   "baseline": "0.1.0",
   "product": "sofa",
   "profiles": [
-    "dotnet-backend"
+    "dotnet-backend",
+    "visual-theme"
   ],
   "integrations": {
     "productShape": "0.23.0",
@@ -14,6 +15,10 @@
     "sdlc": {
       "name": "@juangcarmona/lighthouse-sdlc",
       "version": "0.22.4"
+    },
+    "ui": {
+      "name": "@juangcarmona/lighthouse-ui",
+      "version": "0.2.1"
     }
   },
   "managed": [

@@ -24,7 +24,8 @@
     "verify:dotnet": "node scripts/verify-runtime.mjs --profile",
     "identity:setup": "node scripts/setup-development-identity.mjs",
     "verify:identity:host": "node scripts/verify-identity-host.mjs",
-    "prepare:aspire": "node scripts/prepare-aspire.mjs"
+    "prepare:aspire": "node scripts/prepare-aspire.mjs",
+    "test:visual": "playwright test --grep \"visual contract\""
   },
   "repository": {
     "type": "git",

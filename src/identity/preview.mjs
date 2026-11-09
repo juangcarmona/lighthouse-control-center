@@ -13,7 +13,7 @@ export async function shellPreview() {
   return original
     .replace('<title>Lighthouse Control Center · Fleet overview</title>', '<title>Lighthouse Control Center · Preview</title>')
     .replace('<link rel="stylesheet" href="/app.css">', '<link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/identity.css">')
-    .replace('<span class="mark" aria-hidden="true">S</span>Lighthouse Control Center<span class="brand-note">Fleet operations</span>', '<img class="identity-mark" src="/assets/lighthouse-icon.svg" alt="" width="40" height="40"><span class="identity-name">Lighthouse<span>Control Center</span></span>')
+    .replace(/<a class="brand"[^>]*>[\s\S]*?<\/a>/, '<a class="brand" href="/shell"><img class="identity-mark" src="/assets/lighthouse-icon.svg" alt="" width="40" height="40"><span class="identity-name">Lighthouse<span>Control Center</span></span></a>')
     .replace('FLEET OVERVIEW', 'REPOSITORY OVERVIEW')
     .replace('Fleet operations', 'Repository operations');
 }

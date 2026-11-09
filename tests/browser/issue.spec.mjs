@@ -73,6 +73,40 @@ test('repository picker is prefilled from the operations shortcut without readin
   expect(apiRequests).toEqual([]);
 });
 
+for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`visual contract ${theme} ${width}: Lighthouse shell, density, edges and focus`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await fixture(page);
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
+  await expect(page.locator('body')).toHaveClass(/lh-root/);
+  await expect(page.locator('.site-sidebar')).toBeVisible();
+  const visual = await page.evaluate(() => ({
+    font: getComputedStyle(document.body).fontSize,
+    radius: getComputedStyle(document.querySelector('#mission-actions')).borderTopLeftRadius,
+    header: document.querySelector('.topbar').getBoundingClientRect().height,
+    sidebar: document.querySelector('.site-sidebar').getBoundingClientRect().width,
+    content: document.querySelector('main').getBoundingClientRect().width,
+    overflow: document.documentElement.scrollWidth > innerWidth
+  }));
+  expect(visual.font).toBe('15px');
+  expect(visual.radius).toBe('2px');
+  expect(visual.content).toBeLessThanOrEqual(1160);
+  expect(visual.overflow).toBe(false);
+  if (width >= 1000) { expect(visual.header).toBe(64); expect(visual.sidebar).toBe(236); }
+  else {
+    const navigation = page.getByRole('navigation', { name: 'Workspace navigation' });
+    const last = navigation.getByRole('link').last(); await last.scrollIntoViewIfNeeded();
+    const rail = await navigation.boundingBox(), link = await last.boundingBox();
+    expect(link.y).toBeGreaterThanOrEqual(rail.y);
+    expect(link.y + link.height).toBeLessThanOrEqual(rail.y + rail.height + 1);
+  }
+  await page.getByRole('link', { name: 'Add a comment', exact: true }).focus();
+  expect(await page.getByRole('link', { name: 'Add a comment', exact: true }).evaluate(link => getComputedStyle(link).outlineStyle)).not.toBe('none');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: `test-results/issue/visual-contract-${theme}-${width}.png` });
+});
+
 test('mission actions stay before a long issue description on a narrow screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await fixture(page);
@@ -200,6 +234,20 @@ test('missing private journal explains disabled actions without enabling prepare
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });
 
+test('a failed current-revision read exposes the bounded diagnostic and missing source grants', async ({ page }) => {
+  const harness = await fixture(page);
+  await page.route('**/api/issues/**/controls', route => route.fulfill({ status: 503, json: {
+    availability: 'unavailable', reason: 'source-read-commits-http-403', missingReadScopes: ['contents'], dataScope: 'fixture-71'
+  } }));
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#controls-status')).toContainText("Could not read the repository's current revision (HTTP 403)");
+  await expect(page.locator('#controls-status')).toContainText('Contents: read');
+  await expect(page.locator('#issue-controls')).toContainText('source-read-commits-http-403');
+  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.locator('#control-actions button:enabled')).toHaveCount(0);
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
 for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`comment composer ${theme} ${width}: visible when unsupported, explained and themed`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   const harness = await fixture(page);
@@ -208,7 +256,8 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`co
   await expect(page.getByRole('heading', { name: 'Add a comment' })).toBeVisible();
   await expect(page.getByLabel('Your comment or answer')).toBeVisible();
   await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
-  await expect(page.locator('#comment-composer')).toContainText('Installed contract unavailable.');
+  await expect(page.locator('#controls-status')).toContainText('Installed contract unavailable.');
+  await expect(page.locator('#comment-composer')).toContainText('See the source status above.');
   await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Recover previous action' })).toBeDisabled();
   await page.getByRole('link', { name: 'Add a comment', exact: true }).click();

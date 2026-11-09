@@ -36,4 +36,6 @@ For unattended work, read [the current delivery grant](docs/runbooks/lighthouse-
 
 ## Validation
 
+For every interface change, read [the Lighthouse design guide](docs/design/DESIGN.md) and [the Control Center visual contract](docs/design/control-center.md). Use the Lighthouse website as the visual reference for shell, density, typography and component shape. Verify the changed screen in light/dark and narrow/desktop layouts with the visual and browser checks. Token usage and green accessibility checks alone do not establish visual conformance. For an action, separately prove its source result or report the exact unresolved failure; a visible disabled form is not a working action.
+
 Use `npm run verify` for the scaffold's deterministic checks. Update it and the CI workflow when new build, test, lint, or security tools are adopted. Report checks actually run and any known limitations.
