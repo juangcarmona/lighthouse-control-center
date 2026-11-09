@@ -15,7 +15,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "06e5df585b264d8797e0bae0136e77a043326e7b175ead259fb8a4a46f0fb4e3"
+      "sha256": "6d73cb2e451d8130159862f63a8939d79b32e0b2000b80bee25ad1ed4841d9c8"
     },
     {
       "path": "actual-source-authority.json",
@@ -28,6 +28,10 @@
     {
       "path": "confirmed-source-comments.json",
       "sha256": "13a44ccf6d764e35d365caabe190ed802e8343fa04a719c404e5ee1955b42d0d"
+    },
+    {
+      "path": "development-guidance-activation.json",
+      "sha256": "7b78651d264acbec5c62a38d47fcb09d8b57801c42e87f870cc981aee5583fee"
     },
     {
       "path": "failed-existing-confirmation/structured-behaviours.json",
@@ -78,6 +82,22 @@
       "sha256": "15e6df272d228881a102b048769847a9bda4ca90baee7edbdd3f7a423a6a0481"
     },
     {
+      "path": "fixture-eccdcac/structured-behaviours.json",
+      "sha256": "19bf575982186cc59c08576151a786f2094a1687b0fdecac9a9f0631995b1b5d"
+    },
+    {
+      "path": "fixture-eccdcac/verification-evidence.json",
+      "sha256": "58db9c63b4f9a14a89ac96218ae9362170a07eacfac4975aec1dd8eca5abe2dc"
+    },
+    {
+      "path": "fixture-guidance-9f1e2f8/structured-behaviours.json",
+      "sha256": "ddda92838fb9eda4c0dddba988793bae6398e8202601c5e49fa8e6b12c4f2429"
+    },
+    {
+      "path": "fixture-guidance-9f1e2f8/verification-evidence.json",
+      "sha256": "709d4bb3bb43eea3a34cc0502f9ec83cbbd297a0d2c574057319233a20f23857"
+    },
+    {
       "path": "issue-narrow.png",
       "sha256": "bd78e5ed2d1fb0565cab3438ab8daa49725882618146c02a44ed93faa36c7dd5"
     },
@@ -102,6 +122,30 @@
       "sha256": "8b6626b23d34c1079e19e0057e4f524741c2eb7ae4bb7d14664d87a68a57e854"
     },
     {
+      "path": "live-guidance-9f1e2f8/issue-narrow.png",
+      "sha256": "bd78e5ed2d1fb0565cab3438ab8daa49725882618146c02a44ed93faa36c7dd5"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/issue.png",
+      "sha256": "8cde8f630b396b157a2060322a78ee404149159eefbf89fa21bd3dcd901a7069"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/recovered-comment.png",
+      "sha256": "06396602f3b9aedf1710833e1ccbeb4b307754bea93524178a75dd717775bc8c"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/repository.png",
+      "sha256": "ec7f0278d63943eaf32fa71460d28257ab09943cc6ebe22275c5ebace96e3f8a"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/structured-behaviours.json",
+      "sha256": "bb6bd521bd92254abb1c15d314a4ad0fb50edfe6d62d7991ac6dd5ec48865619"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/verification-evidence.json",
+      "sha256": "25fcc84deda95c9c2721937896e68ed85b4ae27540262abb24357cc07aa9b1f7"
+    },
+    {
       "path": "live-publication-4a7ca88/structured-behaviours.json",
       "sha256": "d35f54e4d2516ebe145c803ef39894c33d4a7a34420a684a2fa4b3cd8912a865"
     },
@@ -119,7 +163,7 @@
     },
     {
       "path": "productshape-validator-output.json",
-      "sha256": "e5e3f9d6b0f64bc56e13e6f19638d4cbd1b5b3a0c7bab5b2c85619a1e2931dae"
+      "sha256": "3a08d14a26d695105b982d0cc3e3b12028e4d2fa694660b5180651474997cd59"
     },
     {
       "path": "recovered-comment.png",
@@ -127,7 +171,7 @@
     },
     {
       "path": "report-validation.json",
-      "sha256": "563ffa5b29fd11456700448e534de74641d66adf403ef7246233ed1056d640c8"
+      "sha256": "716dcd483959e5bcd0c8d358f2dbb9b48084446ffbeaea663c5f18adb580193c"
     },
     {
       "path": "repository.png",
@@ -159,5 +203,8 @@
       "id": 6752272812,
       "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752272812"
     }
-  ]
+  ],
+  "updatedAt": "2026-11-09T22:09:44.125726+00:00",
+  "currentApplicationRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "guidanceReadSuiteRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f"
 }
