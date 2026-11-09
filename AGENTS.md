@@ -2,13 +2,17 @@
 
 Read [README.md](README.md), [docs/README.md](docs/README.md), and [docs/engineering-lifecycle.md](docs/engineering-lifecycle.md) before making changes. Read the relevant ProductShape and ArcShape documents before changing product behavior or architecture.
 
+## GitHub target verification
+
+Before a GitHub write, run `node scripts/check-repository-target.mjs <owner/repository>` from this checkout. Require success and use the returned canonical repository and numeric ID in the action and any delegated handoff. The expected target comes from `.lighthouse/github.json`; verify the issue/PR title and current state in that same repository before changing it. A mismatch or unavailable identity stops the write. A cross-repository task needs an explicitly authorized target and verification from that repository's checkout. Issue numbers alone are not a target.
+
 ## Sources of truth
 
 - Product intent belongs to ProductShape under `docs/product/`. Change it through a Product Change; do not edit an accepted model directly. The applied LCC product definition governs fleet observation, missions and independently authorized runtime operations. GitHub workflows and an independent runtime own execution; Control Center remains optional to repository delivery.
 - Architecture belongs to `docs/architecture/` and explains how the implementation realizes accepted product intent. Use ArcShape's generated structure and the installed `architecture-docs` skill. Do not invent product requirements or architectural facts.
 - Significant architecture decisions belong in `docs/architecture/09-architecture-decisions/` through the ArcShape ADR workflow.
 - Implementation and tests belong under `src/` and `tests/`.
-- The shared Agentic SDLC configuration belongs to `docs/engineering-lifecycle.md`. Follow it across work items; do not create a SoFa-specific lifecycle variant.
+- The shared Agentic SDLC configuration belongs to `docs/engineering-lifecycle.md`. Follow it across work items; keep the shared lifecycle authoritative for Lighthouse Control Center.
 
 ## Working agreements
 
