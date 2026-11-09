@@ -159,7 +159,7 @@ test('operations navigation opens source-backed mission context and repository-s
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await picker.click();
-  await expect(page).toHaveURL(/\/workspace\/factory\?repository=owner%2Flighthouse$/);
+  await expect(page).toHaveURL(url => url.pathname === '/workspace/factory' && url.searchParams.get('repository') === 'owner/lighthouse');
   await expect(page.locator('#factory-repository')).toHaveValue('owner/lighthouse');
   await expect(page.getByRole('link', { name: 'owner/lighthouse#1 · Information', exact: true })).toBeVisible();
 

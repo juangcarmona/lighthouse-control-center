@@ -21,6 +21,7 @@ button, summary { cursor: pointer; }
 .comment-composer { border-block: 1px solid var(--lh-border); padding-block: .75rem 1rem; }
 .comment-composer h3, .comment-composer h5 { margin: 0 0 .5rem; }
 .comment-composer textarea { width: 100%; min-height: 7rem; }
+.comment-composer .lh-hint a { text-decoration: underline; }
 #comment-composer .workflow-action { margin-top: .5rem; }
 #issue-facts-details { margin-bottom: .75rem; }
 #issue-facts-details p, #issue-age, #conversation-coverage { color: var(--lh-text-muted); font-size: var(--lh-text-small); }

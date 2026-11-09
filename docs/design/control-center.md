@@ -16,6 +16,7 @@ Use Lighthouse's compact engineering workspace: a persistent navigation rail on 
 - Put technical identifiers, exact timestamps, revisions and permission diagnostics in labelled disclosures. Primary rows show the project, useful title, state and next action. Prefer compact rows to nested explanatory panels.
 - Returning to a page restores bounded display data after verifying its current owner/account scope, then refreshes in the background. Show that restored data needs refreshing. Cache display projections only; source actions always recheck current authority.
 - Keep a local comment draft editable while submission checks are unavailable. Explain the concrete blocking reason beside the send/review control and provide its recovery action. Clear the draft when the verified actor or repository scope changes.
+- Underline recovery links inside explanatory text in both themes. Color alone must not distinguish a link from its surrounding hint.
 
 The website's composition is implemented in [Lighthouse's public-site stylesheet](https://github.com/juangcarmona/lighthouse/blob/main/src/public-site/site.css); its native control recipes come from the installed `@juangcarmona/lighthouse-ui` package. Public landing-page prose and promotional hero dimensions are not application requirements.
 
