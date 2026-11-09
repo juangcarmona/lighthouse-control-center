@@ -15,7 +15,7 @@ The grants and authority intersections below implement the existing operator and
 ## 1. Protected pickup and dependency reconciliation
 
 - [ ] 1.1 Record the maintainer's review of exact admission, non-inheriting read/operate/admin semantics, target mappings, personal compatibility and restart-applied revocation; verify an explicit review receipt exists before implementation (AC1).
-- [ ] 1.2 Reconcile integrated #48/#117 source heads, source acceptance, action classifications, qualified provider IDs and ADR statuses through the authorized host/owner; deliver a dependency/API inventory retaining existing budgets and identify unavailable surfaces without duplicating work (AC4, AC5).
+- [ ] 1.2 Reconcile PR #100's already-assembled #48 components and the proposed #117 contract against their current main/feature heads; verify main integration, parent-issue source acceptance, action classifications, qualified provider IDs and ADR receipts through the authorized host/owner. Deliver a dependency/API inventory retaining existing budgets and identify unavailable surfaces without duplicating work (AC4, AC5).
 - [ ] 1.3 Obtain separate implementation authorization and resolution of `future` through the existing lifecycle; verify protected decisions are recorded, not inferred from this proposal or any label (AC1).
 
 ## 2. Configuration and admission slice
@@ -37,7 +37,7 @@ The grants and authority intersections below implement the existing operator and
 ## 4. Existing action, intention and receipt slice
 
 - [ ] 4.1 Add scope and named-action checks before supported command previews, confirmations and submission using integrated GitHub authorization/Lighthouse SDK controls; verify read-only denial and local-admin-without-upstream-authority denial produce zero mutation calls (AC4).
-- [ ] 4.2 Bind integrated #48 intentions and receipt lookup to originating identity/session/policy/connection generation and target scope; verify cross-user, cross-session, replaced-account, removed-scope and replayed-ID requests disclose nothing and cannot confirm/send (AC3, AC5).
+- [ ] 4.2 After reusing the #48 path assembled in PR #100 and verifying main integration/source acceptance, bind its intentions and receipt lookup to originating identity/session/policy/connection generation and target scope; verify cross-user, cross-session, replaced-account, removed-scope and replayed-ID requests disclose nothing and cannot confirm/send (AC3, AC5).
 - [ ] 4.3 Preserve journal duplicate/uncertainty history and original correction budgets during invalidation; verify scope/session changes cannot trigger automatic resend, erase deduplication or reset an exhausted budget (AC5).
 - [ ] 4.4 Keep non-owner Lighthouse v1 writes and unavailable provider effects unsupported; verify explicit outcome distinctions for in-scope callers and zero bot/CLI/shell/helper fallback or provider mutation, using doubles only for unavailable contracts (AC4, AC6).
 - [ ] 4.5 Document application admission versus source/provider authority, receipt visibility after invalidation and supported-action limitations; verify all documented actions exist in the reconciled owning contract and no team-write or enterprise-readiness claim is introduced (AC4, AC6).

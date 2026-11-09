@@ -39,9 +39,9 @@ The existing `identity-environments`, `delivery-verification` and `visual-identi
 
 ## Impact
 
-Affected paths include `WorkspaceOptions`, identity admission/session records, `RepositoryAccess`, account/observation handlers, source request guards and the existing browser account/operations views. Extend the integrated #48 intention/receipt path, never build a second journal. Provider-facing scope checks consume #117 identifiers when its contract is accepted and integrated; unavailable provider surfaces stay unavailable.
+Affected paths include `WorkspaceOptions`, identity admission/session records, `RepositoryAccess`, account/observation handlers, source request guards and the existing browser account/operations views. Reuse the existing #48 intention/receipt path; never build a second journal. Provider-facing scope checks consume #117 identifiers only after its contract is accepted and integrated; unavailable provider surfaces stay unavailable.
 
-The inspected Source directory has authorization, transport, permissions and observations, but no command journal. ADR-0008 and ADR-0010 remain Proposed. The dated roadmap's active PR table is not live integration evidence; implementation pickup must reconcile #48/#117 and retain their existing budgets and source acceptance. No code, API service, database, credentials or repository files are changed by this proposal run.
+`main` at `d24953debaab37dfedf7745add1b47dae538a6d7` has authorization, transport, permissions and observations, but no command journal. The current PR #100 feature candidate at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4` already assembles the #48 command controls and `ControlJournal` from PR #112; this is not integration to `main`, and #48 source acceptance remains open. The candidate ADR-0008 file records `Accepted`, while `main` records `Proposed`; verify the existing #48 decision receipts before relying on that difference. ADR-0010 remains `Proposed`. The candidate includes #57 runner inventory but no #117 provider adapter; #117 remains a separate proposal, not an accepted provider contract. Implementation pickup must reconcile current source heads and issue acceptance and retain existing budgets. No code, API service, database, credentials or repository files are changed by this proposal run.
 
 ### Product authority and impact discovery
 
