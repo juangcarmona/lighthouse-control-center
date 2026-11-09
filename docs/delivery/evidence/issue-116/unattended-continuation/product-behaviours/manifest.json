@@ -1,0 +1,98 @@
+{
+  "recordedAt": "2026-11-09T21:20:27.139232+00:00",
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "applicationRevision": "6079e6f7964d0e2c5a992c470489e065131e33b9",
+  "liveReadSuiteRevision": "c8f8231f082b527cd9062a37916971d9528cffa9",
+  "receiptHarnessRevision": "f3b382a02724fa6d01aa0fa6973cee078afb451e",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productChangeStatus": "draft-unapproved",
+  "sourceComment": {
+    "id": 6751624256,
+    "actorId": 2834629,
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6751624256"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "5c042bc3d385f5d11bc95aa63f39ceef15b3082dfeb4a73bb8a03a9e53e062d4"
+    },
+    {
+      "path": "actual-source-authority.json",
+      "sha256": "90f062a3921472cdb492a734829fcd9321b2bf37e39f1f2c79866240ed473fcb"
+    },
+    {
+      "path": "failed-publication-first/structured-behaviours.json",
+      "sha256": "374244b78853214bb96c0393d93f0d699133360f394409d21d684459715a9ac8"
+    },
+    {
+      "path": "failed-publication-first/verification-evidence.json",
+      "sha256": "761fc7cebc42c0fc34552d51c6fde6dcb8a490cc488565654f07e567e62c0399"
+    },
+    {
+      "path": "failed-publication-second/structured-behaviours.json",
+      "sha256": "375d96c7f21d353cdc36cce882db6926c1c216ffabba263323c839e8c5437233"
+    },
+    {
+      "path": "failed-publication-second/verification-evidence.json",
+      "sha256": "e60908b572bab8d6f10e7cdde0bebd3f80bcf907036a510336eed60711e10a82"
+    },
+    {
+      "path": "fixture-6079e6f/structured-behaviours.json",
+      "sha256": "7c32111c91cf666d51d203eab5c0a498b08b64712614c567c73004b550428e9d"
+    },
+    {
+      "path": "fixture-6079e6f/verification-evidence.json",
+      "sha256": "15e6df272d228881a102b048769847a9bda4ca90baee7edbdd3f7a423a6a0481"
+    },
+    {
+      "path": "issue-narrow.png",
+      "sha256": "bd78e5ed2d1fb0565cab3438ab8daa49725882618146c02a44ed93faa36c7dd5"
+    },
+    {
+      "path": "issue.png",
+      "sha256": "8cde8f630b396b157a2060322a78ee404149159eefbf89fa21bd3dcd901a7069"
+    },
+    {
+      "path": "live-498da8c/structured-behaviours.json",
+      "sha256": "65fab955487cbd9701d7548329affede676c35b6ef79a2791e9aec795ae65638"
+    },
+    {
+      "path": "live-498da8c/verification-evidence.json",
+      "sha256": "97fab26bc7a8a811f1516bc85abce624e28c93af4964c4eb885eb33edc7ade57"
+    },
+    {
+      "path": "live-c8f8231/structured-behaviours.json",
+      "sha256": "db67c682a9015e1afbcc5a90662ec1e47bf1cae9ec7acde6321280644f41c04b"
+    },
+    {
+      "path": "live-c8f8231/verification-evidence.json",
+      "sha256": "8b6626b23d34c1079e19e0057e4f524741c2eb7ae4bb7d14664d87a68a57e854"
+    },
+    {
+      "path": "live-recovery-f3b382a/structured-behaviours.json",
+      "sha256": "fff1f7e4870439c32aa97780726c8c11f0628a877261e4d6947d9c4adf89718f"
+    },
+    {
+      "path": "live-recovery-f3b382a/verification-evidence.json",
+      "sha256": "bf276c5fe024e31c4ee2af4bf6a867a0a16296598606d25517ff7b5bcc760214"
+    },
+    {
+      "path": "productshape-validator-output.json",
+      "sha256": "7f479196591e477dc59bc63cfb6147413ee50bda20e0aa022749d4843f7ae5f1"
+    },
+    {
+      "path": "recovered-comment.png",
+      "sha256": "5fd7169908bab51abb2224096ba03e35aaf934e31ce0da995067ba7cecf17e49"
+    },
+    {
+      "path": "report-validation.json",
+      "sha256": "d841e9195b4fa00c691f2379deb6b38dea84d71386467fa8e34c7c38982746a9"
+    },
+    {
+      "path": "repository.png",
+      "sha256": "df4db9659249c164b1eeb8dc73d3477591da9f1a641906d0da3b16488c36dae2"
+    }
+  ],
+  "finalLiveHarnessRevision": "498da8ca6a40a11b93a0c31fb0eb6352bd17472d"
+}
