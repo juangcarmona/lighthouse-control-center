@@ -180,7 +180,7 @@ Inspection SHALL support keyboard and narrow-screen use with visible focus and e
 
 #### Scenario: Keyboard and narrow-screen evidence review
 
-- **WHEN** the operator inspects the eight AC-8 evidence states, selects a comparison, refreshes and opens evidence by keyboard at desktop and 390px widths in light and dark themes
+- **WHEN** the operator inspects the eight fixture states mapped to proposal verification group VG-8, selects a comparison, refreshes and opens evidence by keyboard at desktop and 390px widths in light and dark themes
 - **THEN** text explains each state, controls retain visible accessible focus and long paths, values and revisions do not make the page overflow
 - **THEN** refresh follows the same focused source identity or a persistent inspection control if that source disappears, without stealing focus from unrelated controls
 

@@ -46,9 +46,24 @@ Checked neighbouring concerns: project health/trends, runtime capacity/provider 
 
 The verified owner packet at issue #53 comments 6751369894 and 6751906719 supplies released CLI 0.12.65 / SDLC 0.22.4 provenance and candidate interfaces. It explicitly permits unassessed exception validity and does not accept implementation. Package versions, manifest baseline 0.1.0 and SDLC contract 0.5.0 are distinct dimensions.
 
+## Proposal verification matrix
+
+The groups below organize the evidence planned by this proposal. They are proposal-local verification groups, not numbered acceptance criteria from the original issue and not new ProductShape requirements. Each group maps to the named requirements/scenarios in the proposed `repository-configuration` capability, existing ProductShape sources cited above, and concrete implementation tasks.
+
+| Group | Evidence boundary | Named `repository-configuration` requirements and scenarios | Tasks |
+| --- | --- | --- | --- |
+| VG-1 — Provenance | Every supported fact retains repository, path, immutable revision, observation time, fact kind and contract identity. | Configuration facts retain provenance: Separate source dimensions; Complete configuration facts retain provenance contract. | 2.2, 2.4, 3.1, 3.4 |
+| VG-2 — Compatible expectations | A comparison names its selected compatible expectation and origin; unsupported comparisons stay unassessed. | Comparisons name compatible expectations: Matching baseline; Outdated comparable declaration; Unsupported baseline comparison. | 4.1, 4.6 |
+| VG-3 — Version dimensions | Declared, lock-resolved, installed, latest and policy-required values stay separate; unsupported values remain unknown. | Version evidence categories remain distinct: Declarations do not establish runtime or policy; Independently evidenced registry value. | 2.2, 4.2, 4.6 |
+| VG-4 — Scope, freshness, conflicts and budgets | Coverage and freshness stay independent; conflicts remain inspectable; applicability requires complete evidence; collection obeys explicit bounds. | Coverage freshness and applicability are explained: Conflicting declarations; Stale partial observation; Inaccessible configuration; No applicable package within an evidenced scope; Read limit reached. | 2.3, 2.4, 3.2, 3.3, 4.5, 4.6 |
+| VG-5 — Exception validity unassessed | A declared exception is inspectable but cannot suppress a difference or acquire invented validity semantics. | Declared exceptions do not imply validity: Intentional exception without validation contract. | 4.3, 4.6 |
+| VG-6 — Authorized read-only navigation | Reads use the configured connected-user scope, immutable source paths and safe authorized links; inspection causes no writes or dispatch. | Safe read-only evidence navigation: Exact evidence and linked work; No or unsafe maintenance link. | 3.1, 3.4, 4.4 |
+| VG-7 — Released schemas and unsupported facts | Only pinned released definitions support validation; incompatible/unknown contracts keep raw facts separate from validated interpretations. | Unsupported contracts retain honest source facts: Released SDLC contract conflicts with its schema; Unknown schema version. | 2.1, 2.2, 2.4 |
+| VG-8 — Authority, accessibility and fixtures | Authority loss clears scoped projections and rejects late results; keyboard/narrow-screen behavior is accessible; evidence covers matching, exception-unassessed, outdated, stale, conflicting, no applicable package, inaccessible and unsupported fixtures. | Authority changes invalidate inspection: Lost or changed source authority; Unconfigured repository. Accessible explainable inspection: Keyboard and narrow-screen evidence review. | 3.3, 4.5, 5.1, 5.2, 5.3 |
+
 ## Completion Boundary
 
-This is a planned candidate for owner review, not an approved design or implementation. Definition of Done later requires all AC-1–AC-8 evidence, current citations, required CI at the exact implementation head, documentation, independent review and the lifecycle's explicit protected decisions. See design.md for support limits and tasks.md for ordered implementation and validation.
+This is a planned candidate for owner review, not an approved design or implementation. Definition of Done later requires evidence for proposal verification groups VG-1–VG-8, current citations, required CI at the exact implementation head, documentation, independent review and the lifecycle's explicit protected decisions. See design.md for support limits and tasks.md for ordered implementation and validation.
 
 ## Operator recovery provenance
 

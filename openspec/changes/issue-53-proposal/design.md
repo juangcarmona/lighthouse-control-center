@@ -108,4 +108,4 @@ Later commands: `npm test`, `npm run test:browser`, `npm run verify:dotnet`, `np
 
 ## Definition of Done
 
-All unchecked tasks complete or explicitly dropped without silent acceptance loss; AC-1–AC-8 mapped evidence linked; support limits documented; citations current; required exact-head checks pass; independent source-bound review and lifecycle DoD dimensions reviewed by the developer. Owner acceptance, protected decisions and deployment remain distinct.
+All unchecked tasks complete or explicitly dropped without silent acceptance loss; evidence is linked for each proposal verification group in the [proposal matrix](proposal.md#proposal-verification-matrix); support limits documented; citations current; required exact-head checks pass; independent source-bound review and lifecycle DoD dimensions reviewed by the developer. These proposal-local groups are not original issue acceptance criteria. Owner acceptance, protected decisions and deployment remain distinct.
