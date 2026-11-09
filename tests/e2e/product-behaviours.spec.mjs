@@ -164,7 +164,8 @@ test('live ordinary comment is confirmed by its source identity without continua
   await info.attach('confirmed-source-comment', { body: Buffer.from(JSON.stringify({ commentId: result.receipt.commentId,
     source: result.receipt.source, actingUserId: result.actingUserId, questionResolved: false, sourceWritePerformed: true,
     prepareOrSubmitRequests: operations.filter(value => ['prepare', 'submit'].includes(value)).length })), contentType: 'application/json' });
-  await page.locator('#conversation-panel').screenshot({ path: info.outputPath('confirmed-comment.png') });
+  await confirmation.screenshot({ path: info.outputPath('confirmed-comment.png') });
+  await page.locator('#source-comment-' + result.receipt.commentId).screenshot({ path: info.outputPath('source-comment.png') });
 });
 
 test('live ordinary comment recovery confirms the existing source result without resending', async ({ signedPage: page }, info) => {
