@@ -119,7 +119,7 @@ test('operations navigation opens source-backed mission context and repository-s
     const root = await route.fetch({ url: new URL('/', route.request().url()).href });
     await route.fulfill({ response: root });
   });
-  await page.route('**/workspace/factory**', async route => {
+  await page.route('**/workspace/repositories/**', async route => {
     const target = new URL(route.request().url()); target.port = new URL(issueFixture).port;
     await route.fulfill({ response: await route.fetch({ url: target.href }) });
   });
@@ -142,10 +142,10 @@ test('operations navigation opens source-backed mission context and repository-s
 
   const navigation = page.getByRole('navigation', { name: 'Workspace navigation' });
   await expect(navigation.getByRole('link', { name: 'Overview' })).toHaveAttribute('href', '/workspace/operations');
-  await expect(navigation.getByRole('link', { name: 'Missions' })).toHaveAttribute('href', '/workspace/issues');
+  await expect(navigation.getByRole('link', { name: 'Issues' })).toHaveAttribute('href', '/workspace/issues');
   await expect(navigation.getByRole('link', { name: 'Inbox' })).toHaveAttribute('href', '/workspace/attention');
 
-  const mission = page.getByRole('link', { name: 'Open mission' }).first();
+  const mission = page.getByRole('link', { name: 'Open issue' }).first();
   await expect(mission).toHaveAttribute('href', '/workspace/issues/owner/lighthouse/1');
   const issueCard = mission.locator('..');
   const source = issueCard.getByRole('link', { name: 'GitHub: #1 Information ↗' });
@@ -153,18 +153,18 @@ test('operations navigation opens source-backed mission context and repository-s
   expect((await mission.boundingBox()).width).toBeGreaterThanOrEqual(44);
   await expect(issueCard.getByRole('button')).toHaveCount(0);
 
-  const picker = page.getByRole('navigation', { name: 'owner/lighthouse actions' }).getByRole('link', { name: 'Browse missions' });
-  await expect(picker).toHaveAttribute('href', '/workspace/factory?repository=owner%2Flighthouse');
+  const picker = page.getByRole('navigation', { name: 'owner/lighthouse actions' }).getByRole('link', { name: 'Issues', exact: true });
+  await expect(picker).toHaveAttribute('href', '/workspace/repositories/owner/lighthouse');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await picker.click();
-  await expect(page).toHaveURL(url => url.pathname === '/workspace/factory' && url.searchParams.get('repository') === 'owner/lighthouse');
+  await expect(page).toHaveURL(url => url.pathname === '/workspace/repositories/owner/lighthouse');
   await expect(page.locator('#factory-repository')).toHaveValue('owner/lighthouse');
-  await expect(page.getByRole('link', { name: 'owner/lighthouse#1 · Information', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: '#1 · Information', exact: true })).toBeVisible();
 
   await page.goto('/workspace/operations');
-  await page.getByRole('link', { name: 'Open mission' }).first().click();
+  await page.getByRole('link', { name: 'Open issue' }).first().click();
   await expect(page).toHaveURL(/\/workspace\/issues\/owner\/lighthouse\/1$/);
   await expect(page.locator('#issue-repository')).toHaveValue('owner/lighthouse');
   await expect(page.locator('#issue-number')).toHaveValue('1');

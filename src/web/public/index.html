@@ -17,13 +17,13 @@
   <div class="page-column">
   <header class="topbar"><div class="header-context"><span class="header-kicker">WORKSPACE</span><span class="header-divider">/</span>Overview</div><label class="appearance">Appearance <select id="appearance"><option value="system" selected>System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
   <main id="workspace" tabindex="-1">
-    <section class="intro"><div><p class="eyebrow">CONTROL CENTER</p><h1>Your fleet at a glance</h1><p class="lead">Decisions to make, work in progress and your projects.</p></div><button id="refresh" type="button">Refresh observations</button></section>
+    <h1 class="visually-hidden">Overview</h1><button id="refresh" type="button">Refresh observations</button>
     <div class="dashboard-toolbar"><p id="connection" role="status" aria-live="polite">Connecting to GitHub…</p>
     <label class="repository-filter">Repository <select id="repository-filter"><option value="">All repositories</option></select></label></div>
     <details class="coverage-details"><summary>Source and coverage</summary><p id="count-scope" class="muted">Counts describe collected evidence in the selected repositories.</p>
     <p class="scope">Source: GitHub. Latest 20 workflow runs and first 100 open issue records per repository; PR records excluded from attention. Partial observation, not an exhaustive activity inventory or delivery audit.</p>
     </details>
-    <section class="metrics" aria-label="Observed activity"><div><strong id="repo-count">—</strong><span>Connected projects</span></div><div><strong id="active-count">—</strong><span>Active workflows</span></div><div><strong id="attention-count">—</strong><span>Needs your attention</span></div><div><strong id="unknown-count">—</strong><span>Unavailable projects</span></div></section>
+    <section class="metrics" aria-label="Observed activity"><div><strong id="repo-count">—</strong><span>Repositories</span></div><div><strong id="active-count">—</strong><span>Active workflows</span></div><div><strong id="attention-count">—</strong><span>Needs your attention</span></div><div><strong id="unknown-count">—</strong><span>Unavailable repositories</span></div></section>
 
     <div id="repositories" aria-busy="true"><p class="loading">Loading repository observations…</p></div>
 

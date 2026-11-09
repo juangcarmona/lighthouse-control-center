@@ -201,6 +201,7 @@ public static class WorkspaceModule
       return Results.Json(new
       {
         authenticated = true,
+        displayName = context.User.FindFirst("preferred_username")?.Value ?? context.User.Identity?.Name ?? "Signed in",
         idleDeadline = record.IdleDeadline,
         absoluteDeadline = record.AbsoluteDeadline,
         providerValidatedAt = record.ProviderValidatedAt,
@@ -239,11 +240,16 @@ public static class WorkspaceModule
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
       return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "attention.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
     });
-    app.MapGet("/workspace/factory", async (HttpContext context, OwnerSessions sessions) =>
+    foreach (var route in new[] { "/workspace/factory", "/workspace/repositories", "/workspace/repositories/{owner}/{repository}" })
     {
-      sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "factory.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
-    });
+      app.MapGet(route, async (HttpContext context, OwnerSessions sessions) =>
+      {
+        sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
+        if (context.Request.RouteValues["owner"] is string owner && context.Request.RouteValues["repository"] is string repository
+            && !settings.Repositories.Contains(owner + "/" + repository, StringComparer.OrdinalIgnoreCase)) return (IResult)Results.NotFound();
+        return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "factory.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      });
+    }
     app.MapGet("/api/issues/{owner}/{repository}/{number:int}", async (string owner, string repository, int number,
         HttpContext context, OwnerSessions sessions, GetIssueContextHandler issues) =>
     {
@@ -315,7 +321,7 @@ public static class WorkspaceModule
     app.MapGet("/workspace/issues", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "issue.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "factory.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
     });
     app.MapGet("/workspace/issues/{owner}/{repository}/{number:int}", async (HttpContext context, OwnerSessions sessions) =>
     {
@@ -369,7 +375,7 @@ public static class WorkspaceModule
       "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Lighthouse Control Center · "
       + title + "</title><link rel=\"icon\" href=\"/lighthouse.svg\" type=\"image/svg+xml\"><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
       + "<script type=\"module\" src=\"/workspace-ui.js\"></script>" + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
-      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">Lighthouse Control Center</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Fleet</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
+      + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">Lighthouse Control Center</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/repositories\">Repositories</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
   private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action
       + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token)

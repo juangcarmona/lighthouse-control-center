@@ -6,6 +6,7 @@ async function fixture(page) {
   const methods = [];
   await page.route('**/api/**', async route => {
     methods.push(route.request().method());
+    if (new URL(route.request().url()).pathname === '/api/session') return route.fulfill({ json: { authenticated: true, displayName: 'Fixture owner' } });
     if (route.request().url().endsWith('/api/connections/github')) return route.fulfill({ json: { state: 'linked', login: 'verified-user', dataScope: scope,
       repositories: [{ repository: 'example/repo', availability: 'available', issuesRead: true }] } });
     return route.fulfill({ status, json: { repository: 'example/repo', availability: status === 200 ? 'available' : 'unavailable', dataScope: scope,
@@ -20,7 +21,7 @@ for (const [width, theme] of [[1280, 'dark'], [390, 'light']]) test(`inbox ${wid
   await page.locator('html').evaluate((element, value) => element.dataset.lhTheme = value, theme);
   await expect(page.locator('[data-attention-key]')).toHaveCount(2);
   await expect(page.locator('#factory-results')).toContainText('Needs information · open issue');
-  await page.locator('[data-attention-key] details').first().click();
+  await page.locator('[data-attention-key] details summary').first().click();
   await expect(page.locator('#factory-results')).toContainText('GitHub label: needs-info');
   await expect(page.locator('#factory-results')).toContainText('(not wait duration)');
   await expect(page.locator('#factory-results img, #factory-results script')).toHaveCount(0);
@@ -29,7 +30,7 @@ for (const [width, theme] of [[1280, 'dark'], [390, 'light']]) test(`inbox ${wid
   await page.locator('#factory-refresh').evaluate(button => button.click());
   await expect(page.locator('[data-attention-key]')).toHaveCount(2);
   await expect(page.locator(`[data-focus-key="${key}"]`)).toBeFocused();
-  await expect(page.locator('#factory-status')).toContainText('received');
+  await expect(page.locator('#factory-count')).toContainText('2 collected label contexts');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(source.methods.every(method => method === 'GET')).toBe(true);
@@ -42,7 +43,7 @@ test('inbox label removal and failed refresh preserve uncertainty; denial and ac
   await expect(page.locator('#factory-results')).toContainText('Not observed in this collection; resolution is unknown.');
   source.fail(503); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('#factory-results')).toContainText('Stale observation');
-  await page.locator('[data-attention-key] details').first().click();
+  await page.locator('[data-attention-key] details summary').first().click();
   await expect(page.locator('#factory-results')).toContainText('2026-11-08T01:00:00.000Z');
   source.fail(403); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('[data-attention-key]')).toHaveCount(0);

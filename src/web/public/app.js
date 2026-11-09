@@ -1,4 +1,4 @@
-import './workspace-ui.js';
+import { updateWorkspaceAccount } from './workspace-ui.js';
 import { readProjectionCache, writeProjectionCache, clearProjectionCache } from './read-projection-cache.js';
 const $ = id => document.getElementById(id);
 const node = (tag, text, className) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (className) n.className = className; return n; };
@@ -12,9 +12,9 @@ function showWorkspaceNavigation(visible) {
   if (!navigation.childElementCount) {
     for (const [label, href, key] of [
       ['Overview', '/workspace/operations', 'workspace:operations'],
-      ['Projects', '/workspace/factory', 'workspace:factory'],
+      ['Repositories', '/workspace/repositories', 'workspace:factory'],
       ['Inbox', '/workspace/attention', 'workspace:attention'],
-      ['Missions', '/workspace/issues', 'workspace:issues'],
+      ['Issues', '/workspace/issues', 'workspace:issues'],
       ['Runtime', '/workspace/runtime', 'workspace:runtime'],
       ['Account', '/workspace', 'workspace:account'],
     ]) {
@@ -70,7 +70,7 @@ function issueCard(repo, issue) {
   row.append(labels);
   if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
     const href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number;
-    row.append(workspaceLink('Open mission', href, repo.repository, 'mission-link', `${issueKey}:mission`));
+    row.append(workspaceLink('Open issue', href, repo.repository, 'mission-link', `${issueKey}:mission`));
   }
   const evidence = node('details', undefined, 'record-details'); evidence.dataset.key = `${issueKey}:evidence`;
   evidence.append(node('summary', repo.repository + ' · Source details'), timing('Since source update (not wait duration)', issue.updatedAt, repo.observedAt));
@@ -101,9 +101,9 @@ async function restoreProjection() {
   const epoch = projectionEpoch;
   try {
     const response = await fetch('/api/connections/github', { cache: 'no-store', signal: AbortSignal.timeout(35000) });
-    if ([401, 403, 409].includes(response.status)) { clearProjectionCache(); return; }
+    if ([401, 403, 409].includes(response.status)) { updateWorkspaceAccount({ state: response.status === 409 ? 'unlinked' : 'expired' }); clearProjectionCache(); return; }
     if (!response.ok) return;
-    const account = await response.json();
+    const account = await response.json(); updateWorkspaceAccount(account);
     if (epoch !== projectionEpoch || snapshot) return;
     if (account.state !== 'linked' || typeof account.dataScope !== 'string') { clearProjectionCache(); return; }
     projectionScope = account.dataScope;
@@ -146,7 +146,7 @@ function render(data) {
     workflows.append(group);
   }
   if (workflows.children.length === 1) workflows.append(node('p', available.length ? 'No active workflow runs in the collected observation.' : 'Workflow evidence unavailable.', 'empty'));
-  fragment.append(waits, workflows, node('h2', 'Projects'));
+  fragment.append(waits, workflows, node('h2', 'Repositories'));
   for (const repo of rows) {
     const card = node('article', undefined, 'repository'); card.dataset.repository = repo.repository;
     const heading = node('div', undefined, 'repo-heading');
@@ -155,8 +155,8 @@ function render(data) {
     const provenance = node('details', undefined, 'record-details'); provenance.dataset.key = sourceKey(repo.repository, 'observation', ''); provenance.append(node('summary', 'Observation details'), node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp')); card.append(provenance);
     const actions = node('nav', undefined, 'repo-actions'); actions.setAttribute('aria-label', `${repo.repository} actions`);
     if (location.pathname === '/workspace/operations') {
-      const href = '/workspace/factory?repository=' + encodeURIComponent(repo.repository);
-      actions.append(workspaceLink('Browse missions', href, repo.repository, 'repository-mission-link', sourceKey(repo.repository, 'mission-picker', '')));
+      const href = '/workspace/repositories/' + repo.repository;
+      actions.append(workspaceLink('Issues', href, repo.repository, 'repository-mission-link', sourceKey(repo.repository, 'mission-picker', '')));
     }
     actions.append(link('Open workflow actions ↗', `https://github.com/${repo.repository}/actions/workflows/lighthouse-sdlc-router.yml`, repo.repository, 'actions/', sourceKey(repo.repository, 'actions', '')), link('Issues ↗', `https://github.com/${repo.repository}/issues`, repo.repository, undefined, sourceKey(repo.repository, 'issues', '')));
     card.append(actions);
@@ -196,6 +196,7 @@ async function refresh() {
   try {
     const response = await fetch('/api/observations', { signal: AbortSignal.timeout(35000) });
     if ([401, 403, 409].includes(response.status)) {
+      updateWorkspaceAccount({ state: response.status === 409 ? 'unlinked' : 'expired' });
       const failure = await response.json().catch(() => null);
       const setupRequired = response.status === 409 && failure?.state === 'unconfigured';
       const heldFocus = $('repositories').contains(document.activeElement);

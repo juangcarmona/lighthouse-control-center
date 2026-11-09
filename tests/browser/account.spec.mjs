@@ -15,7 +15,7 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`ac
   await expect(page.getByRole('link', { name: 'Account', exact: true })).toHaveAttribute('aria-current', 'page');
   await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
   await expect(page.getByRole('link', { name: 'Lighthouse Control Center', exact: true })).toBeVisible();
-  await expect(page.locator('.workspace-nav a')).toHaveText(['Overview', 'Projects', 'Inbox', 'Missions', 'Runtime', 'Account']);
+  await expect(page.locator('.workspace-nav a')).toHaveText(['Overview', 'Repositories', 'Inbox', 'Issues', 'Runtime', 'Account']);
   await expect(page.locator('#account a[href="/workspace/operations"]')).toHaveText('Open fleet overview');
   const current = await page.locator('.workspace-nav [aria-current="page"]').boundingBox();
   expect(current.x).toBeGreaterThanOrEqual(0);
@@ -24,9 +24,9 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`ac
   const header = await page.locator('.topbar').boundingBox();
   const panel = await page.locator('#account').boundingBox();
   expect(rail.x).toBe(0);
-  expect(rail.width).toBe(width >= 1000 ? 236 : width);
-  expect(header.x).toBe(width >= 1000 ? 236 : 0);
-  expect(panel.x).toBeGreaterThanOrEqual(width >= 1000 ? 236 : 0);
+  expect(rail.width).toBe(width >= 1000 ? 184 : width);
+  expect(header.x).toBe(width >= 1000 ? 184 : 0);
+  expect(panel.x).toBeGreaterThanOrEqual(width >= 1000 ? 184 : 0);
   expect(panel.x + panel.width).toBeLessThanOrEqual(width);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(await page.locator('body').evaluate(body => getComputedStyle(body).fontSize)).toBe('15px');

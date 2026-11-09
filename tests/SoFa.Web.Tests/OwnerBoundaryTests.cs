@@ -30,7 +30,7 @@ public sealed class OwnerBoundaryTests
   {
     await using var app = new OwnerApplication();
     using var client = app.Client();
-    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory", "/workspace/attention",
+    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory", "/workspace/repositories", "/workspace/repositories/example/repository", "/workspace/issues", "/workspace/attention",
         "/workspace/runtime", "/api/runtime/host", "/api/runtime/example/repository", "/api/controls/csrf", "/api/issues/example/repository/7/controls", "/unknown" })
       Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
     Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/auth/login", new StringContent(""))).StatusCode);
@@ -328,7 +328,13 @@ public sealed class OwnerBoundaryTests
     var connectedAccount = await client.GetStringAsync("/workspace");
     Assert.Contains("href=\"https://github.com/verified-user\"", connectedAccount, StringComparison.Ordinal);
     var operations = await client.GetStringAsync("/workspace/operations");
-    Assert.Contains("Your fleet at a glance", operations, StringComparison.Ordinal);
+    Assert.Contains("Overview", operations, StringComparison.Ordinal);
+    Assert.Contains("factory-main", await client.GetStringAsync("/workspace/repositories"), StringComparison.Ordinal);
+    Assert.Contains("factory-results", await client.GetStringAsync("/workspace/repositories/example/repository"), StringComparison.Ordinal);
+    Assert.Contains("factory-search", await client.GetStringAsync("/workspace/issues"), StringComparison.Ordinal);
+    Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/workspace/repositories/unconfigured/repository")).StatusCode);
+    using var currentSession = JsonDocument.Parse(await client.GetStringAsync("/api/session"));
+    Assert.False(string.IsNullOrWhiteSpace(currentSession.RootElement.GetProperty("displayName").GetString()));
     using var anonymous = app.Client();
     Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/app.js")).StatusCode);
     Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/tokens.css")).StatusCode);

@@ -8,6 +8,7 @@ async function fixture(page) {
   const methods = [], requests = [];
   await page.route('**/api/**', async route => {
     methods.push(route.request().method()); const url = new URL(route.request().url()); requests.push(url.pathname + url.search);
+    if (url.pathname === '/api/session') return route.fulfill({ json: { authenticated: true, displayName: 'Fixture owner' } });
     if (url.pathname === '/api/connections/github' && accountStatus) return route.fulfill({ status: accountStatus, body: 'Session ended' });
     if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true, actionsRead })) } });
     if (url.pathname.startsWith('/api/issues/')) return route.fulfill({ json: url.pathname.endsWith('/evidence')
@@ -40,12 +41,13 @@ for (const width of [1280, 390]) test(`factory ${width}: list board filters evid
   await expect(page.getByRole('link', { name: /Find beyond the first page/ })).toBeVisible();
   await page.selectOption('#factory-repository', 'example/repository');
   await expect(page.locator('.factory-issue')).toHaveCount(2);
-  await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).getByRole('button', { name: 'Read issue evidence' }).focus();
+  const ordinary = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
+  await ordinary.locator('details summary').click();
+  await ordinary.getByRole('button', { name: 'Read issue evidence' }).focus();
   await page.keyboard.press('Enter');
-  await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).locator('details').click();
   await expect(page.locator('#factory-results')).toContainText('propose · Result blocked');
   await expect(page.locator('#factory-results')).toContainText('completed / success');
-  await page.locator('#factory-more-filters summary').click();
+  await page.getByText('Evidence filters and coverage', { exact: true }).click();
   await page.selectOption('#factory-stage', 'propose'); await page.selectOption('#factory-wait', 'both');
   const listLinks = await page.locator('.factory-issue h3 a').evaluateAll(links => links.map(link => link.getAttribute('href')));
   expect(listLinks).toEqual(['/workspace/issues/example/repository/7']);
@@ -57,22 +59,55 @@ for (const width of [1280, 390]) test(`factory ${width}: list board filters evid
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   expect(source.methods.every(method => method === 'GET')).toBeTruthy();
 });
-test('exact-number lookup finds uncollected ordinary work and title mode returns to pages', async ({ page }) => {
-  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
-  await page.fill('#factory-search', '#701'); await page.getByRole('button', { name: 'Apply search' }).click();
+test('global issue list finds uncollected work by number and title, preserving list state', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/issues');
+  await page.fill('#factory-search', '#701'); await page.locator('#factory-search').press('Enter');
   await expect(page.locator('.factory-issue')).toHaveCount(2);
   await expect(page.locator('#factory-scope')).toContainText('Exact-number lookup');
-  await expect(page.getByRole('link', { name: /example\/repository#701/ })).toHaveAttribute('href', '/workspace/issues/example/repository/701');
-  await page.fill('#factory-search', '#702'); await page.getByRole('button', { name: 'Apply search' }).click();
+  await expect(page.getByRole('link', { name: /example\/repository #701/ })).toHaveAttribute('href', '/workspace/issues/example/repository/701');
+  await page.fill('#factory-search', '#702'); await page.locator('#factory-search').press('Enter');
   await expect(page.locator('.factory-issue')).toHaveCount(2);
-  await expect(page.getByRole('link', { name: /example\/repository#702/ })).toHaveAttribute('href', '/workspace/issues/example/repository/702');
+  await expect(page.getByRole('link', { name: /example\/repository #702/ })).toHaveAttribute('href', '/workspace/issues/example/repository/702');
   expect(source.requests).toContain('/api/factory/example/repository?number=702');
-  await page.fill('#factory-search', 'Ordinary'); await page.getByRole('button', { name: 'Apply search' }).click();
+  await page.fill('#factory-search', 'Ordinary'); await page.locator('#factory-search').press('Enter');
   await expect(page.locator('.factory-issue')).toHaveCount(1);
   await expect(page.locator('#factory-scope')).toContainText('Title search and filters cover collected');
-  await page.selectOption('#factory-view', 'board'); await page.locator('#factory-more-filters summary').click(); await page.selectOption('#factory-state', 'open');
+  await page.selectOption('#factory-view', 'board'); await page.getByText('Evidence filters and coverage', { exact: true }).click(); await page.selectOption('#factory-state', 'open');
   await page.reload(); await expect(page.locator('#factory-view')).toHaveValue('board'); await expect(page.locator('#factory-state')).toHaveValue('open');
   await expect(page.locator('.factory-issue')).toHaveCount(1);
+});
+
+test('canonical repository inventory opens a compact scoped issue list with semantic state badges', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 900 }); await fixture(page);
+  await page.goto(origin + '/workspace/repositories');
+  await expect(page.locator('body')).toHaveAttribute('data-collection', 'repositories');
+  await page.getByRole('link', { name: 'example/repository', exact: true }).click();
+  await expect(page).toHaveURL(/\/workspace\/repositories\/example\/repository(?:\?.*)?$/);
+  await expect(page.locator('body')).toHaveAttribute('data-repository-scoped', 'true');
+  await page.getByRole('button', { name: 'Dark appearance' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-lh-theme', 'dark');
+  await expect(page.locator('#factory-repository')).toBeHidden();
+  const first = page.locator('.factory-issue').first();
+  await expect(first.locator('h3 a')).toHaveText('#7 · Ordinary work');
+  const geometry = await first.boundingBox();
+  expect(geometry).not.toBeNull();
+  expect(geometry.y).toBeLessThan(230);
+  await expect(first.locator('.issue-row-meta .badge.positive')).toHaveText('Open');
+  await expect(first.locator('.issue-row-meta .badge.caution')).toHaveCount(2);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({ path: info.outputPath('repository-scope-desktop-dark.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Light appearance' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-lh-theme', 'light');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath('repository-scope-mobile-light.png'), fullPage: true });
+
+  await page.goto(origin + '/workspace/repositories/example/repository?repository=example/other');
+  await expect(page.locator('body')).toHaveAttribute('data-repository-scoped', 'true');
+  const issueLinks = await page.locator('.factory-issue h3 a').evaluateAll(links => links.map(link => link.getAttribute('href')));
+  expect(issueLinks.length).toBeGreaterThan(0);
+  expect(issueLinks.every(href => href.startsWith('/workspace/issues/example/repository/'))).toBe(true);
 });
 test('transient failure retains stale times while denied and replacement scopes remove old rows', async ({ page }) => {
   const source = await fixture(page); await page.goto(origin + '/workspace/factory');
@@ -89,8 +124,9 @@ test('transient failure retains stale times while denied and replacement scopes 
 
 test('removed repository titles and evidence disappear before a slow remaining refresh completes', async ({ page }) => {
   const source = await fixture(page); await page.goto(origin + '/workspace/factory');
-  await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).getByRole('button', { name: 'Read issue evidence' }).click();
-  await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).locator('details').click();
+  const ordinary = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
+  await ordinary.locator('details summary').click();
+  await ordinary.getByRole('button', { name: 'Read issue evidence' }).click();
   await expect(page.locator('#factory-results')).toContainText('propose · Result blocked');
   source.removeFirst(); const release = source.pauseOther();
   try {
@@ -132,8 +168,8 @@ test('returning restores same-scope read rows as stale, then refreshes them in t
   const source = await fixture(page); await page.goto(origin + '/workspace/factory');
   const ordinary = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
   await expect(ordinary).toBeVisible();
+  await ordinary.locator('details summary').click();
   await ordinary.getByRole('button', { name: 'Read issue evidence' }).click();
-  await ordinary.locator('details').click();
   await expect(ordinary).toContainText('propose · Result blocked');
   const stored = await page.evaluate(() => Object.entries(sessionStorage).filter(([key]) => key.startsWith('lcc:read-projection:v1:') && !key.endsWith(':active-scope'))
     .map(([, value]) => JSON.parse(value).projection));
@@ -146,8 +182,8 @@ test('returning restores same-scope read rows as stale, then refreshes them in t
     await page.reload();
     const restored = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
     await expect(restored).toContainText('Stale collection; current activity and labels are unknown.');
+    await restored.locator('details summary').click();
     await expect(restored.getByRole('button', { name: /issue evidence/ })).toBeDisabled();
-    await restored.locator('details').click();
     await expect(restored).toContainText('unknown / unread');
     await expect(restored).not.toContainText('propose · Result blocked');
   } finally { release(); }
@@ -172,7 +208,7 @@ test('permission downgrade restores issue rows but never reuses cached private e
     await page.reload();
     const restored = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
     await expect(restored).toContainText('Stale collection; current activity and labels are unknown.');
-    await restored.locator('details').click();
+    await restored.locator('details summary').click();
     await expect(restored).toContainText('unknown / unread');
     await expect(restored).not.toContainText('propose · Result blocked');
     await expect(page.locator('#factory-results')).not.toContainText('Run 500');
@@ -192,4 +228,14 @@ test('an unauthorized account response clears the session projection before a la
     await expect(page.locator('.factory-issue')).toHaveCount(0);
   } finally { release(); }
   await expect(page.locator('.factory-issue')).toHaveCount(3);
+});
+
+
+test('owner expiry removes the connected name and signed-in claim from the shared shell', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/issues');
+  await expect(page.locator('.sidebar-identity strong')).toHaveText('verified-user');
+  source.expireAccount(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.sidebar-identity')).not.toContainText('verified-user');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('Fixture owner');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('Signed in');
 });

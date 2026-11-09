@@ -9,6 +9,8 @@ const paths = {
   issues: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM12 7v6m0 3v1',
   runtime: 'M3 3h18v7H3Zm0 11h18v7H3ZM6 6h1m-1 11h1',
   account: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21v-3a8 8 0 0 1 16 0v3',
+  refresh: 'M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1',
+  collapse: 'M3 4h18v16H3ZM8 4v16m8-12-4 4 4 4',
 };
 function icon(name) {
   const svg = document.createElementNS(namespace, 'svg');
@@ -23,15 +25,49 @@ function applyTheme(value) {
   document.querySelectorAll('[data-theme-choice]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === value)));
 }
 applyTheme(preference);
+let ownerName = '', accountState, ownerEpoch = 0;
+let collapsed = false;
+try { collapsed = localStorage.getItem('lcc:navigation') === 'collapsed'; } catch { /* Optional preference. */ }
+document.documentElement.dataset.navCollapsed = String(collapsed);
+function renderIdentity() {
+  for (const link of document.querySelectorAll('.sidebar-identity,.header-identity')) {
+    const linked = accountState?.state === 'linked' && typeof accountState.login === 'string';
+    const name = linked ? accountState.login : ownerName || 'Account';
+    link.querySelector('strong').textContent = name;
+    const detail = linked ? 'GitHub connected' : accountState?.state === 'unlinked' ? 'Connect GitHub' : ownerName ? 'Signed in' : 'Account and connection';
+    link.querySelector('small').textContent = detail;
+    link.setAttribute('aria-label', name + ' ' + detail + ' · Account'); link.title = 'Account · ' + name;
+  }
+}
+export function updateWorkspaceAccount(account) {
+  if (account.state === 'expired') { ownerEpoch++; ownerName = ''; }
+  accountState = account; renderIdentity();
+}
+function identityLink(className) {
+  const link = document.createElement('a'); link.href = '/workspace'; link.className = className; link.append(icon('account'));
+  const copy = document.createElement('span'); copy.className = 'identity-copy';
+  copy.append(document.createElement('strong'), document.createTextNode(' '), document.createElement('small')); link.append(copy); return link;
+}
 function enhance() {
   let changedNavigation = false;
   document.querySelectorAll('.workspace-nav a').forEach(link => {
     if (link.querySelector('svg')) return;
     const route = link.getAttribute('href'), name = route === '/workspace' ? 'account' : route?.split('/')[2];
-    if (paths[name]) { link.prepend(icon(name)); changedNavigation = true; }
+    const label = link.textContent;
+    link.setAttribute('aria-label', label); link.title = label;
+    const text = document.createElement('span'); text.className = 'nav-label'; text.textContent = label; link.replaceChildren(text);
+    if (paths[name === 'repositories' ? 'factory' : name]) { link.prepend(icon(name === 'repositories' ? 'factory' : name)); changedNavigation = true; }
   });
   if (changedNavigation) document.querySelector('.workspace-nav [aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   document.querySelectorAll('.topbar').forEach(header => {
+    let actions = header.querySelector('.header-actions');
+    if (!actions) { actions = document.createElement('div'); actions.className = 'header-actions'; header.append(actions); }
+    if (!header.querySelector('.header-identity')) { header.insertBefore(identityLink('header-identity'), actions); renderIdentity(); }
+    const refresh = document.querySelector('#refresh, #factory-refresh, #issue-refresh');
+    if (refresh && !refresh.dataset.headerRefresh) {
+      refresh.dataset.headerRefresh = 'true'; refresh.setAttribute('aria-label', refresh.textContent); refresh.title = refresh.textContent;
+      refresh.classList.add('header-refresh'); refresh.replaceChildren(icon('refresh')); actions.prepend(refresh);
+    }
     if (header.querySelector('.theme-switcher')) return;
     const group = document.createElement('div'); group.className = 'theme-switcher'; group.setAttribute('role', 'group'); group.setAttribute('aria-label', 'Appearance');
     for (const value of ['light', 'dark', 'system']) {
@@ -41,7 +77,18 @@ function enhance() {
       button.addEventListener('click', () => { applyTheme(value); try { localStorage.setItem(preferenceKey, value); } catch { /* The current page still changes. */ } });
       group.append(button);
     }
-    header.querySelector('.appearance')?.remove(); header.append(group);
+    header.querySelector('.appearance')?.remove(); actions.append(group);
+  });
+  document.querySelectorAll('.site-sidebar').forEach(sidebar => {
+    if (!sidebar.querySelector('.sidebar-toggle')) {
+      const toggle = document.createElement('button'); toggle.type = 'button'; toggle.className = 'sidebar-toggle'; toggle.append(icon('collapse'));
+      const state = () => { toggle.setAttribute('aria-expanded', String(!collapsed)); toggle.setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation'); };
+      state(); toggle.addEventListener('click', () => { collapsed = !collapsed; document.documentElement.dataset.navCollapsed = String(collapsed); state(); try { localStorage.setItem('lcc:navigation', collapsed ? 'collapsed' : 'expanded'); } catch { /* Optional preference. */ } });
+      sidebar.append(toggle);
+    }
+    if (!sidebar.querySelector('.sidebar-identity')) {
+      sidebar.append(identityLink('sidebar-identity')); renderIdentity();
+    }
   });
 }
 const favicon = document.createElement('link'); favicon.rel = 'icon'; favicon.type = 'image/svg+xml'; favicon.href = '/lighthouse.svg';
@@ -49,3 +96,9 @@ document.head.querySelectorAll('link[rel="icon"]').forEach(link => link.remove()
 enhance();
 new MutationObserver(enhance).observe(document.body, { childList: true, subtree: true });
 window.addEventListener('storage', event => { if (event.key === preferenceKey) applyTheme(['light', 'dark', 'system'].includes(event.newValue) ? event.newValue : 'system'); });
+const sessionEpoch = ownerEpoch;
+fetch('/api/session', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).then(async response => {
+  if (!response.ok) return;
+  const session = await response.json();
+  if (sessionEpoch === ownerEpoch && session.authenticated === true && typeof session.displayName === 'string') { ownerName = session.displayName; renderIdentity(); }
+}).catch(() => {});

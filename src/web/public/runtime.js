@@ -1,4 +1,4 @@
-import './workspace-ui.js';
+import { updateWorkspaceAccount } from './workspace-ui.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text) => { const value = document.createElement(tag); if (text !== undefined) value.textContent = text; return value; };
 const time = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';
@@ -14,6 +14,7 @@ function facts(value, rows) {
 }
 function clearGitHub(message) { githubEpoch++; scope = undefined; sources.clear(); byId('runners-status').textContent = message; render(); }
 function clearAll() {
+  updateWorkspaceAccount({ state: 'expired' });
   clearTimeout(ownerDeadline);
   hostEpoch++; host = undefined; clearGitHub('Owner session ended. Sign in again.');
   byId('host-status').textContent = 'No owner-authorized host evidence is available.';
@@ -109,7 +110,7 @@ async function refreshGitHub() {
     const response = await fetch('/api/connections/github', { cache: 'no-store' });
     if (epoch !== githubEpoch) return;
     if (response.status === 401 || response.status === 403) { clearAll(); return; }
-    const account = await response.json();
+    const account = await response.json(); updateWorkspaceAccount(account);
     if (epoch !== githubEpoch) return;
     if (['unlinked', 'unconfigured'].includes(account.state)) { clearGitHub('Connect and verify GitHub to read repository runners. Host evidence is separate.'); return; }
     if (!response.ok || account.state !== 'linked' || typeof account.dataScope !== 'string' || !Array.isArray(account.repositories)) throw Error('Current GitHub authority is unavailable.');

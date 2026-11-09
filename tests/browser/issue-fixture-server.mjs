@@ -8,7 +8,7 @@ const assets = new Map(['workspace-ui.js', 'read-projection-cache.js', 'lighthou
 assets.set('/tokens.css', require.resolve('@juangcarmona/lighthouse-ui/tokens.css'));
 createServer(async (request, response) => {
   const path = request.url.split('?')[0];
-  const file = path === '/workspace/attention' ? new URL('attention.html', root) : path === '/workspace/factory' ? new URL('factory.html', root) : path === '/workspace/issues' || path.startsWith('/workspace/issues/') ? new URL('issue.html', root) : assets.get(path);
+  const file = path === '/workspace/attention' ? new URL('attention.html', root) : path === '/workspace/factory' || path === '/workspace/issues' || path.startsWith('/workspace/repositories') ? new URL('factory.html', root) : path.startsWith('/workspace/issues/') ? new URL('issue.html', root) : assets.get(path);
   if (request.method !== 'GET' || !file) { response.writeHead(404); response.end(); return; }
   const extension = String(file).split('.').at(-1);
   response.writeHead(200, { 'Content-Type': extension === 'html' ? 'text/html' : extension === 'js' ? 'text/javascript' : extension === 'svg' ? 'image/svg+xml' : 'text/css',

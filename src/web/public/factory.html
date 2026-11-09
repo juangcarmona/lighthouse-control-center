@@ -1,28 +1,29 @@
 <!doctype html>
 <html lang="en" data-lh-theme="system">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lighthouse Control Center · Projects</title><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/factory.css"><script type="module" src="/factory.js"></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lighthouse Control Center · Issues</title><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/factory.css"><script type="module" src="/factory.js"></script></head>
 <body class="lh-root">
-<a class="skip" href="#factory-main">Skip to projects and issues</a>
-<aside class="site-sidebar" aria-label="Workspace"><a class="brand" href="/workspace/operations" aria-label="Lighthouse Control Center"><svg class="brand-mark" viewBox="0 0 128 128" aria-hidden="true"><rect x="1" y="1" width="126" height="126" rx="18" fill="#F8FAFF" stroke="#DCE1EB" stroke-width="2"/><path d="M76 31 128 15v37L76 42Z" fill="#4DA3FF" opacity=".2"/><path d="M78 33 128 18M78 40l50 6" fill="none" stroke="#1F6FD1" stroke-width="1.5" opacity=".68"/><g transform="translate(-5 0)"><path d="M54 49h32l9 58H44l10-58Z" fill="#1F6FD1"/><path d="M58 53h13l8 50H51l7-50Z" fill="#F8FAFF"/><path d="M73 53h9l9 50H79l-6-50Z" fill="#4DA3FF"/><path d="M58 72h25l2 5H57l1-5Zm-3 18h31l1 5H54l1-5Z" fill="#1F6FD1"/><path d="M51 49h38l-5-8H56l-5 8Z" fill="#8FC2FF"/><rect x="59" y="27" width="22" height="15" rx="2" fill="#4DA3FF" stroke="#1F6FD1" stroke-width="2"/><path d="M56 28h28l-4-6H60l-4 6Z" fill="#1F6FD1"/><circle cx="70" cy="34.5" r="3.4" fill="#FFFFFF"/><path d="M61 22v-4h18v4M53 109h34l8 6H45l8-6Z" fill="#1F6FD1"/><path d="M64 18v-4m-9 10-4-4" stroke="#1F6FD1" stroke-width="2" stroke-linecap="round"/></g></svg><span class="brand-copy"><strong>Lighthouse</strong>&#32;<small>Control Center</small></span></a><nav class="workspace-nav" aria-label="Workspace navigation"><a href="/workspace/operations">Overview</a><a href="/workspace/factory" aria-current="page">Projects</a><a href="/workspace/attention">Inbox</a><a href="/workspace/issues">Missions</a><a href="/workspace/runtime">Runtime</a><a href="/workspace">Account</a></nav></aside>
-<div class="page-column"><header class="topbar"><div class="header-context"><span class="header-kicker">WORKSPACE</span><span class="header-divider">/</span>Projects</div></header>
+<a class="skip" href="#factory-main">Skip to issues</a>
+<aside class="site-sidebar" aria-label="Workspace"><a class="brand" href="/workspace/operations" aria-label="Lighthouse Control Center"><svg class="brand-mark" viewBox="0 0 128 128" aria-hidden="true"><rect x="1" y="1" width="126" height="126" rx="18" fill="#F8FAFF" stroke="#DCE1EB" stroke-width="2"/><path d="M76 31 128 15v37L76 42Z" fill="#4DA3FF" opacity=".2"/><path d="M78 33 128 18M78 40l50 6" fill="none" stroke="#1F6FD1" stroke-width="1.5" opacity=".68"/><g transform="translate(-5 0)"><path d="M54 49h32l9 58H44l10-58Z" fill="#1F6FD1"/><path d="M58 53h13l8 50H51l7-50Z" fill="#F8FAFF"/><path d="M73 53h9l9 50H79l-6-50Z" fill="#4DA3FF"/><path d="M58 72h25l2 5H57l1-5Zm-3 18h31l1 5H54l1-5Z" fill="#1F6FD1"/><path d="M51 49h38l-5-8H56l-5 8Z" fill="#8FC2FF"/><rect x="59" y="27" width="22" height="15" rx="2" fill="#4DA3FF" stroke="#1F6FD1" stroke-width="2"/><path d="M56 28h28l-4-6H60l-4 6Z" fill="#1F6FD1"/><circle cx="70" cy="34.5" r="3.4" fill="#FFFFFF"/><path d="M61 22v-4h18v4M53 109h34l8 6H45l8-6Z" fill="#1F6FD1"/><path d="M64 18v-4m-9 10-4-4" stroke="#1F6FD1" stroke-width="2" stroke-linecap="round"/></g></svg><span class="brand-copy"><strong>Lighthouse</strong>&#32;<small>Control Center</small></span></a><nav class="workspace-nav" aria-label="Workspace navigation"><a href="/workspace/operations">Overview</a><a href="/workspace/repositories" aria-current="page">Repositories</a><a href="/workspace/attention">Inbox</a><a href="/workspace/issues">Issues</a><a href="/workspace/runtime">Runtime</a><a href="/workspace">Account</a></nav></aside>
+<div class="page-column"><header class="topbar"><div class="header-context"><span class="header-kicker">WORKSPACE</span><span class="header-divider">/</span>Issues</div></header>
 <main id="factory-main" tabindex="-1">
-<div class="intro"><div><p class="eyebrow">Configured projects</p><h1>Projects</h1><p>Browse repositories, find issues and check source coverage.</p></div><button id="factory-refresh" type="button">Refresh collection</button></div>
-<p id="factory-status" role="status" aria-live="polite">Checking the connected GitHub account…</p>
-<form id="factory-filters" aria-label="Filter projects and issues">
-<label>Repository<select id="factory-repository"><option value="">All repositories</option></select></label>
-<label>Title or issue number<input id="factory-search" type="search" maxlength="200" placeholder="Issue title or #number"></label>
-<button type="submit">Apply search</button>
-<label>View<select id="factory-view"><option value="list">List</option><option value="board">Board by issue state</option></select></label>
-<details id="factory-more-filters"><summary>More filters</summary><div class="factory-filter-grid">
-<label>Issue state<select id="factory-state"><option value="">All states</option><option value="open">Open</option><option value="closed">Closed</option><option value="unknown">Unknown</option></select></label>
+<h1 id="collection-title" class="visually-hidden">Issues</h1>
+<button id="factory-refresh" type="button">Refresh collection</button>
+<p id="factory-status" role="status" aria-live="polite">Loading…</p>
+<form id="factory-filters" aria-label="Filter issues">
+<label class="search-field"><span class="visually-hidden" id="search-label">Search issues</span><input id="factory-search" type="search" maxlength="200" placeholder="Filter issues or enter #number" aria-labelledby="search-label"></label>
+<label class="repository-field"><span class="visually-hidden">Repository</span><select id="factory-repository"><option value="">All repositories</option></select></label>
+<label class="state-field"><span class="visually-hidden">Issue state</span><select id="factory-state"><option value="">All states</option><option value="open">Open</option><option value="closed">Closed</option><option value="unknown">Unknown</option></select></label>
+<label class="view-field"><span class="visually-hidden">View</span><select id="factory-view"><option value="list">List</option><option value="board">Board</option></select></label>
+</form>
+<section id="issue-collection" aria-labelledby="work-heading"><h2 id="work-heading" class="visually-hidden">Issues</h2><p id="factory-count"></p><div id="factory-results"></div></section>
+<details id="factory-more-filters"><summary>Evidence filters and coverage</summary><div class="factory-filter-grid">
 <label>Reported stage<select id="factory-stage"><option value="">Any / unread</option><option value="unknown">Unknown / unread</option></select></label>
 <label>Linked run status<select id="factory-execution"><option value="">Any / unread</option><option value="unknown">Unknown / unread</option></select></label>
 <label>Waiting for<select id="factory-wait"><option value="">Any labels</option><option value="needs-info">Needs information</option><option value="waiting-review">Waiting for review</option><option value="both">Both waits</option><option value="none">No collected wait labels</option><option value="unknown">Incomplete labels</option></select></label>
-</div></details>
-</form>
+</div>
 <p id="factory-scope" class="notice">Search and filters cover collected issues only. Use an exact number to look beyond collected pages.</p>
 <details class="factory-explanation"><summary>How to read this view</summary><p class="muted">Board columns show GitHub open/closed state. Reported stages and associated run statuses describe collected historical evidence; they do not establish a current lease or command eligibility. Source wait labels do not identify a pending question or approver.</p></details>
 
-<section aria-labelledby="work-heading"><h2 id="work-heading">Issues</h2><p id="factory-count"></p><div id="factory-results"></div></section>
-<details id="factory-project-details"><summary id="factory-project-summary">Projects and source coverage</summary><section aria-labelledby="projects-heading"><h2 id="projects-heading">Projects and source coverage</h2><div id="factory-projects" class="factory-projects"></div></section></details>
+</details>
+<details id="factory-project-details"><summary id="factory-project-summary">Repository coverage</summary><section aria-labelledby="projects-heading"><h2 id="projects-heading" class="visually-hidden">Repository coverage</h2><div id="factory-projects" class="factory-projects"></div></section></details>
 </main></div></body></html>

@@ -1,4 +1,4 @@
-import './workspace-ui.js';
+import { updateWorkspaceAccount } from './workspace-ui.js';
 // Use the same source-owned Lighthouse mark as the other workspace pages.
 document.body.classList.add('lh-root');
 {
@@ -16,13 +16,14 @@ document.body.classList.add('lh-root');
     if (header && main && nav) {
       const rail = document.createElement('aside'); rail.className = 'site-sidebar'; rail.setAttribute('aria-label', 'Workspace');
       nav.classList.add('workspace-nav');
+      for (const link of nav.querySelectorAll('a[href="/workspace/factory"]')) link.href = '/workspace/repositories';
       let accountLink = [...nav.querySelectorAll('a')].find(link => link.getAttribute('href') === '/workspace');
       if (!accountLink) { accountLink = document.createElement('a'); accountLink.href = '/workspace'; accountLink.textContent = 'Account'; nav.append(accountLink); }
-      for (const [href, label] of [['/workspace/operations', 'Overview'], ['/workspace/factory', 'Projects'], ['/workspace/attention', 'Inbox'], ['/workspace/issues', 'Missions'], ['/workspace/runtime', 'Runtime'], ['/workspace', 'Account']]) {
+      for (const [href, label] of [['/workspace/operations', 'Overview'], ['/workspace/repositories', 'Repositories'], ['/workspace/attention', 'Inbox'], ['/workspace/issues', 'Issues'], ['/workspace/runtime', 'Runtime'], ['/workspace', 'Account']]) {
         const link = [...nav.querySelectorAll('a')].find(item => item.getAttribute('href') === href);
         if (link) { link.textContent = label; nav.append(link); }
       }
-      for (const link of main.querySelectorAll('a[href="/workspace/factory"]')) link.textContent = 'Projects';
+      for (const link of main.querySelectorAll('a[href="/workspace/repositories"]')) link.textContent = 'Repositories';
       for (const link of main.querySelectorAll('a[href="/workspace/operations"]')) link.textContent = 'Open fleet overview';
       accountLink.setAttribute('aria-current', 'page'); rail.append(brand, nav);
       const column = document.createElement('div'); column.className = 'page-column';
@@ -45,6 +46,7 @@ async function refresh() {
   try {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
     if ([401, 403].includes(response.status)) {
+      updateWorkspaceAccount({ state: 'expired' });
       document.getElementById('account-verification-details')?.remove();
       identity.textContent = 'No verified acting account is available.';
       if (disconnect) disconnect.hidden = true;
@@ -53,7 +55,7 @@ async function refresh() {
       return;
     }
     if (!response.ok) throw Error();
-    const account = await response.json();
+    const account = await response.json(); updateWorkspaceAccount(account);
     if (disconnect && ['linked', 'unlinked', 'unconfigured'].includes(account.state)) disconnect.hidden = account.state !== 'linked';
     if (account.state !== 'linked') {
       document.getElementById('account-verification-details')?.remove();
@@ -87,6 +89,7 @@ async function refresh() {
     }
     diagnostics.querySelector('p').textContent = `GitHub user ID ${account.userId} · Last verified ${verified}. Current permission observations do not grant command eligibility.`;
   } catch {
+    updateWorkspaceAccount({ state: 'unavailable' });
     repositories.replaceChildren();
     status.textContent = 'Current GitHub authority is unavailable. Previously displayed identity may be stale; source operations require a new successful check.';
   } finally { busy = false; }

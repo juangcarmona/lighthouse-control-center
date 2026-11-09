@@ -1,3 +1,4 @@
+import { updateWorkspaceAccount } from './workspace-ui.js';
 let composerId = 0;
 
 export function renderUnavailableActions(area, reason) {
@@ -103,7 +104,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     message.textContent = value.operation === 'submit' ? 'Sending the prepared action once…' : 'Verifying source and confirmation…';
     try {
       const csrf = await fetch('/api/controls/csrf', { credentials: 'same-origin', cache: 'no-store' });
-      if ([401, 403, 409].includes(csrf.status)) { clear(); return; }
+      if ([401, 403, 409].includes(csrf.status)) { if (csrf.status === 401) updateWorkspaceAccount({ state: 'expired' }); clear(); return; }
       if (!csrf.ok) throw Error('Confirmation token unavailable');
       const token = (await csrf.json()).token;
       if (!live() || typeof token !== 'string') return;
@@ -111,7 +112,8 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
         { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json', 'X-SoFa-Csrf': token }, body: JSON.stringify(value) });
       if (!live()) return;
       const data = await response.json().catch(() => null);
-      if ([401, 403, 409].includes(response.status)) { clear(typeof data?.reason === 'string' ? data.reason : undefined); return; }
+      if ([401, 403, 409].includes(response.status)) {
+      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' }); clear(typeof data?.reason === 'string' ? data.reason : undefined); return; }
       if (!data) throw Error('Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (!response.ok || data.availability !== 'available') throw Error(data.reason ?? 'Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (data.dataScope !== scope || data.actingUserId !== facts.actor.id) { clear(); return; }

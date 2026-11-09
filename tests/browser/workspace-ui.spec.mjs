@@ -5,12 +5,15 @@ const data = { repositories: [{ repository: 'owner/project', availability: 'avai
 for (const width of [1280, 390]) test(`dashboard visual contract ${width}: decisions first and shared appearance persists`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   await page.route('**/api/observations', route => route.fulfill({ json: data }));
+  await page.route('**/api/session', route => route.fulfill({ json: { authenticated: true, displayName: 'verified-operator' } }));
   await page.route('**/workspace/operations', async route => route.fulfill({ response: await route.fetch({ url: new URL('/', route.request().url()).href }) }));
   await page.goto('/workspace/operations');
-  await expect(page.getByRole('heading', { name: 'Your fleet at a glance' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Overview' })).toHaveCount(1);
   await expect(page.getByRole('heading', { name: 'Needs your attention' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Workspace navigation' });
   await expect(nav.locator('a > svg')).toHaveCount(6);
+  await expect(page.locator(width >= 1000 ? '.sidebar-identity strong' : '.header-identity strong')).toHaveText('verified-operator');
+  await expect(page.locator('.topbar #refresh')).toBeVisible();
   expect(await page.locator('link[rel="icon"]').getAttribute('href')).toBe('/lighthouse.svg');
   await expect(page.getByText('Source observation time:', { exact: false })).toBeHidden();
   await expect(page.getByText('Latest 20 workflow runs', { exact: false })).toBeHidden();
@@ -25,6 +28,29 @@ for (const width of [1280, 390]) test(`dashboard visual contract ${width}: decis
   await expect(page.getByRole('button', { name: 'Dark appearance' })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'System appearance' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-lh-theme', 'system');
+});
+
+test('navigation can collapse without losing accessible route names or persistence', async ({ page }) => {
+  await page.route('**/api/observations', route => route.fulfill({ json: data }));
+  await page.route('**/workspace/operations', async route => route.fulfill({ response: await route.fetch({ url: new URL('/', route.request().url()).href }) }));
+  await page.goto('/workspace/operations');
+  await page.getByRole('button', { name: 'Collapse navigation' }).click();
+  expect((await page.locator('.site-sidebar').boundingBox()).width).toBe(60);
+  await expect(page.getByRole('navigation', { name: 'Workspace navigation' }).getByRole('link', { name: 'Repositories', exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Expand navigation' })).toHaveAttribute('aria-expanded', 'false');
+  expect((await page.locator('.site-sidebar').boundingBox()).width).toBe(60);
+});
+
+test.describe('touch controls', () => {
+  test.use({ hasTouch: true });
+  test('refresh and appearance preserve 44px touch targets', async ({ page }) => {
+    await page.route('**/api/observations', route => route.fulfill({ json: data }));
+    await page.goto('/');
+    for (const target of ['.header-refresh', '.theme-option']) {
+      const box = await page.locator(target).first().boundingBox(); expect(box.width).toBeGreaterThanOrEqual(44); expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+  });
 });
 
 test('return navigation restores only an authorized projection and removes it on authority loss', async ({ page }) => {

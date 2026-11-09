@@ -40,3 +40,26 @@ button, summary { cursor: pointer; }
 #issue-body { max-height: 40rem; overflow-y: auto; }
 .issue-panel { overflow-wrap: anywhere; }
 @media (max-width: 48rem) { .issue-grid { display: block; } .issue-panel { margin-block: 1rem; } #issue-picker label { width: 100%; } }
+/* A readable issue thread uses the available width, without nested scroll panes. */
+#issue-picker[hidden] { display:none; }
+.issue-heading { display:flex; gap:.75rem; align-items:center; margin:.25rem 0 .5rem; }
+.issue-heading h1 { font-size:1.35rem; margin:0; }
+.issue-tools { margin:.375rem 0 .75rem; gap:.5rem; }
+.issue-tools details { margin:0; font-size:.75rem; }
+.issue-tools summary { min-height:28px; padding:.125rem 0; }
+.issue-grid { display:flex; flex-direction:column; gap:.75rem; }
+.issue-grid>.issue-panel,.issue-evidence-details { width:100%; }
+.issue-panel { padding:.75rem; }
+.issue-panel>h2 { margin:0 0 .5rem; font-size:.9375rem; }
+#issue-body { max-height:none; overflow:visible; }
+#issue-facts-details { margin:0 0 .5rem; }
+#issue-facts-details>summary,#conversation-panel details>summary { min-height:24px; padding:.125rem 0; font-size:.75rem; }
+.issue-evidence-details { order:2; margin:0; font-size:.8125rem; }
+.issue-evidence-details>summary { min-height:28px; padding:.25rem 0; }
+#mission-actions { margin:0; }
+#controls-status { font-size:.75rem; margin:.25rem 0; }
+#source-eligibility { margin:.25rem 0 0; }
+#source-eligibility>summary { min-height:28px; padding:.125rem 0; font-size:.75rem; }
+#mission-actions .action-recovery { margin-top:.375rem; padding-top:.375rem; }
+#issue-comments>li { padding-block:.75rem; }
+#issue-status[data-state="ready"] { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }

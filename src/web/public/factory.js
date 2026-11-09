@@ -1,4 +1,4 @@
-import './workspace-ui.js';
+import { updateWorkspaceAccount } from './workspace-ui.js';
 import { inspectAttention } from './attention-controls.js';
 import { reconcileAttention } from './attention.js';
 import { clearProjectionCache, readProjectionCache, writeProjectionCache } from './read-projection-cache.js';
@@ -7,6 +7,29 @@ const node = (tag, text, className) => { const element = document.createElement(
 const filterIds = ['repository', 'search', 'state', 'stage', 'execution', 'wait', 'view'];
 const filters = () => Object.fromEntries(filterIds.map(key => [key, byId('factory-' + key).value]));
 const attentionView = document.body.dataset.view === 'attention';
+const repositoryPath = location.pathname.match(/^\/workspace\/repositories\/([^/]+)\/([^/]+)$/);
+const inventoryView = location.pathname === '/workspace/repositories' && !new URL(location.href).searchParams.has('repository');
+if (repositoryPath) {
+  const name = repositoryPath.slice(1).map(decodeURIComponent).join('/');
+  const option = node('option', name); option.value = name; byId('factory-repository').append(option); byId('factory-repository').value = name;
+}
+if (!attentionView) {
+  const label = inventoryView ? 'Repositories' : repositoryPath ? repositoryPath.slice(1).map(decodeURIComponent).join('/') : 'Issues';
+  byId('collection-title').textContent = label; document.title = label + ' · Lighthouse Control Center';
+  document.querySelector('.header-context').textContent = label;
+  document.body.dataset.collection = inventoryView ? 'repositories' : 'issues';
+  byId('factory-project-details').open = inventoryView;
+  if (repositoryPath) {
+    document.body.dataset.repositoryScoped = 'true';
+    const parent = node('a', 'Repositories'); parent.href = '/workspace/repositories';
+    document.querySelector('.header-context').replaceChildren(parent, document.createTextNode(' / ' + repositoryPath[2]));
+  }
+  for (const link of document.querySelectorAll('.workspace-nav a')) {
+    link.removeAttribute('aria-current');
+    if (link.getAttribute('href') === (inventoryView || repositoryPath ? '/workspace/repositories' : '/workspace/issues')) link.setAttribute('aria-current', 'page');
+  }
+  if (inventoryView) { byId('search-label').textContent = 'Filter repositories'; byId('factory-search').placeholder = 'Filter repositories'; }
+}
 let attentionHistory = new Map();
 const repositories = new Map();
 const evidence = new Map();
@@ -34,11 +57,12 @@ function restoreProjection(scope, readable) {
   return restored;
 }
 function remember() {
-  const url = new URL(location.href); for (const [key, value] of Object.entries(filters())) value ? url.searchParams.set(key, value) : url.searchParams.delete(key);
+  const url = new URL(location.href); for (const [key, value] of Object.entries(filters())) value && !(repositoryPath && key === 'repository') ? url.searchParams.set(key, value) : url.searchParams.delete(key);
   history.replaceState(null, '', url);
 }
 function setBusy(value) { busy = value; byId('factory-refresh').disabled = value; for (const button of document.querySelectorAll('#factory-projects button, #factory-results button')) button.disabled = value; }
-function clearSource(message) {
+function clearSource(message, ownerExpired = false) {
+  updateWorkspaceAccount({ state: ownerExpired ? 'expired' : 'unavailable' });
   epoch++; clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); dataScope = undefined; render();
   byId('factory-count').textContent = 'No authorized collection is available.';
   const account = node('a', 'Open account'); account.href = '/workspace';
@@ -87,10 +111,15 @@ function matches(repository, issue, selected) {
 }
 function issueCard(repository, issue, stale) {
   const card = node('article', undefined, 'factory-issue' + (stale ? ' factory-stale' : '')); card.dataset.issueKey = identity(repository, issue);
-  const title = node('h3'), open = node('a', `${repository}#${issue.number} · ${issue.title}`);
+  const title = node('h3'), open = node('a', `${filters().repository ? '' : repository + ' '}#${issue.number} · ${issue.title}`);
   open.href = `/workspace/issues/${repository}/${issue.number}`; open.dataset.focusKey = identity(repository, issue); title.append(open);
   const source = facts(repository, issue);
-  card.append(title, node('p', `${issue.state ?? 'unknown'} · Updated ${time(issue.updatedAt)}`));
+  const meta = node('div', undefined, 'issue-row-meta');
+  const state = node('span', issue.state === 'open' ? 'Open' : issue.state === 'closed' ? 'Closed' : 'Unknown', 'badge ' + (issue.state === 'open' ? 'positive' : ''));
+  const updated = node('time', age(issue.updatedAt)); updated.title = 'Updated ' + time(issue.updatedAt);
+  if (issue.updatedAt && Number.isFinite(Date.parse(issue.updatedAt))) updated.dateTime = issue.updatedAt;
+  meta.append(state, updated); card.append(title, meta);
+  for (const label of issue.labels.filter(value => ['needs-info', 'waiting-review'].includes(value))) meta.append(node('span', label, 'badge caution'));
   if (stale) card.append(node('p', 'Stale collection; current activity and labels are unknown.', 'notice'));
   const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source details'));
   provenance.append(node('p', `Collected labels: ${issue.labels.join(', ') || 'none'}${issue.labelsComplete ? '' : ' · incomplete'}`, 'factory-labels'),
@@ -104,7 +133,13 @@ function issueCard(repository, issue, stale) {
   card.append(provenance);
   const actions = node('div', undefined, 'project-actions'), inspect = node('button', source.value ? 'Refresh issue evidence' : 'Read issue evidence');
   inspect.type = 'button'; inspect.disabled = busy || stale; inspect.addEventListener('click', () => readEvidence(repository, issue));
-  actions.append(inspect, sourceLink('GitHub issue', repository, '/issues/' + issue.number)); card.append(actions); return card;
+  actions.append(inspect, sourceLink('GitHub issue', repository, '/issues/' + issue.number)); provenance.append(actions); return card;
+}
+function age(value) {
+  const elapsed = Date.now() - Date.parse(value);
+  if (!Number.isFinite(elapsed) || elapsed < 0) return 'Unknown';
+  const days = Math.floor(elapsed / 86400000), hours = Math.floor(elapsed / 3600000), minutes = Math.floor(elapsed / 60000);
+  return days ? `${days}d` : hours ? `${hours}h` : minutes ? `${minutes}m` : 'now';
 }
 function render() {
   const selected = filters(), focusKey = document.activeElement?.dataset.focusKey;
@@ -112,11 +147,15 @@ function render() {
   for (const [repository, collection] of repositories) {
     for (const issue of collection.issues ?? []) all.push({ repository, issue, stale: collection.stale });
     if (selected.repository && repository !== selected.repository) continue;
+    if (inventoryView && selected.search && !repository.toLowerCase().includes(selected.search.toLowerCase())) continue;
     const project = node('article', undefined, 'factory-project'); project.dataset.repository = repository;
-    const heading = node('h3'), select = node('a', repository); const target = new URL(location.href); target.searchParams.set('repository', repository); select.href = target.pathname + target.search;
-    select.addEventListener('click', event => { event.preventDefault(); byId('factory-repository').value = repository; remember(); render(); }); heading.append(select);
-    project.append(heading, node('p', `${collection.issues?.length ?? 0} collected issues · ${collection.stale ? 'stale' : collection.availability ?? 'unread'} · Observed ${time(collection.observedAt)}`));
+    const heading = node('h3'), select = node('a', repository); select.href = '/workspace/repositories/' + repository; heading.append(select);
+    const summary = collection.availability === 'available' || collection.stale
+      ? `${collection.issues?.length ?? 0} issues${collection.complete ? '' : ' · Partial'}${collection.stale ? ' · Stale' : ''}`
+      : collection.availability === 'denied' ? 'Access denied' : collection.availability === 'unavailable' ? 'Source unavailable' : 'Loading…';
+    project.append(heading, node('p', summary));
     const coverage = node('details', undefined, 'factory-provenance'); coverage.append(node('summary', 'Branch and source coverage'),
+      node('p', `Observed ${time(collection.observedAt)}`),
       node('p', `Default branch · configured: ${collection.configuredBranch ?? 'unknown'} · observed: ${collection.observedBranch ?? 'unknown'}`),
       node('p', `Pages: ${collection.pages?.join(', ') || 'none'} · Source records: ${collection.sourceRecords ?? 'unknown'} · ${collection.complete ? 'source end reached for this collection' : 'coverage incomplete / unknown'}`),
       node('p', collection.reason || 'Source evidence has not been read.'),
@@ -130,15 +169,17 @@ function render() {
     project.append(actions); projects.append(project);
   }
   byId('factory-projects').replaceChildren(projects);
-  const limited = [...repositories.values()].filter(value => value.availability !== 'available' || value.stale || !value.complete).length;
-  byId('factory-project-summary').textContent = `Projects and source coverage · ${repositories.size} repositories · ${limited} incomplete or unavailable`;
+  const collections = [...repositories].filter(([name]) => !selected.repository || name === selected.repository).map(([, value]) => value);
+  const limited = collections.filter(value => value.availability !== 'available' || value.stale || !value.complete).length;
+  byId('factory-project-summary').textContent = `Source coverage · ${collections.length} ${collections.length === 1 ? 'repository' : 'repositories'}${limited ? ` · ${limited} partial` : ''}`;
+  if (inventoryView) { byId('factory-count').textContent = `${projects.childElementCount || repositories.size} repositories`; return; }
   if (attentionView) { renderAttention(selected, focusKey); return; }
   const sourceFacts = all.map(row => facts(row.repository, row.issue));
   options('factory-stage', sourceFacts.flatMap(source => source.stages)); options('factory-execution', sourceFacts.flatMap(source => source.executions));
   const visible = all.filter(row => matches(row.repository, row.issue, selected));
   const rows = selected.repository ? [...repositories].filter(([name]) => name === selected.repository).map(([, value]) => value) : [...repositories.values()];
   const unknown = rows.some(row => row.availability !== 'available' || row.stale || !row.complete);
-  byId('factory-count').textContent = `${visible.length} matching collected issues${unknown ? '; source coverage is incomplete, stale or unavailable' : '; source end reached for the collected scope'}. Unread stage/run evidence remains unknown.`;
+  byId('factory-count').textContent = `${visible.length} issues${unknown ? ' · Partial coverage' : ''}`;
   byId('factory-scope').textContent = exactNumber(selected.search) ? 'Exact-number lookup across selected configured repositories. Other filters still apply.' : 'Title search and filters cover collected issues only. Open project coverage to load more. Refresh starts a new collection; live pages can change.';
   const results = document.createDocumentFragment();
   if (selected.view === 'board') {
@@ -197,7 +238,7 @@ async function getPage(repository, page, requestEpoch, number) {
   const parameters = new URLSearchParams(number ? { number } : { page });
   const response = await fetch('/api/factory/' + repository + '?' + parameters, { signal: AbortSignal.timeout(35000) });
   if (requestEpoch !== epoch) return;
-  if ([401, 409].includes(response.status)) { clearSource('The owner session or source connection changed. Open Account to connect again.'); return; }
+  if ([401, 409].includes(response.status)) { clearSource('The owner session or source connection changed. Open Account to connect again.', response.status === 401); return; }
   const data = await response.json().catch(() => null);
   if (requestEpoch !== epoch) return;
   if (response.status === 403) { denyRepository(repository); return; }
@@ -220,8 +261,8 @@ async function refresh() {
   render(); status('Checking current source authority…');
   try {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
-    if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.'); return; }
-    const account = await response.json();
+    if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.', response.status === 401); return; }
+    const account = await response.json(); updateWorkspaceAccount(account);
     if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading fleet work.'); return; }
     const configured = new Set(account.repositories.map(row => row.repository));
     const readable = new Set(account.repositories.filter(row => row.availability === 'available' && row.issuesRead === true).map(row => row.repository));
@@ -232,9 +273,11 @@ async function refresh() {
     if (restore) restoreProjection(account.dataScope, readable);
     lookupNumber = exactNumber(byId('factory-search').value);
     const picker = byId('factory-repository'), selected = picker.value || new URL(location.href).searchParams.get('repository') || '';
+    const scopedRepository = repositoryPath && account.repositories.find(row => row.repository.toLowerCase() === repositoryPath.slice(1).map(decodeURIComponent).join('/').toLowerCase());
+    if (repositoryPath && !scopedRepository) { clearSource('This repository is not configured or is no longer available to this account.'); return; }
     const all = node('option', 'All repositories'); all.value = '';
     picker.replaceChildren(all, ...account.repositories.map(row => { const option = node('option', row.repository); option.value = row.repository; return option; }));
-    picker.value = account.repositories.some(row => row.repository === selected) ? selected : '';
+    picker.value = scopedRepository ? scopedRepository.repository : account.repositories.some(row => row.repository === selected) ? selected : '';
     const selectedRepositories = account.repositories.filter(row => !picker.value || row.repository === picker.value);
     for (const row of account.repositories) if (row.availability === 'denied' || row.availability === 'available' && !row.issuesRead) {
       removeRepositoryDetails(row.repository);
@@ -248,7 +291,7 @@ async function refresh() {
       try { await getPage(row.repository, 1, requestEpoch, exactNumber(byId('factory-search').value)); }
       catch { if (requestEpoch !== epoch) return; const previous = repositories.get(row.repository); repositories.set(row.repository, { ...previous, availability: 'unavailable', stale: !!previous?.issues?.length, complete: false, reason: 'Source refresh failed. Previous same-scope rows retain their original times and may be stale; this is not an empty backlog.' }); }
     }));
-    if (requestEpoch === epoch) { saveProjection(); render(); status(`Fleet collection received for ${account.login}. Source times and coverage are shown per project.`); }
+    if (requestEpoch === epoch) { saveProjection(); render(); status(''); }
   } catch { if (requestEpoch === epoch) { for (const collection of repositories.values()) { collection.stale = true; collection.complete = false; } saveProjection(); render(); status('Source refresh failed. Previously collected rows may be stale; no current authority or empty-backlog conclusion is inferred.'); } }
   finally { setBusy(false); }
 }
@@ -264,12 +307,12 @@ async function readEvidence(repository, issue) {
     const path = `/api/issues/${repository}/${issue.number}`;
     const response = await fetch(path, { signal: AbortSignal.timeout(35000) });
     if (requestEpoch !== epoch) return;
-    if ([401, 409].includes(response.status)) { clearSource('Source authority changed. Refresh the connected account.'); return; }
+    if ([401, 409].includes(response.status)) { clearSource('Source authority changed. Refresh the connected account.', response.status === 401); return; }
     if (response.status === 403) { denyRepository(repository); return; }
     const context = await response.json();
     if (!response.ok || context.dataScope !== dataScope || context.issue?.id !== issue.id || typeof context.snapshot !== 'string') throw Error('Issue evidence context unavailable');
     const result = await fetch(path + '/evidence?snapshot=' + encodeURIComponent(context.snapshot), { signal: AbortSignal.timeout(35000) });
-    if ([401, 409].includes(result.status)) { clearSource('The source connection changed while reading evidence.'); return; }
+    if ([401, 409].includes(result.status)) { clearSource('The source connection changed while reading evidence.', result.status === 401); return; }
     if (result.status === 403) { denyRepository(repository); return; }
     const source = await result.json();
     if (requestEpoch !== epoch) return;
@@ -279,12 +322,14 @@ async function readEvidence(repository, issue) {
   finally { setBusy(false); }
 }
 for (const [key, value] of new URL(location.href).searchParams) {
+  if (repositoryPath && key === 'repository') continue;
   const control = byId('factory-' + key); if (!control) continue;
   if (control.tagName === 'INPUT') control.value = value.slice(0, 200);
   else if ([...control.options].some(option => option.value === value)) control.value = value;
   else if (['repository', 'stage', 'execution'].includes(key)) { const option = node('option', value); option.value = value; control.append(option); control.value = value; }
 }
 byId('factory-filters').addEventListener('submit', event => { event.preventDefault(); remember(); if (exactNumber(byId('factory-search').value) !== lookupNumber) refresh(); else render(); });
+byId('factory-search').addEventListener('input', () => { remember(); render(); });
 for (const key of ['state', 'stage', 'execution', 'wait', 'view']) byId('factory-' + key).addEventListener('change', () => { remember(); render(); });
 byId('factory-repository').addEventListener('change', () => { remember(); refresh(); });
 byId('factory-refresh').addEventListener('click', refresh);

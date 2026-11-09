@@ -1,4 +1,4 @@
-import './workspace-ui.js';
+import { updateWorkspaceAccount } from './workspace-ui.js';
 import { renderActions, renderUnavailableActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
 const byId = id => document.getElementById(id);
@@ -7,7 +7,7 @@ const encoder = new TextEncoder();
 let renderingBudget = { remaining: 5000 };
 let current, comments = [], bytes = 0, nextPage = null, pending = false, controller, revision = 0;
 const initial = location.pathname.match(/^\/workspace\/issues\/([^/]+)\/([^/]+)\/(\d+)$/);
-if (initial) { byId('issue-repository').value = initial[1] + '/' + initial[2]; byId('issue-number').value = initial[3]; }
+if (initial) { byId('issue-picker').hidden = true; byId('issue-repository').value = initial[1] + '/' + initial[2]; byId('issue-number').value = initial[3]; }
 else {
   const repository = new URLSearchParams(location.search).get('repository');
   if (repository && /^[a-zA-Z0-9][a-zA-Z0-9-]*\/[a-zA-Z0-9_.-]+$/.test(repository)) byId('issue-repository').value = repository;
@@ -31,7 +31,7 @@ function controlReason(data) {
 function clear() {
   renderingBudget = { remaining: 5000 };
   current = null; comments = []; bytes = 0; nextPage = null;
-  byId('issue-title').textContent = 'Issue workspace'; byId('evidence-status').textContent = '';
+  byId('issue-title').textContent = initial ? 'Issue #' + initial[3] : 'Issue'; byId('issue-state').hidden = true; byId('evidence-status').textContent = '';
   for (const id of ['issue-body', 'issue-facts', 'issue-comments', 'issue-evidence', 'issue-controls']) byId(id).replaceChildren();
   controlsStatus('Shared source authority has not been observed.');
   byId('source-eligibility').open = false;
@@ -49,7 +49,11 @@ function selection() {
 function paragraph(text, className) { const p = document.createElement('p'); p.textContent = text; if (className) p.className = className; return p; }
 function show(data, append) {
   if (!append) {
-    byId('issue-title').textContent = data.repository + ' #' + data.number + ' · ' + data.issue.title;
+    byId('issue-title').textContent = data.issue.title;
+    document.title = '#' + data.number + ' · ' + data.issue.title + ' · Lighthouse Control Center';
+    const repositoryLink = document.createElement('a'); repositoryLink.href = '/workspace/repositories/' + data.repository; repositoryLink.textContent = data.repository.split('/')[1]; repositoryLink.title = data.repository;
+    document.querySelector('.header-context').replaceChildren(repositoryLink, document.createTextNode(' / #' + data.number));
+    const badge = byId('issue-state'); badge.hidden = false; badge.textContent = data.issue.state === 'open' ? 'Open' : data.issue.state === 'closed' ? 'Closed' : 'Unknown'; badge.className = 'badge' + (data.issue.state === 'open' ? ' positive' : '');
     byId('issue-body').replaceChildren(markdown(data.issue.body, renderingBudget));
     byId('issue-facts-details').open = false;
     byId('issue-facts').replaceChildren(paragraph('Issue state: ' + data.issue.state + ' · Author: ' + (data.issue.author ?? 'unknown')),
@@ -99,6 +103,7 @@ async function read(append = false) {
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
     if (operation !== revision) return;
     if ([401, 403, 409].includes(response.status)) {
+      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
       const failure = await response.json().catch(() => null); clear();
       const reason = typeof failure?.reason === 'string' ? failure.reason : 'Source authority changed. Verify the account and refresh.';
       status(reason, true); controlsStatus('Actions unavailable. ' + reason); return;
@@ -158,7 +163,8 @@ async function readEvidence(target, page, snapshot, operation) {
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/evidence?' + query,
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
     if (operation !== revision || current?.key !== target.key) return;
-    if ([401, 403, 409].includes(response.status)) { clear(); status('Source authority changed; previous context was removed.', true); return; }
+    if ([401, 403, 409].includes(response.status)) {
+      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' }); clear(); status('Source authority changed; previous context was removed.', true); return; }
     if (!response.ok) throw Error('Unavailable evidence');
     const data = await response.json();
     if (!data.dataScope || data.dataScope !== current.dataScope) {
@@ -215,6 +221,7 @@ async function readControls(target, operation, initialBody = '') {
     const data = await response.json().catch(() => null);
     const reason = controlReason(data);
     if ([401, 403, 409].includes(response.status)) {
+      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
       clear(); status('Source authority changed; previous context was removed. ' + reason, true);
       controlsStatus('Actions unavailable. ' + reason);
       return;

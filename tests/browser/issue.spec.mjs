@@ -55,7 +55,7 @@ test('temporary failure retains stale context; source authority loss removes eve
   await expect(page.locator('#issue-comments > li')).toHaveCount(0);
   await expect(page.locator('#issue-body')).toBeEmpty();
   await expect(page.locator('#issue-evidence')).toBeEmpty();
-  await expect(page.locator('#issue-title')).toHaveText('Issue workspace');
+  await expect(page.locator('#issue-title')).toHaveText('Issue #7');
 });
 test('initial failure does not invent an ordinary issue or empty conversation', async ({ page }) => {
   await fixture(page, { unavailable: true });
@@ -67,10 +67,10 @@ test('initial failure does not invent an ordinary issue or empty conversation', 
 test('repository picker is prefilled from the operations shortcut without reading issue data', async ({ page }) => {
   const apiRequests = [];
   page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(request.url()); });
-  await page.goto(origin + '/workspace/issues?repository=example%2Frepository');
+  await page.goto(origin + '/issue.html?repository=example%2Frepository');
   await expect(page.locator('#issue-repository')).toHaveValue('example/repository');
   await expect(page.locator('#issue-number')).toHaveValue('');
-  expect(apiRequests).toEqual([]);
+  expect(apiRequests.filter(url => !url.endsWith('/api/session'))).toEqual([]);
 });
 
 for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`visual contract ${theme} ${width}: Lighthouse shell, density, edges and focus`, async ({ page }) => {
@@ -92,7 +92,7 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`vi
   expect(visual.radius).toBe('2px');
   expect(visual.content).toBeLessThanOrEqual(1160);
   expect(visual.overflow).toBe(false);
-  if (width >= 1000) { expect(visual.header).toBe(64); expect(visual.sidebar).toBe(236); }
+  if (width >= 1000) { expect(visual.header).toBe(48); expect(visual.sidebar).toBe(184); }
   else {
     const navigation = page.getByRole('navigation', { name: 'Workspace navigation' });
     const last = navigation.getByRole('link').last(); await last.scrollIntoViewIfNeeded();
@@ -160,7 +160,7 @@ test('a changed connection during pagination removes the earlier account context
   await expect(page.locator('#issue-evidence')).toContainText('propose · blocked');
   harness.replaceAccount(); await page.getByRole('button', { name: 'Load more comments' }).click();
   await expect(page.locator('#issue-status')).toContainText('connected account changed');
-  await expect(page.locator('#issue-title')).toHaveText('Issue workspace');
+  await expect(page.locator('#issue-title')).toHaveText('Issue #7');
   await expect(page.locator('#issue-comments > li')).toHaveCount(0);
   await expect(page.locator('#issue-body')).toBeEmpty();
   await expect(page.locator('#issue-evidence')).toBeEmpty();
@@ -379,7 +379,7 @@ test('denied journal receipt clears source content and preserves the returned de
   await expect(page.locator('#issue-status')).toContainText(reason);
   await expect(page.locator('#issue-status script')).toHaveCount(0);
   expect(await page.evaluate(() => window.deniedReasonRan)).toBeUndefined();
-  await expect(page.locator('#issue-title')).toHaveText('Issue workspace');
+  await expect(page.locator('#issue-title')).toHaveText('Issue #7');
   await expect(page.locator('#issue-body')).toBeEmpty();
   await expect(page.locator('#issue-controls')).toBeEmpty();
 });
@@ -453,4 +453,16 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.locator('#control-actions').screenshot({ path: `test-results/issue/controls-${width}.png` });
+});
+
+
+test('owner expiry clears the signed-in identity on an open issue page', async ({ page }) => {
+  const harness = await fixture(page);
+  await page.route('**/api/session', route => route.fulfill({ json: { authenticated: true, displayName: 'Verified owner' } }));
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('.sidebar-identity')).toContainText('Verified owner');
+  harness.fail(401); await page.getByRole('button', { name: 'Refresh source' }).click();
+  await expect(page.locator('#issue-body')).toBeEmpty();
+  await expect(page.locator('.sidebar-identity')).not.toContainText('Verified owner');
+  await expect(page.locator('.sidebar-identity')).not.toContainText('Signed in');
 });
