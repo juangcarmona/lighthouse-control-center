@@ -101,16 +101,31 @@ test('live ordinary comment is confirmed by its source identity without continua
   expect(source.availability, 'Actual source preflight is required; unavailable authority is not a successful comment test.').toBe('available');
   expect(source.facts?.actions?.comment?.eligible).toBe(true);
   expect(source.submissionAvailable).toBe(true);
-  await page.goto(issuePath);
+  await test.step('Open the issue and wait for current comment authority', async () => {
+    await page.goto(issuePath, { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('button', { name: 'Review comment', exact: true })).toBeEnabled();
+  });
+  await test.step('Recover the existing journal before preparing another action', async () => {
+    const recovered = page.waitForResponse(response => response.url().endsWith(controlsPath) && response.request().method() === 'POST'
+      && response.request().postDataJSON()?.operation === 'receipt');
+    await page.getByRole('button', { name: 'Recover previous action', exact: true }).click();
+    const previous = await (await recovered).json();
+    expect(previous.availability).toBe('available');
+    if (previous.receipt?.state !== 'comment-published') expect(['claimed', 'uncertain']).not.toContain(previous.journalState);
+  });
   const body = 'Lighthouse Control Center E2E: ordinary comment confirmation ' + new Date().toISOString() + '. This action requests no continuation.';
-  await page.getByLabel('Your comment or answer').fill(body);
-  await page.getByRole('button', { name: 'Review comment', exact: true }).click();
   const confirmation = page.getByRole('region', { name: 'Action confirmation', exact: true });
-  await expect(confirmation).toContainText('does not resume work');
-  const submitted = page.waitForResponse(response => response.url().endsWith(controlsPath) && response.request().method() === 'POST'
-    && response.request().postDataJSON()?.operation === 'submit');
-  await page.getByRole('button', { name: 'Confirm and send', exact: true }).click();
-  const result = await (await submitted).json();
+  await test.step('Prepare an ordinary comment without dispatching continuation', async () => {
+    await page.getByLabel('Your comment or answer').fill(body);
+    await page.getByRole('button', { name: 'Review comment', exact: true }).click();
+    await expect(confirmation).toContainText('does not resume work');
+  });
+  const result = await test.step('Send once and inspect the actual source receipt', async () => {
+    const submitted = page.waitForResponse(response => response.url().endsWith(controlsPath) && response.request().method() === 'POST'
+      && response.request().postDataJSON()?.operation === 'submit', { timeout: 45000 });
+    await page.getByRole('button', { name: 'Confirm and send', exact: true }).click();
+    return (await submitted).json();
+  });
   expect(result.receipt?.state).toBe('comment-published');
   expect(result.intent?.action).toBe('comment');
   expect(result.receipt?.questionResolved).toBe(false);
@@ -121,4 +136,42 @@ test('live ordinary comment is confirmed by its source identity without continua
   await info.attach('confirmed-source-comment', { body: Buffer.from(JSON.stringify({ commentId: result.receipt.commentId,
     source: result.receipt.source, actingUserId: result.actingUserId, questionResolved: false, sourceWritePerformed: true })), contentType: 'application/json' });
   await page.locator('#conversation-panel').screenshot({ path: info.outputPath('confirmed-comment.png') });
+});
+
+test('live ordinary comment recovery confirms the existing source result without resending', async ({ signedPage: page }, info) => {
+  const expectedId = Number(process.env.LCC_E2E_RECOVER_COMMENT_ID);
+  test.skip(!Number.isSafeInteger(expectedId) || expectedId < 1, 'Recovery needs the exact source comment ID of a previously submitted action.');
+  let submissions = 0;
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === controlsPath && request.method() === 'POST'
+        && ['prepare', 'submit'].includes(request.postDataJSON()?.operation)) submissions++;
+  });
+  await page.goto(issuePath, { waitUntil: 'domcontentloaded' });
+  const recover = page.getByRole('button', { name: 'Recover previous action', exact: true });
+  await expect(recover).toBeEnabled();
+  const response = page.waitForResponse(value => new URL(value.url()).pathname === controlsPath
+    && value.request().method() === 'POST' && value.request().postDataJSON()?.operation === 'receipt', { timeout: 45000 });
+  await recover.click();
+  let result = await (await response).json();
+  expect(result.availability).toBe('available');
+  expect(result.intent?.action).toBe('comment');
+  if (result.receipt?.state !== 'comment-published') {
+    const reconciled = page.waitForResponse(value => new URL(value.url()).pathname === controlsPath
+      && value.request().method() === 'POST' && value.request().postDataJSON()?.operation === 'reconcile', { timeout: 45000 });
+    await page.getByRole('button', { name: 'Reconcile source result', exact: true }).click();
+    result = await (await reconciled).json();
+  }
+  expect(result.receipt?.state).toBe('comment-published');
+  expect(result.receipt?.commentId).toBe(expectedId);
+  expect(result.receipt?.source).toBe('https://github.com/' + repository + '/issues/' + issue + '#issuecomment-' + expectedId);
+  expect(result.receipt?.questionResolved).toBe(false);
+  const confirmation = page.getByRole('region', { name: 'Action confirmation', exact: true });
+  await expect(confirmation).toContainText('GitHub confirmed that the comment was published.');
+  await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toHaveCount(0);
+  await expect(page.locator('#source-comment-' + expectedId)).toContainText(result.intent.body);
+  expect(submissions).toBe(0);
+  await info.attach('recovered-source-comment', { body: Buffer.from(JSON.stringify({ commentId: expectedId,
+    source: result.receipt.source, actingUserId: result.actingUserId, questionResolved: false,
+    sourceWritePerformed: false, prepareOrSubmitRequests: submissions })), contentType: 'application/json' });
+  await confirmation.screenshot({ path: info.outputPath('recovered-comment.png') });
 });

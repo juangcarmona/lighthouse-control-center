@@ -11,6 +11,7 @@ export default defineConfig({
     ['./tests/product-behaviours/reporter.mjs', { kind: 'live', output: 'test-results/product-behaviours-live' }]],
   use: {
     baseURL: origin.origin, headless: true, ignoreHTTPSErrors: false,
+    actionTimeout: 15000, navigationTimeout: 45000,
     trace: 'off', screenshot: 'off', video: 'off',
     launchOptions: process.env.LCC_E2E_BROWSER_HOME ? { env: { ...process.env, HOME: process.env.LCC_E2E_BROWSER_HOME } } : {},
   },
