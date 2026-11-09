@@ -1,8 +1,48 @@
 # Lighthouse Control Center: current state and gaps
 
+## Qualification snapshot — 2026-11-09
+
+This section supersedes the status, repository-path and installed-version claims in the historical preparation assessment below. It reports implementation and executed evidence; ProductShape owns intent and the canonical ArcShape views/ADRs own architecture. No new product requirement or architecture decision is introduced here.
+
+Canonical repository: `juangcarmona/lighthouse-control-center`, numeric ID `1425429121`. The repository/folder rename and CHG-LCC-EVOLUTION-001 application through #126 are complete. The accepted model remains under `docs/product/model`; the structured-behaviour formalization and later access-continuity change are distinct, unapplied drafts.
+
+| Source boundary | Exact observed revision and meaning |
+| --- | --- |
+| Default branch | `d24953debaab37dfedf7745add1b47dae538a6d7`; development identity/observer, adopted Lighthouse and branding baseline. It lacks the candidate issue-control, journal, discovery and runner handlers. |
+| PR #100 candidate | `281bb63a0782b986603d9275fa1d38350404b00e`; includes component PRs #112/#103/#105/#111, subsequent workspace/source-read/quality corrections and operational lessons. These component PRs merged into `feat/50-issue-workspace`, not main. PR #100 remains draft and unmerged into main. |
+| Activated development binary | `9f1e2f81b96449bdaea28b28e533637550c3a67f`; independently reviewed, private TLS verified and served action JavaScript hash matched. This is development qualification, not production deployment. |
+| Adopted shared tuple | CLI `0.12.65`, SDLC `0.22.4`, UI `0.2.1`, with generated workflow source `879c4e75efebd945f8aea5b8ee09b97db62edbea`; package adoption is not source-operation or telemetry acceptance. |
+
+Status vocabulary: **Implemented baseline** means present on the observed default branch; **Partial** means only a bounded subset exists; **Active candidate** means implemented in unmerged PR #100; **New** means absent from the application. A producer or draft proposal is identified separately from an implemented LCC feature.
+
+| Capability | Current classification and proof | Remaining work / owner |
+| --- | --- | --- |
+| .NET/Aspire, OIDC and GitHub user connection | Implemented baseline; retain the observer, external identity boundary and connected-user transport. Continuity/session refinements are active candidate with a separate draft Product Change. | #49 baseline retained; proposed session decision and #58 production custody remain separate. |
+| Fleet and repository discovery | Partial baseline observations; active candidate configured inventory, scoped issue lookup/list/board and filters. Real navigation/exact lookup passed. | #52 acceptance; registration/grouping and full adoption interpretation remain follow-ons. |
+| Issues, conversation and history | Active candidate reader, inert content, paging and bounded source/evidence correlation. Actual issue/conversation reading passed. | #50/#56; complete retained mission history and later-stage delivery views are not established. |
+| Source operations and interventions | Active candidate shared controls/journal and inbox. A fresh ordinary comment was confirmed in GitHub and separately recovered without prepare/submit. Refine/Propose are denied by actual source grants; Continue lacks its policy input. | #48/#51 real dispatch and current-question acceptance stay open. Comment publication is not delivery. |
+| Adoption, versions and drift | Candidate reads declared versions; interpreted compatible baselines, applicability and exceptions remain New. | #53 draft PR #147; no installed/latest/policy inference from a declaration. |
+| Runtime infrastructure | Active candidate local registration and permission-gated runner inventory; registration is not measured liveness/capacity. Provider capability contract and administration are New. | #57 qualification, #117 draft PR #144 and separately authorized #118 operation; no scaling/drain/provider adapter is accepted. |
+| Engineering health and trends | New LCC ingestion/calculation/history. One actual normalized upstream execution observation exists; the current artifact reader does not ingest telemetry members. | #54 first resource-signal proposal; delivery/adoption/quality signals and comparable trends remain later slices. No DORA, billing or cost is invented. |
+| Evidence and observability | Partial baseline source runs; active candidate issue/run/attempt/PR/head/receipt evidence and strict source guards. Ten original passing ProductShape reports retain draft example hashes and baseline citations. | Full correlation and independent verification remain source-specific; no workflow-success-to-delivery inference. |
+| Multi-user/resource scopes | New; current owner admission and shared owner-only write support remain. | #119 draft PR #143; no extra identity, repository or provider authority is granted. |
+| Identity and independent distribution | Renamed repository, Lighthouse/bench assets and adopted dependencies are baseline; compact Lighthouse workspace is active candidate. Independent installation/restore remains Partial/New. | #121/#123/#124 continuity/acceptance; #120 rehearsal and #58 production evidence remain open. |
+| Idea exploration and promotion | New application capability; existing #55 is being refined/proposed. | Define explicit create/link authority and uncertain-response recovery without duplicating #48/#52. |
+| Repository-owned autonomous delivery | Implemented bounded Lighthouse route; successful #55 refinement and actual native source-bound handoffs are execution evidence. | Preserve existing grants/holds and independent acceptance; no LCC scheduler or native epic adoption is introduced. |
+
+Full hosted verification at `eb9d51a7` passed 105 Node, 267 workspace .NET, 38 retained-runtime and 90 fixture browser cases, including evaluated analyzer activation, real rejected LH1001/LH1002 compiler examples and frontend module/privileged-transport guards. [Executed source evidence](../delivery/evidence/issue-116/unattended-continuation/product-behaviours/README.md) records six distinct real-service cases across runs, all original failures, ten valid passing reports, sanitized captures and 52 artifact hashes. Fixture/live/draft-product evidence are separate. A settled unavailable-controls capture remains unexplained; subsequent available observations do not prove its cause fixed.
+
+Current source anchors: [baseline module](https://github.com/juangcarmona/lighthouse-control-center/blob/d24953debaab37dfedf7745add1b47dae538a6d7/src/SoFa.Modules.Workspace/WorkspaceModule.cs), [candidate issue reader](https://github.com/juangcarmona/lighthouse-control-center/blob/281bb63a0782b986603d9275fa1d38350404b00e/src/SoFa.Modules.Workspace/Source/GetIssueContextHandler.cs), [journal](https://github.com/juangcarmona/lighthouse-control-center/blob/281bb63a0782b986603d9275fa1d38350404b00e/src/SoFa.Modules.Workspace/Source/ControlJournal.cs), [runner inventory](https://github.com/juangcarmona/lighthouse-control-center/blob/281bb63a0782b986603d9275fa1d38350404b00e/src/SoFa.Modules.Workspace/Runtime/GetRepositoryRunnersHandler.cs), [adopted package pins](https://github.com/juangcarmona/lighthouse-control-center/blob/d24953debaab37dfedf7745add1b47dae538a6d7/package.json), and [stage-chain retrospective](../delivery/evidence/issue-116/unattended-continuation/orchestration-retrospective.md). [Tracker #116](https://github.com/juangcarmona/lighthouse-control-center/issues/116) owns the live queue and changing run outcomes.
+
+No architecture documentation impact: this reconciliation changes no component responsibility, trust boundary, persistence strategy or deployment topology. It corrects evidence classification and links existing sources; the canonical twelve ArcShape views and owning ADRs remain authoritative. Main integration, product/session/ADR decisions, installation, source/provider acceptance and production release remain separate. No enterprise readiness is claimed.
+
+## Historical preparation assessment — 2026-11-08
+
+The following original evidence retains its original timestamps, source revisions and pre-rename names. Its statuses are historical and are superseded by the qualification snapshot above.
+
 Evidence snapshot: 2026-11-08 UTC, before any product apply or rename. Tracking: [#116](https://github.com/juangcarmona/sofa/issues/116). This assessment distinguishes implementation from acceptance; the [roadmap](lighthouse-control-center.md) owns sequencing. Product intent is proposed in [CHG-LCC-EVOLUTION-001](../product/changes/completed/chg-lcc-evolution-001/change.md); architecture remains in the twelve ArcShape views.
 
-## Evidence boundary
+### Evidence boundary
 
 SoFa default branch: `4c457c337640795a31492f7219cb0e497df9e232`; Lighthouse default branch: `1e76be4b46e6e402e030fa22d3e233a154fe73bc`. Both were fetched into isolated worktrees. Primary checkouts contain unrelated work and were not changed. GitHub repository ID `1425429121` / node ID `R_kgDOVPZSgQ` is the durable repository identity; current path is `juangcarmona/sofa`, observed public. Package privacy is a separate setting.
 
@@ -10,7 +50,7 @@ GitHub connector search supplied bodies and links but omitted state/check fields
 
 The accepted ProductShape model contains 71 artifacts and validates with no errors or warnings. Its artifact metadata still uses `draft`; acceptance comes from applied Product Changes and accepted merges, including #82, rather than inference from that field. The authenticated-operations change is completed, not an outstanding draft. Source and active branch facts below are the implementation authority.
 
-## Capability assessment
+### Capability assessment
 
 Status vocabulary: **Implemented** means present on the inspected default branch; **Partial** means only a bounded subset is on that branch; **Active** means code exists in a named unmerged candidate; **New** means absent from the inspected application. Implemented does not attest production deployment or every acceptance scenario. A row naming several statuses separates those surfaces explicitly.
 
@@ -45,7 +85,7 @@ Status vocabulary: **Implemented** means present on the inspected default branch
 | LCC identity and repository rename | New public identity/migration; strategic name decided | Product change first; execute [rename plan](lighthouse-control-center-rename.md) only after rehearsed gates |
 | Idea exploration and promotion | Accepted intent; New implementation #55 | Retain as optional; it does not block the first Control Center journey |
 
-## Source anchors
+### Source anchors
 
 | Evidence | What it establishes |
 | --- | --- |
@@ -62,7 +102,7 @@ Status vocabulary: **Implemented** means present on the inspected default branch
 | [src/SoFa.Modules.Workspace/Runtime/GetHostInventoryHandler.cs](https://github.com/juangcarmona/sofa/blob/0ae7d3910f2c2a19cc63f33bb89b7d1e0a996337/src/SoFa.Modules.Workspace/Runtime/GetHostInventoryHandler.cs) and [src/SoFa.Modules.Workspace/Runtime/GetRepositoryRunnersHandler.cs](https://github.com/juangcarmona/sofa/blob/0ae7d3910f2c2a19cc63f33bb89b7d1e0a996337/src/SoFa.Modules.Workspace/Runtime/GetRepositoryRunnersHandler.cs) | Active #57 local/GitHub inventory with explicit bounds and admin-read requirement |
 | [src/web/public/attention.js](https://github.com/juangcarmona/sofa/blob/fcd09a947fa58bab70616622777e8859aa1251ec/src/web/public/attention.js) | Active #51 inbox presentation; common source controls own mutation behavior |
 
-## Active delivery reconciliation
+### Active delivery reconciliation
 
 | PR | Exact observed head | Base branch | State / boundary |
 | --- | --- | --- | --- |
@@ -100,7 +140,7 @@ The stack is `main → #100 → #112 → #103 → #105 → #111`. Retarget/rebas
 | [#77](https://github.com/juangcarmona/sofa/issues/77) | OPEN | Retain failed refine diagnostic history; not an alternate implementation path. |
 | [#80](https://github.com/juangcarmona/sofa/issues/80) | OPEN | Retain failed refine diagnostic history; inspect if selected for repair. |
 
-## Lighthouse contracts and compatibility
+### Lighthouse contracts and compatibility
 
 The inspected Lighthouse source is `1e76be4b46e6e402e030fa22d3e233a154fe73bc`: CLI `0.12.64`, SDLC `0.22.3`, UI `0.2.1`. SoFa commits CLI `0.12.61`, SDLC `0.22.0` and UI `0.2.0`; ProductShape `0.23.0`, ArcShape `0.1.6`, OpenSpec `1.15.0`. The current immutable SoFa workflow source is `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d` in its generated router/locks, separately from package versions. These facts do not authorize automatic upgrade to Lighthouse main.
 
@@ -117,7 +157,7 @@ The native router includes owner/authenticated admission, per-issue concurrency,
 
 Compatibility acceptance must include the installed 0.12.61/0.22.0 tuple; a separately selected supported current tuple; and an older/absent/unsupported capability. Preserve read-only issue utility in every case. Unsupported team actor, epic or Product Change control returns its source explanation. No latest-version requirement hides a repository.
 
-## Architecture challenges and retained investments
+### Architecture challenges and retained investments
 
 1. Keep one .NET web process and the current browser assets/Lighthouse tokens. Logical planes do not justify microservices.
 2. Keep OIDC identity separate from GitHub user authority and provider administrative grants. Existing owner-only admission is a useful safe default, not a team implementation.
@@ -127,11 +167,11 @@ Compatibility acceptance must include the installed 0.12.61/0.22.0 tuple; a sepa
 6. Treat local privileged access as a new trust boundary. The web process receives neither root nor a Docker socket nor an arbitrary shell endpoint. Unsupported safe drain is explicit; a fresh GitHub busy read alone cannot fence a race with a new job.
 7. Keep provider elasticity delegated to the provider/controller. Configuring a capacity bound can be an administrative operation; LCC never assigns a GitHub job to a host.
 
-## Retire or defer
+### Retire or defer
 
 Retire the obsolete supervisor as an architectural dependency and mark historical roadmap links accordingly; preserve its code/evidence until a separate removal decision. Retain #55 ideas without making it a foundation dependency. Defer enterprise service topology, organization-wide discovery credentials, new model engines, default autoscaling, push notifications, terminal/file explorers, custom scorecards and platform-wide quality thresholds until an accepted requirement and actual evidence justify them. Multiple providers and hundreds of repositories are contract and capacity validation targets, not current readiness claims.
 
-## Upstream delivered versus still open
+### Upstream delivered versus still open
 
 At the live inspection, Lighthouse [#521](https://github.com/juangcarmona/lighthouse/issues/521) telemetry and [#567](https://github.com/juangcarmona/lighthouse/issues/567) trusted completion recovery are closed completed. The source-owned callbacks and bounded recovery are implementation evidence, not an LCC controller requirement. [#119](https://github.com/juangcarmona/lighthouse/issues/119) remains open despite the published issue-control SDK: actual-user qualification and remaining acceptance must not be inferred from package availability. [#220](https://github.com/juangcarmona/lighthouse/issues/220) provenance-aware delivery/attention metrics remains open backlog work; its prospective shared definitions are not implemented LCC analytics. Reuse these upstream owners rather than create duplicate lifecycle/metric policy in Control Center.
 
