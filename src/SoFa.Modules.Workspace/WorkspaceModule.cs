@@ -81,16 +81,22 @@ public static class WorkspaceModule
     app.UseAuthentication();
     app.Use(OwnerIdentity.Gate);
     app.UseAuthorization();
-    app.MapGet("/", (HttpContext context, IAntiforgery antiforgery) =>
+    app.MapGet("/", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions, ProviderSessions provider) =>
     {
+      if (context.User.Identity?.IsAuthenticated == true && sessions.Get(context.User) is { } current
+          && await provider.EnsureCurrentAsync(current, context.RequestAborted).ConfigureAwait(false) == ProviderAuthority.Current)
+      { context.Response.Redirect("/workspace/operations"); return Results.Empty; }
       var token = antiforgery.GetAndStoreTokens(context).RequestToken!;
-      return Html("Lighthouse Control Center", "<p>Sign in with your configured identity provider. Fleet data requires an owner session.</p>"
+      return Html("Lighthouse Control Center", "<p>Sign in with your configured identity provider to open the private workspace.</p>"
               + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required sign-in.</p>" : "")
-              + Form("/auth/login", token, "Sign in")
-              + (context.User.Identity?.IsAuthenticated == true
-                  ? Form("/auth/logout", token, "Sign out locally") + Form("/connections/github/disconnect", token, "Disconnect GitHub") : ""));
+              + Form("/auth/login", token, "Sign in"));
     }).AllowAnonymous();
     app.MapGet("/health/live", () => Results.Text("live")).AllowAnonymous();
+    foreach (var asset in new[] { (Path: "/workspace-ui.js", File: "workspace-ui.js", Type: "text/javascript"),
+        (Path: "/read-projection-cache.js", File: "read-projection-cache.js", Type: "text/javascript"),
+        (Path: "/lighthouse.svg", File: "lighthouse.svg", Type: "image/svg+xml") })
+      app.MapGet(asset.Path, async (CancellationToken cancellationToken) => Results.Content(
+          await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", asset.File), cancellationToken).ConfigureAwait(false), asset.Type)).AllowAnonymous();
     app.MapPost("/auth/login", async (HttpContext context, IAntiforgery antiforgery) =>
     {
       if (!await Csrf(context, antiforgery).ConfigureAwait(false)) return;
@@ -124,27 +130,30 @@ public static class WorkspaceModule
       {
         canDisconnect = record.GitHub.Current is not null;
         account = connection is not null ? "<p id=\"github-account\">GitHub acting account: <a href=\"https://github.com/"
-                + Encode(Uri.EscapeDataString(connection.Login)) + "\" rel=\"noreferrer noopener\">" + Encode(connection.Login) + "</a> · User ID "
+                + Encode(Uri.EscapeDataString(connection.Login)) + "\" rel=\"noreferrer noopener\">" + Encode(connection.Login) + "</a>.</p>"
+                + "<details><summary>Technical identity details</summary><p>GitHub user ID "
                 + connection.UserId.ToString(System.Globalization.CultureInfo.InvariantCulture) + ". Verified at "
-                + Encode(connection.VerifiedAt.ToString("o", System.Globalization.CultureInfo.InvariantCulture)) + ".</p>"
+                + Encode(connection.VerifiedAt.ToString("o", System.Globalization.CultureInfo.InvariantCulture)) + ". Identity provider: "
+                + Encode(settings.Identity.Issuer.AbsoluteUri) + ".</p></details>"
                 : "<p id=\"github-account\">" + (record.GitHub.Current is null ? "GitHub is not connected." : "GitHub account verification is unavailable. Source operations are blocked.") + "</p>";
         if (record.GitHub.Replacement is { } candidate && clock.GetUtcNow() < record.GitHub.ReplacementDeadline)
-          account += "<p>Confirm replacing the acting account with " + Encode(candidate.Login) + " · User ID "
-                  + candidate.UserId.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".</p>"
+          account += "<p>Confirm replacing the acting account with " + Encode(candidate.Login) + ".</p>"
+                  + "<details><summary>Replacement identity details</summary><p>GitHub user ID "
+                  + candidate.UserId.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".</p></details>"
                   + Form("/connections/github/confirm", token, "Confirm account replacement");
       }
       return Html("Workspace", "<p>Owner identity verified. GitHub account connection is separate.</p>"
           + (feedback.Length == 0 ? "" : "<p role=\"status\">" + feedback + "</p>")
-              + "<p>Identity provider: " + Encode(settings.Identity.Issuer.AbsoluteUri) + ".</p>" + account
+              + account
               + "<p id=\"account-status\" role=\"status\" aria-live=\"polite\">Checking current repository authority…</p><ul id=\"repository-authority\" aria-label=\"Configured repository permissions\"></ul>"
               + (string.IsNullOrEmpty(settings.GitHubClientId) ? "<h2>GitHub setup required</h2><p>Register the development GitHub App, then connect your GitHub account to load repository operations.</p>"
                   : Form("/connections/github/start", token, "Connect GitHub account"))
               + "<div id=\"github-disconnect\"" + (canDisconnect ? "" : " hidden") + ">"
               + Form("/connections/github/disconnect", token, "Disconnect GitHub") + "</div>"
               + "<p><a href=\"/workspace/operations\">Open fleet operations</a></p>"
-              + "<p>Local disconnect removes this session's source credentials. To revoke the separate GitHub grant, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
-              + "<p>Sessions expire after 15 minutes without user activity, or four hours after authentication. Provider authority is checked at least every five minutes; a failed due check blocks access.</p>"
-              + "<p>Sign out ends this local session. Your identity provider may retain its own session; the next sign-in requires fresh authentication.</p>"
+              + "<p>Disconnect removes the locally stored GitHub grant for this owner across active sessions. To revoke the provider-side grant too, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
+              + "<p>Owner sessions expire after two hours without user activity or twelve hours after authentication. Identity-provider authority is checked online at least every five minutes; a failed due check blocks access.</p>"
+              + "<p>Sign out ends this browser's owner session. The separately authorized GitHub connection remains available for a later owner session and is checked with GitHub before use.</p>"
               + Form("/auth/logout", token, "Sign out"), account: true);
     });
     app.MapPost("/connections/github/start", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions, GitHubAuthorization github) =>
@@ -194,7 +203,8 @@ public static class WorkspaceModule
         authenticated = true,
         idleDeadline = record.IdleDeadline,
         absoluteDeadline = record.AbsoluteDeadline,
-        providerValidatedAt = record.ProviderValidatedAt
+        providerValidatedAt = record.ProviderValidatedAt,
+        dataScope = record.GitHub.Current?.DataScope
       });
     });
     app.MapGet("/api/observations", async (HttpContext context, OwnerSessions sessions, GetObservationsHandler observations) =>
@@ -357,8 +367,8 @@ public static class WorkspaceModule
 
   private static IResult Html(string title, string body, bool account = false) => Results.Content(
       "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Lighthouse Control Center · "
-      + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
-      + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
+      + title + "</title><link rel=\"icon\" href=\"/lighthouse.svg\" type=\"image/svg+xml\"><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
+      + "<script type=\"module\" src=\"/workspace-ui.js\"></script>" + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
       + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">Lighthouse Control Center</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/factory\">Fleet</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
   private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action

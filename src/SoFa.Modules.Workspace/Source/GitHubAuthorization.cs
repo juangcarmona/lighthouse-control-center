@@ -18,6 +18,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
       if (!Live(record) || string.IsNullOrEmpty(settings.GitHubClientId)) return null;
       var state = Random();
       var verifier = Random();
+      record.GitHub.CommittingAttempt = 0;
       record.GitHub.Replacement = null;
       record.GitHub.Authorization = new GitHubAuthorizationAttempt(state, verifier, ++record.GitHub.Attempt, clock.GetUtcNow().AddMinutes(5));
       return QueryHelpers.AddQueryString("https://github.com/login/oauth/authorize", new Dictionary<string, string?>
@@ -65,50 +66,56 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
     if (!user.Successful || id is not > 0 || SourceJson.Text(user.Value, "type") != "User"
         || login is null || !Regex.IsMatch(login, "^[A-Za-z0-9][A-Za-z0-9-]{0,38}$", RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
       return ConnectionOutcome.Unavailable;
+    var connection = new GitHubConnection(id.Value, login, tokens, clock.GetUtcNow());
     lock (record.Sync)
     {
       if (!Live(record) || record.GitHub.Attempt != attempt.Attempt || clock.GetUtcNow() >= attempt.Deadline)
         return ConnectionOutcome.Rejected;
-      var connection = new GitHubConnection(id.Value, login, tokens, clock.GetUtcNow());
       if (record.GitHub.Current is { } current && current.UserId != id)
       {
         record.GitHub.Replacement = connection;
         record.GitHub.ReplacementDeadline = clock.GetUtcNow().AddMinutes(5);
         return ConnectionOutcome.ConfirmationRequired;
       }
-      record.GitHub.Current?.Stopped.Cancel();
-      record.GitHub.Current = connection;
-      record.GitHub.Observations.Clear();
-      record.GitHub.Generation++;
-      return ConnectionOutcome.Connected;
+      record.GitHub.CommittingAttempt = attempt.Attempt;
     }
+    return sessions.SetGitHubGrant(record, connection, attempt.Attempt) ? ConnectionOutcome.Connected : ConnectionOutcome.Rejected;
   }
 
   internal bool Confirm(OwnerSession record)
   {
+    GitHubConnection replacement;
+    long confirmationAttempt;
     lock (record.Sync)
     {
-      if (!Live(record) || record.GitHub.Replacement is not { } replacement) return false;
+      if (!Live(record) || record.GitHub.Replacement is not { } pending) return false;
+      replacement = pending;
       record.GitHub.Replacement = null;
       if (clock.GetUtcNow() >= record.GitHub.ReplacementDeadline) return false;
-      record.GitHub.Current?.Stopped.Cancel();
-      record.GitHub.Current = replacement;
-      record.GitHub.Observations.Clear();
-      record.GitHub.Generation++;
       record.GitHub.Attempt++;
       record.GitHub.Authorization = null;
-      return true;
+      confirmationAttempt = record.GitHub.Attempt;
+      record.GitHub.CommittingAttempt = confirmationAttempt;
     }
+    return sessions.SetGitHubGrant(record, replacement, confirmationAttempt);
   }
 
-  internal static void Disconnect(OwnerSession record) { lock (record.Sync) record.GitHub.Clear(); }
+  internal static void Disconnect(OwnerSession record)
+  {
+    record.Sessions?.DisconnectGitHubGrant();
+  }
 
   internal async Task<GitHubConnection?> CurrentAsync(OwnerSession record, CancellationToken cancellationToken)
   {
-    await record.GitHub.RefreshLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+    GitHubConnection connection;
+    lock (record.Sync)
+    {
+      if (!Live(record) || record.GitHub.Current is not { } current) return null;
+      connection = current;
+    }
+    await connection.RefreshLock.WaitAsync(cancellationToken).ConfigureAwait(false);
     try
     {
-      GitHubConnection connection;
       long generation;
       lock (record.Sync)
       {
@@ -142,6 +149,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
           if (!Current(record, connection, generation)) return null;
           connection.Tokens = tokens;
           refreshed = true;
+          sessions.Persist(record);
         }
       }
       if (refreshed || clock.GetUtcNow() >= connection.VerifiedAt.AddMinutes(5))
@@ -161,16 +169,17 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
           if (!Current(record, connection, generation)) return null;
           connection.VerifiedAt = clock.GetUtcNow();
           connection.Login = login;
+          sessions.Persist(record);
         }
       }
       lock (record.Sync) return Current(record, connection, generation) ? connection : null;
     }
-    finally { record.GitHub.RefreshLock.Release(); }
+    finally { connection.RefreshLock.Release(); }
   }
 
   internal static void Invalidate(OwnerSession record, GitHubConnection connection)
   {
-    lock (record.Sync) if (ReferenceEquals(record.GitHub.Current, connection)) record.GitHub.Clear();
+    record.Sessions?.RevokeGitHubGrant(connection);
   }
 
   private bool Current(OwnerSession record, GitHubConnection connection, long generation) => Live(record)

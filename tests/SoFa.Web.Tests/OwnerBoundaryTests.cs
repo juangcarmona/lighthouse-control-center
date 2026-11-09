@@ -137,7 +137,10 @@ public sealed class OwnerBoundaryTests
     using var client = app.Client();
     var first = await client.GetAsync(await app.Begin(client));
     var oldCookie = OwnerCookie(first);
-    var next = await client.GetAsync(await app.Begin(client));
+    var root = await client.GetAsync("/");
+    Assert.Equal(HttpStatusCode.Redirect, root.StatusCode);
+    Assert.Equal("/workspace/operations", root.Headers.Location?.OriginalString);
+    var next = await client.GetAsync(await app.Begin(client, authenticated: true));
     Assert.NotEqual(oldCookie, OwnerCookie(next));
     Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/session")).StatusCode);
     using var stale = app.Client();
@@ -368,6 +371,7 @@ public sealed class OwnerBoundaryTests
   private sealed class OwnerApplication : WebApplicationFactory<Program>
   {
     private readonly ECDsa key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+    private readonly string privateRoot = Path.Combine(Path.GetTempPath(), "lcc-owner-web-" + Guid.NewGuid().ToString("N"));
     private string nonce = "";
     internal string? Invalid { get; init; }
     internal int TokenExchanges;
@@ -383,10 +387,17 @@ public sealed class OwnerBoundaryTests
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+      if (!OperatingSystem.IsLinux()) throw new PlatformNotSupportedException("Owner middleware tests require Linux private-directory validation.");
+      const UnixFileMode privateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
+      Directory.CreateDirectory(privateRoot, privateMode);
+      Directory.CreateDirectory(Path.Combine(privateRoot, "sessions"), privateMode);
+      Directory.CreateDirectory(Path.Combine(privateRoot, "keys"), privateMode);
       builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
       {
         ["SoFa:Origin"] = "https://workspace.invalid",
         ["SoFa:Identity:Mode"] = "Development",
+        ["SoFa:Identity:SessionDirectory"] = Path.Combine(privateRoot, "sessions"),
+        ["SoFa:Identity:SessionKeyDirectory"] = Path.Combine(privateRoot, "keys"),
         ["SoFa:Identity:Development:Issuer"] = "https://identity.invalid/realms/dev",
         ["SoFa:Identity:Development:ClientId"] = "sofa-development",
         ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
@@ -404,6 +415,16 @@ public sealed class OwnerBoundaryTests
         services.PostConfigure<OpenIdConnectOptions>(IdentitySchemes.Oidc, ConfigureProvider);
         services.PostConfigure<CookieAuthenticationOptions>(IdentitySchemes.Cookie, ConfigureOwnerCookie);
       });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+      base.Dispose(disposing);
+      if (disposing)
+      {
+        key.Dispose();
+        if (Directory.Exists(privateRoot)) Directory.Delete(privateRoot, recursive: true);
+      }
     }
 
     private void ConfigureOwnerCookie(CookieAuthenticationOptions options)
@@ -430,9 +451,9 @@ public sealed class OwnerBoundaryTests
       options.Backchannel = new HttpClient(new Exchange(this));
     }
 
-    internal async Task<string> Begin(HttpClient client)
+    internal async Task<string> Begin(HttpClient client, bool authenticated = false)
     {
-      var token = Token(await client.GetStringAsync("/"));
+      var token = Token(await client.GetStringAsync(authenticated ? "/workspace" : "/"));
       var response = await client.PostAsync("/auth/login", new FormUrlEncodedContent(new Dictionary<string, string> { ["__RequestVerificationToken"] = token }));
       Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
       var query = QueryHelpers.ParseQuery(response.Headers.Location!.Query);
@@ -479,6 +500,5 @@ public sealed class OwnerBoundaryTests
       }
     }
 
-    protected override void Dispose(bool disposing) { base.Dispose(disposing); if (disposing) key.Dispose(); }
   }
 }

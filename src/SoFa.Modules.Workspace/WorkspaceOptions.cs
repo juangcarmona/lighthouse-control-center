@@ -17,8 +17,14 @@ internal sealed class WorkspaceOptions
   public RuntimeOptions Runtime { get; init; } = new();
   [System.Text.Json.Serialization.JsonIgnore]
   public string? GitHubClientSecret { get; init; }
+  [System.Text.Json.Serialization.JsonIgnore]
   public string? ControlJournalDirectory { get; init; }
+  [System.Text.Json.Serialization.JsonIgnore]
   public string? ControlJournalKeyDirectory { get; init; }
+  [System.Text.Json.Serialization.JsonIgnore]
+  public string? OwnerSessionDirectory { get; init; }
+  [System.Text.Json.Serialization.JsonIgnore]
+  public string? OwnerSessionKeyDirectory { get; init; }
 
   public override string ToString() => "WorkspaceOptions (credentials withheld)";
 
@@ -60,11 +66,31 @@ internal sealed class WorkspaceOptions
     var githubSecret = section["GitHub:ClientSecret"];
     if (string.IsNullOrWhiteSpace(githubClient) != string.IsNullOrWhiteSpace(githubSecret))
       throw new InvalidOperationException("Complete both GitHub user App settings or leave the connection unconfigured.");
+    var sessionDirectory = section["Identity:SessionDirectory"];
+    var sessionKeyDirectory = section["Identity:SessionKeyDirectory"];
+    if (!PrivateDirectory(sessionDirectory) || !PrivateDirectory(sessionKeyDirectory)
+        || sessionDirectory == sessionKeyDirectory || sessionDirectory!.StartsWith(sessionKeyDirectory + "/", StringComparison.Ordinal)
+        || sessionKeyDirectory!.StartsWith(sessionDirectory + "/", StringComparison.Ordinal))
+      throw new InvalidOperationException("Configure separate absolute private owner session and key directories.");
+    var journalDirectory = section["Controls:JournalDirectory"];
+    var journalKeyDirectory = section["Controls:KeyDirectory"];
+    if (string.IsNullOrWhiteSpace(journalDirectory) != string.IsNullOrWhiteSpace(journalKeyDirectory))
+      throw new InvalidOperationException("Configure both control journal directories or leave the journal unconfigured.");
+    if (!string.IsNullOrWhiteSpace(journalDirectory))
+    {
+      if (!PrivateDirectory(journalDirectory) || !PrivateDirectory(journalKeyDirectory)
+          || new[] { sessionDirectory!, sessionKeyDirectory!, journalDirectory!, journalKeyDirectory! }
+              .Select(Path.GetFullPath).Any(path => new[] { sessionDirectory!, sessionKeyDirectory!, journalDirectory!, journalKeyDirectory! }
+                  .Select(Path.GetFullPath).Count(other => PathsOverlap(path, other)) != 1))
+        throw new InvalidOperationException("Configure four separate absolute private owner-session and control-journal directories.");
+    }
 
     return new WorkspaceOptions
     {
       ControlJournalDirectory = section["Controls:JournalDirectory"],
       ControlJournalKeyDirectory = section["Controls:KeyDirectory"],
+      OwnerSessionDirectory = section["Identity:SessionDirectory"],
+      OwnerSessionKeyDirectory = section["Identity:SessionKeyDirectory"],
       Origin = origin,
       IdentityMode = mode,
       Identity = new IdentityProfile { Issuer = issuer, ClientId = client, ClientSecret = secret, OwnerSubject = subject, RequiredAssurance = mode == "Development" ? "1" : "2" },
@@ -86,5 +112,17 @@ internal sealed class WorkspaceOptions
         || !string.IsNullOrEmpty(uri.Fragment) || originOnly && uri.AbsolutePath != "/")
       throw new InvalidOperationException("Configure exact HTTPS application and issuer addresses without credentials, queries or fragments.");
     return uri;
+  }
+
+  private static bool PrivateDirectory(string? value) => !string.IsNullOrWhiteSpace(value)
+      && Path.IsPathFullyQualified(value) && value == Path.GetFullPath(value)
+      && !value.Any(char.IsControl) && System.Text.Encoding.UTF8.GetByteCount(value) <= 4096;
+
+  private static bool PathsOverlap(string first, string second)
+  {
+    var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+    var separator = Path.DirectorySeparatorChar;
+    return string.Equals(first, second, comparison) || first.StartsWith(second.TrimEnd(separator) + separator, comparison)
+        || second.StartsWith(first.TrimEnd(separator) + separator, comparison);
   }
 }

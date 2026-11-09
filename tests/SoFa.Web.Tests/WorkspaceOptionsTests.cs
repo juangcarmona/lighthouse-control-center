@@ -68,6 +68,24 @@ public sealed class WorkspaceOptionsTests
   }
 
   [Fact]
+  public void ConfiguredOwnerAndJournalCustodyDirectoriesArePairwiseSeparate()
+  {
+    var values = Values();
+    values["SoFa:Controls:JournalDirectory"] = "/private/control-journal";
+    values["SoFa:Controls:KeyDirectory"] = "/private/control-journal-keys";
+    Assert.NotNull(WorkspaceOptions.Load(Configuration(values)));
+
+    values["SoFa:Controls:KeyDirectory"] = "/private/owner-session-keys";
+    Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+    values["SoFa:Controls:KeyDirectory"] = "/private/control-journal-keys";
+    values["SoFa:Controls:JournalDirectory"] = "/private/owner-sessions/nested";
+    Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+    values["SoFa:Controls:JournalDirectory"] = "/private/control-journal";
+    values.Remove("SoFa:Controls:KeyDirectory");
+    Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+  }
+
+  [Fact]
   public void ConfigurationErrorsAndDefaultSerializationContainNoCredential()
   {
     var values = Values();
@@ -126,6 +144,8 @@ public sealed class WorkspaceOptionsTests
   internal static Dictionary<string, string?> Values(string mode = "Development") => new()
   {
     ["SoFa:Identity:Mode"] = mode,
+    ["SoFa:Identity:SessionDirectory"] = "/private/owner-sessions",
+    ["SoFa:Identity:SessionKeyDirectory"] = "/private/owner-session-keys",
     ["SoFa:Origin"] = "https://workspace.invalid:5443",
     [$"SoFa:Identity:{mode}:Issuer"] = "https://identity.invalid/realms/dev",
     [$"SoFa:Identity:{mode}:ClientId"] = "sofa-development",

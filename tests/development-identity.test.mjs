@@ -23,6 +23,8 @@ test('development setup imports simple shared test credentials, protects generat
     const configuration = JSON.parse(original);
     assert.ok(configuration.SoFa.Repositories.includes('juangcarmona/lighthouse-control-center'));
     assert.ok(!configuration.SoFa.Repositories.includes('juangcarmona/sofa'));
+    assert.equal(configuration.SoFa.Identity.SessionDirectory, join(directory, 'owner-sessions'));
+    assert.equal(configuration.SoFa.Identity.SessionKeyDirectory, join(directory, 'owner-session-keys'));
     const accounts = JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8'));
     assert.equal(accounts.length, 2);
     const realm = JSON.parse(await readFile(join(directory, "import/sofa-dev-realm.json"), "utf8"));
@@ -38,6 +40,8 @@ test('development setup imports simple shared test credentials, protects generat
       assert.equal(seeded.users[index].credentials[0].temporary, false);
     }
     assert.equal(realm.clients[0].attributes["minimum.acr.value"], "1");
+    assert.equal(realm.ssoSessionIdleTimeout, 7200);
+    assert.equal(realm.ssoSessionMaxLifespan, 43200);
     assert.ok(realm.users.every(user => !user.requiredActions.includes("CONFIGURE_TOTP")));
     assert.equal(configuration.SoFa.Identity.Development.ProviderUser, `${process.getuid()}:0`);
     assert.equal(configuration.SoFa.Identity.Development.OwnerSubject, accounts[0].subject);
@@ -46,6 +50,8 @@ test('development setup imports simple shared test credentials, protects generat
       assert.ok(!result.stdout.includes(account.password));
     }
     assert.equal((await stat(directory)).mode & 0o777, 0o700);
+    for (const privateDirectory of ['owner-sessions', 'owner-session-keys'])
+      assert.equal((await stat(join(directory, privateDirectory))).mode & 0o777, 0o700);
     for (const file of ['development.json', 'provider.env', 'test-accounts.json', 'ca.key', 'tls/app.key', 'tls/identity.key'])
       assert.equal((await stat(join(directory, file))).mode & 0o777, 0o600);
     const chain = spawnSync('openssl', ['verify', '-CAfile', join(directory, 'ca.crt'), join(directory, 'tls/app.crt'), join(directory, 'tls/identity.crt')], { encoding: 'utf8' });

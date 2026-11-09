@@ -30,6 +30,10 @@ if (!testAccounts && !values.get('--owner-subject')) throw Error('Supply the exa
 await mkdir(directory, { mode: 0o700 }); // Refuse to overwrite an existing private setup.
 const tls = resolve(directory, 'tls');
 await mkdir(tls, { mode: 0o700 });
+const ownerSessions = resolve(directory, 'owner-sessions');
+const ownerSessionKeys = resolve(directory, 'owner-session-keys');
+await mkdir(ownerSessions, { mode: 0o700 });
+await mkdir(ownerSessionKeys, { mode: 0o700 });
 const privateWrite = (path, data) => writeFile(path, data, { mode: 0o600, flag: 'wx' });
 const secret = () => randomBytes(32).toString('base64url');
 const ownerSubject = testAccounts ? randomUUID() : values.get('--owner-subject');
@@ -69,7 +73,7 @@ for (const [name, url] of [['app', origin], ['identity', issuer]]) {
 await privateWrite(resolve(directory, 'trust-bundle.pem'), await readFile('/etc/ssl/certs/ca-certificates.crt', 'utf8') + '\n' + await readFile(ca, 'utf8'));
 await privateWrite(resolve(directory, 'development.json'), JSON.stringify({
   Kestrel: { Endpoints: { Https: { Url: origin.origin, Certificate: { Path: resolve(tls, 'app.crt'), KeyPath: resolve(tls, 'app.key') } } } },
-  SoFa: { Origin: origin.origin, Identity: { Mode: 'Development', Development: {
+  SoFa: { Origin: origin.origin, Identity: { Mode: 'Development', SessionDirectory: ownerSessions, SessionKeyDirectory: ownerSessionKeys, Development: {
     ProviderUser: `${process.getuid()}:0`, Issuer: issuer.href, ClientId: 'sofa-development', ClientSecret: clientSecret, OwnerSubject: ownerSubject,
   } }, Repositories: ['juangcarmona/lighthouse', 'juangcarmona/lighthouse-control-center'] },
 }, null, 2));

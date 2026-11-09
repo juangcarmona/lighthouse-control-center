@@ -17,11 +17,21 @@ internal static class OwnerIdentity
 
   internal static void Add(IServiceCollection services)
   {
-    services.AddDataProtection().UseEphemeralDataProtectionProvider();
     services.AddSingleton(sp => WorkspaceOptions.Load(sp.GetRequiredService<IConfiguration>()));
     services.AddSingleton(sp => sp.GetRequiredService<WorkspaceOptions>().Identity);
     services.AddSingleton(TimeProvider.System);
-    services.AddSingleton<OwnerSessions>();
+    services.AddSingleton<IDataProtectionProvider>(sp =>
+    {
+      var settings = sp.GetRequiredService<WorkspaceOptions>();
+      return DataProtectionProvider.Create(new DirectoryInfo(settings.OwnerSessionKeyDirectory!),
+          options => options.SetApplicationName("LighthouseControlCenter.OwnerSessions.v1"));
+    });
+    services.AddSingleton(sp =>
+    {
+      var settings = sp.GetRequiredService<WorkspaceOptions>();
+      return new OwnerSessions(settings.Identity, sp.GetRequiredService<TimeProvider>(),
+          settings.OwnerSessionDirectory!, settings.OwnerSessionKeyDirectory!, settings.GitHubClientId, settings.GitHubAppId);
+    });
     services.AddSingleton<ProviderSessions>();
     services.AddAuthentication(options =>
     {

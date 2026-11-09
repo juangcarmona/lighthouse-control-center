@@ -4,6 +4,7 @@ internal sealed class GitHubSession
 {
   internal long Generation { get; set; }
   internal long Attempt { get; set; }
+  internal long CommittingAttempt { get; set; }
   internal GitHubAuthorizationAttempt? Authorization { get; set; }
   internal GitHubConnection? Current { get; set; }
   internal GitHubConnection? Replacement { get; set; }
@@ -11,12 +12,13 @@ internal sealed class GitHubSession
   internal SemaphoreSlim RefreshLock { get; } = new(1, 1);
   internal Dictionary<string, CachedObservation> Observations { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-  internal void Clear()
+  internal void Clear(bool cancelConnection = true)
   {
     Generation++;
     Attempt++;
+    CommittingAttempt = 0;
     Authorization = null;
-    Current?.Stopped.Cancel();
+    if (cancelConnection) Current?.Stopped.Cancel();
     Replacement?.Stopped.Cancel();
     Current = null;
     Replacement = null;
@@ -33,11 +35,12 @@ internal sealed class GitHubAuthorizationAttempt(string state, string verifier, 
   public override string ToString() => "GitHub authorization attempt (protocol values withheld)";
 }
 
-internal sealed class GitHubConnection(long userId, string login, GitHubTokens tokens, DateTimeOffset verifiedAt)
+internal sealed class GitHubConnection(long userId, string login, GitHubTokens tokens, DateTimeOffset verifiedAt, string? dataScope = null)
 {
-  internal string DataScope { get; } = Guid.NewGuid().ToString("N");
+  internal string DataScope { get; } = dataScope ?? Guid.NewGuid().ToString("N");
   internal (long Generation, IssueContext Page)? EvidencePage { get; set; }
   internal CancellationTokenSource Stopped { get; } = new();
+  internal SemaphoreSlim RefreshLock { get; } = new(1, 1);
   internal long UserId { get; } = userId;
   internal string Login { get; set; } = login;
   internal GitHubTokens Tokens { get; set; } = tokens;
