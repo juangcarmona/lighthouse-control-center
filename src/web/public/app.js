@@ -165,7 +165,7 @@ async function refresh() {
       const setupRequired = response.status === 409 && failure?.state === 'unconfigured';
       const heldFocus = $('repositories').contains(document.activeElement);
       showObservationControls(false);
-      showWorkspaceNavigation(false);
+      showWorkspaceNavigation(response.status === 409);
       snapshot = undefined;
       $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
       for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
@@ -197,5 +197,6 @@ async function refresh() {
 $('refresh').addEventListener('click', refresh);
 $('repository-filter').addEventListener('change', () => { if (snapshot) render(snapshot); });
 $('appearance').addEventListener('change', event => { document.documentElement.dataset.lhTheme = event.target.value; });
+showWorkspaceNavigation(true);
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);

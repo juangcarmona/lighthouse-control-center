@@ -95,6 +95,19 @@ test('all active states, human waits, bounded evidence, source ages and local fi
   await expect(page.locator('#unknown-count')).toHaveText('1');
 });
 
+test('operations retains account navigation when GitHub needs reconnecting', async ({ page }) => {
+  await page.route('**/workspace/operations', async route => {
+    const response = await route.fetch({ url: new URL('/', route.request().url()).href });
+    await route.fulfill({ response });
+  });
+  await page.route('**/api/observations', route => route.fulfill({ status: 409, json: { availability: 'disconnected' } }));
+  await page.goto('/workspace/operations');
+  const nav = page.getByRole('navigation', { name: 'Workspace navigation' });
+  await expect(nav.getByRole('link', { name: 'Account', exact: true })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Account', exact: true })).toHaveAttribute('href', '/workspace');
+  await expect(page.locator('#repositories')).not.toContainText('Source revision:');
+});
+
 test('operations navigation opens source-backed mission context and a repository-specific issue picker', async ({ page }) => {
   const current = operationalPayload();
   const issueFixture = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'}`;
