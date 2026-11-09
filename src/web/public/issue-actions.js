@@ -1,20 +1,47 @@
-export function renderActions(area, facts, target, scope, live, clear, contextLabel = '') {
+let composerId = 0;
+
+export function renderUnavailableActions(area, reason) {
+  renderActions(area, {}, {}, null, () => false, () => {}, '', { submissionAvailable: false, reason });
+}
+
+export function renderActions(area, facts, target, scope, live, clear, contextLabel = '', { submissionAvailable = true, reason = '', initialBody = '' } = {}) {
   area.classList.add('source-actions');
   let busy = false, preparation = null;
-  const message = document.createElement('p'); message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
-  const body = document.createElement('textarea'); body.rows = 5; body.maxLength = 12288;
+  const allowed = action => submissionAvailable && facts.actions?.[action]?.eligible === true;
+  const message = document.createElement('p'); message.className = 'action-message'; message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
+  const body = document.createElement('textarea'); body.className = 'lh-textarea'; body.rows = 5; body.maxLength = 12288;
+  body.placeholder = 'Write a comment for this issue…'; body.disabled = !allowed('comment') && !allowed('continue');
+  body.value = initialBody;
+  const field = document.createElement('div'); field.className = 'lh-field';
   const label = document.createElement('label'); label.textContent = 'Your comment or answer'; label.append(body);
+  const hint = document.createElement('p'); hint.className = 'lh-hint'; hint.id = 'comment-hint-' + ++composerId;
+  hint.textContent = !allowed('comment') && allowed('continue') ? 'Enter an answer for the verified question, then review answer and continue. Ordinary commenting is unavailable.'
+    : !allowed('comment') ? reason || facts.actions?.comment?.reason || 'Commenting is unavailable until source permissions and action checks are confirmed.'
+    : 'Publishes a GitHub comment as the connected account. It does not resume work. Review it before sending.';
+  body.setAttribute('aria-describedby', hint.id); field.append(label, hint);
+  const composer = document.createElement('section'); composer.className = 'comment-composer';
+  if (area.id === 'control-actions') { composer.id = 'comment-composer'; composer.tabIndex = -1; }
+  const heading = document.createElement(contextLabel ? 'h5' : 'h3'); heading.textContent = 'Add a comment';
+  composer.append(heading, field);
   const confirmation = document.createElement('section'); confirmation.setAttribute('aria-label', 'Action confirmation' + (contextLabel ? ' · ' + contextLabel : ''));
-  const controls = document.createElement('div'); controls.className = 'issue-tools';
-  const buttons = [];
+  confirmation.className = 'action-confirmation'; confirmation.hidden = true;
+  const controls = document.createElement('div'); controls.className = 'mission-workflow-actions';
+  const workflowHeading = document.createElement(contextLabel ? 'h5' : 'h3'); workflowHeading.textContent = 'Lighthouse actions'; controls.append(workflowHeading);
+  const layout = document.createElement('div'); layout.className = 'mission-action-layout'; layout.append(composer, controls);
+  const recovery = document.createElement('div'); recovery.className = 'action-recovery';
+  const buttons = new Map();
   const text = value => { const p = document.createElement('p'); p.textContent = value; return p; };
-  function button(name, action, parent = controls) {
-    const b = document.createElement('button'); b.type = 'button'; b.textContent = name; b.addEventListener('click', action); parent.append(b); buttons.push(b); return b;
+  function button(name, action, parent = controls, disabled = false, secondary = false) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'lh-button'; b.textContent = name; b.disabled = disabled;
+    if (secondary) b.dataset.variant = 'secondary';
+    b.addEventListener('click', action); parent.append(b); buttons.set(b, disabled); return b;
   }
   function display(data) {
-    preparation = data; confirmation.replaceChildren();
+    preparation = data; confirmation.replaceChildren(); confirmation.hidden = !data.id;
     if (!data.id) { message.textContent = 'No previous action was found in this source scope.'; return; }
     const action = data.intent?.action;
+    const heading = document.createElement(contextLabel ? 'h5' : 'h3'); heading.textContent = data.journalState === 'prepared' ? 'Review before sending' : 'Action result'; confirmation.append(heading);
+    confirmation.append(text('Destination: ' + target.repository + ' #' + target.number));
     const progress = data.journalState === 'prepared' ? 'Ready for your confirmation.'
       : action === 'comment' && data.receipt?.state === 'comment-published' ? 'GitHub confirmed that the comment was published.'
         : data.receipt ? 'A source receipt was observed. Review its details; the result may still be unconfirmed.'
@@ -49,9 +76,9 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     button('Reconcile source result', () => command({ operation: 'reconcile', id: preparation.id }), confirmation);
   }
   async function command(value) {
-    if (busy || !live()) return;
+    if (!submissionAvailable || busy || !live() || value.operation === 'prepare' && !allowed(value.action)) return;
     if (value.operation === 'submit' && preparation) display({ ...preparation, journalState: 'uncertain' });
-    busy = true; for (const b of buttons) b.disabled = true;
+    busy = true; for (const b of buttons.keys()) b.disabled = true;
     message.textContent = value.operation === 'submit' ? 'Sending the prepared action once…' : 'Verifying source and confirmation…';
     try {
       const csrf = await fetch('/api/controls/csrf', { credentials: 'same-origin', cache: 'no-store' });
@@ -70,15 +97,21 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       message.textContent = 'Observed: ' + data.observedAt + '. A submitted request does not prove completed work.';
       display(data);
     } catch (error) { if (live()) message.textContent = error.message + ' No automatic resend was attempted.'; }
-    finally { busy = false; for (const b of buttons) b.disabled = false; }
+    finally { busy = false; for (const [b, disabled] of buttons) b.disabled = disabled; }
   }
-  for (const [action, name] of [['comment', 'Prepare ordinary comment'], ['refine', 'Prepare Refine'], ['propose', 'Prepare Propose'], ['continue', 'Prepare Continue']]) {
-    if (facts.actions?.[action]?.eligible !== true) continue;
+  for (const [action, name] of [['comment', 'Review comment'], ['refine', 'Review Refine'], ['propose', 'Review Propose'], ['continue', 'Review answer and continue']]) {
+    const group = document.createElement('div'); group.className = 'workflow-action';
+    (action === 'comment' ? composer : controls).append(group);
     button(name, () => {
       if (['comment', 'continue'].includes(action) && !body.value.trim()) { message.textContent = 'Enter your comment or answer first.'; body.focus(); return; }
       void command({ operation: 'prepare', action, body: ['comment', 'continue'].includes(action) ? body.value : '' });
-    });
+    }, group, !allowed(action), action !== 'comment');
+    if (action !== 'comment') {
+      const help = text(!allowed(action) ? reason || facts.actions?.[action]?.reason || 'Not currently permitted by source checks.'
+        : action === 'continue' ? 'Use your answer above to explicitly resume the verified question under its original grant.' : 'Review a ' + action + ' request before sending it to Lighthouse.');
+      help.className = 'lh-hint'; group.append(help);
+    }
   }
-  button('Recover previous action', () => command({ operation: 'receipt' }));
-  area.replaceChildren(label, controls, message, confirmation);
+  button('Recover previous action', () => command({ operation: 'receipt' }), recovery, !submissionAvailable, true);
+  area.replaceChildren(layout, message, confirmation, recovery);
 }

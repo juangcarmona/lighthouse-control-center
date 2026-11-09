@@ -72,7 +72,7 @@ for (const width of [1280, 390]) test(`verified intervention ${width}: inspect o
   await expect(context).toContainText('<script>window.questionRan=true</script>'); await expect(context.locator('script')).toHaveCount(0);
   expect(reads).toBe(1);
   await context.getByLabel('Your comment or answer').fill('The original scoped answer.');
-  await context.getByRole('button', { name: 'Prepare Continue' }).click();
+  await context.getByRole('button', { name: 'Review answer and continue' }).click();
   await expect(context.getByRole('button', { name: 'Confirm and send' })).toBeVisible();
   expect(operations).toEqual(['prepare']);
   await context.getByRole('button', { name: 'Confirm and send' }).click();

@@ -193,8 +193,67 @@ test('missing private journal explains disabled actions without enabling prepare
   await page.goto(origin + '/workspace/issues/example/repository/7');
   await expect(page.locator('#controls-status')).toContainText('protected command storage is not ready');
   await expect(page.locator('#controls-status')).toContainText('Opening this page does not send an action');
-  await expect(page.getByRole('button', { name: 'Prepare ordinary comment' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Prepare Refine' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
+  await expect(page.getByLabel('Your comment or answer')).toBeVisible();
+  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
+for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`comment composer ${theme} ${width}: visible when unsupported, explained and themed`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const harness = await fixture(page);
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
+  await expect(page.getByRole('heading', { name: 'Add a comment' })).toBeVisible();
+  await expect(page.getByLabel('Your comment or answer')).toBeVisible();
+  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.locator('#comment-composer')).toContainText('Installed contract unavailable.');
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Recover previous action' })).toBeDisabled();
+  await page.getByRole('link', { name: 'Add a comment', exact: true }).click();
+  await expect(page.locator('#comment-composer')).toBeFocused();
+  expect(await page.evaluate(() => {
+    const probe = document.createElement('div'); probe.style.backgroundColor = 'var(--lh-surface)'; document.body.append(probe);
+    const matches = getComputedStyle(document.querySelector('#mission-actions')).backgroundColor === getComputedStyle(probe).backgroundColor;
+    probe.remove(); return matches;
+  })).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+  await page.locator('#mission-actions').screenshot({ path: `test-results/issue/composer-${theme}-${width}.png` });
+});
+
+test('loading another conversation page restores the authorized comment composer', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true }, refine: { eligible: false, reason: 'Refinement is not currently permitted.' } }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
+  await page.getByLabel('Your comment or answer').fill('Keep this draft while reading the conversation.');
+  await page.getByRole('button', { name: 'Load more comments' }).click();
+  await expect(page.locator('#issue-comments > li')).toHaveCount(101);
+  await expect(page.getByLabel('Your comment or answer')).toBeVisible();
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
+  await expect(page.getByLabel('Your comment or answer')).toHaveValue('Keep this draft while reading the conversation.');
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
+test('an eligible Continue answer explains its enabled field when ordinary commenting is denied', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: false }, continue: { eligible: true } }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
+  await expect(page.locator('#comment-composer')).toContainText('Enter an answer for the verified question');
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review answer and continue' })).toBeEnabled();
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });
 
@@ -238,9 +297,10 @@ test('failed prepare displays its reason and does not automatically retry or sub
   });
   await page.goto(origin + '/workspace/issues/example/repository/7');
   await page.getByLabel('Your comment or answer').fill('A synthetic comment');
-  await page.getByRole('button', { name: 'Prepare ordinary comment' }).click();
+  await page.getByRole('button', { name: 'Review comment' }).click();
   await expect(page.locator('#control-actions')).toContainText(reason);
   await expect(page.locator('#control-actions')).toContainText('No automatic resend was attempted');
+  await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
   expect(operations).toEqual(['prepare']);
 });
@@ -267,9 +327,9 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
     return route.fulfill({ json: entry });
   });
   await page.goto(origin + '/workspace/issues/example/repository/7');
-  await expect(page.getByRole('button', { name: 'Prepare ordinary comment' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeVisible();
   await page.getByLabel('Your comment or answer').fill('<script>window.replyExecuted=true</script>');
-  await page.getByRole('button', { name: 'Prepare ordinary comment' }).focus(); await page.keyboard.press('Enter');
+  await page.getByRole('button', { name: 'Review comment' }).focus(); await page.keyboard.press('Enter');
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('does not resume work');
   expect(operations).toEqual(['prepare']);
   await expect(page.locator('#control-actions script')).toHaveCount(0);

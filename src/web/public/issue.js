@@ -1,4 +1,4 @@
-import { renderActions } from './issue-actions.js';
+import { renderActions, renderUnavailableActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
 const byId = id => document.getElementById(id);
 const maximumTextBytes = 8 * 1024 * 1024;
@@ -12,13 +12,16 @@ else {
   if (repository && /^[a-zA-Z0-9][a-zA-Z0-9-]*\/[a-zA-Z0-9_.-]+$/.test(repository)) byId('issue-repository').value = repository;
 }
 function status(text, error = false) { byId('issue-status').textContent = text; byId('issue-status').dataset.state = error ? 'error' : 'ready'; }
+function controlsStatus(text) {
+  byId('controls-status').textContent = text;
+  renderUnavailableActions(byId('control-actions'), text);
+}
 function clear() {
-  byId("control-actions").replaceChildren();
   renderingBudget = { remaining: 5000 };
   current = null; comments = []; bytes = 0; nextPage = null;
   byId('issue-title').textContent = 'Issue workspace'; byId('evidence-status').textContent = '';
   for (const id of ['issue-body', 'issue-facts', 'issue-comments', 'issue-evidence', 'issue-controls']) byId(id).replaceChildren();
-  byId('controls-status').textContent = 'Shared source authority has not been observed.';
+  controlsStatus('Shared source authority has not been observed.');
   byId('source-eligibility').open = false;
   byId('conversation-coverage').textContent = ''; byId('issue-age').textContent = ''; byId('issue-more').hidden = true;
 }
@@ -67,8 +70,8 @@ async function read(append = false) {
   const target = selection(); if (!target) { status('Choose owner/repository and a positive issue number.', true); return; }
   if (pending || append && (nextPage === null || bytes >= maximumTextBytes || comments.length >= 1000)) return;
   if (!append && current?.key !== target.key) clear();
-  if (!append && current) byId('controls-status').textContent = 'Refreshing source context; previous shared observations may be stale.';
-  byId("control-actions").replaceChildren();
+  const draft = append ? byId('control-actions').querySelector('textarea')?.value ?? '' : '';
+  controlsStatus('Refreshing source context; previous shared observations may be stale.');
   pending = true; const operation = ++revision; controller?.abort(); controller = new AbortController();
   byId('issue-refresh').disabled = true; byId('issue-more').disabled = true;
   const page = append ? nextPage : 1;
@@ -80,7 +83,7 @@ async function read(append = false) {
     if ([401, 403, 409].includes(response.status)) {
       const failure = await response.json().catch(() => null); clear();
       const reason = typeof failure?.reason === 'string' ? failure.reason : 'Source authority changed. Verify the account and refresh.';
-      status(reason, true); byId('controls-status').textContent = 'Actions unavailable. ' + reason; return;
+      status(reason, true); controlsStatus('Actions unavailable. ' + reason); return;
     }
     const data = await response.json();
     if (current && data.dataScope && data.dataScope !== current.dataScope) {
@@ -113,11 +116,12 @@ async function read(append = false) {
     else { bytes += size; comments.push(...data.conversation.items); }
     current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope }; show(data, append);
     void readEvidence(target, page, data.snapshot, operation);
-    if (!append) void readControls(target, operation);
+    void readControls(target, operation, draft);
   } catch (error) {
     if (error.name !== 'AbortError' && operation === revision) {
       status(current ? 'Refresh unavailable; displayed source context is stale. Source times are unchanged.' : 'Source context unavailable; no issue or empty conversation is inferred.', true);
-      if (current) byId('controls-status').textContent = 'Source refresh unavailable. Previous shared observations are stale; their source times are unchanged.';
+      controlsStatus(current ? 'Source refresh unavailable. Previous shared observations are stale; their source times are unchanged.'
+        : 'The issue could not be read. Refresh the source before commenting or requesting a Lighthouse action.');
     }
   } finally { if (operation === revision) { pending = false; byId('issue-refresh').disabled = false; byId('issue-more').disabled = false; } }
 }
@@ -127,6 +131,7 @@ byId('issue-picker').addEventListener('submit', event => {
 });
 byId('issue-refresh').addEventListener('click', () => read());
 byId('issue-more').addEventListener('click', () => read(true));
+controlsStatus('Open a mission to check whether commenting and Lighthouse actions are available.');
 if (initial) await read(); else status('Choose a configured repository and ordinary issue number.');
 
 async function readEvidence(target, page, snapshot, operation) {
@@ -183,9 +188,8 @@ async function readEvidence(target, page, snapshot, operation) {
   }
 }
 
-async function readControls(target, operation) {
-  byId('control-actions').replaceChildren();
-  byId('controls-status').textContent = 'Refreshing shared source facts; previous observations may be stale.';
+async function readControls(target, operation, initialBody = '') {
+  controlsStatus('Refreshing shared source facts; previous observations may be stale.');
   try {
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
@@ -194,18 +198,18 @@ async function readControls(target, operation) {
     const reason = typeof data?.reason === 'string' ? data.reason : 'Shared source facts are unavailable.';
     if ([401, 403, 409].includes(response.status)) {
       clear(); status('Source authority changed; previous context was removed. ' + reason, true);
-      byId('controls-status').textContent = 'Actions unavailable. ' + reason;
+      controlsStatus('Actions unavailable. ' + reason);
       return;
     }
     if (!response.ok) {
-      byId('controls-status').textContent = 'Action checks are unavailable. Previous observations may be stale. ' + reason;
+      controlsStatus('Action checks are unavailable. Previous observations may be stale. ' + reason);
       return;
     }
     if (!data) throw Error('Shared source facts unavailable');
     if (!data.dataScope || data.dataScope !== current.dataScope) { clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
     byId('issue-controls').replaceChildren();
     if (data.availability !== 'available') {
-      byId('controls-status').textContent = 'Shared source observation: ' + (data.availability ?? 'unavailable') + '. ' + (data.reason ?? 'No current question or eligibility is inferred.');
+      controlsStatus('Shared source observation: ' + (data.availability ?? 'unavailable') + '. ' + (data.reason ?? 'No current question or eligibility is inferred.'));
       return;
     }
     const facts = data.facts;
@@ -214,10 +218,10 @@ async function readControls(target, operation) {
     const area = byId('issue-controls'), question = facts.question;
     const eligible = ['comment', 'refine', 'propose', 'continue'].some(name => facts.actions?.[name]?.eligible === true);
     byId('source-eligibility').open = !data.submissionAvailable || !eligible || question?.current === true;
-    byId('controls-status').textContent = !data.submissionAvailable
+    controlsStatus(!data.submissionAvailable
       ? 'Sending actions and recovery are disabled because protected command storage is not ready. Opening this page does not send an action. You can still inspect the issue and source checks below.'
       : !eligible ? 'No action is currently permitted. Current question and action availability below explain the source checks.'
-        : 'Available actions are shown below. Prepare first, then review and confirm the exact effect before sending.';
+        : 'Available actions are shown below. Prepare first, then review and confirm the exact effect before sending.');
     area.append(paragraph('Shared observation: ' + data.observedAt + ' · GitHub user ID ' + data.actingUserId + '. Source eligibility and application submission are separate.'));
     if (question?.availability === 'available') {
       area.append(paragraph(question.current === true ? 'Verified current question' : 'Verified source question; current input or wait no longer matches'),
@@ -230,16 +234,17 @@ async function readControls(target, operation) {
       area.append(paragraph(label + ' · Source: ' + (action?.eligible === true ? 'eligible' : action?.availability ?? 'unavailable')
         + (action?.reason ? ' · ' + action.reason : '') + ' · Lighthouse Control Center submission: ' + (data.submissionAvailable ? 'available with confirmation' : 'unavailable')));
     }
-    if (data.submissionAvailable) renderActions(byId('control-actions'), facts, target, data.dataScope,
+    renderActions(byId('control-actions'), facts, target, data.dataScope,
       () => operation === revision && current?.key === target.key && current?.dataScope === data.dataScope,
       reason => {
         clear();
         status('The action is unavailable. Previous source context was cleared. ' + (reason || 'Verify your account and refresh.'), true);
-        byId('controls-status').textContent = 'Actions unavailable. ' + (reason || 'Verify your account and refresh.');
-      });
+        controlsStatus('Actions unavailable. ' + (reason || 'Verify your account and refresh.'));
+      }, '', { submissionAvailable: data.submissionAvailable === true, initialBody,
+        reason: !data.submissionAvailable ? 'Protected command storage is not ready. Sending and recovery are disabled.' : '' });
     if (data.missingReadScopes?.length) area.append(paragraph('Missing or unknown App read scopes: ' + data.missingReadScopes.join(', ')));
   } catch (error) {
     if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)
-      byId('controls-status').textContent = 'Shared source refresh unavailable. Previous observations may be stale; no current eligibility or question is inferred.';
+      controlsStatus('Shared source refresh unavailable. Previous observations may be stale; no current eligibility or question is inferred.');
   }
 }

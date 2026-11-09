@@ -369,7 +369,91 @@ footer {
 
 [hidden] { display: none !important; }
 
-.source-actions textarea { color: inherit; background: var(--lh-color-surface, #171b24); border: 1px solid currentColor; border-radius: .4rem; padding: .5rem; display: block; width: 100%; box-sizing: border-box; margin-block: .5rem; resize: vertical; }
-.source-actions .issue-tools { display: flex; flex-wrap: wrap; gap: .5rem; }
-.source-actions section { border-top: 1px solid var(--lh-color-border, #465063); margin-block-start: 1rem; padding-block-start: 1rem; }
-.source-actions section button { margin: .25rem; }
+/* Native recipes adapted from @juangcarmona/lighthouse-ui/components.css. */
+.lh-button {
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:var(--lh-space-2);
+  min-height:44px;
+  padding:var(--lh-space-2) var(--lh-space-4);
+  border:1px solid transparent;
+  border-radius:var(--lh-radius-control);
+  background:var(--lh-action);
+  color:var(--lh-on-action);
+  font-weight:600;
+  text-decoration:none;
+  cursor:pointer}
+.lh-button:hover:not(:disabled) {
+  background:var(--lh-action-hover);
+  text-decoration:none}
+.lh-button[data-variant="secondary"] {
+  background:var(--lh-surface);
+  border-color:var(--lh-border-strong);
+  color:var(--lh-text)}
+.lh-button[data-variant="secondary"]:hover:not(:disabled) {
+  background:var(--lh-surface-muted)}
+.lh-button:disabled {
+  cursor:not-allowed;
+  opacity:.55}
+.lh-field {
+  display:grid;
+  gap:var(--lh-space-2)}
+.lh-field label {
+  display:grid;
+  gap:var(--lh-space-2);
+  font-weight:600}
+.lh-textarea {
+  display:block;
+  width:100%;
+  min-height:var(--lh-control-height);
+  padding:var(--lh-space-2) var(--lh-space-3);
+  border:1px solid var(--lh-border-strong);
+  border-radius:var(--lh-radius-control);
+  background:var(--lh-surface);
+  color:var(--lh-text);
+  font:inherit;
+  font-weight:400;
+  resize:vertical}
+.lh-textarea::placeholder {
+  color:var(--lh-text-muted)}
+.lh-textarea:disabled {
+  cursor:not-allowed;
+  background:var(--lh-surface-muted)}
+.lh-hint {
+  color:var(--lh-text-muted);
+  font-size:var(--lh-text-small);
+  margin:0}
+.mission-action-layout {
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(0,1fr);
+  gap:var(--lh-space-6)}
+.source-actions h3,.source-actions h5 {
+  font-size:var(--lh-text-large);
+  margin:0 0 var(--lh-space-4)}
+.source-actions .workflow-action {
+  display:grid;
+  justify-items:start;
+  gap:var(--lh-space-2);
+  margin-top:var(--lh-space-4)}
+.mission-workflow-actions {
+  border-left:1px solid var(--lh-border);
+  padding-left:var(--lh-space-6)}
+.action-message:not(:empty),.action-confirmation {
+  padding:var(--lh-space-4);
+  border:1px solid var(--lh-border);
+  border-radius:var(--lh-radius-control);
+  background:var(--lh-surface-muted);
+  margin-block:var(--lh-space-4)}
+.action-message:empty {
+  display:none}
+.action-confirmation button {
+  margin:var(--lh-space-2) var(--lh-space-2) 0 0}
+.action-recovery {
+  border-top:1px solid var(--lh-border);
+  padding-top:var(--lh-space-4);
+  margin-top:var(--lh-space-6)}
+@media(max-width:700px) {
+  .mission-action-layout { grid-template-columns:minmax(0,1fr) }
+  .mission-workflow-actions { border-left:0; border-top:1px solid var(--lh-border); padding:var(--lh-space-4) 0 0 }
+}
