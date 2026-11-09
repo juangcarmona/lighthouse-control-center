@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-11-09T15:13:15.099Z",
-  "sourceRevision": "f39616d96ce8bb583949339848d14e8f7e6b5f48",
+  "checkedAt": "2026-11-09T15:25:14.203Z",
+  "sourceRevision": "fa89cad7d6c09aa8b241fb958cd19aec810507ef",
   "tlsValidated": true,
   "realDevelopmentProviderLogin": true,
   "idleHours": 2,
@@ -10,7 +10,7 @@
   "servedAssetsMatch": true,
   "hashes": {
     "app.css": "c1d31449b7a2c2fe18878360ebfa3702dd1fc5d74c046370f000594bbfcc0a98",
-    "issue.css": "214a024907ade536b56e8c90a1fa232b471749fcaf5f8711b66e40379734a711",
+    "issue.css": "483743b0c6ab23dead2cc45f9b65306895a63d1490a66ef7e02bf622ae6e1157",
     "issue.js": "126faa3a273ffbaf6b6af41b18e9b541ffd8212dd41ad1b73b14f532f8ff15a0",
     "issue-actions.js": "37595bbd5e309741f23d170ffd8d370366c81116b530756d52265ce520208dee",
     "account.css": "f13c382e3a40aca29a9191ff827bad957b6b3c02d8d7204b03b39a2ceb68ded8",
@@ -22,14 +22,23 @@
     "lighthouse.svg": "775e7674efa07f17ac02d10d321bbd591813bc4ba0ddc0c9f26f2eb4a1d42903"
   },
   "commentDraftEditable": true,
-  "commentSubmitBlockedWhenUnlinked": true,
+  "commentSubmitBlockedByUnverifiedAuthority": true,
+  "sourceControlAvailability": "unavailable",
   "canonicalRepositoryAdmitted": true,
   "oldAliasRejected": true,
   "sameBrowserSessionSurvivedApplicationRestart": true,
   "providerRevalidatedAfterRestart": true,
   "freshAutomatedSessionOnly": true,
   "actualOwnerBrowserNotInspected": true,
-  "githubGrantRestartProvenByControlledTestsOnly": true,
+  "githubGrantRestartProvenByControlledTestsOnly": false,
+  "liveGitHubGrantSurvivedApplicationRestart": true,
+  "liveRepositoryIssueAndWorkflowReadsAvailable": true,
+  "sourceControlReason": "source-read-commits-http-403",
+  "sourceControlMissingReadScopes": [
+    "contents",
+    "pull_requests",
+    "variables"
+  ],
   "sourceWritePerformed": false,
   "protectedCommandStoreAvailable": true,
   "protectedCommandStoreVerification": "Constructor-level availability probe using the active private configuration; no source write."

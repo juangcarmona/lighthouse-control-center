@@ -45,12 +45,22 @@ operation; those gates remain with #58.
   actual Keycloak login, bounded session deadlines, exact served asset hashes, authenticated-root
   navigation, editable local draft and same-browser owner-session survival across an application
   service restart. Provider authority was revalidated after restoration. It performed no source write.
-- The actual connected owner's browser was not inspected. GitHub grant restoration, expired-owner
-  reattachment and revocation are proven by controlled tests here, not by a live GitHub-user receipt.
+- The actual connected owner's browser was not inspected. The connected owner granted GitHub access during development activation. A subsequent
+  fresh automated owner login reused that grant, read both configured repositories, and retained the
+  same source identity/scope across an application restart with fresh online checks. Expired-owner
+  reattachment and source revocation remain controlled-test evidence. No source write was performed.
   Actual authorized comment, receipt and source-effect acceptance remain open under #48/#50.
 
 Real-provider verification stays outside PR/push CI. This change does not restore the rejected
 wall-clock E2E suite to the required CI path.
+
+The first final-head CI run on `377c5b3` found a real inline-link accessibility regression after
+the fallback recovery link was added: its color alone did not distinguish it from the hint.
+The correction underlines that link in both themes and records the requirement in the design
+contract. The existing Axe assertions remain enabled. The same run exposed a timing-sensitive
+URL assertion: the destination adds its list-view query parameter after navigation. The test now
+checks the destination path and selected repository, and still checks the actual source-backed
+issue row. The full browser suite passed 84/84 after both corrections.
 
 ## Development activation and rollback
 
@@ -72,3 +82,14 @@ Fresh separate session, session-key, command and command-key directories were pl
 operator-owned private root whose ancestors satisfy the existing policy. The original empty
 journal/key directories remain intact. A constructor-level probe confirmed the command store was
 available. Neither access checks nor isolation were weakened.
+
+## Current source-control blocker
+
+Actual connected-user issue and workflow reads work for both configured repositories. The
+shared control observation returns `source-read-commits-http-403`: its current App installation
+lacks verified `contents`, `pull_requests` and `variables` read grants. The issue UI displays those
+specific missing permissions beside the editable draft. Protected storage is available; this
+remaining source failure is independent of session persistence and presentation. Follow the
+[existing issue-control setup](../../../../runbooks/issue-controls.md) to configure and accept the
+additional read permissions on the intended development App installation. Do not substitute CLI
+credentials or infer comment authority from a successful issue read.
