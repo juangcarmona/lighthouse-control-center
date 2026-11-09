@@ -16,6 +16,11 @@ function link(text, href, repository, kind, key) {
   n.dataset.key = key; n.dataset.repository = repository;
   return n;
 }
+function workspaceLink(text, href, repository, kind, key) {
+  const n = node('a', text, kind);
+  n.href = href; n.dataset.key = key; n.dataset.repository = repository;
+  return n;
+}
 function badge(text, tone = '') { return node('span', text, `badge ${tone}`); }
 function timestamp(value) { return typeof value === 'string' && value.trim() && Number.isFinite(Date.parse(value)) ? Date.parse(value) : NaN; }
 function absolute(value) { return Number.isFinite(timestamp(value)) ? new Date(value).toISOString() : 'Time unavailable'; }
@@ -33,12 +38,16 @@ function timing(label, value, observedAt) {
 function uniqueIssues(repo) { return [...new Map(repo.attention.map(issue => [issue.number, issue])).values()]; }
 function issueCard(repo, issue) {
   const li = node('li');
-  li.append(node('p', repo.repository, 'muted'), link(`#${issue.number} ${issue.title}`, issue.url, repo.repository, 'issues/', sourceKey(repo.repository, 'issue', issue.number)));
+  const issueKey = sourceKey(repo.repository, 'issue', issue.number);
+  const source = link(`GitHub: #${issue.number} ${issue.title} ↗`, issue.url, repo.repository, 'issues/', `${issueKey}:source`);
+  source.className = 'issue-source-link';
+  li.append(node('p', repo.repository, 'muted'), source);
+  if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
+    const href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number;
+    li.append(workspaceLink('Open mission', href, repo.repository, 'mission-link', `${issueKey}:mission`));
+  }
   const labels = node('div', undefined, 'labels');
   for (const label of issue.labels) labels.append(badge(label, ['waiting-review', 'needs-info'].includes(label) ? 'caution' : label === 'agent-working' ? 'activity' : ''));
-  if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
-    const local = node('a', 'Open issue in Lighthouse Control Center'); local.href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number; li.append(local);
-  }
   li.append(labels, timing('Since source update (not wait duration)', issue.updatedAt, repo.observedAt));
   return li;
 }
@@ -91,6 +100,10 @@ function render(data) {
     heading.append(node('h3', repo.repository), badge(repo.availability === 'available' ? 'Observed' : repo.availability === 'stale' ? 'Stale evidence' : 'Evidence unavailable', repo.availability === 'available' ? 'positive' : 'caution'));
     card.append(heading, node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp'));
     const actions = node('nav', undefined, 'repo-actions'); actions.setAttribute('aria-label', `${repo.repository} actions`);
+    if (location.pathname === '/workspace/operations') {
+      const href = '/workspace/issues?repository=' + encodeURIComponent(repo.repository);
+      actions.append(workspaceLink('Choose an issue', href, repo.repository, 'repository-mission-link', sourceKey(repo.repository, 'mission-picker', '')));
+    }
     actions.append(link('Open workflow actions ↗', `https://github.com/${repo.repository}/actions/workflows/lighthouse-sdlc-router.yml`, repo.repository, 'actions/', sourceKey(repo.repository, 'actions', '')), link('Issues ↗', `https://github.com/${repo.repository}/issues`, repo.repository, undefined, sourceKey(repo.repository, 'issues', '')));
     card.append(actions);
     if (repo.availability === 'stale') {
@@ -164,10 +177,16 @@ $('refresh').addEventListener('click', refresh);
 $('repository-filter').addEventListener('change', () => { if (snapshot) render(snapshot); });
 $('appearance').addEventListener('change', event => { document.documentElement.dataset.lhTheme = event.target.value; });
 if (location.pathname === '/workspace/operations') {
-  const account = node('a', 'Account'); account.href = '/workspace';
-  const issues = node('a', 'Issues'); issues.href = '/workspace/issues';
-  const fleet = node('a', 'Fleet'); fleet.href = '/workspace/factory';
-  document.querySelector('.topbar').append(fleet, account, issues);
+  const navigation = $('workspace-navigation');
+  navigation.hidden = false;
+  navigation.append(
+    workspaceLink('Fleet overview', '/workspace/operations', '', '', 'workspace:operations'),
+    workspaceLink('Find repository work', '/workspace/factory', '', '', 'workspace:factory'),
+    workspaceLink('Intervention inbox', '/workspace/attention', '', '', 'workspace:attention'),
+    workspaceLink('Issues', '/workspace/issues', '', '', 'workspace:issues'),
+    workspaceLink('Runtime', '/workspace/runtime', '', '', 'workspace:runtime'),
+    workspaceLink('Account', '/workspace', '', '', 'workspace:account'),
+  );
 }
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);

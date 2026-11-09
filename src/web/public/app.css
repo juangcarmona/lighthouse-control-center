@@ -70,6 +70,32 @@ button:disabled {
   color:var(--lh-text-muted);
   border-left:1px solid var(--lh-border);
   padding-left:.8rem}
+.workspace-nav {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:.25rem .85rem}
+.workspace-nav a {
+  display:inline-flex;
+  align-items:center;
+  min-height:44px}
+.issue-source-link {
+  display:block;
+  overflow-wrap:anywhere}
+.mission-link,.repository-mission-link {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:.5rem .85rem;
+  border-radius:var(--lh-radius-control);
+  background:var(--lh-action);
+  color:var(--lh-on-action);
+  font-weight:650}
+.mission-link {
+  margin:.55rem 0 .25rem}
+.repository-mission-link {
+  margin-right:.35rem}
 .appearance {
   display:flex;
   gap:.7rem;
@@ -303,7 +329,11 @@ footer {
 .brand-note {
   display:none}
 .topbar {
-  padding:1rem}
+  padding:1rem;
+  flex-wrap:wrap}
+.workspace-nav {
+  order:3;
+  flex-basis:100%}
 .intro {
   display:block}
 .intro button {

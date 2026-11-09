@@ -7,6 +7,10 @@ let renderingBudget = { remaining: 5000 };
 let current, comments = [], bytes = 0, nextPage = null, pending = false, controller, revision = 0;
 const initial = location.pathname.match(/^\/workspace\/issues\/([^/]+)\/([^/]+)\/(\d+)$/);
 if (initial) { byId('issue-repository').value = initial[1] + '/' + initial[2]; byId('issue-number').value = initial[3]; }
+else {
+  const repository = new URLSearchParams(location.search).get('repository');
+  if (repository && /^[a-zA-Z0-9][a-zA-Z0-9-]*\/[a-zA-Z0-9_.-]+$/.test(repository)) byId('issue-repository').value = repository;
+}
 function status(text, error = false) { byId('issue-status').textContent = text; byId('issue-status').dataset.state = error ? 'error' : 'ready'; }
 function clear() {
   byId("control-actions").replaceChildren();
@@ -15,6 +19,7 @@ function clear() {
   byId('issue-title').textContent = 'Issue workspace'; byId('evidence-status').textContent = '';
   for (const id of ['issue-body', 'issue-facts', 'issue-comments', 'issue-evidence', 'issue-controls']) byId(id).replaceChildren();
   byId('controls-status').textContent = 'Shared source authority has not been observed.';
+  byId('source-eligibility').open = false;
   byId('conversation-coverage').textContent = ''; byId('issue-age').textContent = ''; byId('issue-more').hidden = true;
 }
 function selection() {
@@ -74,7 +79,8 @@ async function read(append = false) {
     if (operation !== revision) return;
     if ([401, 403, 409].includes(response.status)) {
       const failure = await response.json().catch(() => null); clear();
-      status(failure?.availability === 'changed' ? failure.reason : 'Source authority changed. Verify the account and refresh.', true); return;
+      const reason = typeof failure?.reason === 'string' ? failure.reason : 'Source authority changed. Verify the account and refresh.';
+      status(reason, true); byId('controls-status').textContent = 'Actions unavailable. ' + reason; return;
     }
     const data = await response.json();
     if (current && data.dataScope && data.dataScope !== current.dataScope) {
@@ -184,9 +190,18 @@ async function readControls(target, operation) {
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
     if (operation !== revision || current?.key !== target.key) return;
-    if ([401, 403, 409].includes(response.status)) { clear(); status('Source authority changed; previous context was removed.', true); return; }
-    const data = await response.json();
-    if (!response.ok) throw Error('Shared source facts unavailable');
+    const data = await response.json().catch(() => null);
+    const reason = typeof data?.reason === 'string' ? data.reason : 'Shared source facts are unavailable.';
+    if ([401, 403, 409].includes(response.status)) {
+      clear(); status('Source authority changed; previous context was removed. ' + reason, true);
+      byId('controls-status').textContent = 'Actions unavailable. ' + reason;
+      return;
+    }
+    if (!response.ok) {
+      byId('controls-status').textContent = 'Action checks are unavailable. Previous observations may be stale. ' + reason;
+      return;
+    }
+    if (!data) throw Error('Shared source facts unavailable');
     if (!data.dataScope || data.dataScope !== current.dataScope) { clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
     byId('issue-controls').replaceChildren();
     if (data.availability !== 'available') {
@@ -197,7 +212,13 @@ async function readControls(target, operation) {
     if (!facts || facts.repository?.name?.toLowerCase() !== target.repository.toLowerCase() || facts.issue?.number !== target.number
         || facts.actor?.id !== data.actingUserId || typeof data.observedAt !== 'string') throw Error('Unverified shared source identity');
     const area = byId('issue-controls'), question = facts.question;
-    byId('controls-status').textContent = 'Shared observation: ' + data.observedAt + ' · GitHub user ID ' + data.actingUserId + '. Source eligibility and application submission are separate.';
+    const eligible = ['comment', 'refine', 'propose', 'continue'].some(name => facts.actions?.[name]?.eligible === true);
+    byId('source-eligibility').open = !data.submissionAvailable || !eligible || question?.current === true;
+    byId('controls-status').textContent = !data.submissionAvailable
+      ? 'Sending actions and recovery are disabled because protected command storage is not ready. Opening this page does not send an action. You can still inspect the issue and source checks below.'
+      : !eligible ? 'No action is currently permitted. Current question and action availability below explain the source checks.'
+        : 'Available actions are shown below. Prepare first, then review and confirm the exact effect before sending.';
+    area.append(paragraph('Shared observation: ' + data.observedAt + ' · GitHub user ID ' + data.actingUserId + '. Source eligibility and application submission are separate.'));
     if (question?.availability === 'available') {
       area.append(paragraph(question.current === true ? 'Verified current question' : 'Verified source question; current input or wait no longer matches'),
         paragraph(question.text), paragraph('Question source updated: ' + (question.sourceUpdatedAt ?? 'unknown') + ' · Observed: ' + data.observedAt));
@@ -211,7 +232,11 @@ async function readControls(target, operation) {
     }
     if (data.submissionAvailable) renderActions(byId('control-actions'), facts, target, data.dataScope,
       () => operation === revision && current?.key === target.key && current?.dataScope === data.dataScope,
-      () => { clear(); status('Source authority changed. Verify your account and refresh.', true); });
+      reason => {
+        clear();
+        status('The action is unavailable. Previous source context was cleared. ' + (reason || 'Verify your account and refresh.'), true);
+        byId('controls-status').textContent = 'Actions unavailable. ' + (reason || 'Verify your account and refresh.');
+      });
     if (data.missingReadScopes?.length) area.append(paragraph('Missing or unknown App read scopes: ' + data.missingReadScopes.join(', ')));
   } catch (error) {
     if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)

@@ -27,11 +27,13 @@ The logical SQLite database cap is 50 MiB and 10,000 retained intentions, includ
 
 ## Operation and recovery
 
-1. Open a configured issue with a freshly verified owner/GitHub connection. Shared facts show the current question, reservation coverage and action eligibility separately from historical labels/reports.
+1. In **Operations**, select **Open mission** on an issue card. For an issue not in the collected overview, use **Choose an issue** on its repository card, enter the issue number, then select **Open issue**. The **Mission actions** panel appears before the description and history. Shared facts show the current question, reservation coverage and action eligibility separately from historical labels/reports.
 2. Enter an ordinary comment or explicit Continue answer, or choose Refine/Propose. Prepare first and inspect the effect. An ordinary comment does not resume work and may invalidate an earlier input digest. Continue binds the verified question and original grant.
 3. Confirm the protected local ID. The SDK receives one committed claim and can request one exact POST; repository admission still rechecks authority and inputs. Submission alone does not prove source acknowledgement, a worker or a passed stage.
 4. If the response is lost, use **Recover previous action**, then **Reconcile source result**. The same identity and immutable intent are retained; no automatic resend occurs. A new unresolved preparation cannot replace the previous one for that source scope. A terminal source receipt keeps its tombstone and permits a deliberately new action.
 5. After process restart, sign in and reconnect GitHub before recovery. A restored preparation is reconciliation-only. If its effect was never observed, it can remain uncertain and block a replacement; this checkpoint provides no operator reset/delete bypass.
+
+The panel explains unavailable actions using the source response and the current question/eligibility details. If protected command storage is unavailable, submission and recovery are disabled while issue reading remains available. Opening a mission or preparing an effect does not send it; **Confirm and send** is the explicit write. A confirmed comment is distinguished from an unconfirmed request or completed delivery.
 
 For a private backup, stop the single workspace instance and capture **both** the database directory (including any WAL) and its separate key-ring/marker directory with ownership/modes intact. Store backups privately; do not attach them as evidence. Restore both as a pair while stopped. Restored claims/preparations cannot authorize another send. Missing/wrong keys, marker or schema block actions; do not delete the journal to resolve an unknown transmission. Production custody and disaster recovery need their separate acceptance.
 

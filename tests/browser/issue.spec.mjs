@@ -64,6 +64,36 @@ test('initial failure does not invent an ordinary issue or empty conversation', 
   await expect(page.locator('#issue-body')).toBeEmpty();
 });
 
+test('repository picker is prefilled from the operations shortcut without reading issue data', async ({ page }) => {
+  const apiRequests = [];
+  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(request.url()); });
+  await page.goto(origin + '/workspace/issues?repository=example%2Frepository');
+  await expect(page.locator('#issue-repository')).toHaveValue('example/repository');
+  await expect(page.locator('#issue-number')).toHaveValue('');
+  expect(apiRequests).toEqual([]);
+});
+
+test('mission actions stay before a long issue description on a narrow screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await fixture(page);
+  await page.route('**/api/issues/**', async route => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/controls') || url.pathname.endsWith('/evidence')) return route.fallback();
+    const data = source(); data.issue.body = '# Long issue description\n\n'.repeat(500);
+    return route.fulfill({ json: data });
+  });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  const actions = page.locator('#mission-actions'), description = page.locator('#issue-body');
+  await expect(actions).toBeVisible();
+  const missionBeforeDescription = await page.evaluate(() => {
+    const mission = document.querySelector('#mission-actions'), body = document.querySelector('#issue-body');
+    return (mission.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+  });
+  expect(missionBeforeDescription).toBe(true);
+  expect((await actions.boundingBox()).y).toBeLessThan((await description.boundingBox()).y);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
 test('losing Actions access removes execution evidence while authorized issue context remains readable', async ({ page }) => {
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
@@ -144,11 +174,75 @@ test('shared source authority loss clears the earlier private issue and question
     question: { availability: 'available', current: true, text: 'Private source question' } } });
   await page.goto(origin + '/workspace/issues/example/repository/7');
   await expect(page.locator('#issue-controls')).toContainText('Private source question');
-  await page.route('**/api/issues/**/controls', route => route.fulfill({ status: 403, json: { availability: 'denied' } }));
+  const reason = 'Current connected-user issue authority was denied.';
+  await page.route('**/api/issues/**/controls', route => route.fulfill({ status: 403, json: { availability: 'denied', reason } }));
   await page.getByRole('button', { name: 'Refresh source' }).click();
   await expect(page.locator('#issue-controls')).toBeEmpty();
   await expect(page.locator('#issue-body')).toBeEmpty();
   await expect(page.locator('#issue-status')).toContainText('Source authority changed');
+  await expect(page.locator('#controls-status')).toContainText(reason);
+});
+
+test('missing private journal explains disabled actions without enabling prepare', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: false,
+    reason: 'The protected action journal is unavailable.', facts: {
+      repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+      actions: { comment: { eligible: true }, refine: { eligible: true } }
+    } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#controls-status')).toContainText('protected command storage is not ready');
+  await expect(page.locator('#controls-status')).toContainText('Opening this page does not send an action');
+  await expect(page.getByRole('button', { name: 'Prepare ordinary comment' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Prepare Refine' })).toHaveCount(0);
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
+test('denied journal receipt clears source content and preserves the returned denial reason', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true } }
+  } });
+  await page.route('**/api/controls/csrf', route => route.fulfill({ json: { token: 'browser-test-csrf' } }));
+  const reason = 'The protected action journal is unavailable or the confirmation belongs to another source scope. <script>window.deniedReasonRan=true</script>';
+  await page.route('**/api/issues/**/controls', async route => {
+    if (route.request().method() === 'GET') return route.fallback();
+    expect(route.request().postDataJSON().operation).toBe('receipt');
+    return route.fulfill({ status: 403, json: { availability: 'denied', reason } });
+  });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#issue-title')).toContainText('Read an ordinary issue');
+  await page.getByRole('button', { name: 'Recover previous action' }).click();
+  await expect(page.locator('#issue-status')).toContainText('The action is unavailable');
+  await expect(page.locator('#issue-status')).toContainText(reason);
+  await expect(page.locator('#issue-status script')).toHaveCount(0);
+  expect(await page.evaluate(() => window.deniedReasonRan)).toBeUndefined();
+  await expect(page.locator('#issue-title')).toHaveText('Issue workspace');
+  await expect(page.locator('#issue-body')).toBeEmpty();
+  await expect(page.locator('#issue-controls')).toBeEmpty();
+});
+
+test('failed prepare displays its reason and does not automatically retry or submit', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true } }
+  } });
+  await page.route('**/api/controls/csrf', route => route.fulfill({ json: { token: 'browser-test-csrf' } }));
+  const operations = [], reason = 'The source could not prepare this action.';
+  await page.route('**/api/issues/**/controls', async route => {
+    if (route.request().method() === 'GET') return route.fallback();
+    const operation = route.request().postDataJSON().operation; operations.push(operation);
+    return route.fulfill({ status: 503, json: { availability: 'unavailable', reason } });
+  });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.getByLabel('Your comment or answer').fill('A synthetic comment');
+  await page.getByRole('button', { name: 'Prepare ordinary comment' }).click();
+  await expect(page.locator('#control-actions')).toContainText(reason);
+  await expect(page.locator('#control-actions')).toContainText('No automatic resend was attempted');
+  await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
+  expect(operations).toEqual(['prepare']);
 });
 
 for (const width of [1280, 390]) test(`explicit source action ${width}: confirmation, lost response and recovery without another send`, async ({ page }) => {
@@ -188,6 +282,8 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
   await page.getByRole('button', { name: 'Reconcile source result' }).click();
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('comment-published');
   await expect(page.locator('#control-actions')).toContainText('Comment published.');
+  await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('GitHub confirmed that the comment was published.');
+  await expect(page.getByRole('region', { name: 'Action confirmation' })).not.toContainText('Request recorded. Reconcile to check its source result.');
   await expect(page.locator('#control-actions')).toContainText('Receipt observed: 2026-11-08T08:00:00Z');
   await expect(page.locator('#control-actions')).not.toContainText('Question resolved:');
   expect(operations.filter(item => item === 'submit')).toHaveLength(1);

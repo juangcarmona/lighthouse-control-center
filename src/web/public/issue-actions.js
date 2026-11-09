@@ -15,8 +15,12 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     preparation = data; confirmation.replaceChildren();
     if (!data.id) { message.textContent = 'No previous action was found in this source scope.'; return; }
     const action = data.intent?.action;
+    const progress = data.journalState === 'prepared' ? 'Ready for your confirmation.'
+      : action === 'comment' && data.receipt?.state === 'comment-published' ? 'GitHub confirmed that the comment was published.'
+        : data.receipt ? 'A source receipt was observed. Review its details; the result may still be unconfirmed.'
+          : 'Request recorded. Reconcile to check its source result.';
     confirmation.append(text('Action: ' + ({ comment: 'Ordinary comment', continue: 'Continue', refine: 'Refine', propose: 'Propose' }[action] ?? 'unknown')),
-      text(data.journalState === 'prepared' ? 'Ready for your confirmation.' : 'Request recorded. Reconcile to check its source result.'));
+      text(progress));
     const details = document.createElement('details'), summary = document.createElement('summary'); summary.textContent = 'Request details';
     details.append(summary, text('Confirmation ID: ' + data.id), text('Journal: ' + data.journalState));
     if (data.intent?.body) confirmation.append(text(data.intent.body));
@@ -58,8 +62,9 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
         { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json', 'X-SoFa-Csrf': token }, body: JSON.stringify(value) });
       if (!live()) return;
-      if ([401, 403, 409].includes(response.status)) { clear(); return; }
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
+      if ([401, 403, 409].includes(response.status)) { clear(typeof data?.reason === 'string' ? data.reason : undefined); return; }
+      if (!data) throw Error('Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (!response.ok || data.availability !== 'available') throw Error(data.reason ?? 'Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (data.dataScope !== scope || data.actingUserId !== facts.actor.id) { clear(); return; }
       message.textContent = 'Observed: ' + data.observedAt + '. A submitted request does not prove completed work.';
