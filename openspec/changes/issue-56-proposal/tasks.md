@@ -8,7 +8,7 @@ This candidate is planned, not accepted or implemented. Tasks are future work an
 
 ## 1. Qualify foundations before implementation
 
-- [ ] 1.1 After owner proposal review, refresh #50/PR #100 and #47/#48/PR #112 through their existing delivery records; verify their integration, actual connected-user qualification, ADR-0008 reconciliation and separate maintainer release of `future` are recorded before coding #56. Stop if any condition remains unmet; do not duplicate their work or reset correction budgets.
+- [ ] 1.1 After owner proposal review, verify PR #100 integrates its already-assembled #50/#48 components into `main`; refresh #112 and parent-issue delivery records for actual connected-user qualification, ADR-0008 decision receipts and the separate maintainer release of `future` before coding #56. Stop if any condition remains unmet; do not duplicate their work or reset correction budgets.
 - [ ] 1.2 Record the adopted SDK/SDLC/workflow tuple and exported public contract; verify source-observed capability results for Implement, Integrate, Review and recovery against the actual actor/issue. Produce a supported/denied/unsupported matrix with exact binding/receipt semantics, and retain unavailable presentation wherever support or qualification is absent (VG-04, VG-08).
 - [ ] 1.3 Reconcile the integrated reader/command APIs and current spec inventory with this plan; verify an interface/read-budget note identifies reused handlers, artifact validation, source grants, finite collection limits and exact test commands without introducing new infrastructure or changing product scope.
 <!-- pdac:cite id="BR-EXPLICIT-WORK-COMMANDS" digest="sha256:5d2f308b670bdf6e577d2205ebc246ec56505253d81d6a5a5efe0b92b55d735e" -->
