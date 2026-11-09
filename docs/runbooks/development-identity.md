@@ -1,4 +1,4 @@
-# Development identity and workspace
+# Lighthouse Control Center development identity and workspace
 
 The supported application uses one HTTPS workspace and a separate development Keycloak container. Repository workflows and agent execution remain independent. The external-issuer profile provisions no provider; production storage, credentials and deployment belong to #58.
 
@@ -19,11 +19,11 @@ node scripts/setup-development-identity.mjs \
 SOFA_CONFIG_FILE="$HOME/.config/sofa-dev/development.json" npm start
 ```
 
-For LAN/VPN use, replace the loopback addresses with stable reachable hostnames or the selected host address before generating configuration. The generator reads the two development users from [the versioned Keycloak realm](../../.config/keycloak/sofa-dev-realm.json) and writes their generated passwords into the private `test-accounts.json` and imported realm together. The committed realm contains no working password. The generator refuses an existing destination and any destination inside the checkout. It creates a private directory, separate application/provider certificates and the non-production realm import. Passwords, client secret, owner subject and TLS keys remain in private files; output contains only setup locations and addresses. No global certificate trust is changed by this setup command.
+For LAN/VPN use, replace the loopback addresses with stable reachable hostnames or the selected host address before generating configuration. [The versioned development Keycloak realm](../../.config/keycloak/sofa-dev-realm.json) defines `admin` and `test`, both with password `Test1234@`. The generator imports them and writes the same values to `test-accounts.json`. It refuses an existing destination and any destination inside the checkout. It creates a private directory, separate application/provider certificates and the non-production realm import. The client secret, owner subject and TLS keys remain in private files; output contains only setup locations and addresses. No global certificate trust is changed by this setup command.
 
-Trust the generated public `ca.crt` only in the designated development browser/device, checking its fingerprint out of band. Keep `ca.key`, TLS keys, `provider.env`, `development.json`, account passwords and TOTP secrets private. The automated host test creates its own browser HOME/NSS database and removes its setup afterwards. It never disables HTTPS validation.
+Trust the generated public `ca.crt` only in the designated development browser/device, checking its fingerprint out of band. Keep `ca.key`, TLS keys, `provider.env`, `development.json` and TOTP secrets private. The two shared test passwords are intentionally tracked for the isolated development realm. The automated host test creates its own browser HOME/NSS database and removes its setup afterwards. It never disables HTTPS validation.
 
-The first development sign-in uses the synthetic owner and password from `test-accounts.json`. Development requests assurance1 and does not require OTP enrollment. External mode retains assurance2/MFA. Existing enrolled factors need not be removed. The configured `(issuer, subject)` admits that owner only. Recreating the disposable provider discards its accounts and credentials; preserve the exact owner subject rather than mapping an account by email. A setup without synthetic accounts requires an explicit `--owner-subject` and operator-provisioned account in that development realm.
+Sign in to Lighthouse Control Center with `admin` / `Test1234@`. The `test` user has the same password but is denied owner access. Development requests assurance1 and does not require OTP enrollment. External mode retains assurance2/MFA. Existing enrolled factors need not be removed. The configured `(issuer, subject)` admits the owner only. Recreating the disposable provider discards its accounts; preserve the exact owner subject rather than mapping an account by email. A setup without synthetic accounts requires an explicit `--owner-subject` and operator-provisioned account in that development realm.
 
 ## Connect the real GitHub user
 
@@ -50,7 +50,7 @@ Add its **client ID** and **client secret** to the private configuration, alongs
 
 Merge that fragment into the existing private file; preserve its identity, certificates and repository allowlist. Supply both fields or leave both absent. Restart the workspace, sign in and choose **Connect GitHub account**. Complete GitHub's user authorization in the browser. Confirm a different acting account explicitly before replacement. Verify the displayed numeric user identity, repository permission result and check time.
 
-Never paste credentials into an issue, PR, chat, screenshot or tracked file. The application has no operator `gh`, PAT or installation-token fallback. Linking, checking, disconnecting and signing out do not post issue comments, change labels or request workflows. Native GitHub links remain source inspection paths; source command controls are separate work.
+Keep generated client secrets, GitHub grants and TLS keys out of issues, PRs, chats, screenshots and tracked files. The two development account passwords in the realm are intentionally tracked. The application has no operator `gh`, PAT or installation-token fallback. Linking, checking, disconnecting and signing out do not post issue comments, change labels or request workflows. Native GitHub links remain source inspection paths; source command controls are separate work.
 
 ## Session and failure behavior
 
