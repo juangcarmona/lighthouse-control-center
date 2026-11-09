@@ -2,11 +2,28 @@
 import { TextDecoder } from 'node:util';
 
 const maximum = 4 * 1024 * 1024;
+const diagnosticStatuses = new Set([401, 403, 404, 408, 409, 429, 500, 502, 503]);
 const iterator = process.stdin[Symbol.asyncIterator]();
 const decoder = new TextDecoder('utf-8', { fatal: true });
 let buffered = Buffer.alloc(0), sequence = 0, broken = false, tail = Promise.resolve();
+let failedRead = null;
 const positive = value => Number.isSafeInteger(value) && value > 0;
 const emit = value => process.stdout.write(JSON.stringify(value) + '\n');
+
+function initialReadCategory(request, number) {
+  if (request.scope === 'account' && request.path === 'user') return 'actor';
+  if (request.scope !== 'repository' || typeof request.path !== 'string') return null;
+  if (request.path === '') return 'repository';
+  if (request.path === `issues/${number}`) return 'issue';
+  if (request.path.startsWith('commits/')) return 'commits';
+  if (new RegExp(`^issues/${number}/comments\\?per_page=100&page=[1-9][0-9]*$`).test(request.path)) return 'comments';
+  return null;
+}
+
+function diagnosticReason(failure) {
+  const status = diagnosticStatuses.has(failure.status) ? `http-${failure.status}` : 'status-unknown';
+  return `source-read-${failure.category}-${status}`;
+}
 
 async function frame() {
   while (true) {
@@ -73,7 +90,12 @@ try {
           return callback('effect', { scope: request.scope, path: request.path, method: 'POST', body: request.body, apiVersion: request.apiVersion ?? null });
         }
         try { return await callback('transport', { scope: request.scope, path: request.path }); }
-        catch (error) { if (request.optional === true && error.status === 404) return null; throw error; }
+        catch (error) {
+          const category = initialReadCategory(request, input.number);
+          if (category) failedRead = { category, status: error.status };
+          if (request.optional === true && error.status === 404) return null;
+          throw error;
+        }
       },
       readAuthority: ({ actor, metadata }) => callback('authority', { actorId: actor?.id, repositoryId: metadata?.id }),
       readArtifact: async (api, repository, runId, name, member, optional = false) => {
@@ -91,11 +113,15 @@ try {
         return callback('artifact', { artifactId: matches[0].id, member });
       },
     });
-    const result = input.operation === 'observe' ? await sdk.observe({ number: input.number })
+    let result = input.operation === 'observe' ? await sdk.observe({ number: input.number })
       : input.operation === 'prepare' ? await sdk.prepare({ number: input.number, action: input.action, id: input.id, body: input.body })
       : input.operation === 'reconcile' ? await sdk.reconcile(input.prepared)
       : await sdk.submit(input.prepared, { claim: value => callback('claim', value) });
     if (broken) throw Error('Observation protocol failed');
+    if (input.operation === 'observe' && result.availability === 'unavailable'
+        && result.reason === 'source-observation-unavailable' && failedRead) {
+      result = { ...result, reason: diagnosticReason(failedRead) };
+    }
     emit({ type: 'result', result });
   }
 } catch {

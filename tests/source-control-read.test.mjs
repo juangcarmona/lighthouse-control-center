@@ -132,3 +132,34 @@ test('the selected public SDK observes through host callbacks without requiring 
   assert.equal(result.actor.id, 11); assert.equal(result.repository.id, 22);
   assert.ok(requests.some(request => request.kind === 'authority'));
 });
+
+test('generic initial-read failures become bounded category/status reasons without source details', async () => {
+  const selected = createRequire(process.env.SOFA_TEST_PUBLIC_SDK_ROOT
+    ? join(process.env.SOFA_TEST_PUBLIC_SDK_ROOT, 'package.json') : new URL('../package.json', import.meta.url));
+  const sdk = selected.resolve('@juangcarmona/lighthouse-sdlc/issue-control');
+  const owner = { id: 11, login: 'owner', type: 'User' };
+  const failures = [
+    ['user', 403, 'actor'],
+    ['', 503, 'repository'],
+    ['issues/7', 403, 'issue'],
+    ['commits/main', 503, 'commits'],
+    ['issues/7/comments?per_page=100&page=1', 403, 'comments'],
+  ];
+  for (const [failedPath, status, category] of failures) {
+    const { result } = await exercise('public', request => {
+      if (request.kind === 'authority') return { actorId: owner.id, repositoryId: 22, commentWrite: false, dispatchWrite: false };
+      if (request.kind === 'transport' && request.path === failedPath) return { fixtureStatus: status };
+      if (request.path === 'user') return owner;
+      if (request.path === '') return { id: 22, full_name: 'private-owner/private-repository', owner, default_branch: 'main' };
+      if (request.path === 'issues/7') return { id: 70, number: 7, title: 'Private issue marker', body: 'Private source body marker', state: 'open', labels: [], user: owner };
+      if (request.path === 'commits/main') return { sha: 'a'.repeat(40) };
+      if (request.path.startsWith('issues/7/comments?')) return [];
+      if (request.path.startsWith('contents/.lighthouse/issue-control.json?')) return { fixtureStatus: 404 };
+      throw Error('Unexpected public SDK callback');
+    }, { ...initial, repository: 'private-owner/private-repository' }, sdk);
+    assert.deepEqual(result, { availability: 'unavailable', reason: `source-read-${category}-http-${status}` });
+    const output = JSON.stringify(result);
+    for (const privateMarker of ['private-owner/private-repository', 'Private issue marker', 'Private source body marker', 'comments?per_page=100&page=1'])
+      assert.equal(output.includes(privateMarker), false);
+  }
+});
