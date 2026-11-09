@@ -6,9 +6,9 @@ pdac-scope: cited
 
 ## Context
 
-See proposal.md for motivation and authority. Main currently has connected-user transport, repository access checks and bounded observations under `src/SoFa.Modules.Workspace/Source/`; it does not contain the supplied candidate discovery/issue-reader handlers. `GitHubObservations.ReadRepositoryAsync` checks permission before a 15-second scoped cache and checks connection generation before returning results. Its issue/action permissions are not a substitute for content-read authority.
+See proposal.md for motivation and authority. `main` at `d24953debaab37dfedf7745add1b47dae538a6d7` has connected-user transport, repository access checks and bounded observations under `src/SoFa.Modules.Workspace/Source/`; it does not contain the supplied discovery/issue-reader handlers. The current PR #100 feature candidate at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4` already assembles those component changes, including #103 and #112, but is not merged to `main` and has not satisfied the parent issue acceptance. `GitHubObservations.ReadRepositoryAsync` checks permission before a 15-second scoped cache and checks connection generation before returning results. Its issue/action permissions are not a substitute for content-read authority.
 
-Candidate #100 interfaces at `6079e6f7964d0e2c5a992c470489e065131e33b9` are design evidence only. Reuse accepted discovery, source scopes, issue/evidence readers and safe browser navigation after their existing delivery is integrated. Preserve ADR-0006 observation independence, ADR-0007 identity separation and ADR-0009 .NET/Aspire ownership. No dependency on proposed ADR-0010 or a new ADR-0008 decision.
+The PR #100 candidate interfaces at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4` are the existing implementation to reuse, not a separate proposal to rebuild. Revalidate their exact interfaces, main integration and source acceptance before implementation. The candidate ADR-0008 file records `Accepted`, while `main` records `Proposed`; reconcile the #48 source-bound decision receipts at pickup without treating this proposal as an ADR decision. Preserve ADR-0006 observation independence, ADR-0007 identity separation and ADR-0009 .NET/Aspire ownership. No dependency on proposed ADR-0010 or a new ADR-0008 decision.
 
 ## Goals / Non-Goals
 
@@ -87,7 +87,7 @@ Alternative: upgrade buttons or automatic maintenance issue creation change auth
 
 ## Risks / Trade-offs
 
-- [Prerequisites exist only in candidate evidence] → Maintainer must accept/integrate existing #52/#103/#50/#48 work and refresh exact interfaces before implementation; do not replace it here.
+- [Prerequisites are assembled in an unmerged candidate] → Maintainer must integrate PR #100 into `main`, obtain the existing #52/#48 acceptance and refresh exact interfaces before implementation; reuse the component work rather than replacing it here.
 - [Limited contract support] → Keep raw evidence available, unsupported status explicit and comparison disabled where semantics are missing. Shared contract expansion is separate work.
 - [Repository size exceeds budgets] → Report bounded partial coverage. Do not raise limits silently or recursively crawl monorepos.
 - [Access loss races with a read] → Permission-before-reuse, generation/epoch checks and clearing tests cover server and browser paths.

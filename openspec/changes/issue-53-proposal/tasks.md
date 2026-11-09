@@ -8,7 +8,7 @@ Implementation is held by `future`. These unchecked tasks describe later work, n
 
 ## 1. Confirm delivery prerequisites before coding
 
-- [ ] 1.1 Maintainer accepts/integrates the existing #52/#103 discovery and #50/#48 reader path and reconciles its ADR-0008 status in #48/#112; verify linked acceptance and exact integrated interface receipts, not candidate #100 presence alone.
+- [ ] 1.1 Verify PR #100 integrates the already-assembled #52/#103 discovery and #50/#48 reader components into `main`; obtain the existing parent-issue/source acceptance and reconcile ADR-0008 through #48 decision receipts. Verify exact integrated interfaces before implementation; do not duplicate the candidate components.
 - [ ] 1.2 Maintainer explicitly resolves the implementation hold through the existing lifecycle and reviews this proposal; verify a recorded release decision before starting group 2.
 - [ ] 1.3 Refresh the project-detail, discovery, source-scope and issue/evidence reader contracts against the accepted head; deliver an interface map and confirm the additive route uses those paths without duplicating prerequisites.
 
