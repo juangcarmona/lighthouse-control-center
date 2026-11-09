@@ -39,13 +39,14 @@ realm.clients[0].secret = clientSecret;
 realm.clients[0].redirectUris = [new URL('/signin-oidc', origin).href];
 realm.clients[0].attributes['post.logout.redirect.uris'] = origin.href;
 const accounts = testAccounts ? realm.users.map(user => ({
-  subject: user.username === 'development-owner' ? ownerSubject : randomUUID(), username: user.username, password: secret(),
+  subject: user.username === 'admin' ? ownerSubject : randomUUID(), username: user.username,
+  password: user.credentials?.find(credential => credential.type === 'password')?.value,
 })) : [];
-if (testAccounts && (accounts.length !== 2 || accounts[0].username !== 'development-owner' || accounts[1].username !== 'development-other'))
+if (testAccounts && (accounts.length !== 2 || accounts[0].username !== 'admin' || accounts[1].username !== 'test'
+  || !accounts[0].password || accounts.some(account => account.password !== accounts[0].password)))
   throw Error('The development realm must seed the owner and denied test user.');
 realm.users = testAccounts ? realm.users.map((user, index) => ({
   ...user, id: accounts[index].subject,
-  credentials: [{ type: 'password', value: accounts[index].password, temporary: false }], requiredActions: [],
 })) : [];
 await mkdir(resolve(directory, 'import'), { mode: 0o700 });
 await privateWrite(resolve(directory, 'import', 'sofa-dev-realm.json'), JSON.stringify(realm));
@@ -79,4 +80,4 @@ await privateWrite(resolve(directory, 'provider.env'), [
   'KC_LOG_LEVEL=warn',
 ].join('\n') + '\n');
 console.log(JSON.stringify({ directory, origin: origin.origin, issuer: issuer.href, testAccounts,
-  instructions: 'Private setup created. Trust ca.crt only in the designated development browser/device. Credentials remain in private files; no global trust was changed.' }));
+  instructions: 'Development setup created. Trust ca.crt only in the designated development browser/device. Test passwords are in the tracked development realm; client and TLS secrets remain private. No global trust was changed.' }));

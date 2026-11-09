@@ -152,18 +152,22 @@
   ],
   "users": [
     {
-      "username": "development-owner",
+      "username": "admin",
       "enabled": true,
       "firstName": "Development",
       "lastName": "Owner",
-      "email": "development-owner@example.invalid"
+      "email": "admin@example.invalid",
+      "credentials": [{ "type": "password", "value": "Test1234@", "temporary": false }],
+      "requiredActions": []
     },
     {
-      "username": "development-other",
+      "username": "test",
       "enabled": true,
       "firstName": "Development",
       "lastName": "Other",
-      "email": "development-other@example.invalid"
+      "email": "test@example.invalid",
+      "credentials": [{ "type": "password", "value": "Test1234@", "temporary": false }],
+      "requiredActions": []
     }
   ]
 }
