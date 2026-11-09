@@ -69,6 +69,7 @@ test('live issue context retains actual description conversation and source prov
   await expect(page.locator('#issue-body')).not.toBeEmpty();
   await expect(page.locator('#conversation-coverage')).toContainText('Source');
   await expect(page.locator('#issue-comments > li')).toHaveCount(source.conversation.items.length);
+  await expect(page.locator('#controls-status')).not.toHaveText(/^(Checking|Refreshing)/i);
   await page.screenshot({ path: info.outputPath('issue.png') });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -80,7 +81,7 @@ test('live action authority explains unavailable dependencies without granting a
   const response = await page.request.get(controlsPath);
   const source = await response.json();
   await page.goto(issuePath);
-  await expect(page.locator('#controls-status')).not.toContainText('Checking');
+  await expect(page.locator('#controls-status')).not.toHaveText(/^(Checking|Refreshing)/i);
   const blocked = source.availability !== 'available' || Object.values(source.facts?.actions ?? {}).some(action => !action.eligible);
   test.skip(!blocked, 'This configured source has no unavailable action prerequisite; the negative example needs another scope.');
   await expect(page.locator('#control-actions button:disabled').first()).toBeVisible();
