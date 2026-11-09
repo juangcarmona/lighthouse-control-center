@@ -122,13 +122,14 @@
       },
       "cases": {
         "fixture": [
-          "explicit source action "
+          "explicit source action ",
+          "existing action explains recovery"
         ],
         "live": [
           "live ordinary comment"
         ]
       },
-      "limitations": "Fixture confirmation does not establish a GitHub App-user effect. Live confirmation requires an explicit selected issue and source write opt-in."
+      "limitations": "Fixture confirmation does not establish a GitHub App-user effect. The existing-action case covers preserved draft/original intent and explicit recovery, without submitting a comment. Live confirmation requires an explicit selected issue and source write opt-in."
     },
     {
       "id": "SB-PARTIAL-REPOSITORY-COLLECTION",
