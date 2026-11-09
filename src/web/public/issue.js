@@ -1,4 +1,4 @@
-import { updateWorkspaceAccount } from './workspace-ui.js';
+import { projectWorkspaceSourceIdentity, updateWorkspaceAccount, validateWorkspaceSourceIdentity, workspaceSourceIdentityGeneration } from './workspace-ui.js';
 import { renderActions, renderUnavailableActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
 const byId = id => document.getElementById(id);
@@ -98,17 +98,20 @@ async function read(append = false) {
   byId('issue-refresh').disabled = true; byId('issue-more').disabled = true;
   const page = append ? nextPage : 1;
   const query = new URLSearchParams({ page: String(page) }); if (append) query.set('snapshot', current.snapshot);
+  const identityGeneration = workspaceSourceIdentityGeneration();
   try {
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '?' + query,
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
     if (operation !== revision) return;
+    const data = await response.json().catch(() => null);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      const failure = await response.json().catch(() => null); clear();
-      const reason = typeof failure?.reason === 'string' ? failure.reason : 'Source authority changed. Verify the account and refresh.';
+      else if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+      clear();
+      const reason = typeof data?.reason === 'string' ? data.reason : 'Source authority changed. Verify the account and refresh.';
       status(reason, true); controlsStatus('Actions unavailable. ' + reason); return;
     }
-    const data = await response.json();
+    if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
     if (current && data.dataScope && data.dataScope !== current.dataScope) {
       clear();
       if (append) { status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
@@ -137,7 +140,7 @@ async function read(append = false) {
     }
     if (!append) { clear(); bytes = size; comments = data.conversation.items; }
     else { bytes += size; comments.push(...data.conversation.items); }
-    current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope }; show(data, append);
+    current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope, actingUserId: data.actingUserId }; show(data, append);
     void readEvidence(target, page, data.snapshot, operation);
     void readControls(target, operation, draft);
   } catch (error) {
@@ -158,15 +161,20 @@ controlsStatus('Open a mission to check whether commenting and Lighthouse action
 if (initial) await read(); else status('Choose a configured repository and ordinary issue number.');
 
 async function readEvidence(target, page, snapshot, operation) {
+  const identityGeneration = workspaceSourceIdentityGeneration();
   try {
     const query = new URLSearchParams({ page: String(page), snapshot });
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/evidence?' + query,
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
     if (operation !== revision || current?.key !== target.key) return;
+    const data = await response.json().catch(() => null);
     if ([401, 403, 409].includes(response.status)) {
-      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' }); clear(); status('Source authority changed; previous context was removed.', true); return; }
+      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
+      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
+      clear(); status('Source authority changed; previous context was removed.', true); return;
+    }
+    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
     if (!response.ok) throw Error('Unavailable evidence');
-    const data = await response.json();
     if (!data.dataScope || data.dataScope !== current.dataScope) {
       clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return;
     }
@@ -214,6 +222,7 @@ async function readEvidence(target, page, snapshot, operation) {
 
 async function readControls(target, operation, initialBody = '') {
   controlsStatus('Refreshing shared source facts; previous observations may be stale.');
+  const identityGeneration = workspaceSourceIdentityGeneration();
   try {
     const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
       { signal: controller.signal, credentials: 'same-origin', cache: 'no-store' });
@@ -222,10 +231,12 @@ async function readControls(target, operation, initialBody = '') {
     const reason = controlReason(data);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
+      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); controlsStatus('Actions unavailable. ' + reason); return; }
       clear(); status('Source authority changed; previous context was removed. ' + reason, true);
       controlsStatus('Actions unavailable. ' + reason);
       return;
     }
+    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected GitHub identity or source scope changed. Refresh to read a new source snapshot.', true); return; }
     if (!response.ok) {
       controlsStatus('Action checks are unavailable. Previous observations may be stale. ' + reason);
       if (typeof data?.reason === 'string') {
@@ -246,8 +257,11 @@ async function readControls(target, operation, initialBody = '') {
         || !Number.isSafeInteger(data.actingUserId) || data.actingUserId <= 0
         || !Number.isSafeInteger(facts.actor?.id) || facts.actor.id <= 0 || facts.actor.id !== data.actingUserId
         || typeof data.observedAt !== 'string') throw Error('Unverified shared source identity');
+    current.actingUserId = data.actingUserId;
     if (typeof facts.actor.login === 'string' && facts.actor.login.trim()) {
-      updateWorkspaceAccount({ state: 'linked', login: facts.actor.login.trim() });
+      if (!projectWorkspaceSourceIdentity({ state: 'linked', login: facts.actor.login.trim(), userId: facts.actor.id, dataScope: data.dataScope }, identityGeneration)) {
+        clear(); status('The connected GitHub identity changed. Refresh to read a new source snapshot.', true); return;
+      }
     }
     const area = byId('issue-controls'), question = facts.question;
     const eligible = ['comment', 'refine', 'propose', 'continue'].some(name => facts.actions?.[name]?.eligible === true);

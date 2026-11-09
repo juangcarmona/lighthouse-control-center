@@ -1,4 +1,4 @@
-import { updateWorkspaceAccount } from './workspace-ui.js';
+import { updateWorkspaceAccount, validateWorkspaceSourceIdentity, workspaceSourceIdentityGeneration } from './workspace-ui.js';
 let composerId = 0;
 
 export function renderUnavailableActions(area, reason) {
@@ -105,6 +105,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   }
   async function command(value) {
     if (!submissionAvailable || busy || !live() || value.operation === 'prepare' && !allowed(value.action)) return;
+    const identityGeneration = workspaceSourceIdentityGeneration();
     if (value.operation === 'submit' && preparation) display({ ...preparation, journalState: 'uncertain' });
     busy = true; for (const b of buttons.keys()) b.disabled = true;
     message.textContent = value.operation === 'submit' ? 'Sending the prepared action once…' : 'Verifying source and confirmation…';
@@ -114,12 +115,16 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       if (!csrf.ok) throw Error('Confirmation token unavailable');
       const token = (await csrf.json()).token;
       if (!live() || typeof token !== 'string') return;
+      if (identityGeneration !== workspaceSourceIdentityGeneration()) { clear(); return; }
       const response = await fetch('/api/issues/' + target.repository.split('/').map(encodeURIComponent).join('/') + '/' + target.number + '/controls',
         { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json', 'X-SoFa-Csrf': token }, body: JSON.stringify(value) });
       if (!live()) return;
       const data = await response.json().catch(() => null);
+      if (response.status === 401) { updateWorkspaceAccount({ state: 'expired' }); clear(typeof data?.reason === 'string' ? data.reason : undefined); return; }
+      if (!validateWorkspaceSourceIdentity(data, scope, facts.actor?.id, identityGeneration)) { clear(typeof data?.reason === 'string' ? data.reason : undefined); return; }
       if ([401, 403, 409].includes(response.status)) {
-      if (response.status === 401) updateWorkspaceAccount({ state: 'expired' }); clear(typeof data?.reason === 'string' ? data.reason : undefined); return; }
+        clear(typeof data?.reason === 'string' ? data.reason : undefined); return;
+      }
       if (!data) throw Error('Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (!response.ok || data.availability !== 'available') throw Error(data.reason ?? 'Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (data.dataScope !== scope || data.actingUserId !== facts.actor.id) { clear(); return; }

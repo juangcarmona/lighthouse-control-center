@@ -26,6 +26,7 @@ function applyTheme(value) {
 }
 applyTheme(preference);
 let ownerName = '', accountState, ownerEpoch = 0;
+let sourceIdentityGeneration = 0;
 let collapsed = false;
 try { collapsed = localStorage.getItem('lcc:navigation') === 'collapsed'; } catch { /* Optional preference. */ }
 document.documentElement.dataset.navCollapsed = String(collapsed);
@@ -41,7 +42,33 @@ function renderIdentity() {
 }
 export function updateWorkspaceAccount(account) {
   if (account.state === 'expired') { ownerEpoch++; ownerName = ''; }
+  if (['linked', 'unlinked', 'unconfigured', 'unavailable', 'expired'].includes(account.state)) sourceIdentityGeneration++;
   accountState = account; renderIdentity();
+}
+function validActorId(value) { return Number.isSafeInteger(value) && value > 0; }
+export function workspaceSourceIdentityGeneration() { return sourceIdentityGeneration; }
+export function validateWorkspaceSourceIdentity(data, expectedScope, expectedActorId, requestGeneration) {
+  if (requestGeneration !== sourceIdentityGeneration) return false;
+  if (!data || typeof data !== 'object') return true;
+  const accountScope = accountState?.state === 'linked' ? accountState.dataScope : undefined;
+  const accountActorId = accountState?.state === 'linked' ? accountState.userId : undefined;
+  const scope = expectedScope ?? accountScope;
+  const actorId = validActorId(expectedActorId) ? expectedActorId : accountActorId;
+  const scopeChanged = typeof scope === 'string' && scope.length > 0
+    && typeof data.dataScope === 'string' && data.dataScope.length > 0 && data.dataScope !== scope;
+  const reportedIds = [data.actingUserId, data.facts?.actor?.id].filter(validActorId);
+  const actorConflict = reportedIds.some(value => value !== reportedIds[0])
+    || validActorId(actorId) && reportedIds.some(value => value !== actorId);
+  if (data.availability === 'disconnected' || scopeChanged || actorConflict) {
+    sourceIdentityGeneration++;
+    accountState = { state: 'unavailable' }; renderIdentity();
+    return false;
+  }
+  return true;
+}
+export function projectWorkspaceSourceIdentity(account, requestGeneration) {
+  if (requestGeneration !== sourceIdentityGeneration) return false;
+  accountState = account; renderIdentity(); return true;
 }
 function identityLink(className) {
   const link = document.createElement('a'); link.href = '/workspace'; link.className = className; link.append(icon('account'));
