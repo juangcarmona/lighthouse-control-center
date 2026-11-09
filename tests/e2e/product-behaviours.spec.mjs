@@ -32,17 +32,9 @@ const test = base.extend({
       await use(context);
     } finally { await context.close(); }
   }, { scope: 'worker' }],
-  signedPage: async ({ owner }, use, info) => {
+  signedPage: async ({ owner }, use) => {
     const page = await owner.newPage();
     await use(page);
-    if (info.status !== info.expectedStatus && page.url().startsWith(origin + '/workspace/')) {
-      await page.screenshot({ path: info.outputPath('authenticated-failure.png') });
-      await info.attach('authenticated-action-state', { body: Buffer.from(JSON.stringify(await page.evaluate(() => ({
-        sourceStatus: document.querySelector('#issue-status')?.textContent,
-        controlsStatus: document.querySelector('#controls-status')?.textContent,
-        actionMessage: document.querySelector('.action-message')?.textContent,
-      })))), contentType: 'application/json' });
-    }
     await page.close();
   },
 });
