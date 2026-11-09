@@ -90,6 +90,7 @@ test('live action authority explains unavailable dependencies without granting a
   test.skip(!blocked, 'This configured source has no unavailable action prerequisite; the negative example needs another scope.');
   await expect(page.locator('#control-actions button:disabled').first()).toBeVisible();
   await expect(page.locator('#mission-actions')).toContainText(/unavailable|permission|authority|supported/i);
+  await page.screenshot({ path: info.outputPath('action-authority.png') });
   await info.attach('source-authority', { body: Buffer.from(JSON.stringify({ availability: source.availability, reason: source.reason,
     missingReadScopes: source.missingReadScopes, sourceWritePerformed: false })), contentType: 'application/json' });
 });
