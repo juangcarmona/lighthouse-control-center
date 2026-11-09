@@ -1,3 +1,4 @@
+import './workspace-ui.js';
 import { renderActions, renderUnavailableActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
 const byId = id => document.getElementById(id);
@@ -34,6 +35,9 @@ function clear() {
   for (const id of ['issue-body', 'issue-facts', 'issue-comments', 'issue-evidence', 'issue-controls']) byId(id).replaceChildren();
   controlsStatus('Shared source authority has not been observed.');
   byId('source-eligibility').open = false;
+  byId('source-provenance').open = false;
+  byId('issue-facts-details').open = false;
+  byId('conversation-panel').querySelector('details').open = false;
   byId('conversation-coverage').textContent = ''; byId('issue-age').textContent = ''; byId('issue-more').hidden = true;
 }
 function selection() {
@@ -47,6 +51,7 @@ function show(data, append) {
   if (!append) {
     byId('issue-title').textContent = data.repository + ' #' + data.number + ' · ' + data.issue.title;
     byId('issue-body').replaceChildren(markdown(data.issue.body, renderingBudget));
+    byId('issue-facts-details').open = false;
     byId('issue-facts').replaceChildren(paragraph('Issue state: ' + data.issue.state + ' · Author: ' + (data.issue.author ?? 'unknown')),
       paragraph('Source labels: ' + (data.issue.labels.join(', ') || 'none observed')),
       paragraph('Source updated: ' + (data.issue.updatedAt ?? 'unknown')),
@@ -64,8 +69,10 @@ function show(data, append) {
   for (const comment of data.conversation.items) {
     const li = document.createElement('li'); li.id = 'source-comment-' + comment.id;
     const heading = document.createElement('h3'); heading.textContent = comment.author ?? 'Unknown source author';
-    li.append(heading, paragraph('Source updated: ' + (comment.updatedAt ?? 'unknown'), 'source-byline'),
-      sourceLink('Source comment ' + comment.id, comment.sourceUrl), markdown(comment.body, renderingBudget));
+    const details = document.createElement('details'), summary = document.createElement('summary'); summary.textContent = 'Source details';
+    details.append(summary, paragraph('Comment ID: ' + comment.id + ' · Updated: ' + (comment.updatedAt ?? 'unknown'), 'source-byline'),
+      sourceLink('Inspect source comment', comment.sourceUrl));
+    li.append(heading, details, markdown(comment.body, renderingBudget));
     byId('issue-comments').append(li);
   }
   nextPage = data.conversation.nextPage;
@@ -74,14 +81,14 @@ function show(data, append) {
   byId('issue-more').hidden = nextPage === null;
   byId('conversation-coverage').textContent = `${comments.length} comments read · Source count: ${data.conversation.sourceCount ?? 'unknown'} · ${data.conversation.complete ? 'End observed' : 'Partial coverage'}. `
     + (capped ? 'The read budget was reached; later records require source inspection. ' : '') + (data.conversation.reason ?? '');
-  byId('issue-age').textContent = 'Observed: ' + data.observedAt + ' · GitHub user ID ' + data.actingUserId;
+  byId('issue-age').textContent = 'Observed: ' + data.observedAt + ' · Acting GitHub user ID: ' + data.actingUserId;
   status(data.conversation.availability === 'unavailable' ? 'Issue read; conversation unavailable. Previous pages may be stale.' : 'Issue context loaded from GitHub.');
 }
 async function read(append = false) {
   const target = selection(); if (!target) { status('Choose owner/repository and a positive issue number.', true); return; }
   if (pending || append && (nextPage === null || bytes >= maximumTextBytes || comments.length >= 1000)) return;
   if (!append && current?.key !== target.key) clear();
-  const draft = append ? byId('control-actions').querySelector('textarea')?.value ?? '' : '';
+  const draft = append ? byId('comment-composer-slot').querySelector('textarea')?.value ?? '' : '';
   controlsStatus('Refreshing source context; previous shared observations may be stale.');
   pending = true; const operation = ++revision; controller?.abort(); controller = new AbortController();
   byId('issue-refresh').disabled = true; byId('issue-more').disabled = true;

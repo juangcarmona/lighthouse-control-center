@@ -1,5 +1,7 @@
+import './workspace-ui.js';
 import { inspectAttention } from './attention-controls.js';
 import { reconcileAttention } from './attention.js';
+import { clearProjectionCache, readProjectionCache, writeProjectionCache } from './read-projection-cache.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text, className) => { const element = document.createElement(tag); if (text !== undefined) element.textContent = text; if (className) element.className = className; return element; };
 const filterIds = ['repository', 'search', 'state', 'stage', 'execution', 'wait', 'view'];
@@ -13,23 +15,45 @@ const identity = (repository, issue) => repository.toLowerCase() + ':' + issue.i
 const exactNumber = search => /^#?[1-9][0-9]{0,9}$/.test(search.trim()) && Number(search.replace('#', '')) <= 2147483647 ? Number(search.replace('#', '')) : null;
 const time = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';
 function status(message) { byId('factory-status').textContent = message; }
+function saveProjection() {
+  if (!dataScope) return;
+  writeProjectionCache(dataScope, {
+    repositories: [...repositories], attentionHistory: [...attentionHistory],
+  });
+}
+function restoreProjection(scope, readable) {
+  const cached = readProjectionCache(scope);
+  if (!Array.isArray(cached?.repositories) || !Array.isArray(cached?.attentionHistory)) return false;
+  const mayRead = repository => typeof repository === 'string' && [...readable].some(name => name.toLowerCase() === repository.toLowerCase());
+  let restored = false;
+  for (const [repository, collection] of cached.repositories) {
+    if (!mayRead(repository) || !collection || typeof collection !== 'object' || !Array.isArray(collection.issues)) continue;
+    repositories.set(repository, { ...collection, stale: true }); restored = true;
+  }
+  for (const [key, value] of cached.attentionHistory) if (typeof key === 'string' && mayRead(value?.repository)) attentionHistory.set(key, value);
+  return restored;
+}
 function remember() {
   const url = new URL(location.href); for (const [key, value] of Object.entries(filters())) value ? url.searchParams.set(key, value) : url.searchParams.delete(key);
   history.replaceState(null, '', url);
 }
 function setBusy(value) { busy = value; byId('factory-refresh').disabled = value; for (const button of document.querySelectorAll('#factory-projects button, #factory-results button')) button.disabled = value; }
 function clearSource(message) {
-  epoch++; repositories.clear(); evidence.clear(); attentionHistory.clear(); dataScope = undefined; render();
+  epoch++; clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); dataScope = undefined; render();
   byId('factory-count').textContent = 'No authorized collection is available.';
   const account = node('a', 'Open account'); account.href = '/workspace';
   byId('factory-results').replaceChildren(node('p', 'Verify your account to read fleet work.'), account);
   status(message);
 }
-function denyRepository(repository) {
-  repositories.set(repository, { availability: 'denied', issues: [], complete: false, reason: 'Current repository authority is denied.' });
+function removeRepositoryDetails(repository) {
+  repositories.delete(repository);
   for (const key of evidence.keys()) if (key.startsWith(repository.toLowerCase() + ':')) evidence.delete(key);
   for (const [key, entry] of attentionHistory) if (entry.repository === repository) attentionHistory.delete(key);
-  render(); status('Repository authority was denied; its earlier issue context was removed.');
+}
+function denyRepository(repository) {
+  removeRepositoryDetails(repository);
+  repositories.set(repository, { availability: 'denied', issues: [], complete: false, reason: 'Current repository authority is denied.' });
+  saveProjection(); render(); status('Repository authority was denied; its earlier issue context was removed.');
 }
 function sourceLink(text, repository, suffix) {
   const link = node('a', text); link.href = 'https://github.com/' + repository + suffix; link.rel = 'noreferrer noopener'; return link;
@@ -66,16 +90,18 @@ function issueCard(repository, issue, stale) {
   const title = node('h3'), open = node('a', `${repository}#${issue.number} · ${issue.title}`);
   open.href = `/workspace/issues/${repository}/${issue.number}`; open.dataset.focusKey = identity(repository, issue); title.append(open);
   const source = facts(repository, issue);
-  card.append(title, node('p', `Issue state: ${issue.state ?? 'unknown'} · Source update: ${time(issue.updatedAt)}`),
-    node('p', `Collected source labels: ${issue.labels.join(', ') || 'none'}${issue.labelsComplete ? '' : ' (incomplete)'}`, 'factory-labels'),
-    node('p', `Reported stages: ${source.stages.join(', ') || 'Unknown / unread'} · Linked runs: ${source.executions.join(', ') || 'Unknown / unread'}`));
+  card.append(title, node('p', `${issue.state ?? 'unknown'} · Updated ${time(issue.updatedAt)}`));
   if (stale) card.append(node('p', 'Stale collection; current activity and labels are unknown.', 'notice'));
+  const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source details'));
+  provenance.append(node('p', `Collected labels: ${issue.labels.join(', ') || 'none'}${issue.labelsComplete ? '' : ' · incomplete'}`, 'factory-labels'),
+    node('p', `Reported stages: ${source.stages.join(', ') || 'unknown / unread'} · Linked runs: ${source.executions.join(', ') || 'unknown / unread'}`));
   if (source.value) {
-    card.append(node('p', `Evidence observed: ${time(source.value.observedAt)}. ${source.value.reason || source.value.scope || ''}`));
+    provenance.append(node('p', `Evidence observed: ${time(source.value.observedAt)} · ${source.value.reason || source.value.scope || ''}`));
     const reports = node('ul');
     for (const report of source.reports) reports.append(node('li', `${report.stage ?? 'unknown'} · Result ${report.result ?? 'unknown'} · Workflow ${report.runId ?? 'unknown'} / attempt ${report.attempt ?? 'unknown'} · ${report.executionStatus ?? 'unknown'} / ${report.executionConclusion ?? 'unknown'}`));
-    card.append(reports);
+    if (reports.childElementCount) provenance.append(reports);
   }
+  card.append(provenance);
   const actions = node('div', undefined, 'project-actions'), inspect = node('button', source.value ? 'Refresh issue evidence' : 'Read issue evidence');
   inspect.type = 'button'; inspect.disabled = busy || stale; inspect.addEventListener('click', () => readEvidence(repository, issue));
   actions.append(inspect, sourceLink('GitHub issue', repository, '/issues/' + issue.number)); card.append(actions); return card;
@@ -89,11 +115,14 @@ function render() {
     const project = node('article', undefined, 'factory-project'); project.dataset.repository = repository;
     const heading = node('h3'), select = node('a', repository); const target = new URL(location.href); target.searchParams.set('repository', repository); select.href = target.pathname + target.search;
     select.addEventListener('click', event => { event.preventDefault(); byId('factory-repository').value = repository; remember(); render(); }); heading.append(select);
-    project.append(heading, node('p', `Source: ${collection.stale ? 'stale' : collection.availability ?? 'unread'} · Observed ${time(collection.observedAt)}`),
-      node('p', `Default branch · configured: ${collection.configuredBranch ?? 'unknown'} · observed: ${collection.observedBranch ?? 'unknown'}`));
-    if (collection.configuredBranch && collection.observedBranch && collection.configuredBranch !== collection.observedBranch) project.append(node('p', 'Configured and observed default branches conflict.', 'notice'));
-    project.append(node('p', `Collected pages: ${collection.pages?.join(', ') || 'none'} · Source records: ${collection.sourceRecords ?? 'unknown'} · Coverage: ${collection.complete ? 'reached source end for this collection' : 'incomplete / unknown'}`),
-      node('p', collection.reason || 'Source evidence has not been read.'), node('p', 'Health and harness/version signals: not collected by this discovery view; unavailable values do not mean healthy.'));
+    project.append(heading, node('p', `${collection.issues?.length ?? 0} collected issues · ${collection.stale ? 'stale' : collection.availability ?? 'unread'} · Observed ${time(collection.observedAt)}`));
+    const coverage = node('details', undefined, 'factory-provenance'); coverage.append(node('summary', 'Branch and source coverage'),
+      node('p', `Default branch · configured: ${collection.configuredBranch ?? 'unknown'} · observed: ${collection.observedBranch ?? 'unknown'}`),
+      node('p', `Pages: ${collection.pages?.join(', ') || 'none'} · Source records: ${collection.sourceRecords ?? 'unknown'} · ${collection.complete ? 'source end reached for this collection' : 'coverage incomplete / unknown'}`),
+      node('p', collection.reason || 'Source evidence has not been read.'),
+      node('p', 'Health and harness/version signals are not collected here; unavailable values do not mean healthy.'));
+    if (collection.configuredBranch && collection.observedBranch && collection.configuredBranch !== collection.observedBranch) coverage.append(node('p', 'Configured and observed default branches conflict.', 'notice'));
+    project.append(coverage);
     const actions = node('div', undefined, 'project-actions'); actions.append(sourceLink('Source project', repository, ''), sourceLink('Workflow evidence', repository, '/actions'));
     if (collection.nextPage && !exactNumber(selected.search)) {
       const more = node('button', 'Load next issue page'); more.type = 'button'; more.disabled = busy; more.addEventListener('click', () => loadMore(repository)); actions.append(more);
@@ -130,6 +159,7 @@ function render() {
 }
 function renderAttention(selected, focusKey) {
   const projection = reconcileAttention(repositories, attentionHistory); attentionHistory = projection.entries;
+  saveProjection();
   const visible = [...attentionHistory.values()].filter(entry => matches(entry.repository, entry.issue, selected));
   byId('factory-count').textContent = `${visible.length} collected label contexts. Inspect a context to verify its current question and supported actions.`;
   byId('factory-scope').textContent = 'Order: source-label observations, then stale or unobserved contexts; oldest issue update first, source identity breaks ties. Age does not establish urgency. Collection coverage is shown per project.';
@@ -139,10 +169,10 @@ function renderAttention(selected, focusKey) {
     card.dataset.attentionKey = entry.key;
     const heading = node('h3'), link = node('a', `${entry.repository}#${entry.issue.number} · ${entry.issue.title}`);
     link.href = `/workspace/issues/${entry.repository}/${entry.issue.number}`; link.dataset.focusKey = entry.key; heading.append(link);
-    card.append(heading, node('p', `Source label: ${entry.label} · Issue state: ${entry.issue.state ?? 'unknown'}`),
-      node('p', 'Question: unverified · Responsible actor: unknown'),
-      node('p', `Issue updated: ${time(entry.sourceTime)} (not the start of this wait)`),
-      node('p', `Observed: ${time(entry.observedAt)}`));
+    card.append(heading, node('p', `${entry.label === 'needs-info' ? 'Needs information' : 'Waiting for review'} · ${entry.issue.state ?? 'unknown'} issue`));
+    const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source history'),
+      node('p', `GitHub label: ${entry.label} · Issue updated: ${time(entry.sourceTime)} (not wait duration)`),
+      node('p', `Observed: ${time(entry.observedAt)}`)); card.append(provenance);
     if (entry.state === 'stale') card.append(node('p', 'Stale observation; current source context is unknown.', 'notice'));
     if (entry.state === 'not-observed') card.append(node('p', 'Not observed in this collection; resolution is unknown. Missing pages or a removed label do not establish a resolved question.', 'notice'));
     card.append(sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number));
@@ -181,40 +211,51 @@ async function getPage(repository, page, requestEpoch, number) {
     repositories.set(repository, { ...previous, availability: 'available', complete: false, nextPage: null, reason: 'The4MiB retained collection bound was reached. This page was not retained; refresh starts a new collection.' }); return;
   }
   repositories.set(repository, { ...data, issues: [...merged.values()], pages: [...(previous?.pages ?? []), page], sourceRecords: (previous?.sourceRecords ?? 0) + data.sourceRecords, stale: false });
+  saveProjection();
 }
 async function refresh() {
   if (busy) return;
-  setBusy(true); const requestEpoch = ++epoch; remember(); status('Checking current source authority…');
+  setBusy(true); const requestEpoch = ++epoch; remember();
+  for (const collection of repositories.values()) if (collection.availability === 'available') collection.stale = true;
+  render(); status('Checking current source authority…');
   try {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
     if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.'); return; }
     const account = await response.json();
     if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading fleet work.'); return; }
     const configured = new Set(account.repositories.map(row => row.repository));
-    for (const repository of repositories.keys()) if (!configured.has(repository)) repositories.delete(repository);
-    if (dataScope !== account.dataScope) { repositories.clear(); evidence.clear(); attentionHistory.clear(); }
-    dataScope = account.dataScope; evidence.clear(); lookupNumber = exactNumber(byId('factory-search').value);
+    const readable = new Set(account.repositories.filter(row => row.availability === 'available' && row.issuesRead === true).map(row => row.repository));
+    for (const repository of repositories.keys()) if (!configured.has(repository)) removeRepositoryDetails(repository);
+    if (dataScope && dataScope !== account.dataScope) { clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); }
+    const restore = !dataScope && repositories.size === 0;
+    dataScope = account.dataScope;
+    if (restore) restoreProjection(account.dataScope, readable);
+    lookupNumber = exactNumber(byId('factory-search').value);
     const picker = byId('factory-repository'), selected = picker.value || new URL(location.href).searchParams.get('repository') || '';
     const all = node('option', 'All repositories'); all.value = '';
     picker.replaceChildren(all, ...account.repositories.map(row => { const option = node('option', row.repository); option.value = row.repository; return option; }));
     picker.value = account.repositories.some(row => row.repository === selected) ? selected : '';
     const selectedRepositories = account.repositories.filter(row => !picker.value || row.repository === picker.value);
-    for (const row of account.repositories) if (row.availability === 'denied' || row.availability === 'available' && !row.issuesRead) repositories.set(row.repository, { availability: 'denied', issues: [], reason: 'Current issue-read authority is denied.' });
+    for (const row of account.repositories) if (row.availability === 'denied' || row.availability === 'available' && !row.issuesRead) {
+      removeRepositoryDetails(row.repository);
+      repositories.set(row.repository, { availability: 'denied', issues: [], complete: false, reason: 'Current issue-read authority is denied.' });
+    }
     for (const row of account.repositories) if (!repositories.has(row.repository)) repositories.set(row.repository, { availability: 'unread', issues: [], complete: false, reason: 'Source collection has not completed.' });
+    saveProjection();
     render();
     await Promise.all(selectedRepositories.map(async row => {
       if (repositories.get(row.repository)?.availability === 'denied' && (row.availability !== 'available' || !row.issuesRead)) return;
       try { await getPage(row.repository, 1, requestEpoch, exactNumber(byId('factory-search').value)); }
       catch { if (requestEpoch !== epoch) return; const previous = repositories.get(row.repository); repositories.set(row.repository, { ...previous, availability: 'unavailable', stale: !!previous?.issues?.length, complete: false, reason: 'Source refresh failed. Previous same-scope rows retain their original times and may be stale; this is not an empty backlog.' }); }
     }));
-    if (requestEpoch === epoch) { render(); status(`Fleet collection received for ${account.login}. Source times and coverage are shown per project.`); }
-  } catch { if (requestEpoch === epoch) { for (const collection of repositories.values()) { collection.stale = true; collection.complete = false; } render(); status('Source refresh failed. Previously collected rows may be stale; no current authority or empty-backlog conclusion is inferred.'); } }
+    if (requestEpoch === epoch) { saveProjection(); render(); status(`Fleet collection received for ${account.login}. Source times and coverage are shown per project.`); }
+  } catch { if (requestEpoch === epoch) { for (const collection of repositories.values()) { collection.stale = true; collection.complete = false; } saveProjection(); render(); status('Source refresh failed. Previously collected rows may be stale; no current authority or empty-backlog conclusion is inferred.'); } }
   finally { setBusy(false); }
 }
 async function loadMore(repository) {
   if (busy) return; setBusy(true); const requestEpoch = epoch;
   try { await getPage(repository, repositories.get(repository).nextPage, requestEpoch); if (requestEpoch === epoch) { render(); status('Another explicit source page was read; coverage is shown above.'); } }
-  catch { const collection = repositories.get(repository); if (collection) { collection.stale = true; collection.complete = false; collection.reason = 'The next page could not be read. Previous source times remain unchanged; coverage is incomplete.'; } render(); status('Next source page unavailable. Previously read issues remain visible as stale.'); }
+  catch { const collection = repositories.get(repository); if (collection) { collection.stale = true; collection.complete = false; collection.reason = 'The next page could not be read. Previous source times remain unchanged; coverage is incomplete.'; } saveProjection(); render(); status('Next source page unavailable. Previously read issues remain visible as stale.'); }
   finally { setBusy(false); }
 }
 async function readEvidence(repository, issue) {
@@ -247,4 +288,5 @@ byId('factory-filters').addEventListener('submit', event => { event.preventDefau
 for (const key of ['state', 'stage', 'execution', 'wait', 'view']) byId('factory-' + key).addEventListener('change', () => { remember(); render(); });
 byId('factory-repository').addEventListener('change', () => { remember(); refresh(); });
 byId('factory-refresh').addEventListener('click', refresh);
+window.addEventListener('pageshow', event => { if (event.persisted) refresh(); });
 refresh();

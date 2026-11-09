@@ -8,16 +8,37 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   area.classList.add('source-actions');
   let busy = false, preparation = null;
   const allowed = action => submissionAvailable && facts.actions?.[action]?.eligible === true;
+  const actionReasons = {
+    'write-authority-denied': 'The connected GitHub user or GitHub App installation lacks issue-write permission. Check the connected account and repository access, then refresh.',
+    'write-authority-unavailable': 'Issue-write permission could not be verified for the connected GitHub user and App installation. Check the connection and repository access, then refresh.',
+    'installed-contract-unsupported': 'This repository does not expose a supported Lighthouse issue-control contract at its current revision.',
+    'stage-contract-unsupported': 'The installed Lighthouse contract does not support this action for the repository.',
+    'policy-unavailable': 'The repository automation policy could not be verified, so this action is unavailable.',
+    'automation-disabled': 'Repository automation is disabled, so this Lighthouse action is unavailable.',
+    'authenticated-source-reservation': 'A source-confirmed action is already active for this issue. Review its source result before requesting another.',
+    'pending-question-not-verified': 'A current source question could not be verified, so Continue is unavailable.',
+    'pending-question-inputs-unavailable': 'The inputs needed to verify the current question are unavailable.',
+    'pending-question-inputs-changed': 'The issue or source question changed. Refresh before continuing.',
+    'source-wait-not-current': 'The source no longer shows this question as the current wait.',
+    'reservation-evidence-unavailable': 'Current source activity could not be verified. Refresh later; no new action can be prepared safely.',
+  };
+  const explain = value => actionReasons[value] ?? (typeof value === 'string' ? value.replaceAll('-', ' ') : 'The source did not confirm this action. Refresh the issue and review current source checks.');
   const message = document.createElement('p'); message.className = 'action-message'; message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
   const body = document.createElement('textarea'); body.className = 'lh-textarea'; body.rows = 5; body.maxLength = 12288;
-  body.placeholder = 'Write a comment for this issue…'; body.disabled = !allowed('comment') && !allowed('continue');
+  body.placeholder = 'Write a comment for this issue…';
   body.value = initialBody;
   const field = document.createElement('div'); field.className = 'lh-field';
   const label = document.createElement('label'); label.textContent = 'Your comment or answer'; label.append(body);
   const hint = document.createElement('p'); hint.className = 'lh-hint'; hint.id = 'comment-hint-' + ++composerId;
-  hint.textContent = !allowed('comment') && allowed('continue') ? 'Enter an answer for the verified question, then review answer and continue. Ordinary commenting is unavailable.'
-    : !allowed('comment') ? (reason ? 'Commenting is unavailable. See the source status above.' : facts.actions?.comment?.reason || 'Commenting is unavailable until source permissions and action checks are confirmed.')
-    : 'Publishes a GitHub comment as the connected account. It does not resume work. Review it before sending.';
+  const commentEligible = facts.actions?.comment?.eligible === true;
+  hint.textContent = commentEligible
+    ? submissionAvailable ? 'Publishes a GitHub comment as the connected account. It does not resume work. Review it before sending.'
+      : 'The source permits ordinary comments, but protected command storage is unavailable. You can keep a draft here; sending and recovery are disabled.'
+    : allowed('continue') ? 'Enter an answer for the verified question, then review answer and continue. Ordinary commenting is unavailable.'
+      : explain(facts.actions?.comment?.reason || reason || 'write-authority-unavailable');
+  if (!commentEligible && ['write-authority-denied', 'write-authority-unavailable'].includes(facts.actions?.comment?.reason)) {
+    const link = document.createElement('a'); link.href = '/workspace'; link.textContent = 'Review connected account'; hint.append(' ', link);
+  }
   body.setAttribute('aria-describedby', hint.id); field.append(label, hint);
   const composer = document.createElement('section'); composer.className = 'comment-composer';
   if (area.id === 'control-actions') { composer.id = 'comment-composer'; composer.tabIndex = -1; }
@@ -27,7 +48,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   confirmation.className = 'action-confirmation'; confirmation.hidden = true;
   const controls = document.createElement('div'); controls.className = 'mission-workflow-actions';
   const workflowHeading = document.createElement(contextLabel ? 'h5' : 'h3'); workflowHeading.textContent = 'Lighthouse actions'; controls.append(workflowHeading);
-  const layout = document.createElement('div'); layout.className = 'mission-action-layout'; layout.append(composer, controls);
+  const layout = document.createElement('div'); layout.className = 'mission-action-layout';
   const recovery = document.createElement('div'); recovery.className = 'action-recovery';
   const buttons = new Map();
   const text = value => { const p = document.createElement('p'); p.textContent = value; return p; };
@@ -106,12 +127,24 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       if (['comment', 'continue'].includes(action) && !body.value.trim()) { message.textContent = 'Enter your comment or answer first.'; body.focus(); return; }
       void command({ operation: 'prepare', action, body: ['comment', 'continue'].includes(action) ? body.value : '' });
     }, group, !allowed(action), action !== 'comment');
-    if (action !== 'comment' && (allowed(action) || !reason && facts.actions?.[action]?.reason)) {
-      const help = text(!allowed(action) ? facts.actions[action].reason
-        : action === 'continue' ? 'Use your answer above to explicitly resume the verified question under its original grant.' : 'Review a ' + action + ' request before sending it to Lighthouse.');
+    if (action !== 'comment' && allowed(action)) {
+      const help = text(action === 'continue' ? 'Use your answer above to explicitly resume the verified question under its original grant.' : 'Review a ' + action + ' request before sending it to Lighthouse.');
       help.className = 'lh-hint'; group.append(help);
     }
   }
+  const actionLabels = { refine: 'Refine', propose: 'Propose', continue: 'Continue' }, restrictions = new Map();
+  for (const action of Object.keys(actionLabels)) {
+    const code = facts.actions?.[action]?.reason;
+    if (!allowed(action) && code) restrictions.set(code, [...(restrictions.get(code) ?? []), actionLabels[action]]);
+  }
+  for (const [code, names] of restrictions) {
+    const help = text(names.join(', ') + ' unavailable: ' + explain(code));
+    help.className = 'lh-hint'; controls.append(help);
+  }
   button('Recover previous action', () => command({ operation: 'receipt' }), recovery, !submissionAvailable, true);
+  layout.append(controls);
   area.replaceChildren(layout, message, confirmation, recovery);
+  const slot = document.getElementById('comment-composer-slot');
+  if (slot && area.id === 'control-actions') slot.replaceChildren(composer);
+  else layout.prepend(composer);
 }

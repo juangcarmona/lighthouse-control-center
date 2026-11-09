@@ -5,18 +5,37 @@ input, button, summary { min-height: 44px; }
 input { padding: .5rem; color: var(--lh-text); background: var(--lh-surface); border: 1px solid var(--lh-border-strong); border-radius: 2px; max-width: 100%; }
 button, summary { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--lh-focus); outline-offset: 3px; }
-.issue-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 1rem; align-items: start; }
+.issue-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
 .issue-panel { min-width: 0; border: 1px solid var(--lh-border); border-radius: 2px; padding: 1rem; background: var(--lh-surface); }
 .issue-panel h2 { margin-top: 0; }
-.issue-panel:last-child { grid-column: 1 / -1; }
+#conversation-panel { grid-column: 1 / -1; }
+#mission-actions { margin-bottom: 1rem; }
+#mission-actions > p:first-of-type { margin: 0 0 .5rem; color: var(--lh-text-muted); font-size: var(--lh-text-small); }
+#mission-actions > p:nth-of-type(2) { margin-block: .5rem; }
+.mission-action-layout { display: block; }
+#mission-actions .mission-workflow-actions { border: 0; padding: 0; }
+#mission-actions .workflow-action { display: inline-grid; margin: .25rem .5rem .25rem 0; }
+#mission-actions .workflow-action .lh-hint { max-width: 28rem; }
+#mission-actions .lh-hint { margin-block: .25rem .5rem; font-size: var(--lh-text-small); }
+#comment-composer-slot { margin-block: .75rem 1rem; }
+.comment-composer { border-block: 1px solid var(--lh-border); padding-block: .75rem 1rem; }
+.comment-composer h3, .comment-composer h5 { margin: 0 0 .5rem; }
+.comment-composer textarea { width: 100%; min-height: 7rem; }
+#comment-composer .workflow-action { margin-top: .5rem; }
+#issue-facts-details { margin-bottom: .75rem; }
+#issue-facts-details p, #issue-age, #conversation-coverage { color: var(--lh-text-muted); font-size: var(--lh-text-small); }
+#source-provenance summary, #issue-facts-details summary, #conversation-panel details summary { color: var(--lh-text-muted); }
+#conversation-panel > details { margin-bottom: .5rem; }
 #issue-comments { padding: 0; list-style: none; }
 #issue-comments > li { border-top: 1px solid var(--lh-border); padding-block: 1rem; }
+#issue-comments h3 { margin: 0 0 .25rem; font-size: var(--lh-text-base); font-weight: 600; }
+#issue-comments details { margin-bottom: .5rem; }
+.source-byline { margin: .25rem 0; font-family: var(--lh-font-mono); }
 .source-markdown { overflow-wrap: anywhere; }
 .source-markdown pre { white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--lh-border); padding: .75rem; max-height: 28rem; overflow-y: auto; }
 .source-markdown a, #issue-facts, #issue-title { overflow-wrap: anywhere; }
 .source-markdown p { white-space: pre-wrap; }
 #issue-status[data-state="error"] { color: var(--lh-negative); }
-#issue-age, #conversation-coverage, .source-byline { color: var(--lh-text-muted); }
 #issue-body { max-height: 40rem; overflow-y: auto; }
 .issue-panel { overflow-wrap: anywhere; }
 @media (max-width: 48rem) { .issue-grid { display: block; } .issue-panel { margin-block: 1rem; } #issue-picker label { width: 100%; } }

@@ -208,6 +208,7 @@ public sealed class GitHubAuthorizationTests
     var snapshots = await Task.WhenAll(reads);
     Assert.All(snapshots, snapshot =>
     {
+      Assert.Equal(record.GitHub.Current!.DataScope, snapshot!.DataScope);
       var repo = Assert.Single(snapshot!.Repositories);
       Assert.Equal("available", repo.Availability);
       Assert.Equal(71, Assert.Single(repo.Runs!).Id);

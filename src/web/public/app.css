@@ -511,3 +511,42 @@ footer { margin-top:1rem; padding:.75rem max(1.5rem,calc((100% - 1160px)/2)); bo
 }
 
 .action-confirmation { background:var(--lh-surface); border-color:var(--lh-border-strong); }
+
+/* Match the reference site's native sun/moon/system controls. */
+.theme-switcher { display:inline-flex; flex-shrink:0; align-items:center; padding:2px; border:1px solid var(--lh-border); border-radius:2px; background:var(--lh-surface); }
+.theme-option { width:44px; min-height:44px; display:grid; place-items:center; padding:.35rem; border:1px solid transparent; border-radius:2px; background:transparent; color:var(--lh-text-muted); }
+.theme-option:hover { color:var(--lh-text); }
+.theme-option[aria-pressed="true"] { border-color:var(--lh-action); background:var(--lh-action-soft); color:var(--lh-action); }
+.theme-option svg { width:1.1rem; height:1.1rem; }
+.topbar { padding-block:.375rem; }
+.workspace-nav a { gap:.65rem; }
+.workspace-nav a svg { width:19px; height:19px; flex:0 0 19px; }
+.repo-actions .repository-mission-link { padding:.4rem .75rem; color:var(--lh-text); background:var(--lh-surface); border:1px solid var(--lh-border-strong); }
+.repo-actions { align-items:center; gap:1rem; margin:.75rem 0; }
+.dashboard-toolbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin:1rem 0; }
+.dashboard-toolbar #connection { margin:0; min-height:0; }
+.metrics { margin:1rem 0; }
+.metrics>div { padding:.7rem 1rem; }
+.metrics strong { font-size:1.55rem; }
+.metrics span { font-size:.75rem; }
+#repositories>section { padding:1rem; margin:1rem 0; }
+#repositories>section .items { display:block; }
+#repositories>section .items>li { padding:.75rem; margin:.5rem 0; border:1px solid var(--lh-border); }
+#repositories>section:first-child .items>li { border-left:3px solid var(--lh-caution); border-top:1px solid var(--lh-border); background:var(--lh-caution-surface); }
+.operational-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem 1rem; }
+.operational-row .issue-source-link { flex:1 1 16rem; font-weight:600; color:var(--lh-text); }
+.operational-row .labels { margin:0; }
+.operational-row .mission-link { margin:0; background:var(--lh-surface); color:var(--lh-action); border:1px solid var(--lh-border); }
+.record-details { margin:.25rem 0 0; }
+.record-details summary { padding:.25rem 0; font-size:.75rem; color:var(--lh-text-muted); }
+.record-details p { margin:.25rem 0; }
+.repository { padding:1rem; margin-bottom:.65rem; }
+.repository>details { margin:.5rem 0 0; }
+.repository>details>summary { padding:.35rem 0; color:var(--lh-text-muted); font-size:.8rem; }
+.repository .repo-heading h3 { font-size:.95rem; }
+#repositories .empty { padding:.25rem 0; margin:.25rem 0; }
+#repositories section>section { margin:.75rem 0; }
+.coverage-details { margin:.5rem 0 1rem; font-size:.75rem; color:var(--lh-text-muted); }
+.coverage-details summary { padding:.35rem 0; }
+.coverage-details .scope { margin:.5rem 0; padding:.5rem 0; }
+@media(max-width:560px) { .dashboard-toolbar { align-items:flex-start; flex-direction:column; gap:.5rem; } .theme-option { width:40px; } .header-kicker,.header-divider { display:none; } }

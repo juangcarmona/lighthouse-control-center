@@ -19,8 +19,10 @@ for (const [width, theme] of [[1280, 'dark'], [390, 'light']]) test(`inbox ${wid
   await page.goto(origin + '/workspace/attention');
   await page.locator('html').evaluate((element, value) => element.dataset.lhTheme = value, theme);
   await expect(page.locator('[data-attention-key]')).toHaveCount(2);
-  await expect(page.locator('#factory-results')).toContainText('Question: unverified · Responsible actor: unknown');
-  await expect(page.locator('#factory-results')).toContainText('not the start of this wait');
+  await expect(page.locator('#factory-results')).toContainText('Needs information · open issue');
+  await page.locator('[data-attention-key] details').first().click();
+  await expect(page.locator('#factory-results')).toContainText('GitHub label: needs-info');
+  await expect(page.locator('#factory-results')).toContainText('(not wait duration)');
   await expect(page.locator('#factory-results img, #factory-results script')).toHaveCount(0);
   const focus = page.locator('[data-attention-key]').first().getByRole('link').first();
   await focus.focus(); const key = await focus.getAttribute('data-focus-key');
@@ -40,6 +42,7 @@ test('inbox label removal and failed refresh preserve uncertainty; denial and ac
   await expect(page.locator('#factory-results')).toContainText('Not observed in this collection; resolution is unknown.');
   source.fail(503); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('#factory-results')).toContainText('Stale observation');
+  await page.locator('[data-attention-key] details').first().click();
   await expect(page.locator('#factory-results')).toContainText('2026-11-08T01:00:00.000Z');
   source.fail(403); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('[data-attention-key]')).toHaveCount(0);

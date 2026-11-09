@@ -4,16 +4,17 @@ const origin = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'
 const makeIssue = (number, title, state = 'open', labels = []) => ({ id: number + 1000, number, title, state, labels,
   labelsComplete: true, updatedAt: '2026-11-07T10:00:00Z', sourceUrl: `https://github.com/example/repository/issues/${number}` });
 async function fixture(page) {
-  let accountStatus = 0, failure = 0, scope = 'factory-71', title = 'Ordinary work', configured = ['example/repository', 'example/other'], otherWait;
+  let accountStatus = 0, failure = 0, scope = 'factory-71', title = 'Ordinary work', actionsRead = true, configured = ['example/repository', 'example/other'], otherWait, pageWait;
   const methods = [], requests = [];
   await page.route('**/api/**', async route => {
     methods.push(route.request().method()); const url = new URL(route.request().url()); requests.push(url.pathname + url.search);
     if (url.pathname === '/api/connections/github' && accountStatus) return route.fulfill({ status: accountStatus, body: 'Session ended' });
-    if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true })) } });
+    if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true, actionsRead })) } });
     if (url.pathname.startsWith('/api/issues/')) return route.fulfill({ json: url.pathname.endsWith('/evidence')
       ? { availability: 'available', dataScope: scope, observedAt: '2026-11-07T12:00:00Z', reports: [{ availability: 'available', stage: 'propose', result: 'blocked', executionStatus: 'completed', executionConclusion: 'success', runId: 500, attempt: 2 }], scope: 'Synthetic one-page report fixture; live lease unknown.' }
       : { availability: 'available', dataScope: scope, snapshot: 'bounded-snapshot', issue: { id: 1007 } } });
     const repository = url.pathname.replace('/api/factory/', ''), selectedPage = Number(url.searchParams.get('page') || 1), number = Number(url.searchParams.get('number'));
+    if (pageWait) await pageWait;
     if (repository === 'example/other' && otherWait) await otherWait;
     if (failure && repository === 'example/repository') return route.fulfill({ status: failure, json: { availability: 'unavailable' } });
     const issues = number ? [makeIssue(number, 'Uncollected target')] : repository === 'example/other' ? [makeIssue(2, 'Other repository work')]
@@ -24,21 +25,24 @@ async function fixture(page) {
       nextPage: selectedPage === 1 && repository === 'example/repository' && !number ? 2 : null, complete: selectedPage > 1 || repository === 'example/other' || !!number,
       configuredBranch: 'expected', observedBranch: 'main', reason: 'Synthetic collection: bounded live pages, not an atomic snapshot.' } });
   });
-  return { methods, requests, expireAccount() { accountStatus = 401; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
+  return { methods, requests, expireAccount() { accountStatus = 401; }, reconnect() { accountStatus = 0; }, revokeActions() { actionsRead = false; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, pausePages() { let release; pageWait = new Promise(resolve => { release = resolve; }); return () => { pageWait = undefined; release(); }; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
 }
 for (const width of [1280, 390]) test(`factory ${width}: list board filters evidence paging and keyboard`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 }); const source = await fixture(page);
   await page.goto(origin + '/workspace/factory');
   await expect(page.locator('.factory-issue')).toHaveCount(3);
   await expect(page.locator('#factory-results img, #factory-results script')).toHaveCount(0);
-  await expect(page.getByText('Configured and observed default branches conflict.', { exact: true })).toHaveCount(2);
   await page.locator('#factory-project-summary').click();
+  await page.locator('.factory-project details').first().click();
+  await page.locator('.factory-project details').nth(1).click();
+  await expect(page.getByText('Configured and observed default branches conflict.', { exact: true })).toHaveCount(2);
   await page.locator('.factory-project').filter({ has: page.getByRole('heading', { name: 'example/repository', exact: true }) }).getByRole('button', { name: 'Load next issue page' }).click();
   await expect(page.getByRole('link', { name: /Find beyond the first page/ })).toBeVisible();
   await page.selectOption('#factory-repository', 'example/repository');
   await expect(page.locator('.factory-issue')).toHaveCount(2);
   await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).getByRole('button', { name: 'Read issue evidence' }).focus();
   await page.keyboard.press('Enter');
+  await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).locator('details').click();
   await expect(page.locator('#factory-results')).toContainText('propose · Result blocked');
   await expect(page.locator('#factory-results')).toContainText('completed / success');
   await page.locator('#factory-more-filters summary').click();
@@ -86,6 +90,7 @@ test('transient failure retains stale times while denied and replacement scopes 
 test('removed repository titles and evidence disappear before a slow remaining refresh completes', async ({ page }) => {
   const source = await fixture(page); await page.goto(origin + '/workspace/factory');
   await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).getByRole('button', { name: 'Read issue evidence' }).click();
+  await page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).locator('details').click();
   await expect(page.locator('#factory-results')).toContainText('propose · Result blocked');
   source.removeFirst(); const release = source.pauseOther();
   try {
@@ -121,4 +126,70 @@ test('session loss clears source data and offers account recovery instead of a f
   await expect(page.locator('#factory-count')).toHaveText('No authorized collection is available.');
   await expect(page.locator('#factory-results').getByRole('link', { name: 'Open account' })).toHaveAttribute('href', '/workspace');
   await expect(page.locator('#factory-results')).not.toContainText('contains no ordinary issues');
+});
+
+test('returning restores same-scope read rows as stale, then refreshes them in the background', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
+  const ordinary = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
+  await expect(ordinary).toBeVisible();
+  await ordinary.getByRole('button', { name: 'Read issue evidence' }).click();
+  await ordinary.locator('details').click();
+  await expect(ordinary).toContainText('propose · Result blocked');
+  const stored = await page.evaluate(() => Object.entries(sessionStorage).filter(([key]) => key.startsWith('lcc:read-projection:v1:') && !key.endsWith(':active-scope'))
+    .map(([, value]) => JSON.parse(value).projection));
+  expect(stored.length).toBeGreaterThan(0);
+  expect(JSON.stringify(stored)).not.toMatch(/"evidence"|"reports"/i);
+  expect(JSON.stringify(stored)).not.toMatch(/"(?:eligible|eligibility|token|snapshot|preparation)"/i);
+
+  const release = source.pausePages();
+  try {
+    await page.reload();
+    const restored = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
+    await expect(restored).toContainText('Stale collection; current activity and labels are unknown.');
+    await expect(restored.getByRole('button', { name: /issue evidence/ })).toBeDisabled();
+    await restored.locator('details').click();
+    await expect(restored).toContainText('unknown / unread');
+    await expect(restored).not.toContainText('propose · Result blocked');
+  } finally { release(); }
+  await expect(page.locator('.factory-stale')).toHaveCount(0);
+  expect(source.methods.every(method => method === 'GET')).toBeTruthy();
+});
+
+test('permission downgrade restores issue rows but never reuses cached private evidence', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
+  await expect(page.locator('.factory-issue').filter({ hasText: 'Ordinary work' })).toBeVisible();
+  await page.evaluate(() => {
+    const key = 'lcc:read-projection:v1:factory-71:factory';
+    const envelope = JSON.parse(sessionStorage.getItem(key));
+    envelope.projection.evidence = [['example/repository:1007', {
+      availability: 'available', observedAt: '2026-11-07T12:00:00Z',
+      reports: [{ stage: 'propose', result: 'Result blocked', runId: 500 }],
+    }]];
+    sessionStorage.setItem(key, JSON.stringify(envelope));
+  });
+  source.revokeActions(); const release = source.pausePages();
+  try {
+    await page.reload();
+    const restored = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
+    await expect(restored).toContainText('Stale collection; current activity and labels are unknown.');
+    await restored.locator('details').click();
+    await expect(restored).toContainText('unknown / unread');
+    await expect(restored).not.toContainText('propose · Result blocked');
+    await expect(page.locator('#factory-results')).not.toContainText('Run 500');
+  } finally { release(); }
+  expect(source.methods.every(method => method === 'GET')).toBeTruthy();
+});
+
+test('an unauthorized account response clears the session projection before a later reconnect', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/factory');
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
+  source.expireAccount(); await page.reload();
+  await expect(page.locator('.factory-issue')).toHaveCount(0);
+  await expect(page.locator('#factory-count')).toHaveText('No authorized collection is available.');
+  source.reconnect(); const release = source.pausePages();
+  try {
+    await page.reload();
+    await expect(page.locator('.factory-issue')).toHaveCount(0);
+  } finally { release(); }
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
 });

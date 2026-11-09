@@ -1,6 +1,6 @@
+import './workspace-ui.js';
 // Use the same source-owned Lighthouse mark as the other workspace pages.
 document.body.classList.add('lh-root');
-document.documentElement.dataset.lhTheme = 'system';
 {
   const brand = document.querySelector('.topbar .brand');
   if (brand) {
@@ -18,11 +18,11 @@ document.documentElement.dataset.lhTheme = 'system';
       nav.classList.add('workspace-nav');
       let accountLink = [...nav.querySelectorAll('a')].find(link => link.getAttribute('href') === '/workspace');
       if (!accountLink) { accountLink = document.createElement('a'); accountLink.href = '/workspace'; accountLink.textContent = 'Account'; nav.append(accountLink); }
-      for (const [href, label] of [['/workspace/operations', 'Fleet overview'], ['/workspace/factory', 'Find repository work'], ['/workspace/attention', 'Intervention inbox'], ['/workspace/issues', 'Issues'], ['/workspace/runtime', 'Runtime'], ['/workspace', 'Account']]) {
+      for (const [href, label] of [['/workspace/operations', 'Overview'], ['/workspace/factory', 'Projects'], ['/workspace/attention', 'Inbox'], ['/workspace/issues', 'Missions'], ['/workspace/runtime', 'Runtime'], ['/workspace', 'Account']]) {
         const link = [...nav.querySelectorAll('a')].find(item => item.getAttribute('href') === href);
         if (link) { link.textContent = label; nav.append(link); }
       }
-      for (const link of main.querySelectorAll('a[href="/workspace/factory"]')) link.textContent = 'Find repository work';
+      for (const link of main.querySelectorAll('a[href="/workspace/factory"]')) link.textContent = 'Projects';
       for (const link of main.querySelectorAll('a[href="/workspace/operations"]')) link.textContent = 'Open fleet overview';
       accountLink.setAttribute('aria-current', 'page'); rail.append(brand, nav);
       const column = document.createElement('div'); column.className = 'page-column';
@@ -45,6 +45,7 @@ async function refresh() {
   try {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
     if ([401, 403].includes(response.status)) {
+      document.getElementById('account-verification-details')?.remove();
       identity.textContent = 'No verified acting account is available.';
       if (disconnect) disconnect.hidden = true;
       repositories.replaceChildren();
@@ -55,6 +56,7 @@ async function refresh() {
     const account = await response.json();
     if (disconnect && ['linked', 'unlinked', 'unconfigured'].includes(account.state)) disconnect.hidden = account.state !== 'linked';
     if (account.state !== 'linked') {
+      document.getElementById('account-verification-details')?.remove();
       identity.textContent = account.state === 'unconfigured' ? 'GitHub connection is not configured.'
         : account.state === 'unlinked' ? 'GitHub is not connected.' : 'GitHub verification is unavailable.';
       repositories.replaceChildren();
@@ -64,7 +66,7 @@ async function refresh() {
       return;
     }
     if (typeof account.login !== 'string' || !Number.isSafeInteger(account.userId) || !Array.isArray(account.repositories)) throw Error();
-    identity.textContent = `GitHub acting account: ${account.login} · User ID ${account.userId}.`;
+    identity.textContent = `GitHub connected as ${account.login}.`;
     const fragment = document.createDocumentFragment();
     for (const repository of account.repositories) {
       const item = document.createElement('li');
@@ -76,7 +78,14 @@ async function refresh() {
     }
     repositories.replaceChildren(fragment);
     const verified = Number.isFinite(Date.parse(account.verifiedAt)) ? new Date(account.verifiedAt).toISOString() : 'unavailable';
-    status.textContent = `GitHub identity last verified: ${verified}. Account status refreshes every four minutes while visible. These permission observations do not grant command eligibility.`;
+    status.textContent = 'GitHub connection verified. Repository permissions refresh automatically.';
+    let diagnostics = document.getElementById('account-verification-details');
+    if (!diagnostics) {
+      diagnostics = document.createElement('details'); diagnostics.id = 'account-verification-details';
+      const summary = document.createElement('summary'); summary.textContent = 'Identity verification details';
+      diagnostics.append(summary, document.createElement('p')); status.after(diagnostics);
+    }
+    diagnostics.querySelector('p').textContent = `GitHub user ID ${account.userId} · Last verified ${verified}. Current permission observations do not grant command eligibility.`;
   } catch {
     repositories.replaceChildren();
     status.textContent = 'Current GitHub authority is unavailable. Previously displayed identity may be stale; source operations require a new successful check.';

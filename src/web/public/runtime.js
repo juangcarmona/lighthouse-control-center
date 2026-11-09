@@ -1,3 +1,4 @@
+import './workspace-ui.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text) => { const value = document.createElement(tag); if (text !== undefined) value.textContent = text; return value; };
 const time = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';

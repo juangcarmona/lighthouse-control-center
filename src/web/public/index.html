@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Lighthouse Control Center · Fleet overview</title>
+  <title>Lighthouse Control Center · Overview</title>
   <link rel="stylesheet" href="/tokens.css">
   <link rel="stylesheet" href="/app.css">
   <script type="module" src="/app.js"></script>
@@ -15,16 +15,18 @@
     <nav id="workspace-navigation" class="workspace-nav" aria-label="Workspace navigation" hidden></nav>
   </aside>
   <div class="page-column">
-  <header class="topbar"><div class="header-context"><span class="header-kicker">WORKSPACE</span><span class="header-divider">/</span>Fleet overview</div><label class="appearance">Appearance <select id="appearance"><option value="system" selected>System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
+  <header class="topbar"><div class="header-context"><span class="header-kicker">WORKSPACE</span><span class="header-divider">/</span>Overview</div><label class="appearance">Appearance <select id="appearance"><option value="system" selected>System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></header>
   <main id="workspace" tabindex="-1">
-    <section class="intro"><div><p class="eyebrow">FLEET OVERVIEW</p><h1>Fleet operations</h1><p class="lead">Workflow activity and human waits observed in GitHub.</p></div><button id="refresh" type="button">Refresh observations</button></section>
-    <p id="connection" role="status" aria-live="polite">Connecting to GitHub…</p>
-    <label class="repository-filter">Repository <select id="repository-filter"><option value="">All repositories</option></select></label>
-    <p id="count-scope" class="muted">Counts describe collected evidence in the selected repositories.</p>
-    <section class="metrics" aria-label="Observed activity"><div><strong id="repo-count">—</strong><span>Observed / selected repositories</span></div><div><strong id="active-count">—</strong><span>Collected active runs</span></div><div><strong id="attention-count">—</strong><span>Collected human waits</span></div><div><strong id="unknown-count">—</strong><span>Unavailable repositories</span></div></section>
+    <section class="intro"><div><p class="eyebrow">CONTROL CENTER</p><h1>Your fleet at a glance</h1><p class="lead">Decisions to make, work in progress and your projects.</p></div><button id="refresh" type="button">Refresh observations</button></section>
+    <div class="dashboard-toolbar"><p id="connection" role="status" aria-live="polite">Connecting to GitHub…</p>
+    <label class="repository-filter">Repository <select id="repository-filter"><option value="">All repositories</option></select></label></div>
+    <details class="coverage-details"><summary>Source and coverage</summary><p id="count-scope" class="muted">Counts describe collected evidence in the selected repositories.</p>
     <p class="scope">Source: GitHub. Latest 20 workflow runs and first 100 open issue records per repository; PR records excluded from attention. Partial observation, not an exhaustive activity inventory or delivery audit.</p>
+    </details>
+    <section class="metrics" aria-label="Observed activity"><div><strong id="repo-count">—</strong><span>Connected projects</span></div><div><strong id="active-count">—</strong><span>Active workflows</span></div><div><strong id="attention-count">—</strong><span>Needs your attention</span></div><div><strong id="unknown-count">—</strong><span>Unavailable projects</span></div></section>
+
     <div id="repositories" aria-busy="true"><p class="loading">Loading repository observations…</p></div>
-    <aside class="boundary"><strong>Repository workflows own execution.</strong><p>Use “Open workflow actions” to request a stage or review a delivery in GitHub. This observation page cannot start agents or approve changes.</p></aside>
+
   </main>
   <footer>Lighthouse Control Center <span>Observed evidence · Independent repository execution</span></footer>
   </div>

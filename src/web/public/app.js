@@ -1,3 +1,5 @@
+import './workspace-ui.js';
+import { readProjectionCache, writeProjectionCache, clearProjectionCache } from './read-projection-cache.js';
 const $ = id => document.getElementById(id);
 const node = (tag, text, className) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (className) n.className = className; return n; };
 function showObservationControls(visible) {
@@ -9,10 +11,10 @@ function showWorkspaceNavigation(visible) {
   if (!visible) { navigation.hidden = true; return; }
   if (!navigation.childElementCount) {
     for (const [label, href, key] of [
-      ['Fleet overview', '/workspace/operations', 'workspace:operations'],
-      ['Find repository work', '/workspace/factory', 'workspace:factory'],
-      ['Intervention inbox', '/workspace/attention', 'workspace:attention'],
-      ['Issues', '/workspace/issues', 'workspace:issues'],
+      ['Overview', '/workspace/operations', 'workspace:operations'],
+      ['Projects', '/workspace/factory', 'workspace:factory'],
+      ['Inbox', '/workspace/attention', 'workspace:attention'],
+      ['Missions', '/workspace/issues', 'workspace:issues'],
       ['Runtime', '/workspace/runtime', 'workspace:runtime'],
       ['Account', '/workspace', 'workspace:account'],
     ]) {
@@ -61,29 +63,58 @@ function issueCard(repo, issue) {
   const issueKey = sourceKey(repo.repository, 'issue', issue.number);
   const source = link(`GitHub: #${issue.number} ${issue.title} ↗`, issue.url, repo.repository, 'issues/', `${issueKey}:source`);
   source.className = 'issue-source-link';
-  li.append(node('p', repo.repository, 'muted'), source);
-  if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
-    const href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number;
-    li.append(workspaceLink('Open mission', href, repo.repository, 'mission-link', `${issueKey}:mission`));
-  }
+  const row = node('div', undefined, 'operational-row');
+  row.append(source);
   const labels = node('div', undefined, 'labels');
   for (const label of issue.labels) labels.append(badge(label, ['waiting-review', 'needs-info'].includes(label) ? 'caution' : label === 'agent-working' ? 'activity' : ''));
-  li.append(labels, timing('Since source update (not wait duration)', issue.updatedAt, repo.observedAt));
+  row.append(labels);
+  if (location.pathname === '/workspace/operations' && Number.isSafeInteger(issue.number) && issue.number > 0) {
+    const href = '/workspace/issues/' + repo.repository.split('/').map(encodeURIComponent).join('/') + '/' + issue.number;
+    row.append(workspaceLink('Open mission', href, repo.repository, 'mission-link', `${issueKey}:mission`));
+  }
+  const evidence = node('details', undefined, 'record-details'); evidence.dataset.key = `${issueKey}:evidence`;
+  evidence.append(node('summary', repo.repository + ' · Source details'), timing('Since source update (not wait duration)', issue.updatedAt, repo.observedAt));
+  li.append(row, evidence);
   return li;
 }
 function runCard(repo, run) {
   const li = node('li'), heading = node('div', undefined, 'run-heading');
   heading.append(link(run.name || `Run ${run.id}`, run.url, repo.repository, 'actions/runs/', sourceKey(repo.repository, 'run', run.id)), badge(run.status || 'Status unavailable', active(run) ? 'activity' : ''));
-  li.append(node('p', `${repo.repository} · Run ${run.id}`, 'muted'), heading, node('p', `Source revision: ${run.sourceRevision || 'unavailable'}`, 'timestamp'));
-  li.append(node('p', `Source attempt: ${Number.isSafeInteger(run.runAttempt) && run.runAttempt > 0 ? run.runAttempt : 'unknown'}`, 'timestamp'),
+  const evidence = node('details', undefined, 'record-details'); evidence.dataset.key = sourceKey(repo.repository, 'run-details', run.id);
+  evidence.append(node('summary', repo.repository + ' · Source details'), node('p', `Source revision: ${run.sourceRevision || 'unavailable'}`, 'timestamp'));
+  evidence.append(node('p', `Source attempt: ${Number.isSafeInteger(run.runAttempt) && run.runAttempt > 0 ? run.runAttempt : 'unknown'}`, 'timestamp'),
     node('p', `Triggering event: ${typeof run.event === 'string' && run.event.trim() ? run.event : 'unknown'}`, 'timestamp'));
-  if (run.conclusion) li.append(node('p', `Source conclusion: ${run.conclusion}`, 'muted'));
+  if (run.conclusion) heading.append(badge(run.conclusion, run.conclusion === 'failure' ? 'negative' : ''));
   if (run.status === 'in_progress') li.append(timing('Elapsed from source start', run.startedAt, repo.observedAt));
-  li.append(timing('Since source update', run.updatedAt, repo.observedAt));
+  evidence.append(timing('Since source update', run.updatedAt, repo.observedAt));
+  li.prepend(heading); li.append(evidence);
   return li;
 }
 function list(items) { const ul = node('ul', undefined, 'items'); ul.append(...items); return ul; }
-let snapshot, busy = false;
+let snapshot, busy = false, projectionScope, projectionEpoch = 0;
+function validSnapshot(data) {
+  return Array.isArray(data?.repositories) && data.repositories.every(repository => typeof repository.repository === 'string'
+    && (!['available', 'stale'].includes(repository.availability) || Array.isArray(repository.runs) && Array.isArray(repository.attention)));
+}
+async function restoreProjection() {
+  if (location.pathname !== '/workspace/operations') return;
+  const epoch = projectionEpoch;
+  try {
+    const response = await fetch('/api/connections/github', { cache: 'no-store', signal: AbortSignal.timeout(35000) });
+    if ([401, 403, 409].includes(response.status)) { clearProjectionCache(); return; }
+    if (!response.ok) return;
+    const account = await response.json();
+    if (epoch !== projectionEpoch || snapshot) return;
+    if (account.state !== 'linked' || typeof account.dataScope !== 'string') { clearProjectionCache(); return; }
+    projectionScope = account.dataScope;
+    const cached = readProjectionCache(projectionScope, 'operations');
+    if (snapshot || !validSnapshot(cached) || cached.dataScope !== projectionScope) return;
+    const allowed = new Set((account.repositories ?? []).filter(repository => repository.availability === 'available' && repository.issuesRead && repository.actionsRead).map(repository => repository.repository.toLowerCase()));
+    const restored = { ...cached, repositories: cached.repositories.filter(repository => allowed.has(repository.repository.toLowerCase())).map(repository => ({ ...repository, availability: repository.availability === 'available' ? 'stale' : repository.availability })) };
+    showObservationControls(true); showWorkspaceNavigation(true); render(restored); snapshot = restored;
+    $('connection').textContent = 'Restored previous observations · refreshing in the background. Current activity is not yet confirmed.';
+  } catch { /* A failed scope check never opens stored private observations. */ }
+}
 function render(data) {
   const root = $('repositories'), focused = document.activeElement;
   const hadFocus = root.contains(focused), key = hadFocus ? focused.dataset.key : undefined;
@@ -104,21 +135,24 @@ function render(data) {
   $('unknown-count').textContent = unknown;
   $('count-scope').textContent = `${filter.value || 'All configured repositories'}: counts include only collected active runs and needs-info / waiting-review issues, counted once per issue. ${unknown ? 'Known collected counts only; unavailable repositories leave an unknown remainder.' : 'No matching collected records does not prove inactivity or health.'}`;
   const fragment = document.createDocumentFragment(), waits = node('section'), workflows = node('section');
-  waits.append(node('h2', 'Human intervention'), node('p', 'Source-labeled needs-info or waiting-review issues. Workflow waiting does not identify an approver. Agent-working / ready alone does not request owner action.', 'muted'));
+  waits.append(node('h2', 'Needs your attention'));
   const waitingIssues = available.flatMap(repo => uniqueIssues(repo).filter(humanWait).map(issue => issueCard(repo, issue)));
   waits.append(waitingIssues.length ? list(waitingIssues) : node('p', available.length ? 'No human waits in the collected issues.' : 'Human waits unavailable.', 'empty'));
   workflows.append(node('h2', 'Active workflows'));
   for (const [title, statuses] of [['Running', ['in_progress']], ['Queued / pending / requested', ['queued', 'pending', 'requested']], ['Waiting', ['waiting']]]) {
     const group = node('section'), cards = available.flatMap(repo => repo.runs.filter(run => statuses.includes(run.status)).map(run => runCard(repo, run)));
-    group.append(node('h3', title), cards.length ? list(cards) : node('p', available.length ? 'No matching collected runs.' : 'Workflow evidence unavailable.', 'empty'));
+    if (!cards.length) continue;
+    group.append(node('h3', title), list(cards));
     workflows.append(group);
   }
-  fragment.append(waits, workflows, node('h2', 'Repository evidence and history'));
+  if (workflows.children.length === 1) workflows.append(node('p', available.length ? 'No active workflow runs in the collected observation.' : 'Workflow evidence unavailable.', 'empty'));
+  fragment.append(waits, workflows, node('h2', 'Projects'));
   for (const repo of rows) {
     const card = node('article', undefined, 'repository'); card.dataset.repository = repo.repository;
     const heading = node('div', undefined, 'repo-heading');
     heading.append(node('h3', repo.repository), badge(repo.availability === 'available' ? 'Observed' : repo.availability === 'stale' ? 'Stale evidence' : 'Evidence unavailable', repo.availability === 'available' ? 'positive' : 'caution'));
-    card.append(heading, node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp'));
+    card.append(heading);
+    const provenance = node('details', undefined, 'record-details'); provenance.dataset.key = sourceKey(repo.repository, 'observation', ''); provenance.append(node('summary', 'Observation details'), node('p', `Source observation time: ${absolute(repo.observedAt)}`, 'timestamp')); card.append(provenance);
     const actions = node('nav', undefined, 'repo-actions'); actions.setAttribute('aria-label', `${repo.repository} actions`);
     if (location.pathname === '/workspace/operations') {
       const href = '/workspace/issues?repository=' + encodeURIComponent(repo.repository);
@@ -133,7 +167,7 @@ function render(data) {
     } else if (repo.availability !== 'available') card.append(node('p', 'GitHub evidence could not be collected. Activity and backlog are unknown; this does not mean the repository is idle.', 'notice'));
     else {
       const other = uniqueIssues(repo).filter(issue => !humanWait(issue));
-      card.append(node('h4', 'Other collected source labels'), other.length ? list(other.map(issue => issueCard(repo, issue))) : node('p', 'No other attention labels in the collected issues.', 'empty'));
+      const backlog = node('details'); backlog.dataset.key = sourceKey(repo.repository, 'backlog', ''); backlog.append(node('summary', `Other collected work (${other.length})`), other.length ? list(other.map(issue => issueCard(repo, issue))) : node('p', 'No other attention labels in the collected issues.', 'empty')); card.append(backlog);
       if (!repo.attention.length) card.append(node('p', 'No attention labels in the collected issues.', 'empty'));
       if (!repo.runs.length) card.append(node('p', 'No workflow runs returned.', 'empty'));
       for (const [title, predicate, kind] of [['Recent completed runs', run => run.status === 'completed', 'completed'], ['Unclassified source statuses', run => !active(run) && run.status !== 'completed', 'unclassified']]) {
@@ -147,10 +181,11 @@ function render(data) {
     fragment.append(card);
   }
   root.replaceChildren(fragment);
+  for (const details of root.querySelectorAll('details')) details.open = disclosures.get(details.dataset.key) || false;
   if (hadFocus) {
     const controls = [...root.querySelectorAll('a[href], summary')];
     const target = controls.find(n => n.dataset.key === key) || controls.find(n => n.dataset.key === sourceKey(repository, 'actions', '')) || filter;
-    if (target.matches('a') && target.closest('details')) target.closest('details').open = true;
+    for (let details = target.matches('summary') ? target.parentElement.parentElement.closest('details') : target.closest('details'); details; details = details.parentElement.closest('details')) details.open = true;
     target.focus({ preventScroll: true });
   }
 }
@@ -167,6 +202,8 @@ async function refresh() {
       showObservationControls(false);
       showWorkspaceNavigation(response.status === 409);
       snapshot = undefined;
+      projectionEpoch++;
+      clearProjectionCache(); projectionScope = undefined;
       $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
       for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
       $('count-scope').textContent = 'No authorized observation is available.';
@@ -184,9 +221,13 @@ async function refresh() {
     }
     if (!response.ok) throw Error();
     const data = await response.json();
-    if (!Array.isArray(data.repositories) || data.repositories.some(r => typeof r.repository !== 'string' || (['available', 'stale'].includes(r.availability) && (!Array.isArray(r.runs) || !Array.isArray(r.attention))))) throw Error();
+    if (!validSnapshot(data)) throw Error();
+    if (typeof data.dataScope === 'string') {
+      if (projectionScope && projectionScope !== data.dataScope) clearProjectionCache(projectionScope);
+      projectionScope = data.dataScope; writeProjectionCache(projectionScope, data, 'operations');
+    }
     showObservationControls(true); showWorkspaceNavigation(true); render(data); snapshot = data;
-    $('connection').textContent = `Observation received ${new Date().toISOString()}. Refreshes every 30 seconds; source observation times are shown below.`;
+    $('connection').textContent = `Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · refreshes automatically`;
   } catch {
     $('connection').textContent = snapshot ? 'Refresh failed. Previously shown observations may be stale. Try refreshing again.' : 'Refresh failed. No observation is available. Try refreshing again.';
   } finally {
@@ -196,7 +237,7 @@ async function refresh() {
 }
 $('refresh').addEventListener('click', refresh);
 $('repository-filter').addEventListener('change', () => { if (snapshot) render(snapshot); });
-$('appearance').addEventListener('change', event => { document.documentElement.dataset.lhTheme = event.target.value; });
 showWorkspaceNavigation(true);
+restoreProjection();
 refresh();
 setInterval(() => { if (!document.hidden) refresh(); }, 30000);

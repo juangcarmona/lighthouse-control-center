@@ -9,8 +9,9 @@ const payload = { repositories: [
 ] };
 for (const theme of ['dark', 'light']) test(`${theme}: evidence, safe links, keyboard, mobile and accessibility`, async ({ page }, info) => {
   await page.route('**/api/observations', route => route.fulfill({ json: payload }));
-  await page.goto('/'); await page.selectOption('#appearance', theme);
+  await page.goto('/'); await page.getByRole('button', { name: theme[0].toUpperCase() + theme.slice(1) + ' appearance' }).click();
   await expect(page.getByRole('navigation', { name: 'Workspace navigation' })).toBeHidden();
+  await page.getByText('Other collected work (1)', { exact: true }).click();
   await expect(page.getByText('Initialize the factory view', { exact: false })).toBeVisible();
   await expect(page.getByText('Evidence unavailable', { exact: true })).toBeVisible();
   await expect(page.getByText('waiting-review', { exact: true })).toBeVisible();
@@ -60,9 +61,11 @@ test('all active states, human waits, bounded evidence, source ages and local fi
   await expect(page.locator('#active-count')).toHaveText('11');
   await expect(page.locator('#attention-count')).toHaveText('3');
   await expect(page.locator('#repo-count')).toHaveText('2 / 3');
+  await page.getByText('Source and coverage', { exact: true }).click();
   await expect(page.locator('#count-scope')).toContainText('unknown remainder');
+  await page.locator('.record-details').evaluateAll(items => items.forEach(item => item.open = true));
   const workflows = page.getByRole('heading', { name: 'Active workflows', exact: true }).locator('..');
-  const waits = page.getByRole('heading', { name: 'Human intervention', exact: true }).locator('..');
+  const waits = page.getByRole('heading', { name: 'Needs your attention', exact: true }).locator('..');
   await expect(workflows.getByRole('link', { name: 'Workflow 11', exact: true })).toBeVisible();
   await expect(workflows.getByText('pending', { exact: true })).toBeVisible();
   await expect(workflows.getByText('requested', { exact: true }).first()).toBeVisible();
@@ -132,16 +135,16 @@ test('operations navigation opens source-backed mission context and a repository
   await page.goto('/workspace/operations');
 
   const navigation = page.getByRole('navigation', { name: 'Workspace navigation' });
-  await expect(navigation.getByRole('link', { name: 'Fleet overview' })).toHaveAttribute('href', '/workspace/operations');
-  await expect(navigation.getByRole('link', { name: 'Issues' })).toHaveAttribute('href', '/workspace/issues');
-  await expect(navigation.getByRole('link', { name: 'Intervention inbox' })).toHaveAttribute('href', '/workspace/attention');
+  await expect(navigation.getByRole('link', { name: 'Overview' })).toHaveAttribute('href', '/workspace/operations');
+  await expect(navigation.getByRole('link', { name: 'Missions' })).toHaveAttribute('href', '/workspace/issues');
+  await expect(navigation.getByRole('link', { name: 'Inbox' })).toHaveAttribute('href', '/workspace/attention');
 
   const mission = page.getByRole('link', { name: 'Open mission' }).first();
   await expect(mission).toHaveAttribute('href', '/workspace/issues/owner/lighthouse/1');
   const issueCard = mission.locator('..');
   const source = issueCard.getByRole('link', { name: 'GitHub: #1 Information ↗' });
   await expect(source).toHaveAttribute('href', 'https://github.com/owner/lighthouse/issues/1');
-  expect((await mission.boundingBox()).y).toBeGreaterThan((await source.boundingBox()).y);
+  expect((await mission.boundingBox()).width).toBeGreaterThanOrEqual(44);
   await expect(issueCard.getByRole('button')).toHaveCount(0);
 
   const picker = page.getByRole('navigation', { name: 'owner/lighthouse actions' }).getByRole('link', { name: 'Choose an issue' });
@@ -163,7 +166,8 @@ test('operations navigation opens source-backed mission context and a repository
   await expect(page.locator('#issue-status')).toContainText('Synthetic source denial for the navigation fixture.');
   await expect(page.locator('#control-actions button:enabled')).toHaveCount(0);
   await expect(page.getByLabel('Your comment or answer')).toBeVisible();
-  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
   await expect(page.locator('#controls-status')).toContainText('Synthetic source denial for the navigation fixture.');
 });
 
@@ -194,9 +198,9 @@ test('source-keyed focus survives same titles, changed href, reorder, history an
   run.url = 'https://github.com/owner/other/actions/runs/0';
   await refreshInPlace(page);
   await expect(page.getByRole('navigation', { name: 'owner/lighthouse actions' }).getByRole('link', { name: 'Open workflow actions' })).toBeFocused();
-  await page.locator('#appearance').focus();
+  await page.getByRole('button', { name: 'System appearance' }).focus();
   await refreshInPlace(page);
-  await expect(page.locator('#appearance')).toBeFocused();
+  await expect(page.getByRole('button', { name: 'System appearance' })).toBeFocused();
   const summary = page.locator('article').filter({ has: page.getByRole('heading', { name: 'owner/lighthouse', exact: true }) }).getByText('Unclassified source statuses', { exact: true });
   await summary.focus();
   await refreshInPlace(page);
@@ -243,8 +247,9 @@ for (const theme of ['dark', 'light']) test(`${theme}: operational fixture phone
   repo.attention[0].labels.push('long-label'.repeat(30));
   repo.attention[0].url = 'javascript:alert(1)';
   await page.route('**/api/observations', route => route.fulfill({ json: current }));
-  await page.goto('/'); await page.selectOption('#appearance', theme);
+  await page.goto('/'); await page.getByRole('button', { name: theme[0].toUpperCase() + theme.slice(1) + ' appearance' }).click();
   await expect(page.locator('img, a[href^="javascript:"], a[href*="elsewhere"]')).toHaveCount(0);
+  await page.locator('.record-details').evaluateAll(items => items.forEach(item => item.open = true));
   await expect(page.getByText(`Triggering event: ${repo.runs[0].event}`, { exact: true })).toBeVisible();
   await page.locator('article').first().getByText('Recent completed runs', { exact: true }).click();
   const evidence = process.env.SOFA_BROWSER_EVIDENCE;
@@ -272,6 +277,7 @@ test('unavailable observation timestamps and missing revisions are explicit', as
   current.repositories[0].runs = [{ ...current.repositories[0].runs[0], sourceRevision: null }];
   await page.route('**/api/observations', route => route.fulfill({ json: current }));
   await page.goto('/');
+  await page.locator('.record-details').evaluateAll(items => items.forEach(item => item.open = true));
   await expect(page.getByText('Source observation time: Time unavailable', { exact: true })).toBeVisible();
   await expect(page.getByText('Source revision: unavailable', { exact: true })).toBeVisible();
   await expect(page.getByText('Elapsed from source start: unavailable', { exact: true })).toBeVisible();
@@ -295,6 +301,7 @@ test('known, null and legacy source metadata agree across every run category and
   await page.getByText('Recent completed runs', { exact: true }).click();
   await page.getByText('Unclassified source statuses', { exact: true }).click();
   const assertMetadata = async () => {
+    await page.locator('.record-details').evaluateAll(items => items.forEach(item => item.open = true));
     for (const run of repo.runs) {
       const link = page.getByRole('link', { name: run.name, exact: true });
       const card = link.locator('..').locator('..');
@@ -326,6 +333,7 @@ for (const status of [401, 403, 409]) test(`authority loss ${status} clears prev
   let allowed = true;
   await page.route('**/api/observations', route => route.fulfill(allowed ? { json: payload } : { status }));
   await page.goto('/');
+  await page.getByText('Other collected work (1)', { exact: true }).click();
   const issue = page.getByRole('link', { name: 'GitHub: #45 Initialize the factory view ↗' });
   await expect(issue).toBeVisible();
   await issue.focus();
@@ -336,7 +344,7 @@ for (const status of [401, 403, 409]) test(`authority loss ${status} clears prev
   await expect(page.locator('#active-count')).toHaveText('—');
   await expect(page.locator('#attention-count')).toHaveText('—');
   await expect(page.locator('#repository-filter option')).toHaveCount(1);
-  await expect(page.getByText('No authorized observation is available.')).toBeVisible();
+  await expect(page.locator('#count-scope')).toHaveText('No authorized observation is available.');
 });
 
 test('empty evidence is not a claim of delivery success', async ({ page }) => {
@@ -350,6 +358,7 @@ test('background refresh preserves keyboard focus and handles a removed issue', 
   let current = structuredClone(payload);
   await page.route('**/api/observations', route => route.fulfill({ json: current }));
   await page.goto('/');
+  await page.getByText('Other collected work (1)', { exact: true }).click();
   const issue = page.getByRole('link', { name: 'GitHub: #45 Initialize the factory view ↗' });
   await issue.focus();
   const refreshWithoutMovingFocus = async () => {

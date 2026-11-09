@@ -15,7 +15,7 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`ac
   await expect(page.getByRole('link', { name: 'Account', exact: true })).toHaveAttribute('aria-current', 'page');
   await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
   await expect(page.getByRole('link', { name: 'Lighthouse Control Center', exact: true })).toBeVisible();
-  await expect(page.locator('.workspace-nav a')).toHaveText(['Fleet overview', 'Find repository work', 'Intervention inbox', 'Issues', 'Runtime', 'Account']);
+  await expect(page.locator('.workspace-nav a')).toHaveText(['Overview', 'Projects', 'Inbox', 'Missions', 'Runtime', 'Account']);
   await expect(page.locator('#account a[href="/workspace/operations"]')).toHaveText('Open fleet overview');
   const current = await page.locator('.workspace-nav [aria-current="page"]').boundingBox();
   expect(current.x).toBeGreaterThanOrEqual(0);

@@ -229,7 +229,9 @@ test('missing private journal explains disabled actions without enabling prepare
   await expect(page.locator('#controls-status')).toContainText('Opening this page does not send an action');
   await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
   await expect(page.getByLabel('Your comment or answer')).toBeVisible();
-  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
+  await page.getByLabel('Your comment or answer').fill('Keep a local draft until protected storage returns.');
+  await expect(page.getByLabel('Your comment or answer')).toHaveValue('Keep a local draft until protected storage returns.');
   await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });
@@ -243,7 +245,7 @@ test('a failed current-revision read exposes the bounded diagnostic and missing 
   await expect(page.locator('#controls-status')).toContainText("Could not read the repository's current revision (HTTP 403)");
   await expect(page.locator('#controls-status')).toContainText('Contents: read');
   await expect(page.locator('#issue-controls')).toContainText('source-read-commits-http-403');
-  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
   await expect(page.locator('#control-actions button:enabled')).toHaveCount(0);
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
 });
@@ -255,9 +257,9 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`co
   await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
   await expect(page.getByRole('heading', { name: 'Add a comment' })).toBeVisible();
   await expect(page.getByLabel('Your comment or answer')).toBeVisible();
-  await expect(page.getByLabel('Your comment or answer')).toBeDisabled();
+  await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
   await expect(page.locator('#controls-status')).toContainText('Installed contract unavailable.');
-  await expect(page.locator('#comment-composer')).toContainText('See the source status above.');
+  await expect(page.locator('#comment-composer')).toContainText('Installed contract unavailable.');
   await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Recover previous action' })).toBeDisabled();
   await page.getByRole('link', { name: 'Add a comment', exact: true }).click();
@@ -271,6 +273,56 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`co
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(harness.methods.every(method => method === 'GET')).toBe(true);
   await page.locator('#mission-actions').screenshot({ path: `test-results/issue/composer-${theme}-${width}.png` });
+});
+
+test('comment denial explains the source permission and links to account recovery without blocking a draft', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: false, availability: 'denied', reason: 'write-authority-denied' } }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  const draft = page.getByLabel('Your comment or answer');
+  await expect(draft).toBeEnabled();
+  await expect(page.locator('#comment-composer')).toContainText('lacks issue-write permission');
+  await expect(page.getByRole('link', { name: 'Review connected account' })).toHaveAttribute('href', '/workspace');
+  await draft.fill('A draft stays local while permission is unavailable.');
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeDisabled();
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
+test('shared workflow restrictions appear once while distinct restrictions keep separate explanations', async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: {
+      comment: { eligible: true },
+      refine: { eligible: false, reason: 'automation-disabled' },
+      propose: { eligible: false, reason: 'automation-disabled' },
+      continue: { eligible: false, reason: 'reservation-evidence-unavailable' }
+    }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#control-actions')).toContainText('Refine, Propose unavailable: Repository automation is disabled');
+  await expect(page.locator('#control-actions')).toContainText('Continue unavailable: Current source activity could not be verified');
+  await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review Propose' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review answer and continue' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeEnabled();
+  expect(harness.methods.every(method => method === 'GET')).toBe(true);
+});
+
+test('timestamps and source identifiers stay inside collapsed provenance details', async ({ page }) => {
+  await fixture(page);
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#source-provenance')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#issue-facts-details')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#conversation-panel > details')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#source-comment-1 > details')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#source-comment-1 .source-byline')).toBeHidden();
+  await expect(page.locator('#source-comment-1 .source-markdown')).toBeVisible();
+  await expect(page.locator('#conversation-panel #comment-composer')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('loading another conversation page restores the authorized comment composer', async ({ page }) => {
