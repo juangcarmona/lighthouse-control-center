@@ -6,7 +6,7 @@ description: Technical, organizational, and convention constraints that shape th
 
 # 02. Independent execution
 
-No SoFa service, store, queue or lease is required by repository delivery. The authenticated application reads source evidence; workflow controls remain source-owned and are not implemented by the identity foundation. The retained Node collector has no mutation authority.
+No Lighthouse Control Center service, store, queue or lease is required by repository delivery. The authenticated application reads source evidence; workflow controls remain source-owned and are not implemented by the identity foundation. The retained Node collector has no mutation authority.
 
 <!-- pdac:cite id="CON-FACTORY-RUNTIME" digest="sha256:31409f2106c4b0abc626f54b05e1715289edf1e29dc9e653c72d3318a379e704" -->
 

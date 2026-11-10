@@ -1,6 +1,6 @@
 # Repository workflows
 
-SoFa uses Lighthouse's repository workflows. GitHub runs the work; the web app observes it.
+Lighthouse Control Center uses Lighthouse repository workflows. GitHub runs the work; the web app observes it.
 
 The change-request issue form collects an initial request. The owner can add `triage` for classification and an explained relative estimate, then request `refine` when appropriate. A submitted form does not itself authorize execution.
 

@@ -38,7 +38,7 @@
   "lastAppliedMigration": "upgrade-0.12.65",
   "files": {
     "LIGHTHOUSE.md": {
-      "hash": "94650e3864168bc5cffa61c3e7cf50dbaa7031bfc85e113dca8dfdd8dce5c3c2",
+      "hash": "f77cf015a3facaa7cec4d6356d52e2ef18504661038d9d80acad5aec1a162e7f",
       "scope": "harness"
     },
     "scripts/lighthouse-guard.mjs": {
@@ -59,6 +59,14 @@
     },
     ".agents/skills/lighthouse-init/SKILL.md": {
       "hash": "48e1692c905934d9ddceb180ee8cfafda193683d3f21debb54d8287ada068ddc",
+      "scope": "harness"
+    },
+    "docs/design/DESIGN.md": {
+      "hash": "7aad6f6f307ee14ce32f86d676f70e32960a96362e23515f7363da09cd3752c2",
+      "scope": "harness"
+    },
+    ".agents/skills/lighthouse-ui/SKILL.md": {
+      "hash": "c43f923dcea56a311b5e508b957150bd72731a11babc76c613be92927f19a1b2",
       "scope": "harness"
     },
     "docs/profiles/dotnet/README.md": {

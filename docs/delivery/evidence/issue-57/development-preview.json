@@ -1,0 +1,23 @@
+{
+  "kind": "reversible-development-preview-not-acceptance-or-production",
+  "head": "36246f8c6362e16aabaed2a390b5fdd0cd0be373",
+  "deployedAt": "2026-11-08T00:17:44.247535+00:00",
+  "reviewHead": "36246f8c6362e16aabaed2a390b5fdd0cd0be373",
+  "reviewVerdict": "accept",
+  "service": "sofa-development-preview-57.service",
+  "url": "https://192.168.0.3:5443/workspace/runtime",
+  "httpsTrusted": true,
+  "unauthenticatedChecks": {
+    "/api/session": "401",
+    "/api/runtime/host": "401",
+    "/api/runtime/juangcarmona/sofa": "401",
+    "/runtime.js": "200",
+    "/workspace/runtime": "401"
+  },
+  "identityProviderUnchanged": true,
+  "providerRestarted": false,
+  "ownerPasswordOrFactorChanged": false,
+  "sourceUserAcceptance": "not observed",
+  "integration": "pending prerequisites/hosted CI/final Done",
+  "rollbackService": "sofa-development-preview-52.service"
+}

@@ -5,6 +5,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj" />
+    <Content Include="../../scripts/validate-stage-result.mjs" Link="workspace-tools/validate-stage-result.mjs" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../workspace-tools/runtime-inventory.mjs" Link="workspace-tools/runtime-inventory.mjs" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <Content Include="../workspace-tools/issue-control-read.mjs" Link="workspace-tools/issue-control-read.mjs" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../../node_modules/@juangcarmona/lighthouse-sdlc/**/*" Link="workspace-tools/node_modules/@juangcarmona/lighthouse-sdlc/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../web/public/*" Link="workspace-assets/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../../node_modules/@juangcarmona/lighthouse-ui/tokens.css" Link="workspace-assets/tokens.css" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>

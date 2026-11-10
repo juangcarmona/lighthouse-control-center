@@ -1,0 +1,31 @@
+{
+  "verifiedAt": "2026-11-07T15:49:15.692630+00:00",
+  "scope": "Implemented reader checkpoint; #50 remains draft and not Done.",
+  "tests": {
+    "dotnetWeb": 72,
+    "browserIssueFixtures": 4
+  },
+  "checks": [
+    "Dotnet build and tests including actual installed shared-validator process",
+    "Browser paging/Markdown/keyboard/390px/axe/stale/authority-loss fixtures"
+  ],
+  "runtimeLimits": {
+    "conversationPages": 10,
+    "comments": 1000,
+    "retainedTextMiB": 8,
+    "responseMiB": 2,
+    "compressedArtifactMiB": 2,
+    "expandedArtifactMiB": 4,
+    "selectedMemberMiB": 1,
+    "archiveMembers": 100,
+    "validatorSeconds": 3
+  },
+  "planClarification": "One final independently bounded JSON page may exceed remaining retained-text allowance. Reject it without retaining or advancing, stop paging and preserve bounded partial coverage; total source traffic remains capped at20MiB/10requests.",
+  "openAcceptance": [
+    "Real connected-user issue and paginated source conversation; depends on49 actual App consent",
+    "Live reservation/source request coverage and remaining full issue50 criteria",
+    "Final all-repository verification and current-head CI",
+    "Independent final Done audit; do not infer it from this checkpoint"
+  ],
+  "scopeBoundary": "No issue mutation, workflow dispatch, command eligibility decision or runtime scheduling."
+}

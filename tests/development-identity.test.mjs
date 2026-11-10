@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, stat, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, stat, rm, chmod } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -21,6 +21,10 @@ test('development setup imports simple shared test credentials, protects generat
     assert.equal(result.status, 0);
     const original = await readFile(join(directory, 'development.json'), 'utf8');
     const configuration = JSON.parse(original);
+    assert.ok(configuration.SoFa.Repositories.includes('juangcarmona/lighthouse-control-center'));
+    assert.ok(!configuration.SoFa.Repositories.includes('juangcarmona/sofa'));
+    assert.equal(configuration.SoFa.Identity.SessionDirectory, join(directory, 'owner-sessions'));
+    assert.equal(configuration.SoFa.Identity.SessionKeyDirectory, join(directory, 'owner-session-keys'));
     const accounts = JSON.parse(await readFile(join(directory, 'test-accounts.json'), 'utf8'));
     assert.equal(accounts.length, 2);
     const realm = JSON.parse(await readFile(join(directory, "import/sofa-dev-realm.json"), "utf8"));
@@ -36,6 +40,8 @@ test('development setup imports simple shared test credentials, protects generat
       assert.equal(seeded.users[index].credentials[0].temporary, false);
     }
     assert.equal(realm.clients[0].attributes["minimum.acr.value"], "1");
+    assert.equal(realm.ssoSessionIdleTimeout, 7200);
+    assert.equal(realm.ssoSessionMaxLifespan, 43200);
     assert.ok(realm.users.every(user => !user.requiredActions.includes("CONFIGURE_TOTP")));
     assert.equal(configuration.SoFa.Identity.Development.ProviderUser, `${process.getuid()}:0`);
     assert.equal(configuration.SoFa.Identity.Development.OwnerSubject, accounts[0].subject);
@@ -44,6 +50,8 @@ test('development setup imports simple shared test credentials, protects generat
       assert.ok(!result.stdout.includes(account.password));
     }
     assert.equal((await stat(directory)).mode & 0o777, 0o700);
+    for (const privateDirectory of ['owner-sessions', 'owner-session-keys'])
+      assert.equal((await stat(join(directory, privateDirectory))).mode & 0o777, 0o700);
     for (const file of ['development.json', 'provider.env', 'test-accounts.json', 'ca.key', 'tls/app.key', 'tls/identity.key'])
       assert.equal((await stat(join(directory, file))).mode & 0o777, 0o600);
     const chain = spawnSync('openssl', ['verify', '-CAfile', join(directory, 'ca.crt'), join(directory, 'tls/app.crt'), join(directory, 'tls/identity.crt')], { encoding: 'utf8' });
@@ -77,4 +85,16 @@ test('development setup refuses a checkout or relative destination before creati
     assert.notEqual(setup(name).status, 0);
     assert.equal(existsSync(target), false);
   } finally { await rm(target, { recursive: true, force: true }); }
+});
+
+test('development setup rejects a group-writable ancestor before creating credentials', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'sofa-unsafe-parent-'));
+  const directory = join(parent, 'identity');
+  try {
+    await chmod(parent, 0o770);
+    const result = setup(directory);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /parent directories owned by root or this user/);
+    assert.equal(existsSync(directory), false);
+  } finally { await chmod(parent, 0o700); await rm(parent, { recursive: true, force: true }); }
 });
