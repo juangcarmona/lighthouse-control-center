@@ -1,0 +1,34 @@
+{
+  "journalBeforeActivation": {
+    "terminal": 3,
+    "nonterminal": 0
+  },
+  "previousApplicationRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "backupRetained": true,
+  "checkedAt": "2026-11-09T23:23:51.697710+00:00",
+  "applicationRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "origin": "https://192.168.0.3:5443",
+  "environment": "development",
+  "tlsVerification": true,
+  "servedAssets": [
+    {
+      "path": "/issue.js",
+      "sha256": "a7eddbc27dc6137f591837e1bd3c92dfd0892a7def512fd15128162f5a56d14f",
+      "sourceMatchesServed": true
+    },
+    {
+      "path": "/issue-actions.js",
+      "sha256": "7a1d7e0ded0e8f2f0e7f65590ad13f6cbc6ceca9d60d3b62cfb3cd42c5bf455b",
+      "sourceMatchesServed": true
+    },
+    {
+      "path": "/workspace-ui.js",
+      "sha256": "0ee00c8a5145ad26d2eb47dc8fc27f19f335813e69b6d9f07fa15ce1a753b28e",
+      "sourceMatchesServed": true
+    }
+  ],
+  "sourceCommentRecoveryId": 6752272812,
+  "sourceWritePerformed": false,
+  "credentialsOrStoresChanged": false,
+  "rollback": "Previous binary and private service override backup retained."
+}

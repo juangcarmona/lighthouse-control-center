@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-09T23:29:22.851091+00:00",
+  "command": "prodshape --serialization-version v1alpha2 evidence verify <twelve explicit passing-suite reports> --format json",
+  "exitCode": 0,
+  "validationContext": "Disposable v1alpha2 configuration; tracked v1alpha1 adoption unchanged.",
+  "byteIdenticalBaselineMarkdownFiles": 87,
+  "documents": 12,
+  "diagnostics": [],
+  "invalidPredecessor": "live-c8f8231/verification-evidence.json cited BR-LAN-PRIVILEGE-BOUNDARY; retained original, superseded by live-498da8c with QR-EXECUTION-SECURITY.",
+  "excludedFromPassingSuiteCount": [
+    "failed-fixture-1dbcfb4: full suite failed even though its mapped subset passed",
+    "interrupted-live-identity-399fcd7: initial sign-in failed; one case passed, one was interrupted, two did not run"
+  ],
+  "outputCapture": "Official CLI stdout redirected to a file so pipe backpressure cannot truncate JSON on process exit."
+}

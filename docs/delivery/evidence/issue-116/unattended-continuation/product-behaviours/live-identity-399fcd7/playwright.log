@@ -1,0 +1,16 @@
+
+> lighthouse-control-center@0.0.0 test:e2e:live
+> playwright test --config playwright.e2e.config.mjs --grep-invert live ordinary comment is confirmed --output test-results/e2e-identity-qualified-399fcd7
+
+
+Running 5 tests using 1 worker
+
+(node:3172827) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/e2e/product-behaviours.spec.mjs:42:1 › live repository discovery preserves source identity and collection coverage (11.8s)
+  ✓  2 tests/e2e/product-behaviours.spec.mjs:61:1 › live issue context retains actual description conversation and source provenance (15.7s)
+  ✓  3 tests/e2e/product-behaviours.spec.mjs:80:1 › live action authority explains unavailable dependencies without granting a write (12.6s)
+  ✓  4 tests/e2e/product-behaviours.spec.mjs:101:1 › live anonymous denial returns no protected issue information (32ms)
+  ✓  5 tests/e2e/product-behaviours.spec.mjs:180:1 › live ordinary comment recovery confirms the existing source result without resending (18.1s)
+
+  5 passed (1.0m)

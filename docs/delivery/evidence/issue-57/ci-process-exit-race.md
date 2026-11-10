@@ -1,0 +1,7 @@
+# Runtime process-exit assertion recovery
+
+Hosted verification [42467410617](https://github.com/juangcarmona/sofa/actions/runs/42467410617) at `678e9b0157be41011145c1a52f32269a43668893` correctly refused the candidate. The Linux process checker observed `/proc/<pid>/stat` and then received `DirectoryNotFoundException` when the process exited before the read. The application cancellation test still requires both the helper and its child to stop and the read slot/scratch directory to be released.
+
+A deterministic missing-directory injection reproduced the same exception before the correction. The test-only checker now treats missing files and missing process directories as an exited process; unrelated access-denied errors still propagate. A real held `/proc` handle also reproduced Linux ESRCH after the process was reaped. That IOException is treated as exit only after confirming its process stat path no longer exists. The regressions cover both missing-file forms, the held-handle race, and preservation of unrelated I/O/access-denied failures. No application code, timeout, assertion, scan, lifecycle configuration or source grant was relaxed.
+
+The process already required exact-head hosted verification and refused this failed run. No additional lifecycle guard is warranted: this is a checker defect, and the existing deterministic gate detected it. The regression makes the correction repeatable; full repository verification and a fresh exact-head hosted run remain required.

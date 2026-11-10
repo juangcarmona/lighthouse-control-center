@@ -30,7 +30,7 @@ public sealed class ProviderSessionsTests
     release.SetResult();
     Assert.All(await Task.WhenAll(calls), result => Assert.Equal(ProviderAuthority.Current, result));
     Assert.Equal(deadline, record.IdleDeadline);
-    Assert.Equal(fixture.Clock.Start.AddHours(4), record.AbsoluteDeadline);
+    Assert.Equal(fixture.Clock.Start.AddHours(12), record.AbsoluteDeadline);
     Assert.Equal(fixture.Clock.GetUtcNow(), record.ProviderValidatedAt);
     Assert.Equal("rotated-refresh-test-value", record.Ticket.Properties.GetTokenValue("refresh_token"));
     Assert.Equal(ProviderAuthority.Current, await fixture.Provider.EnsureCurrentAsync(record, CancellationToken.None));
@@ -50,7 +50,7 @@ public sealed class ProviderSessionsTests
     Assert.Equal(original, record.ProviderValidatedAt);
     Assert.Equal(ProviderAuthority.Unavailable, await fixture.Provider.EnsureCurrentAsync(record, CancellationToken.None));
     Assert.Equal(1, fixture.Handler.Calls);
-    fixture.Clock.Advance(TimeSpan.FromMinutes(10));
+    fixture.Clock.Advance(TimeSpan.FromMinutes(115));
     Assert.Equal(ProviderAuthority.Revoked, await fixture.Provider.EnsureCurrentAsync(record, CancellationToken.None));
     Assert.Null(fixture.Sessions.Get(record.Id));
   }

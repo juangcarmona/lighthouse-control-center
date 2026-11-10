@@ -1,0 +1,46 @@
+#factory-filters { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:0 0 .5rem; }
+#factory-filters label { display:block; min-width:0; }
+#factory-filters .search-field { flex:1 1 15rem; }
+#factory-filters .repository-field { flex:0 1 16rem; }
+#factory-filters input { font:inherit; width:100%; color:var(--lh-text); background:var(--lh-surface); border:1px solid var(--lh-border-strong); min-width:0; }
+#factory-filters select { width:100%; }
+#factory-status { margin:0 0 .5rem; font-size:.8125rem; color:var(--lh-text-muted); }
+#factory-status:empty { display:none; }
+#factory-count { margin:.375rem 0; font-size:.75rem; color:var(--lh-text-muted); }
+.factory-list,.factory-projects { display:block; border:1px solid var(--lh-border); background:var(--lh-surface); }
+.factory-issue,.factory-project { position:relative; min-width:0; padding:.625rem .75rem; border-bottom:1px solid var(--lh-border); overflow-wrap:anywhere; }
+.factory-issue:last-child,.factory-project:last-child { border-bottom:0; }
+.factory-issue h3,.factory-project h3 { font-size:.875rem; margin:0; padding-right:2rem; }
+.factory-issue h3 a,.factory-project h3 a { color:var(--lh-text); }
+.issue-row-meta { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; margin-top:.25rem; font-size:.6875rem; color:var(--lh-text-muted); }
+.issue-row-meta .badge { padding:.125rem .4rem; }
+.factory-provenance { margin:0; font-size:.75rem; color:var(--lh-text-muted); }
+.factory-provenance>summary { min-height:24px; padding:.125rem 0; font-size:.6875rem; }
+.factory-issue>.factory-provenance>summary { position:absolute; right:.5rem; top:.5rem; width:32px; height:32px; overflow:hidden; font-size:0; display:grid; place-items:center; }
+.factory-issue>.factory-provenance>summary::after { content:'⋯'; font-size:1.25rem; }
+.factory-provenance[open] { margin-top:.5rem; }
+.factory-provenance p { margin:.25rem 0; }
+.factory-project p { margin:.25rem 0; font-size:.75rem; color:var(--lh-text-muted); }
+.project-actions { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; margin:.375rem 0 0; }
+.project-actions a { text-decoration:underline; }
+.factory-board { display:grid; gap:.75rem; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:start; }
+.board-column { min-width:0; border:1px solid var(--lh-border); background:var(--lh-surface); padding:.5rem; }
+.board-column>h3 { font-size:.875rem; margin:0 0 .5rem; }
+.factory-stale { border-left:3px solid var(--lh-caution); }
+#factory-more-filters,#factory-project-details { margin:.5rem 0; font-size:.75rem; color:var(--lh-text-muted); }
+#factory-more-filters>summary,#factory-project-details>summary { min-height:28px; padding:.25rem 0; }
+.factory-filter-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin:.5rem 0; }
+.factory-filter-grid label { display:grid; gap:.25rem; }
+.factory-explanation summary { min-height:28px; padding:.25rem 0; }
+body[data-collection="repositories"] .repository-field,body[data-collection="repositories"] .state-field,body[data-collection="repositories"] .view-field,body[data-collection="repositories"] #issue-collection,body[data-collection="repositories"] #factory-more-filters { display:none; }
+body[data-collection="repositories"] #factory-project-details>summary { display:none; }
+body[data-collection="repositories"] .factory-project>.project-actions { display:none; }
+@media(max-width:700px) { .factory-board { grid-template-columns:1fr; } #factory-filters .search-field { flex-basis:100%; } #factory-filters .repository-field { flex:1; } }
+body[data-repository-scoped="true"] .repository-field { display:none; }
+@media(min-width:701px) {
+  .factory-list>.factory-issue { display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:.75rem; }
+  .factory-list>.factory-issue>h3 { padding-right:0; }
+  .factory-list .issue-row-meta { grid-column:2; grid-row:1; margin:0; padding-right:2rem; }
+  .factory-list .factory-provenance,.factory-list>.factory-issue>.notice { grid-column:1 / -1; }
+}
+body[data-collection="repositories"] #factory-filters :is(.repository-field,.state-field,.view-field),body[data-repository-scoped="true"] #factory-filters .repository-field { display:none; }

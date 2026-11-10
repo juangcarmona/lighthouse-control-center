@@ -14,7 +14,7 @@ public sealed class OwnerAdmissionTests
     var owner = Principal();
     var admission = OwnerAdmission.Validate(owner, Profile(), Now, freshCeremony: true);
     Assert.NotNull(admission);
-    Assert.Equal(Now.AddHours(4), admission.AbsoluteDeadline);
+    Assert.Equal(Now.AddHours(12), admission.AbsoluteDeadline);
     Assert.Null(OwnerAdmission.Validate(Principal(subject: "another-owner"), Profile(), Now, true));
     Assert.Null(OwnerAdmission.Validate(Principal(issuer: "https://other.invalid/realms/dev"), Profile(), Now, true));
     Assert.Null(OwnerAdmission.Validate(Principal(assurance: "1"), Profile(), Now, true));
@@ -41,7 +41,7 @@ public sealed class OwnerAdmissionTests
     var old = Principal(authenticationTime: Now.AddMinutes(-6).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
     Assert.Null(OwnerAdmission.Validate(old, Profile(), Now, freshCeremony: true));
     Assert.NotNull(OwnerAdmission.Validate(old, Profile(), Now, freshCeremony: false));
-    Assert.Null(OwnerAdmission.Validate(Principal(authenticationTime: Now.AddHours(-4).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)), Profile(), Now, false));
+    Assert.Null(OwnerAdmission.Validate(Principal(authenticationTime: Now.AddHours(-12).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)), Profile(), Now, false));
     Assert.Null(OwnerAdmission.Validate(Principal(authenticationTime: Now.AddSeconds(61).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)), Profile(), Now, true));
   }
 

@@ -1,6 +1,6 @@
 # Engineering lifecycle
 
-**Project**: SoFa · **Adopted**: 2026-10-19 · **Last amended**: 2026-11-08
+**Project**: Lighthouse Control Center · **Adopted**: 2026-10-19 · **Last amended**: 2026-11-08
 
 ## Definition of Ready
 
@@ -30,7 +30,7 @@ No additional dimensions. The reference dimensions are sufficient for this proje
 
 ## GitHub issue classification
 
-Lighthouse owns workflow labels, stage transitions and gate results. SoFa does not define a parallel lifecycle label family. The installed Lighthouse SDLC contract and its generated router are authoritative.
+Lighthouse owns workflow labels, stage transitions and gate results. Lighthouse Control Center does not define a parallel lifecycle label family. The installed Lighthouse SDLC contract and its generated router are authoritative.
 
 | Label family | Allowed values | Meaning |
 | --- | --- | --- |
@@ -90,7 +90,7 @@ The real-provider session suite is separate end-to-end verification: `identity-e
 
 ## Lighthouse stages and gates
 
-The installed Lighthouse contract defines stages, request labels, gates, worker behavior and evidence. This table records only how SoFa uses that contract; it does not redefine stages or introduce another status system.
+The installed Lighthouse contract defines stages, request labels, gates, worker behavior and evidence. This table records only how Lighthouse Control Center uses that contract; it does not redefine stages or introduce another status system.
 
 | Lighthouse stage | Request | Lighthouse result / effect | Owner boundary |
 | --- | --- | --- | --- |
@@ -99,7 +99,7 @@ The installed Lighthouse contract defines stages, request labels, gates, worker 
 | `propose` | Owner adds `propose` after readiness | Lighthouse publishes proposal evidence and `waiting-review` | Owner reviews the proposal; it does not authorize implementation |
 | `implement` | Owner adds `implement`, or Lighthouse's configured continuation requests it | Lighthouse publishes the implementation PR and its `pr-draft` / `pr-ready` projection | Owner retains PR acceptance and merge decisions |
 | `integrate` | Lighthouse completion workflow and explicit owner merge decision | GitHub records the merge and closes a linked issue when requested | The merge decision remains explicit |
-| `review` | Lighthouse completion workflow after integration | Lighthouse records the retrospective result | No SoFa lifecycle label transition |
+| `review` | Lighthouse completion workflow after integration | Lighthouse records the retrospective result | No Lighthouse Control Center lifecycle label transition |
 
 The `transition-work-item` capability follows the Lighthouse request and result contract. It must not swap `status:*` labels or infer a gate from a label name alone. An enabled `/ff` invocation authorizes only routine writes permitted by Lighthouse; owner decisions and required approvals remain explicit.
 
@@ -119,7 +119,7 @@ Fields required to create or update a GitHub issue. Lighthouse owns its stage in
 
 | Field | Identifier | Required by | Notes |
 | --- | --- | --- | --- |
-| Lighthouse request/result | Lighthouse-declared action labels and authenticated stage evidence | Lighthouse stages | Do not introduce a parallel SoFa status label |
+| Lighthouse request/result | Lighthouse-declared action labels and authenticated stage evidence | Lighthouse stages | Do not introduce a parallel Lighthouse Control Center status label |
 | Work type | one of `bug`, `enhancement`, `documentation` | issue creation / classification | Optional; at most one, and independent of lifecycle |
 | Acceptance criteria | `## Acceptance Criteria` section in issue body | `/refine` (Ready gate) | Markdown heading in the issue body |
 | Work item link | `Closes #<number>` in PR body | `/implement` | Placed in the PR body, not the title |
@@ -202,7 +202,7 @@ The `review` capability proposes changes to this file from delivery evidence. Ev
 
 | Date | Section | Change | Why |
 | --- | --- | --- | --- |
-| 2026-10-19 | All | Initial adoption of the shared lifecycle | Align SoFa with the Agentic SDLC practices used across the other repositories |
+| 2026-10-19 | All | Initial adoption of the shared lifecycle | Align the project with the Agentic SDLC practices used across the other repositories |
 | 2026-10-28 | Issue labels, stages, gates and WIP | Use the installed Lighthouse SDLC contract as the workflow authority; remove the parallel `status:*` convention | Lighthouse 0.15.0 supplies request labels, gates, state evidence, reservations and PR projections |
 | 2026-11-06 | Fast Forward | Adopt disabled native FF, narrow scope, verification integrity and distinct reviewer profiles | Owner-authorized #88 adoption; first delivery and merge remain separately authorized |
 | 2026-11-07 | Fast Forward | Enable native FF and merge for issue #90 with two exact test corrections; keep supervised defaults | Owner explicitly authorized autonomous delivery, merge:true and the first read-only operational view |

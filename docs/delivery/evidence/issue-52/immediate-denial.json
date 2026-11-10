@@ -1,0 +1,96 @@
+{
+  "review": {
+    "head": "bf38e90eec15b685d2fd0a5505403108c507f970",
+    "verdict": "request-changes",
+    "findings": [
+      {
+        "severity": "medium",
+        "path": "src/web/public/factory.js:121",
+        "consequence": "When a factory-page request gets a 403 after the account catalog was read, this replaces that repository's cache with denied/empty and clears evidence, but does not render. The prior issue titles and source links remain on screen until every sibling repository read settles (Promise.all at lines 153\u2013157); a slow or hung sibling therefore prolongs displaying data after authority denial.",
+        "minimalfix": "After applying the denied state, render immediately (and update status as appropriate); add a browser regression where one repository returns 403 while another response is held, asserting the denied repository's issue/evidence disappears before releasing the held response."
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "Configured-repository scope and read-only behavior",
+        "verdict": "accept",
+        "rationale": "Repository configuration bounds catalog access; branch mappings and labels do not grant access. Discovery uses GETs and the board does not mutate issue state."
+      },
+      {
+        "name": "Fresh issue/app authority",
+        "verdict": "accept",
+        "rationale": "RepositoryAccess rechecks connected-user and installation grants. The inherited #50 known issue-read-grant loss correction classifies it as denied and has a recorded regression; this does not close #50 or establish connected-user acceptance."
+      },
+      {
+        "name": "SourceRequestGuard initiation and connection generation",
+        "verdict": "accept",
+        "rationale": "Requests initiate under the session lock and guard stopped token, session reference, connection reference, and generation; handlers recheck liveness around reads and projections."
+      },
+      {
+        "name": "Source/API and browser bounds, PR exclusion, and coverage",
+        "verdict": "accept",
+        "rationale": "Issue pages are capped at 25 records and 10 pages, response and retained-browser sizes are bounded, PRs are excluded while raw records count toward coverage, and incomplete reads are not presented as empty."
+      },
+      {
+        "name": "Collected-title search and direct exact-number lookup",
+        "verdict": "accept",
+        "rationale": "The contract explicitly limits title search to collected pages and directly requests exact numbers across selected configured repositories. No exhaustive index or new command policy is required."
+      },
+      {
+        "name": "Default-branch metadata separation",
+        "verdict": "accept",
+        "rationale": "Configured and observed default branches are projected separately; conflicts and missing metadata do not infer registration or permission."
+      },
+      {
+        "name": "Source identity, async reads, pruning, and clearing",
+        "verdict": "request-changes",
+        "rationale": "Data scope and epochs isolate replacement identities. The corrected catalog contraction prunes removed repositories/evidence and redraws before slower remaining reads, with unread placeholders. However, a 403 from a factory page clears its repository cache without redrawing until sibling requests settle (finding above)."
+      },
+      {
+        "name": "URL state and shared list/board predicate",
+        "verdict": "accept",
+        "rationale": "View and filter state is URL-backed, both presentations use the same matches predicate, and issue destinations and explicit paging are retained."
+      },
+      {
+        "name": "Historical evidence versus current stage/lease authority",
+        "verdict": "accept",
+        "rationale": "Explicitly read, validated associated reports/runs are historical evidence; unread or unavailable facts remain unknown, with no inference of current lease, eligibility, or absent work."
+      },
+      {
+        "name": "Safe inert rendering, keyboard/narrow layouts, navigation, and assets",
+        "verdict": "accept",
+        "rationale": "Source text is rendered through textContent, links are constructed for GitHub, semantic controls/navigation and responsive styles exist, and browser fixtures cover keyboard and 390px layouts. Physical-phone proof remains owner-deferred, not established."
+      },
+      {
+        "name": "Verification and remaining acceptance/CI/judgement gates",
+        "verdict": "accept",
+        "rationale": "The supplied checkpoint records two-CPU full verification of 39 Node, 121 web, 38 runtime, and 30 browser tests, plus the catalog-contraction regression. I did not execute verification. Prior unbounded CLR startup failures are not green evidence. Exact-head hosted CI, actual connected-user issue/discovery acceptance, active reservation coverage, prerequisite #50 acceptance/final judgement, and final Done remain open; no physical-phone proof is claimed."
+      }
+    ],
+    "kind": "scope-correction-checkpoint",
+    "issue": 52,
+    "requestedModel": "openai/gpt-6-luna",
+    "requestedEffort": "high",
+    "reviewedAt": "2026-11-07T20:07:37.680Z",
+    "sourceReadOnly": true,
+    "requestPath": "/tmp/sofa-review-52-scope-correction-checkpoint-bf38e90eec-af0f16dc/context.json"
+  },
+  "correction": "Centralized repository denial clears only that repository and its evidence and redraws immediately, including page and evidence read failures. It does not wait for a slow sibling read. Global session loss now offers account recovery and never labels missing authority an empty backlog.",
+  "red": {
+    "test": "a denied page removes old titles before a slow sibling response settles",
+    "exitCode": 1,
+    "logSha256": "ef4f308edee5eab3f059d2e548ab636c7988119b2e3f1da91a12cad7980d719f"
+  },
+  "green": {
+    "command": "npm run verify with two-CPU affinity",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 121,
+      "retainedRuntime": 38,
+      "browser": 32
+    },
+    "logSha256": "a961c9cafc7c3c6cad4f43a426a9d5e3a2e439da8cfd2ff615b6969c611cac78"
+  },
+  "remaining": "Current-head CI, independent correction checkpoint and actual connected-user acceptance remain open; no Done or phone proof is claimed."
+}

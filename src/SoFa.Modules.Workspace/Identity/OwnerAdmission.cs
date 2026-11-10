@@ -20,11 +20,11 @@ internal sealed record OwnerAdmission(DateTimeOffset AuthenticationTime, DateTim
     try { authenticatedAt = DateTimeOffset.FromUnixTimeSeconds(seconds); }
     catch (ArgumentOutOfRangeException) { return null; }
 
-    if (authenticatedAt > now.AddSeconds(60) || now >= authenticatedAt.AddHours(4)
+    if (authenticatedAt > now.AddSeconds(60) || now >= authenticatedAt.AddHours(12)
         || freshCeremony && authenticatedAt < now.AddMinutes(-5))
       return null;
 
-    return new OwnerAdmission(authenticatedAt, authenticatedAt.AddHours(4));
+    return new OwnerAdmission(authenticatedAt, authenticatedAt.AddHours(12));
   }
 
   private static string? Single(ClaimsPrincipal principal, string type)

@@ -1,0 +1,73 @@
+{
+  "issue": 57,
+  "verdict": "ready",
+  "milestone": "Owner-requested first runner/adopter overview; broad capacity/usage remains future",
+  "dimensions": [
+    {
+      "name": "Title",
+      "status": "met",
+      "evidence": "Existing outcome plus explicit owner-requested overview."
+    },
+    {
+      "name": "Description",
+      "status": "met",
+      "evidence": "Refined first-delivery context on57."
+    },
+    {
+      "name": "Actor / stakeholder",
+      "status": "met",
+      "evidence": "Authenticated personal factory owner."
+    },
+    {
+      "name": "Priority",
+      "status": "not-applicable",
+      "evidence": "Dropped by configured Ready definition."
+    },
+    {
+      "name": "Dependencies",
+      "status": "met",
+      "evidence": "49 merged;50/52 stack; no commands or full capacity prerequisite."
+    },
+    {
+      "name": "Acceptance criteria",
+      "status": "met",
+      "evidence": "Six measurable refined criteria preserve the owner-requested first milestone."
+    },
+    {
+      "name": "Scope",
+      "status": "met",
+      "evidence": "Read-only registration and committed-adoption overview; broad capacity/usage future."
+    },
+    {
+      "name": "Product rules",
+      "status": "met",
+      "evidence": "Accepted authenticated-operations baseline and current cited nodes."
+    },
+    {
+      "name": "Affected behaviour",
+      "status": "met",
+      "evidence": "Workspace navigation and new observation queries; existing identity unchanged."
+    },
+    {
+      "name": "Quality expectations",
+      "status": "met",
+      "evidence": "Authority isolation, bounded untrusted inputs, safe output and keyboard/narrow layouts."
+    },
+    {
+      "name": "Test impact",
+      "status": "not-applicable",
+      "evidence": "Required at Plan; explicit design test plan."
+    },
+    {
+      "name": "Existing decisions",
+      "status": "met",
+      "evidence": "Arc42 implemented seams and ADR6/7/9; no execution/persistence authority."
+    },
+    {
+      "name": "Unknowns / risks",
+      "status": "met",
+      "evidence": "Missing admin grant, stale registration, source coverage and actual proof limits named."
+    }
+  ],
+  "ownerAuthorization": "Explicit complete delivery/dependencies/necessary merges; independent technical gates and source acceptance retained"
+}

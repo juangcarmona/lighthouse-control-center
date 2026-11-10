@@ -1,0 +1,19 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "playwright-live",
+  "run-id": "2026-11-10T09:15:15.081Z",
+  "revision": "c75b369b45eb5a4e3c6db9b909678db4881deca3",
+  "results": [
+    {
+      "test-id": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    }
+  ]
+}

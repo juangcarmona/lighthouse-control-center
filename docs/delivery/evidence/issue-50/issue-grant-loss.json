@@ -1,0 +1,27 @@
+{
+  "finding": "Host review found that a known missing app issue-read grant returned unavailable rather than denied, allowing the browser to keep earlier readable context as if a transient failure occurred.",
+  "scope": "Only issue-reader availability classification changes; source access was already blocked. The connection remains usable for other permitted repositories.",
+  "regression": {
+    "test": "KnownLossOfIssueGrantIsDeniedAndCannotRetainEarlierContextAsATransientOutage",
+    "red": {
+      "failed": 1,
+      "exitCode": 1,
+      "expected": "denied",
+      "actual": "unavailable",
+      "logSha256": "404fbdbba7941d05f21ebb54003988fb152a2ee109913b71f7469ffbafcbb838"
+    },
+    "green": {
+      "command": "npm run verify with two-CPU affinity",
+      "exitCode": 0,
+      "tests": {
+        "node": 39,
+        "web": 116,
+        "retainedRuntime": 38,
+        "browser": 25
+      },
+      "logSha256": "3db424b24fdeea871f065acd177b7e9e567681306a4ab9b1a0657f9a74fdf673"
+    }
+  },
+  "hostRuntimeLimit": "Unbounded local verification again stopped with CLR0x80131506 at profile build startup. Full two-CPU verification passed; no checks or source assertions were suppressed. Cause remains unestablished.",
+  "gateDisposition": "This is a late host-found correction after the three code correction checkpoints. No additional automatic50 review round or Done verdict is claimed. The existing final gate remains unmet for actual source acceptance, reservation coverage and final judgement/CI. The fix is included in the52 dependency review context; that does not independently close50."
+}

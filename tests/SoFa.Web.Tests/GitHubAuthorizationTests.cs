@@ -88,6 +88,73 @@ public sealed class GitHubAuthorizationTests
   }
 
   [Fact]
+  public async Task OlderOAuthCompletionCannotCommitAfterANewerAttemptStarts()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    var enteredCommit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    var releaseCommit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    fixture.Sessions.BeforeGitHubGrantCommit = () =>
+    {
+      enteredCommit.TrySetResult();
+      releaseCommit.Task.GetAwaiter().GetResult();
+    };
+
+    var completion = Task.Run(() => fixture.Connect(record));
+    await enteredCommit.Task;
+    fixture.Authorization.Begin(record);
+    releaseCommit.SetResult();
+
+    Assert.Equal(ConnectionOutcome.Rejected, await completion);
+    Assert.Null(record.GitHub.Current);
+    Assert.NotNull(record.GitHub.Authorization);
+  }
+
+  [Fact]
+  public async Task PendingAccountReplacementCannotCommitAfterANewerAttemptStarts()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var original = record.GitHub.Current;
+    fixture.Handler.UserId = 72;
+    Assert.Equal(ConnectionOutcome.ConfirmationRequired, await fixture.Connect(record));
+
+    var enteredCommit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    var releaseCommit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    fixture.Sessions.BeforeGitHubGrantCommit = () =>
+    {
+      enteredCommit.TrySetResult();
+      releaseCommit.Task.GetAwaiter().GetResult();
+    };
+    var confirmation = Task.Run(() => fixture.Authorization.Confirm(record));
+    await enteredCommit.Task;
+    fixture.Authorization.Begin(record);
+    releaseCommit.SetResult();
+
+    Assert.False(await confirmation);
+    Assert.Same(original, record.GitHub.Current);
+    Assert.NotNull(record.GitHub.Authorization);
+  }
+
+  [Fact]
+  public async Task StaleConnectionInvalidationCannotRevokeItsReplacement()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var old = record.GitHub.Current!;
+    fixture.Handler.UserId = 72;
+    Assert.Equal(ConnectionOutcome.ConfirmationRequired, await fixture.Connect(record));
+    Assert.True(fixture.Authorization.Confirm(record));
+    Assert.NotSame(old, record.GitHub.Current);
+
+    GitHubAuthorization.Invalidate(record, old);
+
+    Assert.Equal(72, record.GitHub.Current!.UserId);
+  }
+
+  [Fact]
   public async Task ConcurrentTokenRefreshCannotExtendTheOwnerSessionAndRevocationClearsTheConnection()
   {
     using var fixture = new SourceFixture();
@@ -208,6 +275,7 @@ public sealed class GitHubAuthorizationTests
     var snapshots = await Task.WhenAll(reads);
     Assert.All(snapshots, snapshot =>
     {
+      Assert.Equal(record.GitHub.Current!.DataScope, snapshot!.DataScope);
       var repo = Assert.Single(snapshot!.Repositories);
       Assert.Equal("available", repo.Availability);
       Assert.Equal(71, Assert.Single(repo.Runs!).Id);
