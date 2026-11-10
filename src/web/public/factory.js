@@ -9,6 +9,8 @@ const filters = () => Object.fromEntries(filterIds.map(key => [key, byId('factor
 const attentionView = document.body.dataset.view === 'attention';
 const repositoryPath = location.pathname.match(/^\/workspace\/repositories\/([^/]+)\/([^/]+)$/);
 const inventoryView = location.pathname === '/workspace/repositories' && !new URL(location.href).searchParams.has('repository');
+history.scrollRestoration = 'manual';
+let restoreScroll = Number.isFinite(history.state?.factoryScroll) ? history.state.factoryScroll : null;
 if (repositoryPath) {
   const name = repositoryPath.slice(1).map(decodeURIComponent).join('/');
   const option = node('option', name); option.value = name; byId('factory-repository').append(option); byId('factory-repository').value = name;
@@ -58,7 +60,12 @@ function restoreProjection(scope, readable) {
 }
 function remember() {
   const url = new URL(location.href); for (const [key, value] of Object.entries(filters())) value && !(repositoryPath && key === 'repository') ? url.searchParams.set(key, value) : url.searchParams.delete(key);
-  history.replaceState(null, '', url);
+  history.replaceState(history.state, '', url);
+}
+function projectHref(repository) {
+  const url = new URL('/workspace/repositories/' + repository, location.origin);
+  for (const [key, value] of Object.entries(filters())) if (value && key !== 'repository' && !(inventoryView && key === 'search')) url.searchParams.set(key, value);
+  return url.pathname + url.search;
 }
 function setBusy(value) { busy = value; byId('factory-refresh').disabled = value; for (const button of document.querySelectorAll('#factory-projects button, #factory-results button')) button.disabled = value; }
 function clearSource(message, ownerExpired = false) {
@@ -149,7 +156,7 @@ function render() {
     if (selected.repository && repository !== selected.repository) continue;
     if (inventoryView && selected.search && !repository.toLowerCase().includes(selected.search.toLowerCase())) continue;
     const project = node('article', undefined, 'factory-project'); project.dataset.repository = repository;
-    const heading = node('h3'), select = node('a', repository); select.href = '/workspace/repositories/' + repository; heading.append(select);
+    const heading = node('h3'), select = node('a', repository); select.href = projectHref(repository); heading.append(select);
     const summary = collection.availability === 'available' || collection.stale
       ? `${collection.issues?.length ?? 0} issues${collection.complete ? '' : ' · Partial'}${collection.stale ? ' · Stale' : ''}`
       : collection.availability === 'denied' ? 'Access denied' : collection.availability === 'unavailable' ? 'Source unavailable' : 'Loading…';
@@ -195,7 +202,9 @@ function render() {
     const list = node('div', undefined, 'factory-list'); for (const row of visible) list.append(issueCard(row.repository, row.issue, row.stale)); results.append(list);
   }
   if (!visible.length) results.append(node('p', unknown ? 'No match in the collected scope. Remaining or unavailable source records may contain work.' : all.length ? 'No collected issues match these filters.' : 'The successfully collected scope contains no ordinary issues.'));
+  const scroll = restoreScroll ?? window.scrollY;
   byId('factory-results').replaceChildren(results);
+  requestAnimationFrame(() => { window.scrollTo(0, scroll); restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 function renderAttention(selected, focusKey) {
@@ -231,7 +240,9 @@ function renderAttention(selected, focusKey) {
   }
   if (!visible.length) list.append(node('p', 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));
   if (projection.limited) list.append(node('p', 'The retained 1 MiB / 1,000-context bound was reached; omitted history is not a resolved intervention.', 'notice'));
+  const scroll = restoreScroll ?? window.scrollY;
   byId('factory-results').replaceChildren(list);
+  requestAnimationFrame(() => { window.scrollTo(0, scroll); restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 async function getPage(repository, page, requestEpoch, number) {
@@ -262,8 +273,9 @@ async function refresh() {
   try {
     const response = await fetch('/api/connections/github', { signal: AbortSignal.timeout(35000) });
     if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.', response.status === 401); return; }
+    if (!response.ok) throw Error('Account check unavailable');
     const account = await response.json(); updateWorkspaceAccount(account);
-    if (!response.ok || account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading fleet work.'); return; }
+    if (account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading fleet work.'); return; }
     const configured = new Set(account.repositories.map(row => row.repository));
     const readable = new Set(account.repositories.filter(row => row.availability === 'available' && row.issuesRead === true).map(row => row.repository));
     for (const repository of repositories.keys()) if (!configured.has(repository)) removeRepositoryDetails(repository);
@@ -334,4 +346,5 @@ for (const key of ['state', 'stage', 'execution', 'wait', 'view']) byId('factory
 byId('factory-repository').addEventListener('change', () => { remember(); refresh(); });
 byId('factory-refresh').addEventListener('click', refresh);
 window.addEventListener('pageshow', event => { if (event.persisted) refresh(); });
+window.addEventListener('pagehide', () => history.replaceState({ ...history.state, factoryScroll: window.scrollY }, ''));
 refresh();

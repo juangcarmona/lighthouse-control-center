@@ -26,7 +26,7 @@ async function fixture(page) {
       nextPage: selectedPage === 1 && repository === 'example/repository' && !number ? 2 : null, complete: selectedPage > 1 || repository === 'example/other' || !!number,
       configuredBranch: 'expected', observedBranch: 'main', reason: 'Synthetic collection: bounded live pages, not an atomic snapshot.' } });
   });
-  return { methods, requests, expireAccount() { accountStatus = 401; }, reconnect() { accountStatus = 0; }, revokeActions() { actionsRead = false; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, pausePages() { let release; pageWait = new Promise(resolve => { release = resolve; }); return () => { pageWait = undefined; release(); }; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
+  return { methods, requests, expireAccount() { accountStatus = 401; }, failAccount(status) { accountStatus = status; }, reconnect() { accountStatus = 0; }, revokeActions() { actionsRead = false; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, pausePages() { let release; pageWait = new Promise(resolve => { release = resolve; }); return () => { pageWait = undefined; release(); }; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
 }
 for (const width of [1280, 390]) test(`factory ${width}: list board filters evidence paging and keyboard`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 }); const source = await fixture(page);
@@ -162,6 +162,43 @@ test('session loss clears source data and offers account recovery instead of a f
   await expect(page.locator('#factory-count')).toHaveText('No authorized collection is available.');
   await expect(page.locator('#factory-results').getByRole('link', { name: 'Open account' })).toHaveAttribute('href', '/workspace');
   await expect(page.locator('#factory-results')).not.toContainText('contains no ordinary issues');
+});
+
+test('temporary account failure keeps the last authorized collection visibly stale', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/issues?state=open&view=board');
+  await expect(page.locator('.factory-issue')).toHaveCount(2);
+  source.failAccount(503); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-stale')).toHaveCount(2);
+  await expect(page.locator('#factory-results')).toContainText('Ordinary work');
+  await expect(page.locator('#factory-status')).toContainText('Source refresh failed');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect(page.locator('#factory-state')).toHaveValue('open');
+  source.reconnect(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-stale')).toHaveCount(0);
+});
+
+test('project and issue navigation retain filters and restore the list position on return', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 400 }); await fixture(page);
+  await page.goto(origin + '/workspace/issues?state=open&view=board&wait=both');
+  await expect(page.locator('.factory-issue')).toHaveCount(1);
+  await page.locator('#factory-project-summary').click();
+  const project = page.getByRole('link', { name: 'example/repository', exact: true });
+  const projectUrl = new URL(await project.getAttribute('href'), origin);
+  expect(Object.fromEntries(['state', 'view', 'wait'].map(key => [key, projectUrl.searchParams.get(key)]))).toEqual({ state: 'open', view: 'board', wait: 'both' });
+  await project.click();
+  await expect(page.locator('#factory-state')).toHaveValue('open');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect(page.locator('#factory-wait')).toHaveValue('both');
+  await expect(page.locator('.factory-issue')).toHaveCount(1);
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const before = await page.evaluate(() => window.scrollY);
+  await page.locator('.factory-issue h3 a').evaluate(link => link.click());
+  await page.waitForURL('**/workspace/issues/example/repository/7');
+  await page.goBack({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.factory-issue')).toHaveCount(1);
+  await expect(page.locator('#factory-state')).toHaveValue('open');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThanOrEqual(Math.max(0, before - 2));
 });
 
 test('returning restores same-scope read rows as stale, then refreshes them in the background', async ({ page }) => {
