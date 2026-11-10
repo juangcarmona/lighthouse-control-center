@@ -1,0 +1,31 @@
+{
+  "documents": [
+    {
+      "file": "/srv/workspaces/juangcarmona/lighthouse-control-center/night-issue50-live-e2e-timeout/docs/delivery/evidence/issue-50/live-authority-2026-11-10/verification-evidence.json",
+      "modelRevision": "0f9e016b8c3e8e00b4e7a8fd2c32dfc57aed4116",
+      "evidenceResults": [
+        {
+          "testId": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73",
+          "source": "/srv/workspaces/juangcarmona/lighthouse-control-center/night-issue50-live-e2e-timeout/docs/delivery/evidence/issue-50/live-authority-2026-11-10/verification-evidence.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "c75b369b45eb5a4e3c6db9b909678db4881deca3"
+    }
+  ],
+  "diagnostics": []
+}
