@@ -263,10 +263,11 @@
           "failed prepare displays"
         ],
         "live": [
-          "live ordinary comment recovery"
+          "live ordinary comment recovery",
+          "live uncertain comment recovery"
         ]
       },
-      "limitations": "Fixture-backed loss injection and live recovery contribute different evidence. The live case requires an exact existing comment ID and performs no prepare or submit; the separate failed-send run establishes the lost response. Execution does not accept this draft example."
+      "limitations": "Fixture-backed loss injection and live recovery contribute different evidence. The live case requires an exact existing comment ID and performs no prepare or submit; the separate failed-send run establishes the lost response. Execution does not accept this draft example. The uncertain recovery case requires an exact existing uncertain action, reads its receipt and reconciles that same intent with zero prepare/submit requests. It proves visible unconfirmed feedback and no resend, not the original response-loss cause or successful publication."
     },
     {
       "id": "SB-UNRESOLVED-INTERVENTION",

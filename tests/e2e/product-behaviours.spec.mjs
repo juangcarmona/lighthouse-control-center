@@ -145,6 +145,62 @@ test('live prepared comment recovery keeps confirmation beside the editor withou
     journalState: recovered.journalState, sourceWritePerformed: false, prepareRequests: 0, submitRequests: 0 })), contentType: 'application/json' });
 });
 
+test('live uncertain comment recovery keeps the original result beside the editor without resending', async ({ signedPage: page }, info) => {
+  const expected = process.env.LCC_E2E_UNCERTAIN_ACTION_ID;
+  test.skip(!expected, 'Select an existing uncertain action explicitly; this case never prepares or submits one.');
+  expect(expected).toMatch(/^[a-f0-9]{32}$/);
+  const operations = [];
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === controlsPath && request.method() === 'POST') operations.push(request.postDataJSON()?.operation);
+  });
+  await page.goto(issuePath);
+  await expect(page.getByRole('button', { name: 'Recover previous action', exact: true })).toBeEnabled();
+  const responseFor = operation => page.waitForResponse(response => new URL(response.url()).pathname === controlsPath
+    && response.request().method() === 'POST' && response.request().postDataJSON()?.operation === operation, { timeout: 60_000 });
+  const receipt = responseFor('receipt');
+  await page.getByRole('button', { name: 'Recover previous action', exact: true }).click();
+  const recovered = await (await receipt).json();
+  expect(recovered.availability).toBe('available');
+  expect(recovered.id).toBe(expected);
+  expect(recovered.journalState).toBe('uncertain');
+  expect(recovered.intent?.action).toBe('comment');
+  const composer = page.locator('#comment-composer');
+  const status = composer.locator('[role="status"]');
+  await expect(status).toContainText('The source result is not yet confirmed');
+  await expect(status).toBeFocused();
+  await expect(status).toBeInViewport();
+  await expect(composer.getByRole('region', { name: 'Action confirmation', exact: true })).toContainText(recovered.intent.body);
+  await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toHaveCount(0);
+  const reconciliation = responseFor('reconcile');
+  await composer.getByRole('button', { name: 'Reconcile source result', exact: true }).click();
+  const reconciled = await (await reconciliation).json();
+  expect(reconciled.availability).toBe('available');
+  expect(reconciled.id).toBe(expected);
+  expect(reconciled.intent).toEqual(recovered.intent);
+  expect(reconciled.journalState).toBe('uncertain');
+  expect(reconciled.receipt?.state).toBe('unknown');
+  await expect(status).toContainText('The source result is not yet confirmed');
+  await expect(status).toBeFocused();
+  await expect(status).toBeInViewport();
+  await expect(page.getByRole('button', { name: 'Confirm and send', exact: true })).toHaveCount(0);
+  await expect(page.locator('#conversation-history')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#issue-description-details')).not.toHaveAttribute('open', '');
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const theme of ['Light', 'Dark']) {
+      await page.getByRole('button', { name: theme + ' appearance', exact: true }).click();
+      await status.scrollIntoViewIfNeeded();
+      await expect(status).toBeInViewport();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: info.outputPath(`uncertain-${width}-${theme.toLowerCase()}.png`) });
+    }
+  }
+  expect(operations).toEqual(['receipt', 'reconcile']);
+  await info.attach('uncertain-comment-recovery', { body: Buffer.from(JSON.stringify({ actionId: reconciled.id,
+    journalState: reconciled.journalState, receiptState: reconciled.receipt.state, sourceWritePerformed: false,
+    prepareRequests: 0, submitRequests: 0, receiptRequests: 1, reconcileRequests: 1 })), contentType: 'application/json' });
+});
+
 test('live ordinary comment is confirmed by its source identity without continuation', async ({ signedPage: page }, info) => {
   test.skip(process.env.LCC_E2E_ALLOW_COMMENT !== 'true', 'Actual comment publication requires explicit opt-in on the selected issue.');
   const operations = [];

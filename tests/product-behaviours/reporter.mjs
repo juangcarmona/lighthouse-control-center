@@ -17,12 +17,13 @@ export default class ProductBehaviourReporter {
     const outcome = result.status === 'passed' ? 'passed' : result.status === 'skipped' ? 'inconclusive' : 'failed';
     const citations = [...new Map(bindings.map(binding => [binding.requirement.id, { id: binding.requirement.id, digest: binding.requirement.digest }])).values()];
     const sourceEvidence = (result.attachments ?? []).flatMap(attachment => {
-      if (!['source-authority', 'confirmed-source-comment', 'recovered-source-comment'].includes(attachment.name)
+      if (!['source-authority', 'confirmed-source-comment', 'recovered-source-comment', 'prepared-comment-recovery', 'uncertain-comment-recovery'].includes(attachment.name)
           || attachment.contentType !== 'application/json' || !attachment.body) return [];
       try {
         const data = JSON.parse(attachment.body.toString('utf8'));
         const fields = ['availability', 'reason', 'missingReadScopes', 'commentId', 'source', 'actingUserId',
-          'questionResolved', 'sourceWritePerformed', 'prepareOrSubmitRequests'];
+          'questionResolved', 'sourceWritePerformed', 'prepareOrSubmitRequests', 'actionId', 'journalState', 'receiptState',
+          'prepareRequests', 'submitRequests', 'receiptRequests', 'reconcileRequests'];
         return [{ name: attachment.name, ...Object.fromEntries(fields.filter(field => Object.hasOwn(data, field)).map(field => [field, data[field]])) }];
       } catch { return []; }
     });

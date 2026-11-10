@@ -48,13 +48,21 @@ test('source receipts retain attributable outcomes without copying arbitrary att
         { name: 'recovered-source-comment', contentType: 'application/json', body: Buffer.from(JSON.stringify({
           commentId: 123, actingUserId: 456, sourceWritePerformed: false, prepareOrSubmitRequests: 0, token: 'must-not-copy',
         })) },
+        { name: 'uncertain-comment-recovery', contentType: 'application/json', body: Buffer.from(JSON.stringify({
+          actionId: 'abc', journalState: 'uncertain', receiptState: 'unknown', sourceWritePerformed: false,
+          prepareRequests: 0, submitRequests: 0, receiptRequests: 1, reconcileRequests: 1, body: 'must-not-copy', token: 'must-not-copy',
+        })) },
         { name: 'unreviewed-debug', contentType: 'application/json', body: Buffer.from('{"secret":"must-not-copy"}') },
       ],
     });
     reporter.onEnd({ status: 'passed' });
     const raw = readFileSync(join(output, readdirSync(output)[0], 'structured-behaviours.json'), 'utf8');
     const evidence = JSON.parse(raw).results[0].sourceEvidence;
-    assert.deepEqual(evidence, [{ name: 'recovered-source-comment', commentId: 123, actingUserId: 456, sourceWritePerformed: false, prepareOrSubmitRequests: 0 }]);
+    assert.deepEqual(evidence, [
+      { name: 'recovered-source-comment', commentId: 123, actingUserId: 456, sourceWritePerformed: false, prepareOrSubmitRequests: 0 },
+      { name: 'uncertain-comment-recovery', sourceWritePerformed: false, actionId: 'abc', journalState: 'uncertain', receiptState: 'unknown',
+        prepareRequests: 0, submitRequests: 0, receiptRequests: 1, reconcileRequests: 1 },
+    ]);
     assert.equal(raw.includes('must-not-copy'), false);
   } finally { rmSync(output, { recursive: true, force: true }); }
 });
