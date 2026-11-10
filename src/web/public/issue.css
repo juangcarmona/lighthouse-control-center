@@ -63,3 +63,12 @@ button, summary { cursor: pointer; }
 #mission-actions .action-recovery { margin-top:.375rem; padding-top:.375rem; }
 #issue-comments>li { padding-block:.75rem; }
 #issue-status[data-state="ready"] { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+#issue-description-details > summary, #conversation-history > summary { min-height:32px; padding:.25rem 0; font-size:.875rem; font-weight:600; }
+#comment-composer-slot { margin:0 0 .5rem; }
+.comment-composer { border:0; padding:0; }
+.comment-composer .action-message, .comment-composer .action-confirmation { margin-block:.5rem; padding:.5rem .75rem; }
+.comment-composer .action-confirmation h3, .comment-composer .action-confirmation h5 { font-size:.9375rem; }
+.comment-composer .action-confirmation p { margin-block:.375rem; }
+.comment-composer .action-recovery { padding-top:.5rem; margin-top:.5rem; }
+.comment-composer .action-message { color:var(--lh-text); }
+#issue-description-details[open] > #issue-facts-details { margin-top:.5rem; }

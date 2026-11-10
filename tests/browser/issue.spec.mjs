@@ -35,6 +35,8 @@ for (const width of [1280, 390]) test(`issue context ${width}: paginated, inert 
   await page.setViewportSize({ width, height: 900 });
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#issue-description-details > summary').click();
+  await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#issue-title')).toContainText('Read an ordinary issue');
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
   await expect(page.locator('#issue-evidence')).toContainText('propose · blocked');
@@ -66,6 +68,23 @@ test('temporary failure retains stale context; source authority loss removes eve
   await expect(page.locator('#issue-body')).toBeEmpty();
   await expect(page.locator('#issue-evidence')).toBeEmpty();
   await expect(page.locator('#issue-title')).toHaveText('Issue #7');
+});
+
+test('same-scope refresh preserves open description and history; replacement scope closes them', async ({ page }) => {
+  const harness = await fixture(page);
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  const description = page.locator('#issue-description-details'), history = page.locator('#conversation-history');
+  await description.locator(':scope > summary').click();
+  await history.locator(':scope > summary').click();
+  await page.getByRole('button', { name: 'Refresh source' }).click();
+  await expect(description).toHaveAttribute('open', '');
+  await expect(history).toHaveAttribute('open', '');
+
+  harness.replaceAccount();
+  await page.getByRole('button', { name: 'Refresh source' }).click();
+  await expect(page.locator('#issue-status')).toContainText('connected account changed');
+  await expect(description).not.toHaveAttribute('open', '');
+  await expect(history).not.toHaveAttribute('open', '');
 });
 test('initial failure does not invent an ordinary issue or empty conversation', async ({ page }) => {
   await fixture(page, { unavailable: true });
@@ -127,6 +146,7 @@ test('mission actions stay before a long issue description on a narrow screen', 
     return route.fulfill({ json: data });
   });
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#issue-description-details > summary').click();
   const actions = page.locator('#mission-actions'), description = page.locator('#issue-body');
   await expect(actions).toBeVisible();
   const missionBeforeDescription = await page.evaluate(() => {
@@ -141,6 +161,7 @@ test('mission actions stay before a long issue description on a narrow screen', 
 test('losing Actions access removes execution evidence while authorized issue context remains readable', async ({ page }) => {
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#issue-evidence')).toContainText('propose · blocked');
   harness.restrictEvidence(); await page.getByRole('button', { name: 'Load more comments' }).click();
   await expect(page.locator('#evidence-status')).toContainText('Actions-read access was removed');
@@ -157,6 +178,7 @@ test('very long source text keeps a bounded DOM and preserves the full remaining
     return route.fulfill({ json: data });
   });
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#issue-description-details > summary').click();
   await expect(page.locator('#issue-status')).toContainText('loaded from GitHub');
   expect(await page.locator('#issue-body *').count()).toBeLessThan(12000);
   await expect(page.locator('#issue-body .source-markdown > pre')).toContainText('end-of-source-body');
@@ -166,6 +188,7 @@ test('very long source text keeps a bounded DOM and preserves the full remaining
 test('a changed connection during pagination removes the earlier account context', async ({ page }) => {
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
   await expect(page.locator('#issue-evidence')).toContainText('propose · blocked');
   harness.replaceAccount(); await page.getByRole('button', { name: 'Load more comments' }).click();
@@ -179,6 +202,7 @@ test('a changed connection during pagination removes the earlier account context
 test('known Actions grant loss removes old evidence even when conversation refresh is unavailable', async ({ page }) => {
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#issue-evidence')).toContainText('propose · blocked');
   harness.restrictEvidence(); harness.failConversation();
   await page.getByRole('button', { name: 'Refresh source' }).click();
@@ -346,13 +370,18 @@ test('workflow dispatch denial keeps comment permission distinct and sends no re
 test('timestamps and source identifiers stay inside collapsed provenance details', async ({ page }) => {
   await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#conversation-history')).not.toHaveAttribute('open', '');
   await expect(page.locator('#source-provenance')).not.toHaveAttribute('open', '');
   await expect(page.locator('#issue-facts-details')).not.toHaveAttribute('open', '');
   await expect(page.locator('#conversation-panel > details')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#issue-description-details')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#comment-composer')).toBeVisible();
+  await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#source-comment-1 > details')).not.toHaveAttribute('open', '');
   await expect(page.locator('#source-comment-1 .source-byline')).toBeHidden();
   await expect(page.locator('#source-comment-1 .source-markdown')).toBeVisible();
   await expect(page.locator('#conversation-panel #comment-composer')).toBeVisible();
+  await expect(page.locator('#conversation-history #comment-composer')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -363,6 +392,7 @@ test('loading another conversation page restores the authorized comment composer
     actions: { comment: { eligible: true }, refine: { eligible: false, reason: 'Refinement is not currently permitted.' } }
   } });
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.locator('#conversation-history > summary').click();
   await expect(page.getByLabel('Your comment or answer')).toBeEnabled();
   await page.getByLabel('Your comment or answer').fill('Keep this draft while reading the conversation.');
   await page.getByRole('button', { name: 'Load more comments' }).click();
@@ -430,8 +460,11 @@ test('failed prepare displays its reason and does not automatically retry or sub
   await page.goto(origin + '/workspace/issues/example/repository/7');
   await page.getByLabel('Your comment or answer').fill('A synthetic comment');
   await page.getByRole('button', { name: 'Review comment' }).click();
-  await expect(page.locator('#control-actions')).toContainText(reason);
-  await expect(page.locator('#control-actions')).toContainText('No automatic resend was attempted');
+  const feedback = page.locator('#comment-composer .action-feedback');
+  await expect(feedback).toContainText(reason);
+  await expect(feedback).toContainText('No automatic resend was attempted');
+  await expect(feedback.locator('[role="status"]')).toBeFocused();
+  await expect(feedback.locator('[role="status"]')).toBeInViewport();
   await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
   expect(operations).toEqual(['prepare']);
@@ -461,6 +494,9 @@ test('existing action explains recovery, keeps the new draft and requires explic
   await composer.fill(original.intent.body);
   await page.getByRole('button', { name: 'Review comment' }).click();
   await expect(page.getByRole('button', { name: 'Confirm and send' })).toBeVisible();
+  const feedback = page.locator('#comment-composer .action-feedback');
+  await expect(feedback).toBeVisible();
+  await expect(feedback.getByRole('button', { name: 'Recover previous action' })).toBeVisible();
 
   await composer.fill('Replacement draft stays editable.');
   await page.getByRole('button', { name: 'Review comment' }).click();
@@ -469,6 +505,9 @@ test('existing action explains recovery, keeps the new draft and requires explic
   await expect(confirmation).toContainText('the existing intent is unchanged');
   await expect(confirmation).toContainText('Original prepared comment.');
   await expect(confirmation).toContainText('Recover previous action to review its current status and available next step');
+  await expect(feedback.locator('[role="status"]')).toContainText('Recover the earlier action');
+  await expect(feedback.locator('[role="status"]')).toBeFocused();
+  await expect(feedback.locator('[role="status"]')).toBeInViewport();
   await expect(composer).toHaveValue('Replacement draft stays editable.');
   await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
   expect(operations).toEqual(['prepare', 'prepare']);
@@ -476,9 +515,82 @@ test('existing action explains recovery, keeps the new draft and requires explic
   await page.getByRole('button', { name: 'Recover previous action' }).click();
   await expect(confirmation).toContainText('Ready for your confirmation.');
   await expect(confirmation).toContainText('Original prepared comment.');
-  await expect(page.getByRole('button', { name: 'Confirm and send' })).toBeVisible();
+  await expect(feedback.getByRole('button', { name: 'Confirm and send' })).toBeFocused();
+  await expect(feedback.getByRole('button', { name: 'Confirm and send' })).toBeInViewport();
   await expect(composer).toHaveValue('Replacement draft stays editable.');
   expect(operations).toEqual(['prepare', 'prepare', 'receipt']);
+});
+
+for (const width of [1280, 390]) test(`comment feedback stays beside the editor during a delayed double click ${width}`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true } }
+  } });
+  await page.route('**/api/controls/csrf', route => route.fulfill({ json: { token: 'browser-test-csrf' } }));
+  let releasePrepare, startedPrepare;
+  const prepareGate = new Promise(resolve => { releasePrepare = resolve; });
+  const prepareStarted = new Promise(resolve => { startedPrepare = resolve; });
+  const operations = [];
+  let entry;
+  await page.route('**/api/issues/**/controls', async route => {
+    if (route.request().method() === 'GET') return route.fallback();
+    const operation = route.request().postDataJSON().operation; operations.push(operation);
+    if (operation === 'prepare') {
+      startedPrepare();
+      await prepareGate;
+      entry = { availability: 'available', dataScope: 'fixture-71', actingUserId: 71,
+        observedAt: '2026-11-08T08:00:00Z', id: 'd'.repeat(32), journalState: 'prepared',
+        intent: { action: 'comment', body: 'A comment held for explicit review.' }, effect: { kind: 'comment' } };
+      return route.fulfill({ json: entry });
+    }
+    if (operation === 'submit') {
+      entry = { ...entry, journalState: 'confirmed', receiptObservedAt: '2026-11-08T08:01:00Z',
+        receipt: { state: 'comment-published', source: 'https://github.com/example/repository/issues/7#issuecomment-91' } };
+      return route.fulfill({ json: entry });
+    }
+    return route.fulfill({ status: 500, json: { reason: 'Unexpected operation in double-click test.' } });
+  });
+
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  const composer = page.locator('#comment-composer'), feedback = composer.locator('.action-feedback');
+  await expect(page.locator('#conversation-history')).not.toHaveAttribute('open', '');
+  await expect(composer).toBeVisible();
+  expect(await page.evaluate(() => {
+    const composer = document.querySelector('#comment-composer'), history = document.querySelector('#conversation-history');
+    return Boolean(composer.compareDocumentPosition(history) & Node.DOCUMENT_POSITION_FOLLOWING);
+  })).toBe(true);
+  const review = page.getByRole('button', { name: 'Review comment' });
+  await page.getByLabel('Your comment or answer').fill('A comment held for explicit review.');
+  const doubleClick = review.dblclick();
+  try {
+    await prepareStarted;
+    await expect(composer).toHaveAttribute('aria-busy', 'true');
+    await expect(feedback.locator('[role="status"]')).toContainText('Verifying source and confirmation');
+    await expect(feedback.locator('[role="status"]')).toHaveAttribute('aria-live', 'polite');
+    await expect(feedback.locator('[role="status"]')).toBeInViewport();
+    expect(operations).toEqual(['prepare']);
+    expect(operations.filter(operation => operation === 'submit')).toHaveLength(0);
+  } finally { releasePrepare(); }
+  await doubleClick;
+  const confirmation = feedback.getByRole('region', { name: 'Action confirmation' });
+  await expect(confirmation).toContainText('Ready for your confirmation.');
+  await expect(confirmation).toContainText('A comment held for explicit review.');
+  const confirm = feedback.getByRole('button', { name: 'Confirm and send' });
+  await expect(confirm).toBeVisible();
+  await expect(confirm).toBeFocused();
+  await expect(confirm).toBeInViewport();
+  expect(operations).toEqual(['prepare']);
+  expect(operations.filter(operation => operation === 'submit')).toHaveLength(0);
+
+  await confirm.click();
+  await expect(feedback.locator('[role="status"]')).toContainText('Comment published on GitHub');
+  await expect(feedback.locator('[role="status"]')).toBeFocused();
+  await expect(feedback.locator('[role="status"]')).toBeInViewport();
+  await expect(confirmation).toContainText('GitHub confirmed that the comment was published.');
+  expect(operations).toEqual(['prepare', 'submit']);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 for (const width of [1280, 390]) test(`explicit source action ${width}: confirmation, lost response and recovery without another send`, async ({ page }) => {
@@ -508,25 +620,25 @@ for (const width of [1280, 390]) test(`explicit source action ${width}: confirma
   await page.getByRole('button', { name: 'Review comment' }).focus(); await page.keyboard.press('Enter');
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('does not resume work');
   expect(operations).toEqual(['prepare']);
-  await expect(page.locator('#control-actions script')).toHaveCount(0);
+  await expect(page.locator('#comment-composer script')).toHaveCount(0);
   await page.getByRole('button', { name: 'Confirm and send' }).focus(); await page.keyboard.press('Enter');
-  await expect(page.locator('#control-actions')).toContainText('No automatic resend');
+  await expect(page.locator('#comment-composer .action-feedback')).toContainText('No automatic resend');
   await expect(page.getByRole('button', { name: 'Confirm and send' })).toHaveCount(0);
   await page.reload();
   await page.getByRole('button', { name: 'Recover previous action' }).click();
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('a'.repeat(32));
   await page.getByRole('button', { name: 'Reconcile source result' }).click();
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('comment-published');
-  await expect(page.locator('#control-actions')).toContainText('Comment published.');
+  await expect(page.locator('#comment-composer .action-feedback')).toContainText('Comment published.');
   await expect(page.getByRole('region', { name: 'Action confirmation' })).toContainText('GitHub confirmed that the comment was published.');
   await expect(page.getByRole('region', { name: 'Action confirmation' })).not.toContainText('Request recorded. Reconcile to check its source result.');
-  await expect(page.locator('#control-actions')).toContainText('Receipt observed: 2026-11-08T08:00:00Z');
-  await expect(page.locator('#control-actions')).not.toContainText('Question resolved:');
+  await expect(page.locator('#comment-composer .action-feedback')).toContainText('Receipt observed: 2026-11-08T08:00:00Z');
+  await expect(page.locator('#comment-composer .action-feedback')).not.toContainText('Question resolved:');
   expect(operations.filter(item => item === 'submit')).toHaveLength(1);
   expect(await page.evaluate(() => window.replyExecuted)).toBeUndefined();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.locator('#control-actions').screenshot({ path: `test-results/issue/controls-${width}.png` });
+  await page.locator('#comment-composer').screenshot({ path: `test-results/issue/controls-${width}.png` });
 });
 
 

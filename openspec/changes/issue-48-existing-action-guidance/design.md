@@ -19,3 +19,11 @@ The browser regression prepares an original comment, edits the composer and rece
 Run the focused browser case, frontend architecture Node checks, strict OpenSpec validation, ProductShape citation verification, Markdown lint and `git diff --check`. Inspect the diff for unchanged operation flow and source authority.
 
 Rollback only the UI guidance, its regression and this OpenSpec directory. Preserve journal rows, data-protection keys and any source receipts so existing actions remain recoverable.
+
+## Maintainer acceptance correction — 2026-11-10
+
+The original file scope above describes the earlier increment. The current correction also touches issue.html, issue.js, issue.css, browser fixtures and the product-owned Control Center design supplement. Keep the shared action status, review preview, explicit confirmation, receipt and recovery next to the composer in both issue and inbox contexts. On user-triggered preparation or recovery, focus the announced result and bring it into view; maintain the source-backed distinction between prepared, existing, uncertain and published. Retain the busy guard and require a separate Confirm and send click.
+
+Place the composer before a closed-by-default conversation-history disclosure; retain source records, provenance and explicit pagination. Make the description independently collapsible so a long source description cannot bury the editor. Preserve disclosure choice during same-issue updates and clear it on source identity/issue replacement. The existing inert Markdown renderer and raw-source disclosure remain unchanged.
+
+Regressions cover a long thread with local visible confirmation, rapid duplicate review clicks while preparation is pending (one prepare, zero submits), one explicit submit, failed-response recovery without a second submit, and retained draft/authority protections. Verify both themes, desktop/narrow layouts and the complete fixture browser suite. Actual source publication, application activation and whole-PR acceptance remain separately recorded.

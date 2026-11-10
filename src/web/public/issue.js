@@ -37,7 +37,10 @@ function clear() {
   byId('source-eligibility').open = false;
   byId('source-provenance').open = false;
   byId('issue-facts-details').open = false;
-  byId('conversation-panel').querySelector('details').open = false;
+  byId('issue-description-details').open = false;
+  byId('conversation-history').open = false;
+  byId('conversation-provenance').open = false;
+  byId('conversation-summary').textContent = 'Conversation history';
   byId('conversation-coverage').textContent = ''; byId('issue-age').textContent = ''; byId('issue-more').hidden = true;
 }
 function selection() {
@@ -85,6 +88,7 @@ function show(data, append) {
   byId('issue-more').hidden = nextPage === null;
   byId('conversation-coverage').textContent = `${comments.length} comments read · Source count: ${data.conversation.sourceCount ?? 'unknown'} · ${data.conversation.complete ? 'End observed' : 'Partial coverage'}. `
     + (capped ? 'The read budget was reached; later records require source inspection. ' : '') + (data.conversation.reason ?? '');
+  byId('conversation-summary').textContent = `Conversation history · ${comments.length} read / ${data.conversation.sourceCount ?? 'unknown'} source comments · ${data.conversation.complete ? 'End observed' : 'Partial coverage'}`;
   byId('issue-age').textContent = 'Observed: ' + data.observedAt + ' · Acting GitHub user ID: ' + data.actingUserId;
   status(data.conversation.availability === 'unavailable' ? 'Issue read; conversation unavailable. Previous pages may be stale.' : 'Issue context loaded from GitHub.');
 }
@@ -138,7 +142,13 @@ async function read(append = false) {
       nextPage = null; byId('issue-more').hidden = true;
       status('The conversation text budget was reached. No further pages will be fetched; inspect the source for remaining records.', true); return;
     }
-    if (!append) { clear(); bytes = size; comments = data.conversation.items; }
+    if (!append) {
+      const disclosures = current?.key === target.key && current.dataScope === data.dataScope && current.actingUserId === data.actingUserId
+        ? ['issue-description-details', 'conversation-history'].filter(id => byId(id).open) : [];
+      clear();
+      for (const id of disclosures) byId(id).open = true;
+      bytes = size; comments = data.conversation.items;
+    }
     else { bytes += size; comments.push(...data.conversation.items); }
     current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope, actingUserId: data.actingUserId }; show(data, append);
     void readEvidence(target, page, data.snapshot, operation);

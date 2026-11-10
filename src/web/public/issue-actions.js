@@ -29,7 +29,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   };
   const explain = value => actionReasons[value] ?? (typeof value === 'string' ? value.replaceAll('-', ' ') : 'The source did not confirm this action. Refresh the issue and review current source checks.');
   const explainComment = value => commentWriteReasons[value] ?? explain(value);
-  const message = document.createElement('p'); message.className = 'action-message'; message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
+  const message = document.createElement('p'); message.className = 'action-message'; message.tabIndex = -1; message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
   const body = document.createElement('textarea'); body.className = 'lh-textarea'; body.rows = 5; body.maxLength = 12288;
   body.placeholder = 'Write a comment for this issue…';
   body.value = initialBody;
@@ -46,7 +46,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     const link = document.createElement('a'); link.href = '/workspace'; link.textContent = 'Review connected account'; hint.append(' ', link);
   }
   body.setAttribute('aria-describedby', hint.id); field.append(label, hint);
-  const composer = document.createElement('section'); composer.className = 'comment-composer';
+  const composer = document.createElement('section'); composer.className = 'comment-composer source-actions';
   if (area.id === 'control-actions') { composer.id = 'comment-composer'; composer.tabIndex = -1; }
   const heading = document.createElement(contextLabel ? 'h5' : 'h3'); heading.textContent = 'Add a comment';
   composer.append(heading, field);
@@ -56,6 +56,8 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   const workflowHeading = document.createElement(contextLabel ? 'h5' : 'h3'); workflowHeading.textContent = 'Lighthouse actions'; controls.append(workflowHeading);
   const layout = document.createElement('div'); layout.className = 'mission-action-layout';
   const recovery = document.createElement('div'); recovery.className = 'action-recovery';
+  const feedback = document.createElement('div'); feedback.className = 'action-feedback';
+  feedback.append(message, confirmation, recovery);
   const buttons = new Map();
   const text = value => { const p = document.createElement('p'); p.textContent = value; return p; };
   function button(name, action, parent = controls, disabled = false, secondary = false) {
@@ -65,7 +67,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   }
   function display(data) {
     preparation = data; confirmation.replaceChildren(); confirmation.hidden = !data.id;
-    if (!data.id) { message.textContent = 'No previous action was found in this source scope.'; return; }
+    if (!data.id) { message.textContent = 'No previous action was found in this source scope.'; reveal(message); return; }
     const action = data.intent?.action;
     const heading = document.createElement(contextLabel ? 'h5' : 'h3'); heading.textContent = data.journalState === 'prepared' ? 'Review before sending' : 'Action result'; confirmation.append(heading);
     confirmation.append(text('Destination: ' + target.repository + ' #' + target.number));
@@ -100,15 +102,29 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       }
     }
     confirmation.append(details);
-    if (data.journalState === 'prepared') button('Confirm and send', () => command({ operation: 'submit', id: preparation.id }), confirmation);
+    const confirm = data.journalState === 'prepared' ? button('Confirm and send', () => command({ operation: 'submit', id: preparation.id }), confirmation) : null;
     button('Reconcile source result', () => command({ operation: 'reconcile', id: preparation.id }), confirmation);
+    message.textContent = data.journalState === 'prepared' ? 'Review ready. Nothing has been sent. Confirm below to send this action.'
+      : data.journalState === 'existing' ? 'Your new draft has not been sent. Recover the earlier action to check its status.'
+        : action === 'comment' && data.receipt?.state === 'comment-published' ? 'Comment published on GitHub. Open the source receipt below.'
+          : data.receipt?.sourceAcknowledged === true ? 'The source acknowledged the request. Its execution outcome is checked separately.'
+            : data.receipt?.state === 'rejected' ? 'The source declined this request. Inspect the receipt below.'
+              : data.receipt?.state === 'conflict' ? 'The source reports a conflict. Inspect the existing receipt below.'
+          : 'The source result is not yet confirmed. Review the existing receipt before sending anything else.';
+    reveal(confirm ?? message);
+  }
+  function reveal(element) {
+    element.focus({ preventScroll: true });
+    element.scrollIntoView({ block: 'nearest' });
   }
   async function command(value) {
     if (!submissionAvailable || busy || !live() || value.operation === 'prepare' && !allowed(value.action)) return;
     const identityGeneration = workspaceSourceIdentityGeneration();
     if (value.operation === 'submit' && preparation) display({ ...preparation, journalState: 'uncertain' });
     busy = true; for (const b of buttons.keys()) b.disabled = true;
+    composer.setAttribute('aria-busy', 'true');
     message.textContent = value.operation === 'submit' ? 'Sending the prepared action once…' : 'Verifying source and confirmation…';
+    reveal(message);
     try {
       const csrf = await fetch('/api/controls/csrf', { credentials: 'same-origin', cache: 'no-store' });
       if ([401, 403, 409].includes(csrf.status)) { if (csrf.status === 401) updateWorkspaceAccount({ state: 'expired' }); clear(); return; }
@@ -128,10 +144,9 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       if (!data) throw Error('Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (!response.ok || data.availability !== 'available') throw Error(data.reason ?? 'Source result is uncertain. Recover and reconcile the existing action; do not prepare a replacement.');
       if (data.dataScope !== scope || data.actingUserId !== facts.actor.id) { clear(); return; }
-      message.textContent = 'Observed: ' + data.observedAt + '. A submitted request does not prove completed work.';
       display(data);
-    } catch (error) { if (live()) message.textContent = error.message + ' No automatic resend was attempted.'; }
-    finally { busy = false; for (const [b, disabled] of buttons) b.disabled = disabled; }
+    } catch (error) { if (live()) { message.textContent = error.message + ' No automatic resend was attempted.'; reveal(message); } }
+    finally { busy = false; composer.setAttribute('aria-busy', 'false'); for (const [b, disabled] of buttons) b.disabled = disabled; }
   }
   for (const [action, name] of [['comment', 'Review comment'], ['refine', 'Review Refine'], ['propose', 'Review Propose'], ['continue', 'Review answer and continue']]) {
     const group = document.createElement('div'); group.className = 'workflow-action';
@@ -156,7 +171,8 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
   }
   button('Recover previous action', () => command({ operation: 'receipt' }), recovery, !submissionAvailable, true);
   layout.append(controls);
-  area.replaceChildren(layout, message, confirmation, recovery);
+  composer.append(feedback);
+  area.replaceChildren(layout);
   const slot = document.getElementById('comment-composer-slot');
   if (slot && area.id === 'control-actions') slot.replaceChildren(composer);
   else layout.prepend(composer);
