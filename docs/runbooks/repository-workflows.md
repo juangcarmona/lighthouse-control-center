@@ -2,6 +2,8 @@
 
 SoFa uses Lighthouse's repository workflows. GitHub runs the work; the web app observes it.
 
+For the 2026-11-09 revision-bound package, profile, workflow and capability inventory, use [Lighthouse adoption and dogfooding](lighthouse-dogfooding.md). It records CLI/SDLC/UI 0.12.65/0.22.4/0.2.1 and workflow source 879c4e75efebd945f8aea5b8ee09b97db62edbea. Older package and exact-#99 grant descriptions below retain historical context; current authority comes from the checked-in policies and the [current bounded grant](lighthouse-unattended.md), not those earlier examples. The dogfooding guide separates present declarations, historical receipts and remaining operator/application acceptance.
+
 The change-request issue form collects an initial request. The owner can add `triage` for classification and an explained relative estimate, then request `refine` when appropriate. A submitted form does not itself authorize execution.
 
 ## Use the workflow

@@ -56,3 +56,5 @@ Both the historical CLI snapshot and authenticated web projection include `runAt
 The former supervisor is retained for historical rollback, disabled by default and no longer started by AppHost. See [ADR-0006](docs/architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md).
 
 The repository's own development workflows use the pinned Lighthouse gh-aw/OpenCode adapter. See [repository workflow operation](docs/runbooks/repository-workflows.md) for runner setup, stage requests, evidence and recovery.
+
+See the [Lighthouse adoption inventory and dogfooding guide](docs/runbooks/lighthouse-dogfooding.md) for the current package/profile/source-contract baseline, reproducible verification and the still-pending authenticated mission demonstration.
