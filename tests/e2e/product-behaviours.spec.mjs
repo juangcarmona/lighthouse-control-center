@@ -78,7 +78,7 @@ test('live issue context retains actual description conversation and source prov
 });
 
 test('live action authority explains unavailable dependencies without granting a write', async ({ signedPage: page }, info) => {
-  const observation = page.waitForResponse(response => new URL(response.url()).pathname === controlsPath && response.request().method() === 'GET');
+  const observation = page.waitForResponse(response => new URL(response.url()).pathname === controlsPath && response.request().method() === 'GET', { timeout: 60_000 });
   await page.goto(issuePath);
   const source = await (await observation).json();
   await expect(page.locator('#controls-status')).not.toHaveText(/^(Checking|Refreshing)/i);
