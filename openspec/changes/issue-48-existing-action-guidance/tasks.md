@@ -15,9 +15,11 @@ Playwright `tests/browser/issue.spec.mjs`: 34/34 passed. The focused existing-ac
 
 The previous verification record remains historical. These tasks concern the newly reported feedback-placement and long-thread defects in the existing PR.
 
-- [ ] Keep action status, confirmation, result and recovery adjacent to the editor, with deliberate result focus and visible progress.
-- [ ] Put the editor before collapsed conversation history and provide an independent description disclosure without losing source content or pagination.
-- [ ] Extend browser regressions for visible local confirmation, rapid duplicate clicks, one explicit submit, recovery/no-resend and identity boundaries.
-- [ ] Update the product-owned design guardrail for feedback locality and long-thread density.
-- [ ] Run full repository/browser verification and retain light/dark desktop/narrow captures.
-- [ ] Obtain independent final-head review; record source effect/activation separately and update the existing PR only.
+- [x] Keep action status, confirmation, result and recovery adjacent to the editor, with deliberate result focus and visible progress.
+- [x] Put the editor before collapsed conversation history and provide an independent description disclosure without losing source content or pagination.
+- [x] Extend browser regressions for visible local confirmation, rapid duplicate clicks, one explicit submit, recovery/no-resend and identity boundaries.
+- [x] Update the product-owned design guardrail for feedback locality and long-thread density.
+- [x] Run full repository/browser verification and retain light/dark desktop/narrow captures.
+- [x] Obtain independent final-head review; record source effect/activation separately and update the existing PR only.
+
+The [bounded correction evidence](../../../docs/delivery/evidence/issue-48/comment-feedback-2026-11-10/README.md) retains the full passing source CI and local checks, the original failed state-mismatch and pre-fix locality runs, and a passing real exact-intent uncertain recovery with four visual captures. The source outcome remains unconfirmed; zero replacement prepare/submit requests occurred. Independent review approved only this correction/development activation. Existing PR #100 and protected product/source acceptance remain open; this plan is not archived.

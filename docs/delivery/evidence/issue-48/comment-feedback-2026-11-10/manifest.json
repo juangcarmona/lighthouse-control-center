@@ -1,0 +1,126 @@
+{
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "appSource": "0144c6c64820ab936920fe82061e1507543be617",
+  "harnessSource": "cd6e3bde4792e34bc2be86caf106a72dd8b134ed",
+  "recordedAt": "2026-11-10T10:42:19.657955+00:00",
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "0a014949eb5c8c295aa49872f751846082e834b05cedd958cda6a703d5ff49a9"
+    },
+    {
+      "path": "binding-reporter-checks.log.gz",
+      "sha256": "e381b557a82a3defbcab2d34139419cf9238e6ebc66221b2476aa544e8af5105"
+    },
+    {
+      "path": "development-activation.json",
+      "sha256": "4b66b3e5ccdd78d256ab677f7b393d1480ea5d232022167ad88bffc527b189b8"
+    },
+    {
+      "path": "failed-live-locality-before/playwright.log.gz",
+      "sha256": "c654fa6f1b21162c62a816439c44c07122d998494764e66967788ca556e64b02"
+    },
+    {
+      "path": "failed-live-locality-before/structured-behaviours.json",
+      "sha256": "45848a74a510c0a867fa9387bc7c62714c1afedb6f373530a53b71a21b1e8fe1"
+    },
+    {
+      "path": "failed-live-locality-before/verification-evidence.json",
+      "sha256": "ace37982c4e020f8b20f873f118b9c7da6b0fa9fb546ff2fa8ef4b8be1d50263"
+    },
+    {
+      "path": "failed-live-prepared-state-changed/playwright.log.gz",
+      "sha256": "3b91ce88aa768fa1fef37db06eeae4b8c064685ad31e98ba2e9b8a6349324489"
+    },
+    {
+      "path": "failed-live-prepared-state-changed/structured-behaviours.json",
+      "sha256": "73373b4384b4a18d399d681aeb0555ae819d87657b445471a2ac3e7c3b846a6f"
+    },
+    {
+      "path": "failed-live-prepared-state-changed/verification-evidence.json",
+      "sha256": "da7ce6d0d4c1b5538dbef68537ec3f4fabb16dfc5207967d9ca2388609686cbe"
+    },
+    {
+      "path": "fixture-ci-0144/composer-dark-1280.png",
+      "sha256": "93dd6c78c159f55012de118c181a4e9e3032db9c7619333467f2b798df316ba5"
+    },
+    {
+      "path": "fixture-ci-0144/composer-dark-390.png",
+      "sha256": "6b083e074f62191adda4545cc26acfd23253998542306be31a572bfebc696410"
+    },
+    {
+      "path": "fixture-ci-0144/composer-light-1280.png",
+      "sha256": "e75bb254998414de2f4dbd0c935e48e0858ad36177564adfdc175a858e2d1196"
+    },
+    {
+      "path": "fixture-ci-0144/composer-light-390.png",
+      "sha256": "738965ddc1c05b03b8575c3d60238e587fd342d0d01f06acd2800d6339598810"
+    },
+    {
+      "path": "fixture-ci-0144/playwright.log.gz",
+      "sha256": "721cbb5756367f4dd145586c8f24d4f7a8b01906f147251614556400b2b26728"
+    },
+    {
+      "path": "fixture-ci-0144/structured-behaviours.json",
+      "sha256": "7dc45e3cced774ed3cdb9f3908a58aafee0bdf5905da49c955a0c2e86f4e634c"
+    },
+    {
+      "path": "fixture-ci-0144/verification-evidence.json",
+      "sha256": "0047f8f2c31004e5aa12f2645ed463136fc2f4de0f3723c54b846409dd74c07e"
+    },
+    {
+      "path": "full-local-verification.log.gz",
+      "sha256": "243e61024d46b90119721709edda77f3c67a587f701be95de764a8876c1310e5"
+    },
+    {
+      "path": "hosted-verification.json",
+      "sha256": "fd1a91cfb85f9fc2528005388dd12a93561829d735304630845b66276805919b"
+    },
+    {
+      "path": "independent-review.json",
+      "sha256": "d040effc2adb689b06fc1e2981d05897e028bc9fcc2892f29d49431495494b83"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/playwright.log.gz",
+      "sha256": "b324e84e045c4f8ea5a0a2baa02ba56d70671aafab5fcfbddeb42c52230bb3a6"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/structured-behaviours.json",
+      "sha256": "1096cc8dd5436e1edaa56adb1ca93117ff3f3a3e6d72e06b442cdde146e5dbbd"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/uncertain-1280-dark.png",
+      "sha256": "5f40fda843bfa4bbfed02cb7820311c999c9c8a46b34a531f7c818b3bd570032"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/uncertain-1280-light.png",
+      "sha256": "b745ffdd103b2c7ba71723fe86507bda6fcf4450e35fdec65cf58db039e87443"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/uncertain-390-dark.png",
+      "sha256": "f66a9403cd27f1879c09cd7236c261fa630501f5426ea792c13a61843160c649"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/uncertain-390-light.png",
+      "sha256": "1b7642c9a9ff7f8df194f3f98a24f484feb23693874c281fe7c6349a1dec8ae6"
+    },
+    {
+      "path": "live-uncertain-cd6e3bd/verification-evidence.json",
+      "sha256": "53b3d7ee43372293b2c3209778d54b3263517caf52e868f69d1ac6244b81bb0a"
+    },
+    {
+      "path": "recovery-harness-delta.patch.gz",
+      "sha256": "842499343ed271a0ec5daf508a3ce09f46338fe5f14b47ebadeb437f63cdcb3b"
+    },
+    {
+      "path": "source-receipt-before.json",
+      "sha256": "8c4be7f162c6bc001238f0d03805941b8657426a5f295dedb3210916b4a11fc7"
+    },
+    {
+      "path": "source-reconciliation-before.json",
+      "sha256": "a291ca86f02e874ddbf36431f8673ab856c5d71cca5102d4a546063edf61617c"
+    }
+  ],
+  "hostedFixtureCheckout": "08bc5029bdb043a434817b2006597ed647991c94"
+}
