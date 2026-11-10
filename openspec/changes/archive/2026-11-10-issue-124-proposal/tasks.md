@@ -13,9 +13,11 @@
 
 ## 3. Candidate verification
 
-- [ ] 3.1 Run the supplied installation, container and strict proposal checks plus relevant available checks; retain terminal exit receipts, a source-reference report and retrospective, and mark completion only when checks pass.
+- [x] 3.1 Run the supplied installation, container and strict proposal checks plus relevant available checks; retain terminal exit receipts, a source-reference report and retrospective, and mark completion only when checks pass.
 
-Verification remains incomplete: locked installation, installed tuple observation, Lighthouse verification, strict proposal validation and the documentation/source-reference check passed. `verify:container` exited 1 during .NET restore with `No space left on device`, after lint, 54 Node tests, secret/model/integrity/spec/citation/architecture checks passed. .NET build/tests and browser checks did not complete. Keep this task open and the candidate blocked; do not alter caches, isolation, resources, tests or policy to manufacture success. The runtime operator owns recovery through the existing upstream #584 path and a fresh required-check receipt.
+Original worker verification remained incomplete: `verify:container` exited 1 during .NET restore with `No space left on device`. That result remains blocked in native run `42723277342`; it has not been rewritten or counted as passed.
+
+Subsequent trusted-host verification of published PR #154 head `eca22474704ee91c5a4805138c91476157891503`, tree `771b656669aad0dc000a9b2c15838add28cec28a`, passed all three required commands: locked npm installation, `CI=true npm run verify:container` and strict OpenSpec. The original source-bound receipt is retained at `docs/delivery/evidence/issue-124/dogfooding/host-checks.json`; protected verification inputs match the baseline. Exact-head full GitHub verification `42727030503` also passed. These later receipts complete this documentation increment's checks without changing resources, checks, policy or the old worker result. Final integration-head review and CI remain separate.
 
 ## Workflow follow-up
 
