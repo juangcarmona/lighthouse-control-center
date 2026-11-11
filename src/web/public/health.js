@@ -6,7 +6,7 @@ const time = value => typeof value === 'string' && Number.isFinite(Date.parse(va
 const path = location.pathname.match(/^\/workspace\/health\/([^/]+)\/([^/]+)(?:\/runs\/([1-9][0-9]*))?$/);
 const selected = path ? path.slice(1, 3).map(decodeURIComponent).join('/') : null;
 const runId = path?.[3];
-let repositories = new Map(), scope, busy = false, epoch = 0, deadline;
+let repositories = new Map(), scope, busy = false, epoch = 0, deadline, fleetFilter = 'all', fleetQuery = '';
 function link(text, href) { const value = node('a', text); value.href = href; value.dataset.healthKey = href; return value; }
 function healthHref(repository) { return '/workspace/health/' + repository.split('/').map(encodeURIComponent).join('/'); }
 function age(value) {
@@ -29,6 +29,100 @@ function provenance(row) {
   if (row.reason) value.append(node('p', row.reason)); return value;
 }
 function family(title, explanation) { const section = node('section', undefined, 'health-family'); section.append(node('h2', title), node('p', explanation)); return section; }
+function observed(row) { return ['available', 'stale'].includes(row.availability) && Array.isArray(row.runs); }
+function failedRuns(row) { return observed(row) ? row.runs.filter(run => run.conclusion === 'failure').length : null; }
+function metric(label, value, explanation) {
+  const item = node('div', undefined, 'health-metric');
+  item.append(node('span', label, 'health-metric-label'), node('strong', value), node('small', explanation));
+  return item;
+}
+function runStrip(row, repository) {
+  const strip = node('div', undefined, 'health-run-strip');
+  strip.setAttribute('aria-label', 'Latest collected Actions runs, source order');
+  for (const run of row.runs ?? []) {
+    if (!Number.isSafeInteger(run.id) || run.id <= 0) continue;
+    const item = link('', healthHref(repository) + '/runs/' + run.id);
+    item.className = 'health-run-mark ' + (run.conclusion === 'failure' ? 'is-failed' : run.conclusion === 'success' ? 'is-success' : 'is-unknown');
+    item.setAttribute('aria-label', `${run.name || 'Workflow run ' + run.id}: ${run.status || 'unknown status'}, ${run.conclusion || 'conclusion unknown'}`);
+    item.title = `${run.name || 'Workflow run ' + run.id} · ${run.conclusion || run.status || 'unknown'}`;
+    strip.append(item);
+  }
+  return strip;
+}
+function applyFleetFilter() {
+  const rows = [...byId('health-results').querySelectorAll('.health-row')];
+  for (const row of rows) row.hidden = (fleetFilter === 'attention' && row.dataset.attention !== 'true')
+    || (fleetFilter === 'unknown' && row.dataset.unknown !== 'true')
+    || !row.dataset.repository.toLowerCase().includes(fleetQuery.toLowerCase());
+  for (const button of byId('health-results').querySelectorAll('[data-health-filter]'))
+    button.setAttribute('aria-pressed', String(button.dataset.healthFilter === fleetFilter));
+  const count = rows.filter(row => !row.hidden).length;
+  const result = byId('health-results').querySelector('.health-filter-result');
+  if (result) result.textContent = `${count} of ${rows.length} configured projects shown`;
+}
+function fleetView() {
+  const fragment = document.createDocumentFragment();
+  const rows = [...repositories], known = rows.filter(([, row]) => observed(row));
+  const failures = known.filter(([, row]) => failedRuns(row) > 0);
+  const unknown = rows.filter(([, row]) => !observed(row));
+  const intro = node('div', undefined, 'health-intro');
+  intro.append(node('h2', 'Projects'), node('p', 'Engineering evidence across configured repositories. Source coverage is bounded; no overall score is calculated.'));
+  if (!rows.length) {
+    fragment.append(intro, node('p', 'No authorized repository observation is available. This does not establish an empty or healthy fleet.'));
+    return fragment;
+  }
+  const summary = node('div', undefined, 'health-metrics');
+  summary.append(metric('Configured projects', String(rows.length), 'Authorized repository catalog'),
+    metric('Actions observed', String(known.length) + ' / ' + rows.length, 'Latest 20 runs per readable project'),
+    metric('Needs investigation', String(failures.length), 'A failure in the collected Actions runs'),
+    metric('Evidence unknown', String(unknown.length), 'Denied or unavailable source read'));
+  fragment.append(intro, summary);
+  if (failures.length) {
+    const attention = node('section', undefined, 'health-attention');
+    const header = node('div', undefined, 'health-section-head');
+    const filter = node('button', 'Show only these'); filter.type = 'button'; filter.className = 'health-quiet-button';
+    filter.addEventListener('click', () => { fleetFilter = 'attention'; applyFleetFilter(); byId('health-project-search')?.focus(); });
+    header.append(node('h2', `Needs investigation (${failures.length})`), filter); attention.append(header);
+    const list = node('div', undefined, 'health-attention-list');
+    for (const [repository, row] of failures) {
+      const item = link(repository, healthHref(repository)); item.className = 'health-attention-item';
+      item.append(node('small', `${failedRuns(row)} failed of ${row.runs.length} collected Actions runs · ${state(row)}`)); list.append(item);
+    }
+    attention.append(list); fragment.append(attention);
+  }
+  const toolbar = node('div', undefined, 'health-toolbar');
+  const tabs = node('div', undefined, 'health-filters'); tabs.setAttribute('role', 'group'); tabs.setAttribute('aria-label', 'Filter projects');
+  for (const [key, label, count] of [['all', 'All', rows.length], ['attention', 'Needs investigation', failures.length], ['unknown', 'Evidence unknown', unknown.length]]) {
+    const button = node('button', `${label} ${count}`); button.type = 'button'; button.dataset.healthFilter = key;
+    button.dataset.healthKey = 'filter:' + key;
+    button.addEventListener('click', () => { fleetFilter = key; applyFleetFilter(); }); tabs.append(button);
+  }
+  const search = node('input'); search.id = 'health-project-search'; search.type = 'search'; search.placeholder = 'Filter projects';
+  search.setAttribute('aria-label', 'Filter projects by repository'); search.value = fleetQuery;
+  search.addEventListener('input', () => { fleetQuery = search.value; applyFleetFilter(); });
+  toolbar.append(tabs, search); fragment.append(toolbar, node('p', '', 'health-filter-result'));
+  const heading = node('div', undefined, 'health-list-head');
+  heading.append(node('span', 'Project'), node('span', 'Engineering'), node('span', 'Actions evidence'), node('span', 'Environment'));
+  const list = node('section', undefined, 'health-list'); list.setAttribute('aria-label', 'Configured projects'); list.append(heading);
+  for (const [repository, row] of rows) {
+    const item = node('article', undefined, 'health-row'); item.dataset.repository = repository;
+    item.dataset.attention = String(failedRuns(row) > 0); item.dataset.unknown = String(!observed(row));
+    const project = node('div', undefined, 'health-project-cell');
+    const title = node('h3'); title.append(link(repository, healthHref(repository)));
+    project.append(title, node('small', state(row) + ' · ' + age(row.observedAt)));
+    const engineering = node('div', undefined, 'health-evidence-cell');
+    engineering.append(node('strong', 'Unavailable'), node('small', 'No comparable engineering assessment'));
+    const actions = node('div', undefined, 'health-evidence-cell');
+    if (observed(row)) {
+      actions.append(node('strong', `${failedRuns(row)} failed / ${row.runs.length} collected`), runStrip(row, repository));
+    } else actions.append(node('strong', state(row)), node('small', 'Workflow results unknown'));
+    const environment = node('div', undefined, 'health-evidence-cell');
+    environment.append(node('strong', 'Unknown'), node('small', 'PRE / PRO / production not verified'));
+    item.append(project, engineering, actions, environment, provenance(row)); list.append(item);
+  }
+  fragment.append(list);
+  return fragment;
+}
 function detail(repository, row, run) {
   const section = node('section', undefined, 'health-detail'); section.append(node('h2', run.name || 'Workflow run ' + run.id));
   section.append(node('p', 'GitHub Actions · exact contributing run', 'health-kicker'));
@@ -58,51 +152,71 @@ function detail(repository, row, run) {
   ])); section.append(provenance);
   return section;
 }
+function projectView(repository, row) {
+  const fragment = document.createDocumentFragment();
+  const header = node('div', undefined, 'health-project-header');
+  header.append(node('h2', repository), node('p', `${state(row)} · ${coverage(row)}`), provenance(row)); fragment.append(header);
+  const summary = node('div', undefined, 'health-metrics');
+  summary.append(metric('Actions runs', observed(row) ? String(row.runs.length) : 'Unavailable', 'Latest collected source records'),
+    metric('Failed runs', observed(row) ? String(failedRuns(row)) : 'Unavailable', 'Source conclusions in this collection'),
+    metric('Engineering level', 'Unavailable', 'No comparable assessment source'),
+    metric('Environment', 'Unknown', 'PRE / PRO / production not verified'));
+  fragment.append(summary);
+  const nav = node('nav', undefined, 'health-section-nav'); nav.setAttribute('aria-label', 'Project health sections');
+  for (const [id, label] of [['delivery', 'Delivery'], ['engineering', 'Engineering quality'], ['adoption', 'Lighthouse adoption/autonomy'], ['resources', 'Resources']]) {
+    const anchor = link(label, '#' + id); nav.append(anchor);
+  }
+  fragment.append(nav);
+  const delivery = family('Delivery', 'GitHub Actions workflow outcomes in the latest collected scope. These are execution results, not deployment or delivery acceptance.');
+  delivery.id = 'delivery';
+  if (observed(row) && row.runs.length) {
+    const sampled = node('div', undefined, 'health-sample');
+    sampled.append(node('div', `${row.runs.length} latest collected runs · ${failedRuns(row)} failed`, 'health-sample-label'), runStrip(row, repository));
+    delivery.append(sampled);
+  }
+  for (const run of row.runs ?? []) {
+    if (!Number.isSafeInteger(run.id) || run.id <= 0) continue;
+    const item = node('article', undefined, 'health-run');
+    item.append(link(run.name || 'Workflow run ' + run.id, healthHref(repository) + '/runs/' + run.id),
+      node('span', (run.status || 'Unknown status') + ' · ' + (run.conclusion || 'Conclusion unknown'), 'badge'));
+    delivery.append(item);
+  }
+  if (!row.runs?.length) delivery.append(node('p', row.availability === 'available' ? 'No workflow runs in the successfully collected scope; this is not a health verdict.' : 'Workflow evidence unavailable; Actions and Issues read permission and a successful source observation are required.'));
+  fragment.append(delivery);
+  const engineering = family('Engineering quality', 'Engineering level, gates, coverage, mutation and security are unavailable until their source assessments and definitions are supplied.');
+  engineering.id = 'engineering'; engineering.append(node('p', 'No engineering score, level or passing gate is inferred from workflow conclusions.', 'health-empty-signal'));
+  const adoption = family('Lighthouse adoption/autonomy', 'Agentic and code measurements are unavailable. Committed version inventory is separate from installed adoption.');
+  adoption.id = 'adoption'; adoption.append(node('p', 'No agent success, autonomy, AI usage or code quality value is inferred from this Actions collection.', 'health-empty-signal'));
+  const resources = family('Resources', 'Provider cost, tokens, CPU, memory and storage measurements are unavailable. Runner registration does not establish free capacity.');
+  resources.id = 'resources'; resources.append(node('p', 'Environment deployment is unknown: no verified PRE, PRO or production target result is in this collection.', 'health-empty-signal'));
+  fragment.append(engineering, adoption, resources, link('Inspect runtime and version inventory', '/workspace/runtime'));
+  return fragment;
+}
 function render() {
-  const active = document.activeElement, key = active?.dataset.healthKey;
+  const active = document.activeElement, key = active?.dataset.healthKey, searchFocused = active?.id === 'health-project-search';
   const root = byId('health-results'), fragment = document.createDocumentFragment();
   root.className = !selected ? 'health-fleet' : runId ? 'health-detail-view' : 'health-project';
   byId('health-title').textContent = selected ? 'Project health' : 'Health';
   document.title = (selected ? selected + ' · Health' : 'Health') + ' · Lighthouse Control Center';
   const breadcrumb = byId('health-breadcrumb'); breadcrumb.replaceChildren();
   if (selected) breadcrumb.append(link('Health', '/workspace/health'), document.createTextNode(' / '), link(selected, healthHref(selected)));
-  if (!selected) {
-    for (const [repository, row] of repositories) {
-      const item = node('article', undefined, 'health-row'); item.dataset.repository = repository;
-      const heading = node('h2'); heading.append(link(repository, healthHref(repository)));
-      const failed = row.runs?.some(run => run.conclusion === 'failure');
-      item.append(heading, node('span', state(row), 'badge caution'),
-        node('p', failed ? 'Source workflow failure observed · inspect evidence' : 'Overall health is not assessed.'),
-        node('p', age(row.observedAt), 'muted'), provenance(row)); fragment.append(item);
-    }
-    if (!repositories.size) fragment.append(node('p', 'No authorized repository observation is available. This does not establish an empty or healthy fleet.'));
-  } else {
+  if (!selected) fragment.append(fleetView());
+  else {
     const row = repositories.get(selected);
     if (!row) fragment.append(node('p', 'This repository is not in the current authorized collection.'));
     else {
-      fragment.append(node('p', state(row), 'notice'), provenance(row));
       if (runId) {
+        fragment.append(node('p', state(row), 'notice'), provenance(row));
         const run = row.runs?.find(value => String(value.id) === runId);
         fragment.append(link('Back to project health', healthHref(selected)));
         fragment.append(run ? detail(selected, row, run) : node('p', 'This run is unavailable in the current bounded collection. No result is inferred.'));
-      } else {
-        const delivery = family('Delivery', 'Workflow execution observations, not deployment or delivery acceptance.');
-        for (const run of row.runs ?? []) {
-          if (!Number.isSafeInteger(run.id) || run.id <= 0) continue;
-          const item = node('article', undefined, 'health-run'); item.append(link(run.name || 'Workflow run ' + run.id, healthHref(selected) + '/runs/' + run.id),
-            node('span', (run.status || 'Unknown status') + ' · ' + (run.conclusion || 'Conclusion unknown'), 'badge')); delivery.append(item);
-        }
-        if (!row.runs?.length) delivery.append(node('p', row.availability === 'available' ? 'No workflow runs in the successfully collected scope; this is not a health verdict.' : 'Workflow evidence unavailable; Actions and Issues read permission and a successful source observation are required.'));
-        fragment.append(delivery,
-          family('Engineering quality', 'Unavailable: coverage, mutation and security reports are not supplied by this observation source.'),
-          family('Lighthouse adoption/autonomy', 'Unavailable: this source does not supply comparable adoption or autonomy assessments. Committed version inventory is separate from installed adoption.'),
-          family('Resources', 'Unavailable: attributable provider usage, cost, CPU, memory and storage measurements are not supplied. Runner registrations do not establish free capacity.'));
-        fragment.append(link('Inspect existing runtime and version inventory', '/workspace/runtime'));
-      }
+      } else fragment.append(projectView(selected, row));
       fragment.append(node('p', 'Trends unavailable: no comparable historical samples or definition-change boundaries are supplied yet. No missing interval is treated as zero.', 'notice'));
     }
   }
   root.replaceChildren(fragment);
+  if (!selected) applyFleetFilter();
+  if (searchFocused) byId('health-project-search')?.focus();
   if (key && !active.isConnected) ([...root.querySelectorAll('[data-health-key]')].find(value => value.dataset.healthKey === key) || byId('health-title')).focus();
 }
 function clear(message, expired = false) {

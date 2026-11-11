@@ -29,12 +29,21 @@ async function fixture(page) {
 }
 test('health fleet to project to exact contributing source is read-only and honest', async ({ page }) => {
   const state = await fixture(page); state.runName = '<img src=x> Verify'; await page.goto(origin + '/workspace/health');
-  await expect(page.locator('#health-results')).toContainText('Source workflow failure observed');
+  await expect(page.getByRole('heading', { name: 'Needs investigation (1)' })).toBeVisible();
   await expect(page.locator('[data-repository="example/denied"]')).toContainText('Access denied');
   await expect(page.locator('[data-repository="example/unavailable"]')).toContainText('Evidence unavailable');
+  await expect(page.locator('[data-repository="' + repository + '"]')).toContainText('PRE / PRO / production not verified');
+  await page.getByRole('button', { name: 'Needs investigation 1' }).click();
+  await expect(page.locator('.health-row:visible')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Evidence unknown 2' }).click();
+  await expect(page.locator('.health-row:visible')).toHaveCount(2);
+  await page.getByRole('button', { name: 'All 3' }).click();
+  await page.getByRole('searchbox', { name: 'Filter projects by repository' }).fill('denied');
+  await expect(page.locator('.health-row:visible')).toHaveCount(1);
+  await page.getByRole('searchbox', { name: 'Filter projects by repository' }).fill('');
   await page.getByRole('link', { name: repository, exact: true }).click();
   for (const title of ['Delivery', 'Engineering quality', 'Lighthouse adoption/autonomy', 'Resources']) await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
-  await page.getByRole('link', { name: '<img src=x> Verify' }).click();
+  await page.getByRole('link', { name: '<img src=x> Verify', exact: true }).click();
   await expect(page.getByRole('link', { name: 'Open exact contributing GitHub run' })).toHaveAttribute('href', 'https://github.com/' + repository + '/actions/runs/42');
   await expect(page.locator('.health-detail')).toContainText('Not supplied by this source observation');
   await expect(page.locator('.health-detail')).toContainText('numeric unit not applicable');
