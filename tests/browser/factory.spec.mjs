@@ -4,13 +4,13 @@ const origin = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'
 const makeIssue = (number, title, state = 'open', labels = []) => ({ id: number + 1000, number, title, state, labels,
   labelsComplete: true, updatedAt: '2026-11-07T10:00:00Z', sourceUrl: `https://github.com/example/repository/issues/${number}` });
 async function fixture(page) {
-  let accountStatus = 0, failure = 0, scope = 'factory-71', title = 'Ordinary work', actionsRead = true, configured = ['example/repository', 'example/other'], otherWait, pageWait;
+  let accountStatus = 0, accountState = 'linked', failure = 0, scope = 'factory-71', title = 'Ordinary work', actionsRead = true, configured = ['example/repository', 'example/other'], otherWait, pageWait;
   const methods = [], requests = [];
   await page.route('**/api/**', async route => {
     methods.push(route.request().method()); const url = new URL(route.request().url()); requests.push(url.pathname + url.search);
     if (url.pathname === '/api/session') return route.fulfill({ json: { authenticated: true, displayName: 'Fixture owner' } });
     if (url.pathname === '/api/connections/github' && accountStatus) return route.fulfill({ status: accountStatus, body: 'Session ended' });
-    if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true, actionsRead })) } });
+    if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: accountState, login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true, actionsRead })) } });
     if (url.pathname.startsWith('/api/issues/')) return route.fulfill({ json: url.pathname.endsWith('/evidence')
       ? { availability: 'available', dataScope: scope, observedAt: '2026-11-07T12:00:00Z', reports: [{ availability: 'available', stage: 'propose', result: 'blocked', executionStatus: 'completed', executionConclusion: 'success', runId: 500, attempt: 2 }], scope: 'Synthetic one-page report fixture; live lease unknown.' }
       : { availability: 'available', dataScope: scope, snapshot: 'bounded-snapshot', issue: { id: 1007 } } });
@@ -26,7 +26,7 @@ async function fixture(page) {
       nextPage: selectedPage === 1 && repository === 'example/repository' && !number ? 2 : null, complete: selectedPage > 1 || repository === 'example/other' || !!number,
       configuredBranch: 'expected', observedBranch: 'main', reason: 'Synthetic collection: bounded live pages, not an atomic snapshot.' } });
   });
-  return { methods, requests, expireAccount() { accountStatus = 401; }, reconnect() { accountStatus = 0; }, revokeActions() { actionsRead = false; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, pausePages() { let release; pageWait = new Promise(resolve => { release = resolve; }); return () => { pageWait = undefined; release(); }; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
+  return { methods, requests, expireAccount() { accountStatus = 401; }, failAccount(status) { accountStatus = status; }, unavailableAccount() { accountState = 'unavailable'; }, unlinkAccount() { accountState = 'unlinked'; }, reconnect() { accountStatus = 0; accountState = 'linked'; }, revokeActions() { actionsRead = false; }, removeFirst() { configured = ['example/other']; }, pauseOther() { let release; otherWait = new Promise(resolve => { release = resolve; }); return release; }, pausePages() { let release; pageWait = new Promise(resolve => { release = resolve; }); return () => { pageWait = undefined; release(); }; }, fail(status) { failure = status; }, replace() { scope = 'factory-replacement'; title = 'Replacement account work'; } };
 }
 for (const width of [1280, 390]) test(`factory ${width}: list board filters evidence paging and keyboard`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 }); const source = await fixture(page);
@@ -164,6 +164,45 @@ test('session loss clears source data and offers account recovery instead of a f
   await expect(page.locator('#factory-results')).not.toContainText('contains no ordinary issues');
 });
 
+test('temporary account failure keeps the last authorized collection visibly stale', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/issues?state=open&view=board');
+  await expect(page.locator('.factory-issue')).toHaveCount(2);
+  source.failAccount(503); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-stale')).toHaveCount(2);
+  await expect(page.locator('#factory-results')).toContainText('Ordinary work');
+  await expect(page.locator('#factory-status')).toContainText('Source refresh failed');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect(page.locator('#factory-state')).toHaveValue('open');
+  source.reconnect(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-stale')).toHaveCount(0);
+});
+
+test('project and issue navigation retain filters and restore the list position on return', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 400 }); await fixture(page);
+  await page.goto(origin + '/workspace/issues?state=open&view=board&wait=both');
+  await expect(page.locator('.factory-issue')).toHaveCount(1);
+  await page.locator('#factory-project-summary').click();
+  const project = page.getByRole('link', { name: 'example/repository', exact: true });
+  const projectUrl = new URL(await project.getAttribute('href'), origin);
+  expect(Object.fromEntries(['state', 'view', 'wait'].map(key => [key, projectUrl.searchParams.get(key)]))).toEqual({ state: 'open', view: 'board', wait: 'both' });
+  await project.click();
+  await expect(page.locator('#factory-state')).toHaveValue('open');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect(page.locator('#factory-wait')).toHaveValue('both');
+  await expect(page.locator('.factory-issue')).toHaveCount(1);
+  await page.locator('.factory-issue details summary').click();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const before = await page.evaluate(() => window.scrollY);
+  await page.locator('.factory-issue h3 a').evaluate(link => link.click());
+  await page.waitForURL('**/workspace/issues/example/repository/7');
+  await page.goBack({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.factory-issue')).toHaveCount(1);
+  await expect(page.locator('#factory-state')).toHaveValue('open');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect(page.locator('.factory-issue details')).toHaveAttribute('open', '');
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThanOrEqual(Math.max(0, before - 2));
+});
+
 test('returning restores same-scope read rows as stale, then refreshes them in the background', async ({ page }) => {
   const source = await fixture(page); await page.goto(origin + '/workspace/factory');
   const ordinary = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
@@ -238,4 +277,49 @@ test('owner expiry removes the connected name and signed-in claim from the share
   await expect(page.locator('.sidebar-identity')).not.toContainText('verified-user');
   await expect(page.locator('.sidebar-identity')).not.toContainText('Fixture owner');
   await expect(page.locator('.sidebar-identity')).not.toContainText('Signed in');
+});
+
+
+test('temporary unavailable account retains visible rows but never opens stored rows until verification', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/issues');
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
+  source.unavailableAccount(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-stale')).toHaveCount(3);
+  await expect(page.locator('#factory-status')).toContainText('Source refresh failed');
+  await expect(page.locator('.factory-issue').first()).toContainText('Ordinary work');
+  expect(await page.evaluate(() => Object.keys(sessionStorage).some(key => key.startsWith('lcc:read-projection:')))).toBe(true);
+  await page.reload();
+  await expect(page.locator('#factory-status')).toContainText('Source refresh failed');
+  await expect(page.locator('.factory-issue')).toHaveCount(0);
+  source.reconnect(); const release = source.pausePages();
+  try {
+    await page.reload();
+    await expect(page.locator('.factory-stale')).toHaveCount(3);
+  } finally { release(); }
+  await expect(page.locator('.factory-stale')).toHaveCount(0);
+  source.unlinkAccount(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-issue')).toHaveCount(0);
+  expect(await page.evaluate(() => Object.keys(sessionStorage).filter(key => key.startsWith('lcc:read-projection:')))).toEqual([]);
+});
+
+test('local filtering and refresh retain disclosures, while a replacement source starts them closed', async ({ page }) => {
+  const source = await fixture(page); await page.goto(origin + '/workspace/issues');
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
+  await page.locator('#factory-project-summary').click();
+  const coverage = page.locator('.factory-project').filter({ has: page.getByRole('heading', { name: 'example/repository', exact: true }) }).locator('details');
+  const issueDetails = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).locator('details');
+  await coverage.locator('summary').click(); await issueDetails.locator('summary').click();
+  await page.locator('#factory-search').fill('Ordinary');
+  await expect(coverage).toHaveAttribute('open', ''); await expect(issueDetails).toHaveAttribute('open', '');
+  await page.locator('#factory-search').fill('No matching work');
+  await expect(page.locator('.factory-issue')).toHaveCount(0);
+  await page.locator('#factory-search').fill('');
+  await expect(issueDetails).toHaveAttribute('open', '');
+  await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('#factory-refresh')).toBeEnabled();
+  await expect(coverage).toHaveAttribute('open', ''); await expect(issueDetails).toHaveAttribute('open', '');
+  source.replace(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('.factory-issue').filter({ hasText: 'Replacement account work' })).toBeVisible();
+  await expect(coverage).not.toHaveAttribute('open', '');
+  await expect(page.locator('.factory-issue').filter({ hasText: 'Replacement account work' }).locator('details')).not.toHaveAttribute('open', '');
 });
