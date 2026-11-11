@@ -8,6 +8,11 @@ import assert from 'node:assert/strict';
 const directory = await mkdtemp(join(tmpdir(), 'sofa-published-workspace-'));
 try {
   const publish = spawnSync('dotnet', ['publish', 'src/SoFa.Web/SoFa.Web.csproj', '-c', 'Release', '--no-build', '--no-restore', '--disable-build-servers', '-o', directory], { encoding: 'utf8' });
+  if (publish.status !== 0) {
+    process.stderr.write(publish.stdout ?? '');
+    process.stderr.write(publish.stderr ?? '');
+    if (publish.error) console.error(publish.error);
+  }
   assert.equal(publish.status, 0, 'The exact Release application must publish.');
   const tools = join(directory, 'workspace-tools');
   const expected = JSON.parse(await readFile('node_modules/@juangcarmona/lighthouse-sdlc/package.json', 'utf8')).version;
