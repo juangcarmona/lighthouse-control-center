@@ -40,7 +40,17 @@ jobs:
           npm run check:branch -- "$BRANCH_NAME"
           npx --no -- commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
       - name: Install Chromium for browser checks
-        run: npx --no -- playwright install --with-deps chromium
+        timeout-minutes: 5
+        run: |
+          # Keep Ubuntu's signed repositories when the hosted Azure mirror is unavailable.
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' |
+              sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+          fi
+          printf '%s\n' 'Acquire::Retries "0";' 'Acquire::http::Timeout "20";' 'Acquire::https::Timeout "20";' |
+            sudo tee /etc/apt/apt.conf.d/zzzz-lcc-network-timeouts >/dev/null
+          apt-config shell RETRIES Acquire::Retries HTTP_TIMEOUT Acquire::http::Timeout HTTPS_TIMEOUT Acquire::https::Timeout
+          npx --no -- playwright install --with-deps chromium
       - name: Verify repository, specifications and product citations
         run: npm run verify
       - name: Retain browser evidence

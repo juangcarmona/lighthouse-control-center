@@ -1,0 +1,9 @@
+# Hosted browser bootstrap correction
+
+Required CI runs [43035048469](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43035048469) and [43035413614](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43035413614) failed before repository verification. Playwright dependency installation repeatedly failed to resolve `azure.archive.ubuntu.com`, selected from the hosted runner's `/etc/apt/apt-mirrors.txt`. Each execution spent approximately ten minutes retrying package index/download requests. Original failed-step logs are retained as gzip; the [manifest](manifest.json) hashes their exact bytes.
+
+The existing Chromium installation step now selects Ubuntu's official HTTPS archive mirror when the hosted mirror list exists, retains normal package signature/TLS checks, disables repeated APT acquisition retries and bounds HTTP/HTTPS waits to twenty seconds. The configured Ubuntu suites, including security, remain unchanged. The APT settings file sorts after the hosted image's `zz-retries` defaults, and `apt-config shell` records the effective retry/timeouts. The installation step has a five-minute ceiling. This changes only the disposable hosted runner preparation; it does not modify the operator's machine or require a new service/cache.
+
+The same `playwright install --with-deps chromium` and complete `npm run verify` remain required. No browser, dependency, assertion, security check, CI result or repository protection is skipped or weakened. If official mirrors are unavailable, CI still fails instead of presenting an installation failure as a test pass.
+
+Acceptance requires the final-head hosted workflow to complete real dependency installation and all repository checks. Independent review covers this correction before integration; a local shell/YAML check cannot qualify hosted package availability. This evidence does not declare the earlier failed executions passed.
