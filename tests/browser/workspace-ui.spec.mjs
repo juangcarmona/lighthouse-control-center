@@ -11,7 +11,7 @@ for (const width of [1280, 390]) test(`dashboard visual contract ${width}: decis
   await expect(page.getByRole('heading', { name: 'Overview' })).toHaveCount(1);
   await expect(page.getByRole('heading', { name: 'Needs your attention' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Workspace navigation' });
-  await expect(nav.locator('a > svg')).toHaveCount(6);
+  await expect(nav.locator('a > svg')).toHaveCount(7);
   await expect(page.locator(width >= 1000 ? '.sidebar-identity strong' : '.header-identity strong')).toHaveText('verified-operator');
   await expect(page.locator('.topbar #refresh')).toBeVisible();
   expect(await page.locator('link[rel="icon"]').getAttribute('href')).toBe('/lighthouse.svg');
