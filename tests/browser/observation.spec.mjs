@@ -112,7 +112,7 @@ test('operations retains account navigation when GitHub needs reconnecting', asy
 });
 
 test('operations navigation opens source-backed mission context and repository-scoped mission discovery', async ({ page }) => {
-  const current = operationalPayload();
+  const current = { ...operationalPayload(), dataScope: 'navigation-fixture' };
   const issueFixture = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'}`;
   await page.route('**/api/observations', route => route.fulfill({ json: current }));
   await page.route('**/workspace/operations', async route => {
