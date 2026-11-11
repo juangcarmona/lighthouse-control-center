@@ -7,7 +7,7 @@ const repository = 'example/a-very-long-repository-name-for-engineering-health-e
 const observedAt = '2026-11-11T00:00:00Z';
 const screenshotDir = process.env.LIGHTHOUSE_EVIDENCE_DIR || 'test-results/evidence/screenshots';
 async function fixture(page) {
-  const state = { denied: false, unavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [] };
+  const state = { denied: false, unavailable: false, accountUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [], paths: [] };
   await page.route('**/health.js', route => readFile(new URL('../../src/web/public/health.js', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/javascript' })));
   await page.route('**/health.css', route => readFile(new URL('../../src/web/public/health.css', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/css' })));
   await page.route('**/workspace/health**', async route => {
@@ -15,9 +15,9 @@ async function fixture(page) {
     await route.fulfill({ body: html.replace('<div id="health-results">', '<p>Demonstration data · browser fixture</p><div id="health-results">'), contentType: 'text/html' });
   });
   await page.route('**/api/**', async route => {
-    state.methods.push(route.request().method()); const path = new URL(route.request().url()).pathname;
+    state.methods.push(route.request().method()); const path = new URL(route.request().url()).pathname; state.paths.push(path);
     if (path === '/api/session') return route.fulfill({ json: { authenticated: true, displayName: 'Demonstration operator', idleDeadline: new Date(Date.now() + 600000).toISOString(), absoluteDeadline: new Date(Date.now() + 600000).toISOString() } });
-    if (path === '/api/connections/github') return route.fulfill({ json: { state: 'linked', login: 'demo', dataScope: state.scope, userId: 1, repositories: [
+    if (path === '/api/connections/github') return route.fulfill({ json: state.accountUnavailable ? { state: 'unavailable' } : { state: 'linked', login: 'demo', dataScope: state.scope, userId: 1, repositories: [
       { repository, availability: state.denied ? 'denied' : 'available', actionsRead: true, issuesRead: true },
       { repository: 'example/denied', availability: 'denied' }, { repository: 'example/unavailable', availability: 'unavailable' }] } });
     if (state.unavailable) return route.fulfill({ status: 503, json: {} });
@@ -42,15 +42,35 @@ test('health fleet to project to exact contributing source is read-only and hone
   await expect(page.locator('#health-results')).toContainText('Trends unavailable');
   expect(state.methods.every(method => method === 'GET')).toBe(true);
 });
-test('stale timestamps survive temporary failure but denied authority removes records', async ({ page }) => {
+test('temporary account and source failure retain stale visible evidence but denied authority removes records', async ({ page }) => {
   const state = await fixture(page); await page.goto(origin + '/workspace/health/' + repository + '/runs/42');
   await expect(page.locator('.health-detail')).toContainText('failure');
+  state.accountUnavailable = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
+  await expect(page.locator('.health-detail')).toContainText('Stale');
+  await expect(page.locator('.health-detail')).toContainText('2026-11-11T00:00:00.000Z');
+  await expect(page.locator('#health-status')).toContainText('Previously shown observations may be stale');
+  state.accountUnavailable = false;
   state.unavailable = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
   await expect(page.locator('.health-detail')).toContainText('Stale');
   await expect(page.locator('.health-detail')).toContainText('2026-11-11T00:00:00.000Z');
   state.denied = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
   await expect(page.locator('.health-detail')).toHaveCount(0);
   await expect(page.locator('#health-results')).toContainText('Access denied');
+});
+test('initial account unavailability does not restore private cached observations', async ({ page }) => {
+  const state = await fixture(page); state.accountUnavailable = true;
+  await page.addInitScript(({ scope, repository, observedAt }) => {
+    const projection = { dataScope: scope, repositories: [{ repository, availability: 'available', observedAt, attention: [],
+      runs: [{ id: 42, name: 'PRIVATE CACHED RUN', status: 'completed', conclusion: 'failure' }] }] };
+    sessionStorage.setItem('lcc:read-projection:v1:active-scope', scope);
+    sessionStorage.setItem(`lcc:read-projection:v1:${encodeURIComponent(scope)}:operations`, JSON.stringify({ version: 1, scope, savedAt: Date.now(), projection }));
+  }, { scope: state.scope, repository, observedAt });
+  await page.goto(origin + '/workspace/health');
+  await expect(page.locator('#health-status')).toContainText('No stored observations were opened');
+  await expect(page.locator('.health-row, .health-detail')).toHaveCount(0);
+  await expect(page.getByText('PRIVATE CACHED RUN', { exact: true })).toHaveCount(0);
+  expect(state.methods.every(method => method === 'GET')).toBe(true);
+  expect(state.paths).not.toContain('/api/observations');
 });
 test('mismatched source scope cannot populate health', async ({ page }) => {
   const state = await fixture(page); state.sourceScope = 'different'; await page.goto(origin + '/workspace/health');

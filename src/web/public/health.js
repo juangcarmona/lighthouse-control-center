@@ -127,6 +127,14 @@ async function refresh() {
     if (!accountResponse.ok) throw Error();
     const account = await accountResponse.json(); if (requestEpoch !== epoch) return;
     updateWorkspaceAccount(account);
+    if (account.state === 'unavailable') {
+      for (const row of repositories.values()) if (row.availability === 'available' && Array.isArray(row.runs)) row.availability = 'stale';
+      render();
+      byId('health-status').textContent = repositories.size
+        ? 'Account verification unavailable. Previously shown observations may be stale; current authority is unknown.'
+        : 'Account verification unavailable. No stored observations were opened. Refresh to try again.';
+      return;
+    }
     if (account.state !== 'linked' || typeof account.dataScope !== 'string' || !Array.isArray(account.repositories)) { clear('Connect and verify GitHub in Account to read Health.'); return; }
     if (scope !== account.dataScope) repositories.clear(); scope = account.dataScope;
     const catalog = account.repositories.filter(row => validRepository(row.repository));
