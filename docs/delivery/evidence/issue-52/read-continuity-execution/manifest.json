@@ -1,0 +1,11 @@
+{
+  "baseline": "ef5a8f9c7429f8ff76fa8275784b2f50bb9422b8",
+  "scope": "Fixture execution against uncommitted reviewed source; source file hashes are in ../read-continuity-verification.json. Reporter revision records checkout HEAD, not a committed implementation.",
+  "files": {
+    "browser-final.log.gz": "3565705c5bc78dc3092d4eadf21b391623f81f975415bfbaba464bc012bf0cbe",
+    "browser-initial.log.gz": "f659b9017833ff2469cfc1284d8448fc992f60103892a2a12706981a8a68b6f7",
+    "node-final.log.gz": "f364364675da56c3cfb9065c307b48c573e793730b99e37ea70b938791d0f5cb",
+    "structured-behaviours.json": "1468dbe26ac7801e18c2b43b18aa8fe73fbb6cf613c8ec1c8e5e2d13303be42b",
+    "verification-evidence.json": "3cd807f2f8c5a1b6bde91c17e940eccf10de3c994bab45372689a32521c04561"
+  }
+}
