@@ -67,4 +67,6 @@ The former supervisor is retained for historical rollback, disabled by default a
 
 The repository's own development workflows use the pinned Lighthouse gh-aw/OpenCode adapter. See [repository workflow operation](docs/runbooks/repository-workflows.md) for runner setup, stage requests, evidence and recovery.
 
+See the [Lighthouse adoption inventory and dogfooding guide](docs/runbooks/lighthouse-dogfooding.md) for the current package/profile/source-contract baseline, reproducible verification and the still-pending authenticated mission demonstration.
+
 The runtime inventory at `/workspace/runtime` reads configured local runner registrations and committed Lighthouse versions separately from permission-gated GitHub runner observations. See the [runtime inventory runbook](docs/runbooks/runtime-inventory.md) for private sources, explicit filesystem trust, limits and unavailable evidence. Registrations and matching source IDs do not prove process health or free capacity.
