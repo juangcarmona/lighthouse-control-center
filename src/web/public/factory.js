@@ -35,7 +35,8 @@ if (!attentionView) {
 let attentionHistory = new Map();
 const repositories = new Map();
 const evidence = new Map();
-let dataScope, busy = false, epoch = 0, lookupNumber = null;
+let dataScope, disclosureScope, busy = false, epoch = 0, lookupNumber = null;
+const disclosures = new Map();
 const identity = (repository, issue) => repository.toLowerCase() + ':' + issue.id;
 const exactNumber = search => /^#?[1-9][0-9]{0,9}$/.test(search.trim()) && Number(search.replace('#', '')) <= 2147483647 ? Number(search.replace('#', '')) : null;
 const time = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';
@@ -70,7 +71,7 @@ function projectHref(repository) {
 function setBusy(value) { busy = value; byId('factory-refresh').disabled = value; for (const button of document.querySelectorAll('#factory-projects button, #factory-results button')) button.disabled = value; }
 function clearSource(message, ownerExpired = false) {
   updateWorkspaceAccount({ state: ownerExpired ? 'expired' : 'unavailable' });
-  epoch++; clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); dataScope = undefined; render();
+  epoch++; clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); disclosures.clear(); dataScope = undefined; render();
   byId('factory-count').textContent = 'No authorized collection is available.';
   const account = node('a', 'Open account'); account.href = '/workspace';
   byId('factory-results').replaceChildren(node('p', 'Verify your account to read fleet work.'), account);
@@ -78,6 +79,7 @@ function clearSource(message, ownerExpired = false) {
 }
 function removeRepositoryDetails(repository) {
   repositories.delete(repository);
+  for (const key of disclosures.keys()) if (key.startsWith(repository.toLowerCase() + ':')) disclosures.delete(key);
   for (const key of evidence.keys()) if (key.startsWith(repository.toLowerCase() + ':')) evidence.delete(key);
   for (const [key, entry] of attentionHistory) if (entry.repository === repository) attentionHistory.delete(key);
 }
@@ -128,7 +130,7 @@ function issueCard(repository, issue, stale) {
   meta.append(state, updated); card.append(title, meta);
   for (const label of issue.labels.filter(value => ['needs-info', 'waiting-review'].includes(value))) meta.append(node('span', label, 'badge caution'));
   if (stale) card.append(node('p', 'Stale collection; current activity and labels are unknown.', 'notice'));
-  const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source details'));
+  const provenance = node('details', undefined, 'factory-provenance'); provenance.dataset.disclosureKey = identity(repository, issue) + ':source'; provenance.dataset.disclosureRepository = repository; provenance.append(node('summary', 'Source details'));
   provenance.append(node('p', `Collected labels: ${issue.labels.join(', ') || 'none'}${issue.labelsComplete ? '' : ' · incomplete'}`, 'factory-labels'),
     node('p', `Reported stages: ${source.stages.join(', ') || 'unknown / unread'} · Linked runs: ${source.executions.join(', ') || 'unknown / unread'}`));
   if (source.value) {
@@ -149,6 +151,11 @@ function age(value) {
   return days ? `${days}d` : hours ? `${hours}h` : minutes ? `${minutes}m` : 'now';
 }
 function render() {
+  if (dataScope && disclosureScope === dataScope) for (const details of document.querySelectorAll('[data-disclosure-key]')) {
+    const collection = repositories.get(details.dataset.disclosureRepository);
+    if (collection && collection.availability !== 'denied') disclosures.set(details.dataset.disclosureKey, details.open);
+  }
+  disclosureScope = dataScope;
   const selected = filters(), focusKey = document.activeElement?.dataset.focusKey;
   const projects = document.createDocumentFragment(), all = [];
   for (const [repository, collection] of repositories) {
@@ -161,7 +168,7 @@ function render() {
       ? `${collection.issues?.length ?? 0} issues${collection.complete ? '' : ' · Partial'}${collection.stale ? ' · Stale' : ''}`
       : collection.availability === 'denied' ? 'Access denied' : collection.availability === 'unavailable' ? 'Source unavailable' : 'Loading…';
     project.append(heading, node('p', summary));
-    const coverage = node('details', undefined, 'factory-provenance'); coverage.append(node('summary', 'Branch and source coverage'),
+    const coverage = node('details', undefined, 'factory-provenance'); coverage.dataset.disclosureKey = repository.toLowerCase() + ':coverage'; coverage.dataset.disclosureRepository = repository; coverage.open = disclosures.get(coverage.dataset.disclosureKey) === true; coverage.append(node('summary', 'Branch and source coverage'),
       node('p', `Observed ${time(collection.observedAt)}`),
       node('p', `Default branch · configured: ${collection.configuredBranch ?? 'unknown'} · observed: ${collection.observedBranch ?? 'unknown'}`),
       node('p', `Pages: ${collection.pages?.join(', ') || 'none'} · Source records: ${collection.sourceRecords ?? 'unknown'} · ${collection.complete ? 'source end reached for this collection' : 'coverage incomplete / unknown'}`),
@@ -202,9 +209,11 @@ function render() {
     const list = node('div', undefined, 'factory-list'); for (const row of visible) list.append(issueCard(row.repository, row.issue, row.stale)); results.append(list);
   }
   if (!visible.length) results.append(node('p', unknown ? 'No match in the collected scope. Remaining or unavailable source records may contain work.' : all.length ? 'No collected issues match these filters.' : 'The successfully collected scope contains no ordinary issues.'));
-  const scroll = restoreScroll ?? window.scrollY;
+  const restoring = restoreScroll !== null && dataScope && repositories.size > 0;
+  const scroll = restoring ? restoreScroll : window.scrollY;
   byId('factory-results').replaceChildren(results);
-  requestAnimationFrame(() => { window.scrollTo(0, scroll); restoreScroll = null; });
+  for (const details of byId('factory-results').querySelectorAll('[data-disclosure-key]')) details.open = disclosures.get(details.dataset.disclosureKey) === true;
+  requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring) restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 function renderAttention(selected, focusKey) {
@@ -240,9 +249,10 @@ function renderAttention(selected, focusKey) {
   }
   if (!visible.length) list.append(node('p', 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));
   if (projection.limited) list.append(node('p', 'The retained 1 MiB / 1,000-context bound was reached; omitted history is not a resolved intervention.', 'notice'));
-  const scroll = restoreScroll ?? window.scrollY;
+  const restoring = restoreScroll !== null && dataScope && repositories.size > 0;
+  const scroll = restoring ? restoreScroll : window.scrollY;
   byId('factory-results').replaceChildren(list);
-  requestAnimationFrame(() => { window.scrollTo(0, scroll); restoreScroll = null; });
+  requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring) restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 async function getPage(repository, page, requestEpoch, number) {
@@ -275,13 +285,17 @@ async function refresh() {
     if ([401, 403, 409].includes(response.status)) { clearSource('The owner session or source access ended. Open Account to sign in again.', response.status === 401); return; }
     if (!response.ok) throw Error('Account check unavailable');
     const account = await response.json(); updateWorkspaceAccount(account);
+    if (account.state === 'unavailable') throw Error('Account check unavailable');
     if (account.state !== 'linked' || !Array.isArray(account.repositories) || typeof account.dataScope !== 'string') { clearSource('Connect or verify the GitHub account in Account before reading fleet work.'); return; }
     const configured = new Set(account.repositories.map(row => row.repository));
     const readable = new Set(account.repositories.filter(row => row.availability === 'available' && row.issuesRead === true).map(row => row.repository));
     for (const repository of repositories.keys()) if (!configured.has(repository)) removeRepositoryDetails(repository);
-    if (dataScope && dataScope !== account.dataScope) { clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); }
+    if (dataScope && dataScope !== account.dataScope) { clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); disclosures.clear(); }
     const restore = !dataScope && repositories.size === 0;
     dataScope = account.dataScope;
+    if (restore && history.state?.factoryDisclosureScope === dataScope && Array.isArray(history.state.factoryDisclosures)) {
+      for (const entry of history.state.factoryDisclosures) if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'boolean') disclosures.set(entry[0], entry[1]);
+    }
     if (restore) restoreProjection(account.dataScope, readable);
     lookupNumber = exactNumber(byId('factory-search').value);
     const picker = byId('factory-repository'), selected = picker.value || new URL(location.href).searchParams.get('repository') || '';
@@ -346,5 +360,8 @@ for (const key of ['state', 'stage', 'execution', 'wait', 'view']) byId('factory
 byId('factory-repository').addEventListener('change', () => { remember(); refresh(); });
 byId('factory-refresh').addEventListener('click', refresh);
 window.addEventListener('pageshow', event => { if (event.persisted) refresh(); });
-window.addEventListener('pagehide', () => history.replaceState({ ...history.state, factoryScroll: window.scrollY }, ''));
+window.addEventListener('pagehide', () => {
+  for (const details of document.querySelectorAll('[data-disclosure-key]')) disclosures.set(details.dataset.disclosureKey, details.open);
+  history.replaceState({ ...history.state, factoryScroll: window.scrollY, factoryDisclosureScope: dataScope, factoryDisclosures: [...disclosures] }, '');
+});
 refresh();
