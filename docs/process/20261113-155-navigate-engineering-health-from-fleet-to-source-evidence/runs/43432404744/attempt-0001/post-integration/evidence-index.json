@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "indexId": "evidence-index",
+  "runId": "4cd5c4aec6ac267e35df3dab736f1c4b390909934d5b65b2d01dd4209291e53c",
+  "repository": "juangcarmona/lighthouse-control-center",
+  "revision": "00fc87f08bcd948a7a80732746fd29b7ac2043b9",
+  "records": [
+    {
+      "id": "completion:4cd5c4aec6ac267e35df3dab736f1c4b390909934d5b65b2d01dd4209291e53c",
+      "path": "evidence-record.json",
+      "sha256": "3019bda9ddb80ec3dfbe9f71e3754ec3ec376e6f89e39530fef63f0a14d96c32",
+      "kind": "stage-result",
+      "status": "pending-review",
+      "subject": {
+        "type": "issue",
+        "id": "https://github.com/juangcarmona/lighthouse-control-center/issues/155"
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "subject": {
+        "type": "issue",
+        "id": "https://github.com/juangcarmona/lighthouse-control-center/issues/155"
+      },
+      "status": "incomplete",
+      "evidenceIds": [
+        "completion:4cd5c4aec6ac267e35df3dab736f1c4b390909934d5b65b2d01dd4209291e53c"
+      ],
+      "nextAction": "Collect or resolve evidence for issue:https://github.com/juangcarmona/lighthouse-control-center/issues/155."
+    }
+  ]
+}
