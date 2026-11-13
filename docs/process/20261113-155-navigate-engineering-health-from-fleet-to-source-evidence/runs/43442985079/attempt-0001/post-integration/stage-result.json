@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "runId": "b14c83b1c56721b96eb7c9adae8a7854268dd61587553274fe56ff2b6d725cbc",
+  "stage": "review",
+  "gate": null,
+  "status": "blocked",
+  "evidence": [
+    {
+      "id": "owner-decision:6854908237",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/155#issuecomment-6854908237",
+      "reason": "Owner accepted the reviewed Health presentation and bounded connected-user observation, and authorized integration at the accepted head; deployment and unsupported families were excluded."
+    },
+    {
+      "id": "integration:00fc87f08bcd948a7a80732746fd29b7ac2043b9",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/pull/168",
+      "reason": "Host-authenticated completion records PR #168 merged as 00fc87f08bcd948a7a80732746fd29b7ac2043b9."
+    },
+    {
+      "id": "github-check:131888029422",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43426178457/job/131888029422",
+      "reason": "Required verify check passed on the accepted merged revision; post-merge verify also passed."
+    },
+    {
+      "id": "docs/delivery/evidence/issue-155/source-observation-2026-11-13.json",
+      "status": "passed",
+      "source": "docs/delivery/evidence/issue-155/README.md",
+      "reason": "Records the bounded connected observation and explicitly states its scope and limitations; it is not a complete delivery audit."
+    }
+  ],
+  "missingEvidence": [
+    "Current checked guidance remains inconsistent with the accepted owner decision: docs/delivery/evidence/issue-155/platform-reference.md:16 still says visual approval and connected-user acceptance are pending; docs/runbooks/project-health.md:9 says those decisions remain open; line 20 still presents failed Actions run 42966414214 as the real-source example requiring a future session check, although the accepted bounded observation says that run was outside its window."
+  ],
+  "unavailableChecks": [],
+  "pendingReview": [],
+  "nextAction": "Repository maintainer: reconcile the cited stale guidance with the accepted bounded observation and owner decision, then rerun the review; do not claim PRs #190/#192/#189 resolved these exact passages until the checked text agrees.",
+  "output": {
+    "summary": "PR #168 delivered the owner-accepted Health navigation and bounded Actions observation, merged at 00fc87f; the required post-merge verify check passed. The review is blocked only on current documentation drift that contradicts the accepted decision and the stated reconciliation follow-ups.",
+    "outcome": "The owner approved the reviewed fleet, project, and run-detail captures and accepted the bounded current connected-source observation. The integration was authorized for the accepted PR head and verified after merge. Production deployment and unsupported source families remain outside acceptance.",
+    "findings": [
+      {
+        "classification": "accepted",
+        "finding": "Health presentation and the bounded connected Actions observation were explicitly accepted by the owner; the observation is not a complete delivery audit.",
+        "owner": "Issue owner",
+        "followUp": "Issue #155 owner decision 6854908237; integration PR #168."
+      },
+      {
+        "classification": "accepted",
+        "finding": "The accepted PR revision merged and required post-merge verification passed.",
+        "owner": "Repository maintainer",
+        "followUp": "PR #168; verify check github-check:131888029422."
+      },
+      {
+        "classification": "deferred",
+        "finding": "Some checked guidance still implies owner acceptance is pending and retains the old failed run as a current connected-source example. This conflicts with the owner decision and bounded observation recorded in the issue and evidence README.",
+        "owner": "Repository maintainer",
+        "followUp": "Reconcile docs/delivery/evidence/issue-155/platform-reference.md:16 and docs/runbooks/project-health.md:9,20. The owner reports PRs #190/#192 reconciled acceptance notes and #189 refreshed the old protection observation, but these checked passages remain inconsistent; verify the exact paths after correction."
+      },
+      {
+        "classification": "fixed",
+        "finding": "The earlier evidence-protection preflight issue was attributed to a stale observation and refreshed; the historical native implementation attempt remains a failed attempt, not an accepted-head failure.",
+        "owner": "Repository maintainer",
+        "followUp": "Maintainer follow-up comment 6855574105 identifies PR #189 for the refreshed observation; historical implementation attempt 42966414214 is outside the accepted bounded window."
+      }
+    ],
+    "retrospective": "### What went well\nThe owner’s decision explicitly bounded acceptance to reviewed captures and a connected Actions observation. The evidence README labels fixture screenshots as demonstration data and the source JSON records scope and permission limits. PR #168 merged at the authorized head, and the required `verify` check passed on the merged revision.\n\n### What went wrong\nThe checked `platform-reference.md` and `project-health.md` still state that acceptance is pending and point readers to a historical failed run that the accepted observation says is outside the bounded window. Maintainer comments report reconciliation through #190/#192 and refresh through #189, but those statements do not match the text inspected here. The earlier review attempts that omitted the retrospective or placed `effect` incorrectly were retries of this review, not evidence of recurrence across work items. No source-code defect is established by this review.\n\n### Start doing\nFor the maintainer, make acceptance updates atomically across the acceptance README, reference comparison, and operational runbook. Smallest useful guard: a review checklist or documentation test that searches these affected paths for pending-acceptance language and references to the superseded run when an accepted evidence record exists. Reproduce by checking out the accepted documentation state and comparing those exact passages with the owner decision and source-observation scope; verify the guard fails before correction and passes after each file is reconciled. Any new automated guard should receive its own review and regression proof.\n\n### Stop doing\nStop treating a passed CI check or an older real source record as proof of current user acceptance. Do not present an out-of-window historical failure as the current connected-source acceptance example. Do not infer production deployment or coverage for unsupported source families.\n\n### Improvement candidates\n- **Documentation consistency (deferred; owner: repository maintainer; evidence: `platform-reference.md:16`, `project-health.md:9,20`, contrasted with issue comment 6854908237 and `README.md`):** reconcile current guidance and verify each cited path after changes. Reproduce by reviewing these exact lines against the accepted owner decision and bounded observation before checking the correction. The reported #190/#192/#189 follow-ups do not remove this finding until the checked text agrees.\n- **Review-envelope validation (process gap; owner: Lighthouse workflow maintainers; evidence: same-review runs 43438513071 and 43441603854 as reported in comment 6855802637):** prior attempts lacked the required retrospective or placed `effect` outside `result`, so publication rejected the envelope. Smallest useful guard is a schema-validation step before publication that specifically requires `result.output.retrospective` and `result.effect`; reproduce with the malformed shape and missing retrospective, then confirm validation rejects both and accepts the corrected v1 shape. These are retries of one review task, not a recurrence claim. Policy/provider-owned changes require separate review.\n\nNo additional product or architecture follow-up is established here."
+  }
+}

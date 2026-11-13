@@ -1,0 +1,17 @@
+### What went well
+The owner’s decision explicitly bounded acceptance to reviewed captures and a connected Actions observation. The evidence README labels fixture screenshots as demonstration data and the source JSON records scope and permission limits. PR #168 merged at the authorized head, and the required `verify` check passed on the merged revision.
+
+### What went wrong
+The checked `platform-reference.md` and `project-health.md` still state that acceptance is pending and point readers to a historical failed run that the accepted observation says is outside the bounded window. Maintainer comments report reconciliation through #190/#192 and refresh through #189, but those statements do not match the text inspected here. The earlier review attempts that omitted the retrospective or placed `effect` incorrectly were retries of this review, not evidence of recurrence across work items. No source-code defect is established by this review.
+
+### Start doing
+For the maintainer, make acceptance updates atomically across the acceptance README, reference comparison, and operational runbook. Smallest useful guard: a review checklist or documentation test that searches these affected paths for pending-acceptance language and references to the superseded run when an accepted evidence record exists. Reproduce by checking out the accepted documentation state and comparing those exact passages with the owner decision and source-observation scope; verify the guard fails before correction and passes after each file is reconciled. Any new automated guard should receive its own review and regression proof.
+
+### Stop doing
+Stop treating a passed CI check or an older real source record as proof of current user acceptance. Do not present an out-of-window historical failure as the current connected-source acceptance example. Do not infer production deployment or coverage for unsupported source families.
+
+### Improvement candidates
+- **Documentation consistency (deferred; owner: repository maintainer; evidence: `platform-reference.md:16`, `project-health.md:9,20`, contrasted with issue comment 6854908237 and `README.md`):** reconcile current guidance and verify each cited path after changes. Reproduce by reviewing these exact lines against the accepted owner decision and bounded observation before checking the correction. The reported #190/#192/#189 follow-ups do not remove this finding until the checked text agrees.
+- **Review-envelope validation (process gap; owner: Lighthouse workflow maintainers; evidence: same-review runs 43438513071 and 43441603854 as reported in comment 6855802637):** prior attempts lacked the required retrospective or placed `effect` outside `result`, so publication rejected the envelope. Smallest useful guard is a schema-validation step before publication that specifically requires `result.output.retrospective` and `result.effect`; reproduce with the malformed shape and missing retrospective, then confirm validation rejects both and accepts the corrected v1 shape. These are retries of one review task, not a recurrence claim. Policy/provider-owned changes require separate review.
+
+No additional product or architecture follow-up is established here.
