@@ -16,11 +16,11 @@ pdac-scope: cited
 
 ## 3. Integration verification
 
-- [ ] 3.1 Run policy checks, strict OpenSpec and citations; retain receipts, source-linked observation and retrospective and report missing human acceptance.
+- [x] 3.1 Run policy checks, strict OpenSpec and citations; retain receipts, source-linked observation and retrospective and record the accepted scope and its boundaries.
 
-The recovered candidate passed JavaScript and .NET tests, strict OpenSpec, citations, documentation, security, ProductShape and architecture checks. Browser checks passed for Health, account and shared navigation at desktop and 390px, including light/dark screenshots and axe. The container profile cannot run locally without a host-provisioned `SOFA_TEST_DATABASE`; hosted exact-head CI must exercise that gate. Real connected-source observation and owner visual/content acceptance remain outstanding; fixture success does not resolve these boundaries.
+The recovered candidate passed JavaScript and .NET tests, strict OpenSpec, citations, documentation, security, ProductShape and architecture checks. Browser checks passed for Health, account and shared navigation at desktop and 390px, including light/dark screenshots and axe. The container profile could not run locally without a host-provisioned `SOFA_TEST_DATABASE`; hosted required verification on the accepted head and post-merge verification passed. The owner accepted the reviewed presentation and bounded connected-source observation as recorded in the [acceptance evidence](../../docs/delivery/evidence/issue-155/README.md). Fixture screenshots remain demonstration data and do not establish deployment or unsupported source families.
 
 ## Workflow follow-up
 
-- Owner reviews visual/content evidence and confirms connected-source behavior.
-- Host independently verifies the clean candidate; forge CI and integration remain separate.
+- The owner accepted visual/content evidence and bounded connected-source behavior; see the [acceptance record](../../docs/delivery/evidence/issue-155/README.md).
+- Host verification and post-merge CI passed for the accepted revision and integration is recorded there. Production deployment and unsupported source-family measurements remain separate.
