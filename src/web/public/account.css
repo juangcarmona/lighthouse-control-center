@@ -26,3 +26,7 @@
     margin:1rem}
   .account-panel form,.account-panel button {
     width:100%}}
+
+/* Server-rendered account content uses the common workspace shell. */
+.page-column .account-panel { width:min(1160px,calc(100% - 3rem)); max-width:1160px; margin:var(--lh-space-6) auto; padding:var(--lh-space-6); border-radius:var(--lh-radius-panel); }
+@media(max-width:900px) { .page-column .account-panel { width:calc(100% - 2rem); margin:var(--lh-space-4) auto; } }

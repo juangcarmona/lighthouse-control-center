@@ -1,0 +1,261 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "playwright-fixture",
+  "run-id": "2026-11-11T13:52:25.793Z",
+  "revision": "ef5a8f9c7429f8ff76fa8275784b2f50bb9422b8",
+  "results": [
+    {
+      "test-id": " /  / attention.spec.mjs / inbox label removal and failed refresh preserve uncertainty; denial and account switch clear private history",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / attention.spec.mjs / verified intervention 1280: inspect on demand and reconcile explicit Continue",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / attention.spec.mjs / verified intervention 390: inspect on demand and reconcile explicit Continue",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / attention.spec.mjs / a late verified question cannot repopulate an inbox after its acting account changed",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / factory.spec.mjs / factory 1280: list board filters evidence paging and keyboard",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / factory.spec.mjs / factory 390: list board filters evidence paging and keyboard",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / factory.spec.mjs / global issue list finds uncollected work by number and title, preserving list state",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / factory.spec.mjs / canonical repository inventory opens a compact scoped issue list with semantic state badges",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / factory.spec.mjs / transient failure retains stale times while denied and replacement scopes remove old rows",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / issue context 1280: paginated, inert Markdown, blocked result, keyboard and accessibility",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / issue context 390: paginated, inert Markdown, blocked result, keyboard and accessibility",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / shared source question 1280: safe text, separate eligibility and no submission",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / shared source question 390: safe text, separate eligibility and no submission",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / a failed current-revision read exposes the bounded diagnostic and missing source grants",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / comment denial explains the source permission and links to account recovery without blocking a draft",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / timestamps and source identifiers stay inside collapsed provenance details",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / an eligible Continue answer explains its enabled field when ordinary commenting is denied",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / failed prepare displays its reason and does not automatically retry or submit",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / existing action explains recovery, keeps the new draft and requires explicit confirmation",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / comment feedback stays beside the editor during a delayed double click 1280",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / comment feedback stays beside the editor during a delayed double click 390",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / explicit source action 1280: confirmation, lost response and recovery without another send",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / issue.spec.mjs / explicit source action 390: confirmation, lost response and recovery without another send",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    }
+  ]
+}

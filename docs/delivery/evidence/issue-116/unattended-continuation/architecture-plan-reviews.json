@@ -1,0 +1,67 @@
+{
+  "recordedAt": "2026-11-09T20:37:49.345Z",
+  "reviews": [
+    {
+      "kind": "frontend",
+      "reviewKind": "plan",
+      "baseRevision": "de005dea654edd445481e210c24f22641cf6c3c5",
+      "reviewer": {
+        "requestedModel": "gpt-6-luna",
+        "selection": "collaboration override",
+        "providerAuthenticationAttested": false
+      },
+      "decision": "approve",
+      "planningCorrections": 1,
+      "findingsResolved": [
+        "Explicit operator authorization, bounded verification changes and additive rollback recorded."
+      ],
+      "proposalHash": "sha256:32b5436c1c57a265121646dc794bc149c353b910e4ba615fbda27f277604f0d7",
+      "candidateEvidenceRequired": true
+    },
+    {
+      "kind": "backend",
+      "reviewKind": "plan",
+      "baseRevision": "de005dea654edd445481e210c24f22641cf6c3c5",
+      "reviewer": {
+        "requestedModel": "gpt-6-luna",
+        "selection": "collaboration override",
+        "providerAuthenticationAttested": false
+      },
+      "decision": "approve",
+      "planningCorrections": 1,
+      "findingsResolved": [
+        "Explicit operator authorization, bounded verification changes and additive rollback recorded."
+      ],
+      "proposalHash": "sha256:8b714ad8a50d3d21129a74ad988c4f5f1751f10568954334dc24b2bc75f60e88",
+      "candidateEvidenceRequired": true
+    },
+    {
+      "kind": "product-behaviour-e2e",
+      "reviewKind": "plan",
+      "baseRevision": "de005dea654edd445481e210c24f22641cf6c3c5",
+      "reviewer": {
+        "requestedModel": "gpt-6-luna",
+        "selection": "collaboration override",
+        "providerAuthenticationAttested": false
+      },
+      "decision": "approve",
+      "planningCorrections": 1,
+      "proposalHash": "sha256:f10acfbbd79e4e724e05b4e78940718869338d41cd28519bac418f425d8538c0",
+      "candidateEvidenceRequired": true
+    },
+    {
+      "kind": "public-source-reads",
+      "reviewKind": "plan",
+      "baseRevision": "de005dea654edd445481e210c24f22641cf6c3c5",
+      "reviewer": {
+        "requestedModel": "gpt-6-luna",
+        "selection": "collaboration override",
+        "providerAuthenticationAttested": false
+      },
+      "decision": "approve",
+      "planningCorrections": 0,
+      "proposalHash": "sha256:65d144bfbde974bbf07d6389841bbedc8ec7c921438ed550e04a99b6a38f057c",
+      "candidateEvidenceRequired": true
+    }
+  ]
+}

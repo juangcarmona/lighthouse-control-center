@@ -1,0 +1,63 @@
+{
+  "revision": "cd6e3bde4792e34bc2be86caf106a72dd8b134ed",
+  "runId": "2026-11-10T10:39:22.547Z",
+  "suiteStatus": "passed",
+  "evidenceKind": "live",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productAcceptance": "Draft examples; execution does not approve the Product Change.",
+  "runProvenance": "The revision identifies HEAD; uncommitted harness changes, if present, are not attested by this field.",
+  "results": [
+    {
+      "testId": " /  / product-behaviours.spec.mjs / live uncertain comment recovery keeps the original result beside the editor without resending",
+      "outcome": "passed",
+      "durationMs": 23566,
+      "sourceEvidence": [
+        {
+          "name": "uncertain-comment-recovery",
+          "sourceWritePerformed": false,
+          "actionId": "ef66697729e54e15a87250d0024aae19",
+          "journalState": "uncertain",
+          "receiptState": "unknown",
+          "prepareRequests": 0,
+          "submitRequests": 0,
+          "receiptRequests": 1,
+          "reconcileRequests": 1
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNCERTAIN-ISSUE-COMMENT",
+          "hash": "sha256:450d6815d8a2438de45d51b20244816cf5ad13e22a3fe5c9351a7b55f51ef2f6",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator confirmed an ordinary comment",
+            "Its source publication response was lost"
+          ],
+          "when": "The operator requests reconciliation",
+          "then": [
+            "The original comment intent remains identified",
+            "Lighthouse Control Center does not silently post another comment",
+            "The outcome remains uncertain until source evidence confirms it"
+          ],
+          "limitations": "Fixture-backed loss injection and live recovery contribute different evidence. The live case requires an exact existing comment ID and performs no prepare or submit; the separate failed-send run establishes the lost response. Execution does not accept this draft example. The uncertain recovery case requires an exact existing uncertain action, reads its receipt and reconciles that same intent with zero prepare/submit requests. It proves visible unconfirmed feedback and no resend, not the original response-loss cause or successful publication."
+        }
+      ]
+    }
+  ],
+  "uncoveredExamples": [
+    "SB-ANONYMOUS-WORKSPACE-DENIAL",
+    "SB-EXPLICIT-QUESTION-CONTINUATION",
+    "SB-FIND-REPOSITORY-ISSUE",
+    "SB-ORDINARY-ISSUE-COMMENT",
+    "SB-PARTIAL-REPOSITORY-COLLECTION",
+    "SB-READ-ISSUE-CONTEXT",
+    "SB-UNAVAILABLE-ISSUE-ACTION",
+    "SB-UNRESOLVED-INTERVENTION"
+  ]
+}

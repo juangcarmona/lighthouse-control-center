@@ -28,8 +28,6 @@ The [pilot evidence](first-pilot.md) records real triage and refinement through 
 
 The published Lighthouse host contract requires a triage predecessor and owner comment for refine. Its declared unattended route still lists supervised human gates. [The revised contract work](https://github.com/juangcarmona/lighthouse/issues/70) addresses those gaps; installing a newer package alone will not prove event routing, publication or autonomous delivery.
 
-Existing SoFa delivery instructions also use Agentic SDLC `status:*` lifecycle labels while Lighthouse owns a different stage/gate catalog. This is an adoption migration to resolve once, with explicit old-to-new state mapping and provider-supported generation. Do not run two label writers or edit generated skills to hide the conflict.
-
 ## Milestones
 
 | Milestone | Owner and dependency | Demonstrable exit |

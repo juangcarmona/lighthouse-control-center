@@ -1,0 +1,18 @@
+{
+  "baseline": "ef5a8f9c7429f8ff76fa8275784b2f50bb9422b8",
+  "scope": "Original fixture logs/reporter outputs plus final combined verification log and fixture captures. Initial capture metadata is preserved separately; current source/test hashes remain unchanged.",
+  "files": {
+    "README.md": "ae01f85bcb7b4aa6d213eef01838d7ef7f9123287d74b50ad6a6b5b11d30e1ed",
+    "browser-final.log.gz": "3565705c5bc78dc3092d4eadf21b391623f81f975415bfbaba464bc012bf0cbe",
+    "browser-initial.log.gz": "f659b9017833ff2469cfc1284d8448fc992f60103892a2a12706981a8a68b6f7",
+    "combined-verify.log.gz": "9d50002b65e6b5cab08dbed4145dbc73bebcea84cef90c2567104ba453239787",
+    "dashboard-1280-Dark.png": "4fd69ecc8098ffc08dc84facabcd609b057ed0fede3955c2895bbc0657a59cb7",
+    "dashboard-1280-Light.png": "ef41830fe5f2ee1e4bacc02031c83d229318406b5875f63bb870b2d540559026",
+    "dashboard-390-Dark.png": "c754e7fc91f1015089b4d35293da5ea922a63ed2a5432017e381380f5c991437",
+    "dashboard-390-Light.png": "7e01bd83423d8467e79699ad4b99e6593851baceb61b260aaefa74a34871b1d4",
+    "node-final.log.gz": "f364364675da56c3cfb9065c307b48c573e793730b99e37ea70b938791d0f5cb",
+    "structured-behaviours.json": "1468dbe26ac7801e18c2b43b18aa8fe73fbb6cf613c8ec1c8e5e2d13303be42b",
+    "verification-evidence.json": "3cd807f2f8c5a1b6bde91c17e940eccf10de3c994bab45372689a32521c04561"
+  },
+  "currentVerificationSha256": "a5b91d5eaae1144dddb0dba50771cbb55dc5bd3e23f2231597a2d14fda2832b3"
+}

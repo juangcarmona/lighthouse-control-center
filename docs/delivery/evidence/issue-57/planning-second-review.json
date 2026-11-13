@@ -1,0 +1,97 @@
+{
+  "head": "93562601f70b95c8181a3eeb9311a546d181c16f",
+  "verdict": "request-changes",
+  "findings": [
+    {
+      "id": "R57-1",
+      "severity": "high",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "19, 23",
+      "title": "Local Git reads are not specified as isolated from Git configuration",
+      "detail": "A clean process environment alone does not disable system, global, or checkout-local Git configuration. Git's URL rewrite and SSH-related settings can affect origin interpretation, and config can introduce behavior outside the stated fixed-command contract. The proposal explicitly rules out config/credential fallback, but does not say how Git configuration is disabled or isolated. This weakens the tokenless, local-only trust boundary and can make repository identity evidence misleading.",
+      "minimal_fix": "Specify and test hermetic Git invocation: disable system/global config and credential helpers, isolate HOME/XDG and repository config behavior, disable URL rewrites and external SSH/config hooks, and ensure no command can access a remote. Include hostile system/global/local config fixtures and assert no network/credential helper process starts."
+    },
+    {
+      "id": "R57-2",
+      "severity": "medium",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "29-31; openspec/changes/issue-57-proposal/tasks.md:12-13",
+      "title": "Administration authority intersection lacks a positive and negative test matrix",
+      "detail": "The design correctly requires acting-user administration, the current installation's administration grant, and metadata authority. The test task only calls out denied administration with zero runner calls; it does not require demonstrating that all three conditions are conjunctive or that a grant from a different installation/account cannot authorize the query. This leaves the central App/user isolation rule under-tested against the existing `RepositoryAccess` permission-intersection pattern (`src/SoFa.Modules.Workspace/Source/RepositoryAccess.cs:36-84`).",
+      "minimal_fix": "Add table-driven tests for each missing conjunct (user not admin, App installation lacks administration read, metadata missing), mismatched installation/repository, and the all-granted case. Assert denied cases make zero `/actions/runners` calls and only the current connected user's matching installation can authorize a successful query."
+    },
+    {
+      "id": "R57-3",
+      "severity": "medium",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "19, 23, 31, 35",
+      "title": "Local and projected response bounds are qualitative rather than enforceable",
+      "detail": "The `.runner` file has a 32 KiB cap and GitHub has a 2 MiB transport/page-of-100 limit, but the local helper's aggregate stdin/stdout, checkout file/command output sizes, and final runtime response have no numeric limits. 'Bounded' and 'bound every file/command' do not define what the .NET bridge must reject or what coverage the UI reports. Existing routes enforce a 2 MiB projected-response bound (`src/SoFa.Modules.Workspace/WorkspaceModule.cs:208-210`), but this new endpoint has no corresponding planned requirement. Large configured inputs or projection overhead can therefore exceed memory/response expectations or be mistaken for complete evidence.",
+      "minimal_fix": "Set explicit maximum config/input bytes, per-file and per-command output bytes, helper stdout/stderr bytes, and serialized endpoint response bytes; reject/truncate only as unavailable/incomplete with original source coverage, never as empty or complete. Add boundary tests at and over each limit, including the final serialized response."
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Acceptance criteria",
+      "status": "planned-with-gap",
+      "evidence": "The first-milestone registration, runner and committed-adoption scenarios are covered; response limits need explicit enforceable acceptance bounds (R57-3)."
+    },
+    {
+      "name": "Implementation completeness",
+      "status": "planned",
+      "evidence": "Tasks 1-4.4 cover implementation and integration; no implementation is claimed at this plan head."
+    },
+    {
+      "name": "Tests",
+      "status": "planned-with-gap",
+      "evidence": "Host/session/concurrency/source/browser tests are planned; the Git authority intersection matrix and numeric bound tests are missing (R57-2, R57-3)."
+    },
+    {
+      "name": "Quality checks",
+      "status": "planned",
+      "evidence": "Design 47 and task 4.3 require `npm run verify` and hosted CI; neither is represented as already run."
+    },
+    {
+      "name": "Security",
+      "status": "planned-with-gap",
+      "evidence": "Authority separation and owner-session cancellation are specified, but Git config isolation and full App/user intersection proof need work (R57-1, R57-2)."
+    },
+    {
+      "name": "Architecture / design conformance",
+      "status": "planned",
+      "evidence": "The proposal follows the accepted observer boundary in ADR-0006 and uses existing Workspace/session/source seams; implementation conformance remains future evidence."
+    },
+    {
+      "name": "Documentation",
+      "status": "planned",
+      "evidence": "Task 4.2 requires architecture, README and configuration documentation updates."
+    },
+    {
+      "name": "Product / spec consistency",
+      "status": "planned",
+      "evidence": "The proposal cites accepted product nodes and scopes the new capability to the owner-requested first milestone; future capacity, usage, process health and reservations are not claimed."
+    },
+    {
+      "name": "Evidence",
+      "status": "planned",
+      "evidence": "The preflight is explicitly operator-read-only and not acceptance; actual acting-user GitHub evidence and final CI remain planned and limitations are stated."
+    },
+    {
+      "name": "Human review",
+      "status": "planned",
+      "evidence": "Task 4.3 requires independent final-head review; protected approvals and owner decisions remain intact."
+    },
+    {
+      "name": "Known limitations",
+      "status": "planned",
+      "evidence": "Future capacity/usage and unobserved process health are explicitly deferred; unknown coverage and owner-deferred phone rehearsal are not misrepresented."
+    }
+  ],
+  "kind": "plan",
+  "issue": 57,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-07T21:26:14.402Z",
+  "sourceReadOnly": true,
+  "requestPath": "/tmp/sofa-review-57-plan-93562601f7-bb0dce6b/context.json"
+}

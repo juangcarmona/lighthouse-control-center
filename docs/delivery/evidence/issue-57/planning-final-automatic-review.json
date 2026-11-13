@@ -1,0 +1,88 @@
+{
+  "head": "a10c4c3247975ef0c64689511e830d77b3d5214f",
+  "verdict": "request-changes",
+  "findings": [
+    {
+      "id": "R57-1",
+      "severity": "medium",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "17, 23, 25",
+      "title": "Local path and alias limits are not specified",
+      "detail": "The design calls aliases and configured directories bounded and promises tests for every numeric limit, but gives no alias length/character set, path length, or concrete limits for several .git metadata values and directory/reference traversal. These are operator-controlled inputs that reach the helper and filesystem; without explicit values and rejection behavior, implementation and boundary tests cannot demonstrate a bounded input surface or reliably prove private-path handling.",
+      "minimal_fix": "Specify concrete maximum lengths/counts and accepted forms for aliases, absolute paths, .git metadata/ref files and any traversed refs/directories; reject invalid values at startup or as unknown at read time, and add at/over-limit tests for each."
+    },
+    {
+      "id": "R57-2",
+      "severity": "medium",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "21, 23, 25",
+      "title": "No-follow checks do not define race-safe local reads",
+      "detail": "The design rejects a symlink for the final .runner file and validates checkout Git metadata before reading committed objects, but does not require opening/reading those files through a handle that prevents replacement or re-resolution between validation and use. A writable runner/config directory could replace the checked file or metadata with a symlink during refresh, redirecting reads outside the selected source or changing the object/ref after validation. This matters because the proposal explicitly treats configured paths and source contents as private bounded inputs.",
+      "minimal_fix": "Define race-safe file access for .runner and checkout metadata (for example no-follow opens, regular-file checks and reads from the same opened handle, with bounded traversal beneath the configured root); otherwise document and enforce the required directory ownership/immutability assumption. Add replacement/symlink race tests."
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Acceptance criteria",
+      "status": "planned",
+      "assessment": "The owner first-slice criteria are represented by the separate local/GitHub/adoption views and specific observation/coverage behavior; future capacity and usage are expressly deferred."
+    },
+    {
+      "name": "Implementation completeness",
+      "status": "planned",
+      "assessment": "Tasks cover the requested first milestone and integration; no issue57 implementation is claimed. The unbounded input details in R57-1 remain to be resolved."
+    },
+    {
+      "name": "Tests",
+      "status": "planned",
+      "assessment": "Substantial source, authority, cancellation, concurrency, browser and real-observation evidence is planned, but R57-1/R57-2 need corresponding bounded-input and race cases."
+    },
+    {
+      "name": "Quality checks",
+      "status": "planned",
+      "assessment": "Full npm run verify and hosted CI are explicitly required at implementation Done."
+    },
+    {
+      "name": "Security",
+      "status": "planned",
+      "assessment": "Source separation, least authority, tokenless fixed Git commands, no credential fallback and redaction are well specified; local input bounds/race safety remain actionable gaps."
+    },
+    {
+      "name": "Architecture / design conformance",
+      "status": "planned",
+      "assessment": "The proposal follows existing Workspace owner admission and connected-user GitHub authority seams and cites current ADRs; implementation must retain those boundaries."
+    },
+    {
+      "name": "Documentation",
+      "status": "planned",
+      "assessment": "Implementation architecture, README and configuration documentation are included in task 4.2."
+    },
+    {
+      "name": "Product / spec consistency",
+      "status": "planned",
+      "assessment": "Product citations and a scope-specific OpenSpec delta are present; accepted product remains authoritative and no product change is proposed."
+    },
+    {
+      "name": "Evidence",
+      "status": "planned",
+      "assessment": "Real selected-host and committed-adoption evidence, CI and exact-head review are required. Operator gh cannot stand in for connected-user authority; unknown limitations remain explicit."
+    },
+    {
+      "name": "Human review",
+      "status": "planned",
+      "assessment": "Configured distinct LunaHigh final-head review and all protected human/forge gates are retained; no bypass is proposed."
+    },
+    {
+      "name": "Known limitations",
+      "status": "planned",
+      "assessment": "The plan explicitly defers capacity/usage/health/reservations, marks unsupported organization-only registrations and telemetry unknown, and records phone rehearsal as owner-deferred."
+    }
+  ],
+  "kind": "plan",
+  "issue": 57,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-07T21:46:33.483Z",
+  "sourceReadOnly": true,
+  "requestPath": "/tmp/sofa-review-57-plan-a10c4c3247-5692d781/context.json"
+}

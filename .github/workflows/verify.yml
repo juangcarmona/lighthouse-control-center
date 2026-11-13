@@ -40,7 +40,7 @@ jobs:
           npm run check:branch -- "$BRANCH_NAME"
           npx --no -- commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
       - name: Install Chromium for browser checks
-        run: npx --no -- playwright install --with-deps chromium
+        run: npx --no -- playwright install chromium
       - name: Verify repository, specifications and product citations
         run: npm run verify
       - name: Retain browser evidence

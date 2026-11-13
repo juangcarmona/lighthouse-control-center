@@ -1,0 +1,162 @@
+{
+  "scope": "Issue #52 read continuity correction; existing #50 reader and command authority remain unchanged.",
+  "baseline": "ef5a8f9c7429f8ff76fa8275784b2f50bb9422b8",
+  "branch": "chore/154-lighthouse-archive-fix",
+  "repository": {
+    "fullName": "juangcarmona/lighthouse-control-center",
+    "id": 1425429121
+  },
+  "sourceState": "Committed integration source reviewed at 969f8db14271bd2c751a684455f9251b6fe46be6; this documentation-only checkpoint preserves its application/test hashes. No deployment or complete Done claim.",
+  "sourceFileSha256": {
+    "src/web/public/app.js": "6b4fd72b66c008a3247e1e98ab223baca65cf92835eb600ee5e1acfb6fe0c649",
+    "src/web/public/factory.js": "6688c3422381cfcdeb421f12f2f0533a7cefaa71720de4b690d6c47bb4fce349",
+    "tests/browser/factory.spec.mjs": "c3d869c455af77198016ecb91e8be236bb146997284271414788e0278373c6bb",
+    "tests/browser/observation.spec.mjs": "fd210565e5fddee656e41525c4ac20b7496fca002f35fc7f94d88b14b60655ca",
+    "tests/browser/workspace-ui.spec.mjs": "7d4cc89dbd3dcb9940bb715ac3667788cb579b0d0fbeb349c482079da5b87637"
+  },
+  "changes": [
+    "Overview account/observation denial shares DOM, count, identity and cache clearing; old asynchronous results cannot restore invalidated authority.",
+    "A concurrent verified account scope or explicit repository denial constrains earlier source reads; later independently online-authorized reads may recover.",
+    "HTTP 200 account unavailable retains only already-visible stale data; unseen stored data remains closed until online account/repository verification succeeds.",
+    "Factory source disclosures retain stable scope/issue choices during filtering, refresh and history return; source loss/replacement/denial removes applicable choices.",
+    "Saved list scroll is consumed after verified rows exist, avoiding an early empty render clamping the history position.",
+    "Authenticated navigation fixture now supplies the real API connection scope."
+  ],
+  "checks": {
+    "browser": {
+      "command": "npm run test:browser",
+      "passed": 112,
+      "failed": 0,
+      "includes": "Full fixture suite, visual contracts in light/dark and desktop/narrow, keyboard/axe, both response orders of authority/scope/repository denial, transient/unlink/recovery and disclosure/navigation regressions."
+    },
+    "node": {
+      "command": "npm test",
+      "passed": 105,
+      "failed": 0
+    },
+    "documentation": {
+      "command": "npm run lint:docs",
+      "files": 468,
+      "issues": 0
+    },
+    "security": {
+      "command": "npm run security:check",
+      "result": "Git history, index and working-tree scans passed with no leaks."
+    },
+    "product": {
+      "command": "npm run product:validate",
+      "artifacts": 87,
+      "errors": 0,
+      "warnings": 0
+    },
+    "integrity": {
+      "command": "npm run product:integrity",
+      "result": "All managed integration files match."
+    },
+    "doctor": {
+      "command": "npm run product:doctor",
+      "result": "All checks passed."
+    },
+    "spec": {
+      "command": "npm run spec:validate",
+      "passed": 19,
+      "failed": 0
+    },
+    "citations": {
+      "command": "npm run product:citations",
+      "current": 220,
+      "stale": 0,
+      "tampered": 0,
+      "unresolved": 0
+    },
+    "architecture": {
+      "command": "npm run architecture:check",
+      "sections": 12,
+      "result": "Valid, including links."
+    }
+  },
+  "initialFailures": [
+    {
+      "check": "Strengthened history navigation regression",
+      "result": "44/45 focused browser cases passed; the new open-disclosure state exposed premature scroll consumption. Retained the original scroll assertion, fixed restoration timing, and the focused history case and final full suite pass."
+    },
+    {
+      "check": "First full browser run",
+      "result": "111/112 passed; an authenticated navigation fixture omitted dataScope while its account response supplied one. Corrected that fixture to match the actual API; no existing assertion was removed. Final full suite passes112/112."
+    }
+  ],
+  "screenshots": {
+    "read-continuity-execution/dashboard-1280-Dark.png": "4fd69ecc8098ffc08dc84facabcd609b057ed0fede3955c2895bbc0657a59cb7",
+    "read-continuity-execution/dashboard-1280-Light.png": "ef41830fe5f2ee1e4bacc02031c83d229318406b5875f63bb870b2d540559026",
+    "read-continuity-execution/dashboard-390-Dark.png": "c754e7fc91f1015089b4d35293da5ea922a63ed2a5432017e381380f5c991437",
+    "read-continuity-execution/dashboard-390-Light.png": "7e01bd83423d8467e79699ad4b99e6593851baceb61b260aaefa74a34871b1d4"
+  },
+  "visualReview": "Inspected the final 1280px dark and 390px light overview captures. Shared hierarchy and disclosures remain readable; no stylesheet, shell geometry or token changes.",
+  "remaining": [
+    "Independent final review of this evidence-metadata correction and green final-head hosted verification before integration.",
+    "Connected-user behavior/timing, physical-device acceptance and development activation remain unverified.",
+    "Broader #50/#52/#124 acceptance and #154 native requalification remain separate."
+  ],
+  "logs": {
+    "browser": {
+      "path": "/tmp/lcc-read-continuity-browser-final.log",
+      "sha256": "1d04cdb38c04e45730580a47f2457ea237e666f9d7de09188f55b75a9f81ac92"
+    },
+    "docs": {
+      "path": "/tmp/lcc-read-continuity-docs.log",
+      "sha256": "3739f4daca814aa4e4d3339ccca941977be6793e0e67227c2a4f840ae9af0172"
+    },
+    "security": {
+      "path": "/tmp/lcc-read-continuity-security.log",
+      "sha256": "df74907ab1be6112c8db7a0a8d9f6b2086b9bd9101219e21f7f93d104b5c46bf"
+    },
+    "product": {
+      "path": "/tmp/lcc-read-continuity-product.log",
+      "sha256": "ddcc6e7602f774a3d53e95a734b0efb9afa58d1529aa411f9a2e8ed1f7ad52ad"
+    },
+    "integrity": {
+      "path": "/tmp/lcc-read-continuity-integrity.log",
+      "sha256": "c73949ba2e2e0474731eca91989fc460e3ed7eb2d8245be7f6b4405a1aa4e1b2"
+    },
+    "doctor": {
+      "path": "/tmp/lcc-read-continuity-doctor.log",
+      "sha256": "731a4009b3725dbce6bc5634cdafb56925d27d3f544d4a471f280d7578e89fbb"
+    },
+    "spec": {
+      "path": "/tmp/lcc-read-continuity-spec.log",
+      "sha256": "7e748d411fc1d06a90d3b36fa4b4468c6fbb62ae4708788c675c290311760f2d"
+    },
+    "citations": {
+      "path": "/tmp/lcc-read-continuity-citations.log",
+      "sha256": "7ada5706c2b1f6d1a6751669e05b2fd49c7247571337e7956327f6d8aa7bee6e"
+    },
+    "architecture": {
+      "path": "/tmp/lcc-read-continuity-architecture.log",
+      "sha256": "b5212eed06b98165ae7b3cf313ae05adfc85728904f186f66c386e86037f4722"
+    },
+    "node": {
+      "path": "/tmp/lcc-read-continuity-node-final.log",
+      "sha256": "de79043da768507ba84be2d87f8775f3efa88387b44ab1755e378e3f402de2f3"
+    }
+  },
+  "integration": {
+    "subject": "969f8db14271bd2c751a684455f9251b6fe46be6",
+    "applicationSource": "fdca5cf90c87fb0515ef4de275d28e1fff014f14",
+    "checkedTreeSubject": "20faaaaced2f3d24d5d706c52f879c8e17fd9f80",
+    "applicationTestsAndDependenciesMatchIntegration": true,
+    "initialRecord": {
+      "file": "read-continuity-verification.initial.json",
+      "sha256": "f48bc68fc854b15823cebfde75c7fa513391b330c8a09eb136a86918cfc042de"
+    },
+    "review": "Independent Luna High accepted source and artifacts; combined review requested this current-state checkpoint before final audit.",
+    "fullVerify": {
+      "status": "passed",
+      "node": 105,
+      "dotnet": 305,
+      "browser": 112,
+      "log": "read-continuity-execution/combined-verify.log.gz",
+      "sha256": "e05e8e638bcb4527d8c8f518d1c16dd248fb3e08387fd57f4b73c3268b9c5d67"
+    },
+    "hostedVerification": "Required on the final documentation commit; pending at capture."
+  }
+}
