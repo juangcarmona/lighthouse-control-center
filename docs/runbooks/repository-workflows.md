@@ -2,6 +2,8 @@
 
 Lighthouse Control Center uses Lighthouse repository workflows. GitHub runs the work; the web app observes it.
 
+For the 2026-11-09 revision-bound package, profile, workflow and capability inventory, use [Lighthouse adoption and dogfooding](lighthouse-dogfooding.md). It records CLI/SDLC/UI 0.12.65/0.22.4/0.2.1 and workflow source 879c4e75efebd945f8aea5b8ee09b97db62edbea. Older package and exact-#99 grant descriptions below retain historical context; current authority comes from the checked-in policies and the [current bounded grant](lighthouse-unattended.md), not those earlier examples. The dogfooding guide separates present declarations, historical receipts and remaining operator/application acceptance.
+
 The change-request issue form collects an initial request. The owner can add `triage` for classification and an explained relative estimate, then request `refine` when appropriate. A submitted form does not itself authorize execution.
 
 ## Use the workflow
@@ -26,9 +28,9 @@ The current gh-aw gateway uses host port 8080. Only one gateway job may occupy t
 
 Enable `LIGHTHOUSE_AUTOMATION_ENABLED` after installing and checking the workflows. Keep default token permissions read-only. GitHub's setting allowing Actions to create and approve PRs is required for publication; the bot does not approve its own work.
 
-The installed public packages select CLI 0.12.65 / SDLC 0.22.4. Source-mode workflows independently select immutable Lighthouse commit `d601fd70412a4c2dd3bdc7bcb6cb9678ad59e01b`, using gh-aw 0.93.2. The official `.lighthouse/issue-control.json` projection enables the shared typed client entry for #48. It does not supply acting-user credentials or authorize a delivery. The owner-only CI-App preflight keeps its previously qualified `59ded863109b045e399931dbad61e6cfdb698107` pin. Update package selection and both SDLC/harness projections through the official CLI, then regenerate workflows with the installed installer and run foundation plus full repository checks. Historical [0.12.55 release adoption](../delivery/evidence/issue-88/release-055/README.md) and [native qualification](../delivery/evidence/issue-88/native-qualification/README.md) retain their original immutable facts.
+The installed public packages select CLI 0.12.68 / SDLC 0.22.7. Source-mode workflows independently select immutable Lighthouse commit `97f8c97cbdfb5c398adfe713877d4e18d2ba998d`, using gh-aw 0.93.2. The official `.lighthouse/issue-control.json` projection enables the shared typed client entry for #48. It does not supply acting-user credentials or authorize a delivery. The owner-only CI-App preflight keeps its previously qualified `59ded863109b045e399931dbad61e6cfdb698107` pin. Update package selection and both SDLC/harness projections through the official CLI, then regenerate workflows with the installed installer and run foundation plus full repository checks. Historical [0.12.55 release adoption](../delivery/evidence/issue-88/release-055/README.md) and [native qualification](../delivery/evidence/issue-88/native-qualification/README.md) retain their original immutable facts.
 
-The source-mode update adopts the archived-plan requalification repair from Lighthouse #586/#587. It does not install unpublished CLI 0.12.66 or SDLC 0.22.5, refresh #154 completion evidence, or alter delivery authorization. See the [bootstrap plan and verification record](../delivery/evidence/issue-124/archive-fix-adoption/README.md). A fresh native result on the candidate head remains required.
+The source-mode update adopts the archived-plan requalification repair from Lighthouse #586/#587, and the installed packages now include its published CLI 0.12.66 and SDLC 0.22.5 release. Package adoption does not refresh #154 completion evidence or alter delivery authorization. See the [bootstrap plan and verification record](../delivery/evidence/issue-124/archive-fix-adoption/README.md). A fresh native result on the candidate head remains required.
 
 The exact #99 grant completed its real native planning, implementation, App-push CI, delegated integration and final review. Failed attempts remain historical; this adoption does not dispatch another run or extend the grant.
 
@@ -51,8 +53,8 @@ Preflight verifies Node 24, npm, Git, Chromium, OpenCode 2.1.0 and .NET SDK 10.0
 To regenerate the existing workflow set from a verified Lighthouse checkout, first preview and review differences, then apply. Keep `--with-issue-control`: omitting it disables the existing #48/#51 client-control route in the generated router.
 
 ```sh
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . d601fd70412a4c2dd3bdc7bcb6cb9678ad59e01b --with-unattended --with-maintenance --with-issue-control --replace-reviewed
-node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . d601fd70412a4c2dd3bdc7bcb6cb9678ad59e01b --with-unattended --with-maintenance --with-issue-control --replace-reviewed --apply
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 97f8c97cbdfb5c398adfe713877d4e18d2ba998d --with-unattended --with-maintenance --with-issue-control --replace-reviewed
+node node_modules/@juangcarmona/lighthouse-sdlc/src/install-workflows.mjs . 97f8c97cbdfb5c398adfe713877d4e18d2ba998d --with-unattended --with-maintenance --with-issue-control --replace-reviewed --apply
 ```
 
 Commit generated locks with their sources. The host authenticates product revision separately from workflow revision: a manual router dispatch can test this PR's workflow branch, while implementation policy and environment still come from the current default branch. Such a pre-merge run cannot prove activation of an unmerged environment declaration. Use isolated consumer acceptance for the candidate and retain this live-acceptance limitation until post-merge verification.
