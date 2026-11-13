@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "state": "merged",
+  "sha": "d3a166bc2de76a0aa4b25c970baba30c29eb00f2",
+  "acceptedHead": "c2f2453e9f7b1f1d12afa074587c593079158761",
+  "authorization": {
+    "issue": 155,
+    "pr": 192,
+    "head": "c2f2453e9f7b1f1d12afa074587c593079158761",
+    "merge": false
+  },
+  "binding": {
+    "repository": "juangcarmona/lighthouse-control-center",
+    "issue": 155,
+    "pr": 192,
+    "head": "c2f2453e9f7b1f1d12afa074587c593079158761",
+    "base": "d3a166bc2de76a0aa4b25c970baba30c29eb00f2",
+    "branch": "main",
+    "intent": "ac8d295c0cee56953686ee96089e9314bc9cb4b356be6864d32bf67440e1c296",
+    "policy": "0f6cf6c748d45876d647691a6b6d88da4c07b030c2ccf0cf5f6e387cad634f30",
+    "reviews": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "prIntent": "fdcac3a421c4c483b1bfb68ba8fa9d120954f68c5aaba90d39e1729e2b57d50c",
+    "files": "2613b28d83ae72117fc983570440e6194f1ea4f9503f19fb85f99f13e79a2726"
+  },
+  "postMerge": [
+    {
+      "workflow": "verify.yml",
+      "revision": "d3a166bc2de76a0aa4b25c970baba30c29eb00f2",
+      "state": "passed",
+      "status": "passed",
+      "runId": 43441430436,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43441430436"
+    }
+  ]
+}

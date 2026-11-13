@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "runId": "9155d7bd351da8095d18bea67460d07fa6372282aa82ae00c8b1eddf35e7695c",
+  "stage": "review",
+  "status": "passed",
+  "gate": null,
+  "evidence": [
+    {
+      "id": "github-check:131939729390",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43441430436/job/131939729390",
+      "reason": "Required verify check passed on current main revision d3a166bc2de76a0aa4b25c970baba30c29eb00f2; post-merge verify.yml also passed."
+    },
+    {
+      "id": "owner-decision:6854908237",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/155",
+      "reason": "Owner accepted the reviewed Health presentation and bounded connected-source observation and authorized integration of PR #168 at its accepted head."
+    },
+    {
+      "id": "documentation-reconciliation:6856029244",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/155",
+      "reason": "Current-main runbook, acceptance record and OpenSpec tasks reconcile the accepted snapshot and post-merge documentation fixes in #190/#192; stale protection observation was corrected through #189."
+    }
+  ],
+  "missingEvidence": [],
+  "unavailableChecks": [],
+  "pendingReview": [],
+  "nextAction": "Trusted publisher applies the passed review finalization plan; no merge or deployment is authorized by this assessment.",
+  "output": {
+    "reviewRecord": {
+      "scope": "Final review of the reconciled issue #155 delivery using documentation PR #192 at c2f2453e9f7b1f1d12afa074587c593079158761, merged to main as d3a166bc2de76a0aa4b25c970baba30c29eb00f2. This is distinct from the accepted product implementation PR #168, accepted at 5e1ae3f31800628e678ccf58bc365415b3f3b9c2 and merged as 00fc87f08bcd948a7a80732746fd29b7ac2043b9.",
+      "findings": [
+        {
+          "classification": "accepted",
+          "finding": "Owner accepted the reviewed presentation and bounded connected-source observation and authorized the specific #168 integration.",
+          "owner": "Issue owner",
+          "followUp": "Recorded in docs/delivery/evidence/issue-155/README.md and reconciled by #192. Acceptance does not cover production deployment or unsupported source families."
+        },
+        {
+          "classification": "fixed",
+          "finding": "Acceptance notes and runbook had stale/conflicting historical evidence context after integration; the stale protection observation was refreshed separately.",
+          "owner": "Repository maintainer",
+          "followUp": "#189 refreshed the protection observation; #190/#192 aligned the current-main runbook, evidence README and OpenSpec tasks. Current guidance explicitly excludes historical run 42966414214 from the accepted observation window."
+        },
+        {
+          "classification": "deferred",
+          "finding": "Production deployment and measurements for unsupported source families remain outside this accepted delivery.",
+          "owner": "Product/source capability owners",
+          "followUp": "No follow-up was opened in this review. Existing source-family ownership remains with #179/#180 and #156–#159/#54 as applicable; do not interpret this as accepted coverage."
+        },
+        {
+          "classification": "rejected",
+          "finding": "No current product defect or unresolved documentation drift was established in the reviewed changed paths.",
+          "owner": "Review",
+          "followUp": "None."
+        }
+      ],
+      "finalization": {
+        "observedIssue": "open with labels enhancement, implement",
+        "observedPullRequest": "#192 closed and merged; preserve its labels",
+        "intendedOnPassed": "Remove waiting-review, ready, pr-draft, pr-ready, integrate and review labels if present; close issue #155; add no labels. The trusted publisher applies this only after validation."
+      }
+    },
+    "retrospective": "### What went well\n- The owner decision, accepted implementation revision (#168), bounded observation, and later documentation reconciliation (#190/#192) are now distinguished. The current runbook states observation limits, unavailable-source boundaries, and that workflow success is not deployment. Required `verify` passed on current main; post-merge `verify.yml` passed.\n\n### What went wrong\n- Post-integration guidance needed correction: the historical run was outside the accepted window, and an earlier evidence-protection preflight used a stale observation. These were reconciled by #189, #190 and #192; neither establishes a product defect or failed required Verify check. Earlier review attempts for this same issue also omitted the required retrospective or placed `effect` incorrectly, and host validation rejected them. These are retries within one issue, not evidence of recurrence across work items.\n\n### Start doing\n- Keep acceptance evidence pinned to the accepted candidate and explicitly label observation windows, fixture data, and unsupported capabilities. Before publishing a review, validate the complete envelope shape and required retrospective.\n\n### Stop doing\n- Do not treat a historical failing run outside the accepted window, skipped optional workflow jobs, or stale host-policy observations as current product failures. Do not infer deployment or unsupported-source coverage from owner acceptance or green verification.\n\n### Improvement candidates\n- **Lighthouse workflow maintainers:** observed process failure: review publication was rejected for an incorrectly nested `effect` (run 43441603854) and an earlier attempt omitted `output.retrospective` (run 43438513071). Smallest guard: add pre-publication schema validation with targeted diagnostics for top-level `effect` and the review retrospective. Reproduce by submitting each malformed envelope to the validator and confirming rejection, then submit a valid envelope and confirm acceptance; review the guard and regression proof separately before adoption. No guard change is made here.\n- No other improvement finding was established. No attention-time or cost data was observed."
+  }
+}
