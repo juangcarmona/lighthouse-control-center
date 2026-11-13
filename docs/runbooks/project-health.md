@@ -6,15 +6,15 @@ The first signal uses the existing authenticated GitHub observation API. It cove
 
 Engineering quality, adoption/autonomy and resource measurements name their missing sources. Existing Runtime inventory is linked separately; it does not establish installed adoption, process health or free capacity. Workflow success is not deployment or accepted delivery. Numeric units are not applicable to categorical verdicts; definition version is not supplied. Deployment applicability remains unknown without its source. No score, threshold, cost estimate or trend is invented. Comparable history belongs to #54.
 
-Browser fixtures are demonstration data, not a connected-user acceptance receipt. Visual/content acceptance and a real connected-source rehearsal remain owner decisions. Screenshots and check receipts accompany the implementation's Actions artifacts.
+Browser fixtures are demonstration data, not connected-user acceptance receipts. For #155, the owner accepted the presentation and bounded connected-source observation on 2026-11-13. The exact reviewed captures, observation limits, accepted PR head and merge are recorded in the [acceptance evidence](../delivery/evidence/issue-155/README.md). That decision does not establish a complete delivery audit, production deployment, or measurements for unsupported source families.
 
 ## Review evidence
 
-The screenshots below use labelled demonstration data. They show the fleet, project and exact-run views at desktop and 390 px; they do not prove connected-user source acceptance.
+The screenshots below are earlier implementation evidence using labelled demonstration data. The exact owner-reviewed captures are listed in the [acceptance evidence](../delivery/evidence/issue-155/README.md).
 
 - [Fleet at 390 px](../delivery/evidence/issue-155/health-fleet-390-light.png)
 - [Project at 1440 px](../delivery/evidence/issue-155/health-project-1440-light.png)
 - [Run detail at 390 px](../delivery/evidence/issue-155/health-390-light.png)
 - [Run detail in dark mode](../delivery/evidence/issue-155/health-1440-dark.png)
 
-A real source record for the first signal is [Actions run 42966414214](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42966414214): `workflow_dispatch`, attempt 1, source revision `ef5a8f9c7429f8ff76fa8275784b2f50bb9422b8`, completed with `failure`. A Control Center session must still verify that its acting account can retrieve and display this record within the bounded latest-20 observation; an expired window or denied grant must remain unavailable.
+A historical source record for the first signal is [Actions run 42966414214](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42966414214): `workflow_dispatch`, attempt 1, source revision `ef5a8f9c7429f8ff76fa8275784b2f50bb9422b8`, completed with `failure`. It was outside the bounded observation window accepted for #155, so it is not evidence of current connected display. The accepted observation and its included run are recorded in the [acceptance evidence](../delivery/evidence/issue-155/README.md); an expired window or denied grant remains unavailable.
