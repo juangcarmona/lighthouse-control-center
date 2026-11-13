@@ -38,7 +38,6 @@ The #48 development candidate uses the released public SDK 0.22.0 for current qu
 
 - [`docs/product/`](docs/product/README.md): ProductShape model and Product Changes.
 - [`docs/architecture/`](docs/architecture/README.md): ArcShape-managed arc42 architecture documentation.
-- [`docs/engineering-lifecycle.md`](docs/engineering-lifecycle.md): shared Agentic SDLC gates and working agreements.
 - [`src/`](src/README.md): authenticated workspace, source observations, repository tooling and retained legacy execution code.
 - [`tests/`](tests/README.md): runtime, PostgreSQL, container, bridge and repository tests.
 
