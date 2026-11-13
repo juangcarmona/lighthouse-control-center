@@ -22,11 +22,9 @@ The accepted ProductShape model contains the Software Factory definition. Produc
 
 The twelve-section architecture structure contains the reviewed target and development-host boundary described in ADR-0001. It describes the target and current evidence; it does not prove that a runtime is installed. Continue to update the sections through ArcShape's ownership and do not replace unknown implementation facts with assumptions.
 
-## Agentic SDLC and shared skills
+## Architecture guidance
 
-The portable Agentic SDLC skills and shared `architecture-docs`, `git-worktrees`, and `rebase-safely` skills are installed for Codex under `.agents/skills/`. The shared `adr` skill has been removed; ArcShape owns this repository's ADR workflow under `docs/architecture/09-architecture-decisions/`. `skills-lock.json` records the remaining installed shared skills. Lifecycle conventions and project-owned role adaptations live in `docs/engineering-lifecycle.md` and `.agents/skills/`; Claude Code skill links point back to the portable sources where available.
-
-Restore or update upstream skills through the skills CLI and review the resulting diff. Do not hand-edit installed package capabilities. The project owns its lifecycle document and adapted role skills.
+The standalone `architecture-docs` skill is installed under `.agents/skills/` and recorded in `skills-lock.json`. ArcShape owns ADR authoring under `docs/architecture/09-architecture-decisions/`. Update provider-owned skills through their installer.
 
 ## Runtime baseline
 
@@ -34,7 +32,7 @@ See the root README for the current Node.js, .NET and Docker verification requir
 
 ## Contribution conventions
 
-Conventional Commit messages are checked locally by Husky and commitlint. The pre-push hook checks the issue-linked branch name. Pull request CI repeats both checks so bypassing a local hook does not skip validation. See `docs/engineering-lifecycle.md` for the branch format and allowed prefixes.
+Conventional Commit messages are checked locally by Husky and commitlint. The pre-push hook checks the issue-linked branch name. Pull request CI repeats both checks so bypassing a local hook does not skip validation. See `scripts/check-branch-name.mjs` for the branch format and allowed prefixes.
 
 ## Delivery specifications
 
