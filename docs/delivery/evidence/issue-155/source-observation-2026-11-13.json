@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-11-13T11:28:35.2119933+00:00",
+  "source": "Control Center authenticated GitHub connection",
+  "actingUser": "juangcarmona",
+  "repository": "juangcarmona/lighthouse-control-center",
+  "availability": "available",
+  "permissions": {
+    "issuesRead": true,
+    "actionsRead": true,
+    "checkedAt": "2026-11-13T11:28:29.4075273+00:00"
+  },
+  "dataScope": "Latest 20 workflow runs and first 100 open issue records; not a complete delivery audit",
+  "workflowRun": {
+    "id": 43387137210,
+    "name": "Verify repository",
+    "status": "completed",
+    "conclusion": "success",
+    "sourceRevision": "7c0809dc376021deceda6b8ff2575f79862ea281",
+    "runAttempt": 1,
+    "event": "pull_request",
+    "updatedAt": "2026-11-13T07:42:33.0000000+00:00",
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43387137210"
+  },
+  "independentFoundationCheck": {
+    "name": "Verify Lighthouse foundation",
+    "conclusion": "success",
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43387137223/job/131758151771"
+  },
+  "limitations": [
+    "The observation is bounded to the latest 20 workflow runs.",
+    "The previously referenced historical run 42966414214 was outside this observation window.",
+    "This evidence records source observation and CI results; it does not claim merge or post-merge acceptance."
+  ]
+}

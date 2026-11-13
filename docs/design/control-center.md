@@ -20,6 +20,10 @@ Use Lighthouse's compact engineering workspace: a 184px navigation rail that can
 
 The website's composition is implemented in [Lighthouse's public-site stylesheet](https://github.com/juangcarmona/lighthouse/blob/main/src/public-site/site.css); its native control recipes come from the installed `@juangcarmona/lighthouse-ui` package. Public landing-page prose and promotional hero dimensions are not application requirements.
 
+### Health composition
+
+Use [Platform Project Health](https://health.platform.plainconcepts.dev/) as the interaction and information-hierarchy reference for `/workspace/health`: a fleet summary, work needing investigation, compact project comparison, useful filters, and a project view grouped by delivery, engineering, agentic/code and resource evidence. Its published numbers are demonstration data. Reuse Control Center's Lighthouse tokens, shell and source vocabulary; source-backed measurements and levels only appear when their own producers and definitions exist. Show PRE, PRO and production as unknown until a verified deployment source establishes a target environment. Keep the comparison usable at 390px without horizontal page overflow. The [reference and candidate captures](../delivery/evidence/issue-155/platform-reference.md) document this interpretation and its current limits.
+
 ## Verification and completion
 
 Run `npm run test:visual` and the full browser suite for affected routes. Retain desktop and narrow screenshots in both themes. Check actual computed typography, edges, navigation geometry, focus and page overflow in addition to accessibility. Review screenshots against Lighthouse's reference composition before declaring visual conformance.
