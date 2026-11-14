@@ -4,7 +4,7 @@ pdac-scope: cited
 
 # Tasks
 
-All tasks are future work and remain unchecked. Groups are dependency ordered. Do not start implementation while `future` or a required protected decision remains unresolved.
+Groups are dependency ordered. The verified owner answers release the implementation hold for the reviewed scope. PR #196 comment 6865582011 confirms that explicit multiuser sessions and GitHub connections must be invalidated on restart; access continuity remains legacy-only. Unchecked tasks below remain outstanding, not waived.
 
 The grants and authority intersections below implement the existing operator and security baseline, not product approval.
 

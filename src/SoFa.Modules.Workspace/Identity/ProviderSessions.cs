@@ -105,7 +105,7 @@ internal sealed class ProviderSessions(OwnerSessions sessions, IdentityProfile p
       var principal = new ClaimsPrincipal(validated.ClaimsIdentity);
       var admission = OwnerAdmission.Validate(principal, profile, clock.GetUtcNow(), freshCeremony: false);
       var refreshedNonce = principal.FindAll("nonce").Take(2).ToArray();
-      if (admission?.AuthenticationTime != record.AuthenticationTime
+      if (principal.FindFirst("sub")?.Value != record.Subject || admission?.AuthenticationTime != record.AuthenticationTime
           || refreshedNonce.Length > 1 || refreshedNonce.Length == 1
               && refreshedNonce[0].Value != record.Ticket.Principal.FindFirst("nonce")?.Value)
         return Revoke(record);

@@ -15,6 +15,8 @@ internal sealed class SourceControlAccess(WorkspaceOptions settings, OwnerSessio
   internal async Task<ControlSourceResult> Open(GetIssueControls query, CancellationToken cancellationToken)
   {
     var record = query.Session;
+    if (settings.Identity.Access is not null)
+      return new("unsupported", Reason: "Multiuser source controls remain unavailable until the compatible actor contract is qualified. Local read grants do not authorize writes or receipt access.");
     ControlSourceResult Failure(string availability, string reason)
     {
       lock (record.Sync) return new(availability, Reason: reason);

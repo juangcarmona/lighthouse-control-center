@@ -26,7 +26,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
   {
     var now = clock.GetUtcNow();
     RepositoryAuthority Unknown(SourceAvailability availability) => new(repository, availability, false, false, false, now);
-    if (!settings.Repositories.Contains(repository, StringComparer.OrdinalIgnoreCase)) return Unknown(SourceAvailability.Denied);
+    if (!settings.CanRead(record, repository)) return Unknown(SourceAvailability.Denied);
     if (controls && settings.GitHubAppId is null) return Unknown(SourceAvailability.Unavailable);
     var connection = await authorization.CurrentAsync(record, cancellationToken).ConfigureAwait(false);
     if (connection is null) return Unknown(SourceAvailability.Unavailable);

@@ -25,6 +25,8 @@ ADR-0006 is Accepted. `main` at `d24953debaab37dfedf7745add1b47dae538a6d7` recor
 
 These are proposed implementation decisions for owner review, not accepted architecture.
 
+Implementation pickup for PR #196: the supplied verified owner answers approve this scope and release the implementation hold. Comment 6865582011 explicitly confirms restart invalidation in multiuser mode and legacy-only access continuity. Preserve the specification unchanged. The current checkout contains the existing source command journal but no qualified provider projection contract. The first correction slice adds exact project read ceilings and process-local explicit-mode sessions/connections; source commands in explicit mode and host-wide runtime inventory remain unavailable. Provider grants, complete direct API/race/browser acceptance and independent security review remain outstanding; this slice is not completion of issue #119.
+
 ### 1. Opt-in exact identities and restart-applied configuration
 
 Add an optional `SoFa:Access` section. Its presence selects explicit mode; it contains `Operators`, `Projects` and provider/resource references. Each operator has `Issuer`, `Subject` and `Grants`. Only the selected trusted profile issuer is valid; this does not introduce multiple simultaneous identity providers. Compare issuer/subject exactly using the validated provider identity, never email or group display claims. The external provider retains authentication and group authority; this increment does not map groups to grants.

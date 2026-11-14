@@ -10,7 +10,8 @@ internal sealed record OwnerAdmission(DateTimeOffset AuthenticationTime, DateTim
   {
     if (principal.Identity?.IsAuthenticated != true
         || Single(principal, "iss") != profile.Issuer.AbsoluteUri
-        || Single(principal, "sub") != profile.OwnerSubject
+        || Single(principal, "sub") is not { } subject
+        || !(profile.Access is { } access ? access.Admits(subject) : subject == profile.OwnerSubject)
         || !(Single(principal, "acr") == "2" || profile.RequiredAssurance == "1" && Single(principal, "acr") == "1")
         || !long.TryParse(Single(principal, "auth_time"), NumberStyles.None,
             CultureInfo.InvariantCulture, out var seconds))
