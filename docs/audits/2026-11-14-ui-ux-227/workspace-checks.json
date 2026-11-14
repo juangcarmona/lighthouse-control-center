@@ -1,0 +1,324 @@
+{
+  "date": "2026-11-14T22:56:16.690Z",
+  "checks": [
+    "Project/search filters survive URL, reload, board/list and issue return; draft survives navigation/reload; required draft validation and literal preview with deliberate focus.",
+    "Different sample issue has a separate local draft key. This does not qualify real actor/scope authorization.",
+    "Native source dialog opens, Escape closes, and focus returns to invoker.",
+    "Simulated refreshing/failed states retain records; loading/expired do not claim empty; lost-authority presentation hides data. No backend cache or authorization is implemented.",
+    "No-match state is separate from confirmed-empty and unavailable.",
+    "Health exception -> check collection -> source identity detail exercised.",
+    "Mobile attention group, active group and all six navigation destinations exercised.",
+    "All nine proposal views have no page overflow at 320px and computed 32px root text."
+  ],
+  "screenshots": [
+    {
+      "file": "v2-work-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-work-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-work-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-work-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-projects-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-projects-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-projects-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-projects-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-issues-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-issues-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-issues-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-issues-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-issue-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-issue-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-issue-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-issue-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-attention-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-attention-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-attention-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-attention-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-detail-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-detail-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-detail-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-health-detail-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-runtime-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-runtime-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-runtime-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-runtime-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-account-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-account-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "v2-account-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "v2-account-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    }
+  ],
+  "axe": [
+    {
+      "view": "work",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "work",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "projects",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "projects",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "issues",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "issues",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "issue",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "issue",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "attention",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "attention",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "health",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "health",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "health-detail",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "health-detail",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "runtime",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "runtime",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "account",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "account",
+      "theme": "light",
+      "violations": []
+    }
+  ],
+  "errors": []
+}

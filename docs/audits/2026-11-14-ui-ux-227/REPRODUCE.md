@@ -1,14 +1,18 @@
-# Reproducir la auditoría
+# Reproduce the audit and proposals
 
-Los scripts fueron ejecutados desde un directorio temporal separado; sus rutas absolutas reflejan ese directorio de la sesión. Ajustar `root`, `origin` y la ruta del estado privado antes de repetir. No se ha incluido el estado de sesión.
+Scripts ran from an isolated temporary directory. Their absolute paths identify that session; adjust root/origin/private storage-state paths before rerunning. Browser session data and sign-in credentials are excluded.
 
-Dependencias de auditoría: `playwright@1.64.1`, `@axe-core/playwright@4.14.0`, Chromium. No se modificaron dependencias del repositorio.
+Audit-only dependencies: `playwright@1.64.1`, `@axe-core/playwright@4.14.0`, Chromium. Repository dependencies were unchanged.
 
-- `audit.mjs`: capturas de nueve rutas y controles Axe, sin escrituras de origen.
-- `flows.mjs`: búsqueda, board, lector, borrador sin envío, navegación, demora de lecturas y 503 simulado.
-- `secondary-flows.mjs`: carga adicional, lectura de evidencia, Health/proyecto/run y foco inicial.
-- `render-proposals.mjs`: servidor local temporal y checks del HTML ilustrativo.
+- `audit.mjs`: nine current-app routes, screenshots and desktop/light Axe checks; source writes blocked.
+- `flows.mjs`: search, board, reader, unsent draft, navigation, controlled read delay and 503.
+- `secondary-flows.mjs`: pagination, evidence read, Health/project/run and initial focus.
+- `render-proposals.mjs`: first board/reader prototype checks.
+- `check-workspace.mjs`: expanded workspace captures, Axe, filters/return/draft/dialog/mobile/state checks.
+- `reference-scan.mjs`, `reference-flows.mjs`, `reference-deep.mjs`: public Platform and Health captures. `references/*.json` retain route/control metadata, selected tabs and limitations; third-party article body text is excluded. Health's numbers are generated demo data.
 
-Para abrir las propuestas no hace falta autenticación: servir este directorio con un servidor HTTP local y abrir `index.html`. El `sessionStorage` de la demo solo guarda el texto que escriba su usuario y no llama al servicio. La aplicación real requiere una política por ámbito y limpieza que esta demo no acredita.
+Serve this evidence directory through a local HTTP server and open `index.html` or `workspace.html`. GitHub displays HTML source and does not run the prototype. No application sign-in is required. `workspace-standalone.html` also opens directly from disk with all CSS, JavaScript and branding embedded. The new proposal supports `?view=work`, `projects`, `issues`, `issue`, `attention`, `health`, `health-detail`, `runtime`, `account`; `theme=light|dark|system`; `project`, `q`, `group`, and a presentation-only `state` selector.
 
-Los JSON son los recibos de la ejecución retenida; no hay trazas ni credenciales. Los valores vivos pueden cambiar entre pantallas. Los scripts no son tests de aceptación de operaciones reales.
+The demo stores its own appearance preference and fixed-identity draft/filter state locally. It performs no GitHub or application API calls. Clear site storage to reset the demo. Real authorization, retention and source actions need separate qualification.
+
+Retained JSON files are receipts of these audit runs. Live records can change between screenshots. Original screenshots are immutable evidence and may include source-authored Spanish content; all newly authored review text is English. No HAR, cookies, tokens or private Orbion material are included.

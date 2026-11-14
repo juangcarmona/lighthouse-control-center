@@ -1,0 +1,8 @@
+import {chromium} from 'playwright';import {writeFile} from 'node:fs/promises';const root='/tmp/lcc-ux-audit-227/evidence/references',b=await chromium.launch(),p=await b.newPage({viewport:{width:1440,height:1000}}),out=[];
+async function snap(name){await p.screenshot({path:root+'/'+name+'.png'});out.push({name,url:p.url(),bodyTextRetained:false,overflow:await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),selected:await p.locator('[aria-selected=true]').allTextContents()});}
+await p.goto('https://platform.plainconcepts.dev/',{waitUntil:'networkidle'});await p.getByRole('button',{name:'Reject',exact:true}).click();await p.getByRole('button',{name:'App Hub',exact:true}).scrollIntoViewIfNeeded();await snap('platform-app-preview');await p.getByRole('button',{name:'App Hub',exact:true}).click();await snap('platform-app-hub');
+await p.goto('https://health.platform.plainconcepts.dev/projects/checkout/',{waitUntil:'networkidle'});
+for(const name of ['Delivery','Agentic','Roadmap']){await p.getByRole('tab',{name,exact:true}).click();await snap('health-project-'+name.toLowerCase());}
+await p.getByRole('button',{name:'Switch to dark theme',exact:true}).click();await snap('health-roadmap-dark');await p.setViewportSize({width:390,height:844});await snap('health-roadmap-mobile');
+await p.goto('https://health.platform.plainconcepts.dev/',{waitUntil:'networkidle'});await snap('health-overview-mobile');await p.setViewportSize({width:1440,height:1000});await snap('health-overview-dark');
+await writeFile(root+'/deep-flows.json',JSON.stringify(out,null,2));console.log(JSON.stringify(out.map(x=>({name:x.name,selected:x.selected,overflow:x.overflow,bodyTextRetained:false})),null,2));await b.close();

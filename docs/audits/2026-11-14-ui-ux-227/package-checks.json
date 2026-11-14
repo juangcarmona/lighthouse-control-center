@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "Single-file prototype opens directly from disk without external requests.",
+    "Mobile menu sends focus to navigation; Escape returns focus to menu.",
+    "Issue navigation, draft reload and appearance persistence work in the standalone file."
+  ],
+  "externalRequests": []
+}

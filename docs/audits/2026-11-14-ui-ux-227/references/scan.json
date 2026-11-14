@@ -1,0 +1,112 @@
+[
+  {
+    "name": "platform",
+    "url": "https://platform.plainconcepts.com/",
+    "error": "page.goto: net::ERR_NAME_NOT_RESOLVED at https://platform.plainconcepts.com/\nCall log:\n\u001b[2m  - navigating to \"https://platform.plainconcepts.com/\", waiting until \"networkidle\"\u001b[22m\n",
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health",
+    "url": "https://health.plainconcepts.com/",
+    "error": "page.goto: net::ERR_NAME_NOT_RESOLVED at https://health.plainconcepts.com/\nCall log:\n\u001b[2m  - navigating to \"https://health.plainconcepts.com/\", waiting until \"networkidle\"\u001b[22m\n",
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-demo",
+    "url": "https://health.platform.plainconcepts.dev/",
+    "status": 200,
+    "title": "Project Health",
+    "links": [
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Project Health",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "MobileEngineering declining-19 points in 30 days",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "BillingIn production at L17 of 9 gates \u00b7 score 72",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "Mobile",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "Billing",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "Checkout",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/"
+      },
+      {
+        "text": "",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/"
+      },
+      {
+        "text": "Ledger",
+        "href": "https://health.platform.plainconcepts.dev/projects/ledger/"
+      },
+      {
+        "text": "",
+        "href": "https://health.platform.plainconcepts.dev/projects/ledger/"
+      },
+      {
+        "text": "Source and documentation",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agent Harness",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agentic Workflows",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      }
+    ],
+    "buttons": [
+      "",
+      "How is this calculated?",
+      "Show only these",
+      "Engineering scorecard",
+      "Delivery",
+      "Agentic",
+      "Code",
+      "Actions2",
+      "Family1",
+      "Risk",
+      "Engineering",
+      "Gates",
+      "Trend",
+      "Name",
+      "All4",
+      "Needs attention2",
+      "PRO2",
+      "PRE1",
+      "Not deployed0"
+    ],
+    "bodyTextRetained": false
+  }
+]

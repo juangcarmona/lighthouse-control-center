@@ -1,0 +1,1620 @@
+[
+  {
+    "name": "platform-home-desktop",
+    "url": "https://platform.plainconcepts.dev/",
+    "title": "Platform Foundations",
+    "controls": [
+      {
+        "text": "Case Studies",
+        "aria": null
+      },
+      {
+        "text": "Search\u2318K",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Toggle Theme"
+      },
+      {
+        "text": "",
+        "aria": "Open Search"
+      },
+      {
+        "text": "",
+        "aria": "Toggle Theme"
+      },
+      {
+        "text": "",
+        "aria": "Toggle Menu"
+      },
+      {
+        "text": "",
+        "aria": "Copy Text"
+      },
+      {
+        "text": "PPlatform",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "App Hub"
+      },
+      {
+        "text": "",
+        "aria": "Collapse sidebar"
+      },
+      {
+        "text": "What's new",
+        "aria": "What's new"
+      },
+      {
+        "text": "JDJane DoeAdmin",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Stop grouping Stack"
+      },
+      {
+        "text": "Clear",
+        "aria": null
+      },
+      {
+        "text": "Columns (5/5)",
+        "aria": null
+      },
+      {
+        "text": "App",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Stack",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Team",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Description",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Status",
+        "aria": null
+      },
+      {
+        "text": "Reject",
+        "aria": null
+      },
+      {
+        "text": "Accept",
+        "aria": null
+      }
+    ],
+    "links": [
+      {
+        "text": ".pc-plain-logo { container-type: inline-size; display: flex; width: 100%; align-",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Add AI to a project",
+        "href": "https://platform.plainconcepts.dev/case-studies/add-ai-to-a-project"
+      },
+      {
+        "text": "Documentation",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "How it fits together",
+        "href": "https://platform.plainconcepts.dev/docs/how-it-fits#a-new-project-step-by-step"
+      },
+      {
+        "text": "The three phasesHow the Platform department at Plain Concepts builds and runs ap",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "Measuring with HealthProject Health measures every Platform project in four area",
+        "href": "https://platform.plainconcepts.dev/docs/health"
+      },
+      {
+        "text": "Adopt in your projectThe day-one sequence for a Platform project: start from the",
+        "href": "https://platform.plainconcepts.dev/docs/adopt"
+      },
+      {
+        "text": "FrontendThe frontend stack, the reasoning behind it, and the patterns for everyd",
+        "href": "https://platform.plainconcepts.dev/docs/frontend"
+      },
+      {
+        "text": "BackendThe .NET conventions, the reasoning, and the patterns for everyday work.",
+        "href": "https://platform.plainconcepts.dev/docs/backend"
+      },
+      {
+        "text": "AI x SDLCAI across the Platform delivery lifecycle on one page: GitHub Agentic W",
+        "href": "https://platform.plainconcepts.dev/docs/ai"
+      },
+      {
+        "text": "TokensColors, typography and radius from the Platform styleguide.",
+        "href": "https://platform.plainconcepts.dev/docs/tokens"
+      },
+      {
+        "text": "Componentsshadcn/ui components with the shared theme, plus our custom components",
+        "href": "https://platform.plainconcepts.dev/docs/components"
+      },
+      {
+        "text": "How we work",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "How it fits together",
+        "href": "https://platform.plainconcepts.dev/docs/how-it-fits"
+      },
+      {
+        "text": "platform.plainconcepts.dev",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/Foundations",
+        "href": "https://github.com/PlainConceptsPlatform/Foundations"
+      },
+      {
+        "text": "harness.platform.plainconcepts.dev",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/agent-harness",
+        "href": "https://github.com/PlainConceptsPlatform/agent-harness"
+      },
+      {
+        "text": "workflows.platform.plainconcepts.dev",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/agentic-workflows",
+        "href": "https://github.com/PlainConceptsPlatform/agentic-workflows"
+      },
+      {
+        "text": "health.platform.plainconcepts.dev",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/project-health",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "catalog",
+        "href": "https://platform.plainconcepts.dev/docs/components"
+      },
+      {
+        "text": "Overview",
+        "href": "https://platform.plainconcepts.dev/#"
+      },
+      {
+        "text": "Applications",
+        "href": "https://platform.plainconcepts.dev/#"
+      },
+      {
+        "text": "Team",
+        "href": "https://platform.plainconcepts.dev/#"
+      },
+      {
+        "text": "Settings",
+        "href": "https://platform.plainconcepts.dev/#"
+      }
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "platform-home-mobile",
+    "url": "https://platform.plainconcepts.dev/",
+    "title": "Platform Foundations",
+    "controls": [
+      {
+        "text": "Case Studies",
+        "aria": null
+      },
+      {
+        "text": "Search\u2318K",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Toggle Theme"
+      },
+      {
+        "text": "",
+        "aria": "Open Search"
+      },
+      {
+        "text": "",
+        "aria": "Toggle Theme"
+      },
+      {
+        "text": "",
+        "aria": "Toggle Menu"
+      },
+      {
+        "text": "",
+        "aria": "Copy Text"
+      },
+      {
+        "text": "PPlatform",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "App Hub"
+      },
+      {
+        "text": "",
+        "aria": "Collapse sidebar"
+      },
+      {
+        "text": "What's new",
+        "aria": "What's new"
+      },
+      {
+        "text": "JDJane DoeAdmin",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Stop grouping Stack"
+      },
+      {
+        "text": "Clear",
+        "aria": null
+      },
+      {
+        "text": "Columns (5/5)",
+        "aria": null
+      },
+      {
+        "text": "App",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Stack",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Team",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Description",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Drag to resize column"
+      },
+      {
+        "text": "Status",
+        "aria": null
+      },
+      {
+        "text": "Reject",
+        "aria": null
+      },
+      {
+        "text": "Accept",
+        "aria": null
+      }
+    ],
+    "links": [
+      {
+        "text": ".pc-plain-logo { container-type: inline-size; display: flex; width: 100%; align-",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Add AI to a project",
+        "href": "https://platform.plainconcepts.dev/case-studies/add-ai-to-a-project"
+      },
+      {
+        "text": "Documentation",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "How it fits together",
+        "href": "https://platform.plainconcepts.dev/docs/how-it-fits#a-new-project-step-by-step"
+      },
+      {
+        "text": "The three phasesHow the Platform department at Plain Concepts builds and runs ap",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "Measuring with HealthProject Health measures every Platform project in four area",
+        "href": "https://platform.plainconcepts.dev/docs/health"
+      },
+      {
+        "text": "Adopt in your projectThe day-one sequence for a Platform project: start from the",
+        "href": "https://platform.plainconcepts.dev/docs/adopt"
+      },
+      {
+        "text": "FrontendThe frontend stack, the reasoning behind it, and the patterns for everyd",
+        "href": "https://platform.plainconcepts.dev/docs/frontend"
+      },
+      {
+        "text": "BackendThe .NET conventions, the reasoning, and the patterns for everyday work.",
+        "href": "https://platform.plainconcepts.dev/docs/backend"
+      },
+      {
+        "text": "AI x SDLCAI across the Platform delivery lifecycle on one page: GitHub Agentic W",
+        "href": "https://platform.plainconcepts.dev/docs/ai"
+      },
+      {
+        "text": "TokensColors, typography and radius from the Platform styleguide.",
+        "href": "https://platform.plainconcepts.dev/docs/tokens"
+      },
+      {
+        "text": "Componentsshadcn/ui components with the shared theme, plus our custom components",
+        "href": "https://platform.plainconcepts.dev/docs/components"
+      },
+      {
+        "text": "How we work",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "How it fits together",
+        "href": "https://platform.plainconcepts.dev/docs/how-it-fits"
+      },
+      {
+        "text": "platform.plainconcepts.dev",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/Foundations",
+        "href": "https://github.com/PlainConceptsPlatform/Foundations"
+      },
+      {
+        "text": "harness.platform.plainconcepts.dev",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/agent-harness",
+        "href": "https://github.com/PlainConceptsPlatform/agent-harness"
+      },
+      {
+        "text": "workflows.platform.plainconcepts.dev",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/agentic-workflows",
+        "href": "https://github.com/PlainConceptsPlatform/agentic-workflows"
+      },
+      {
+        "text": "health.platform.plainconcepts.dev",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "PlainConceptsPlatform/project-health",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "catalog",
+        "href": "https://platform.plainconcepts.dev/docs/components"
+      },
+      {
+        "text": "Overview",
+        "href": "https://platform.plainconcepts.dev/#"
+      },
+      {
+        "text": "Applications",
+        "href": "https://platform.plainconcepts.dev/#"
+      },
+      {
+        "text": "Team",
+        "href": "https://platform.plainconcepts.dev/#"
+      },
+      {
+        "text": "Settings",
+        "href": "https://platform.plainconcepts.dev/#"
+      }
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "platform-process-desktop",
+    "url": "https://platform.plainconcepts.dev/docs/how-we-work",
+    "title": "The three phases \u00b7 Platform Foundations",
+    "controls": [
+      {
+        "text": "",
+        "aria": "Open Search"
+      },
+      {
+        "text": "",
+        "aria": "Open Sidebar"
+      },
+      {
+        "text": "",
+        "aria": "Collapse Sidebar"
+      },
+      {
+        "text": "",
+        "aria": "Open Search"
+      },
+      {
+        "text": "",
+        "aria": "Collapse Sidebar"
+      },
+      {
+        "text": "Search\u2318K",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "Toggle Theme"
+      },
+      {
+        "text": "Cookie settings",
+        "aria": null
+      },
+      {
+        "text": "The three phasesThe four pillars",
+        "aria": null
+      },
+      {
+        "text": "Reject",
+        "aria": null
+      },
+      {
+        "text": "Accept",
+        "aria": null
+      }
+    ],
+    "links": [
+      {
+        "text": ".pc-plain-logo { container-type: inline-size; display: flex; width: 100%; align-",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": ".pc-plain-logo { container-type: inline-size; display: flex; width: 100%; align-",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "The three phases",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work"
+      },
+      {
+        "text": "1. Discovery",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/discovery"
+      },
+      {
+        "text": "2. Foundations",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/foundations"
+      },
+      {
+        "text": "3. Maintenance mode",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/maintenance"
+      },
+      {
+        "text": "Measuring with Health",
+        "href": "https://platform.plainconcepts.dev/docs/health"
+      },
+      {
+        "text": "How it fits together",
+        "href": "https://platform.plainconcepts.dev/docs/how-it-fits"
+      },
+      {
+        "text": "Adopt in your project",
+        "href": "https://platform.plainconcepts.dev/docs/adopt"
+      },
+      {
+        "text": "Frontend",
+        "href": "https://platform.plainconcepts.dev/docs/frontend"
+      },
+      {
+        "text": "Backend",
+        "href": "https://platform.plainconcepts.dev/docs/backend"
+      },
+      {
+        "text": "AI x SDLC",
+        "href": "https://platform.plainconcepts.dev/docs/ai"
+      },
+      {
+        "text": "Tokens",
+        "href": "https://platform.plainconcepts.dev/docs/tokens"
+      },
+      {
+        "text": "Components",
+        "href": "https://platform.plainconcepts.dev/docs/components"
+      },
+      {
+        "text": "Architecture",
+        "href": "https://platform.plainconcepts.dev/docs/reference/architecture"
+      },
+      {
+        "text": "Design guidelines",
+        "href": "https://platform.plainconcepts.dev/docs/reference/design"
+      },
+      {
+        "text": "Engineering excellence",
+        "href": "https://platform.plainconcepts.dev/docs/reference/engineering"
+      },
+      {
+        "text": "Application documentation",
+        "href": "https://platform.plainconcepts.dev/docs/reference/documentation"
+      },
+      {
+        "text": "AI agents",
+        "href": "https://platform.plainconcepts.dev/docs/reference/agents"
+      },
+      {
+        "text": "Principles",
+        "href": "https://platform.plainconcepts.dev/docs/principles"
+      },
+      {
+        "text": "Contributing",
+        "href": "https://platform.plainconcepts.dev/docs/contributing"
+      },
+      {
+        "text": "Releases",
+        "href": "https://platform.plainconcepts.dev/docs/releases"
+      },
+      {
+        "text": "Adopt in your project",
+        "href": "https://platform.plainconcepts.dev/docs/adopt"
+      },
+      {
+        "text": "The four pillars",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#the-four-pillars"
+      },
+      {
+        "text": "FoundationsThe theme, the conventions, the reference architecture, and this site",
+        "href": "https://github.com/PlainConceptsPlatform/Foundations"
+      },
+      {
+        "text": "agent-harnessInstalls the Platform Harness into a repository: skills, commands, ",
+        "href": "https://github.com/PlainConceptsPlatform/agent-harness"
+      },
+      {
+        "text": "agentic-workflowsThe router and worker catalog that runs the pipeline, the merge",
+        "href": "https://github.com/PlainConceptsPlatform/agentic-workflows"
+      },
+      {
+        "text": "project-healthMeasures every project from GitHub: engineering gates, delivery, a",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "How it fits together",
+        "href": "https://platform.plainconcepts.dev/docs/how-it-fits"
+      },
+      {
+        "text": "platform.plainconcepts.dev",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "harness.platform.plainconcepts.dev",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "workflows.platform.plainconcepts.dev",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "health.platform.plainconcepts.dev",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "What Health measures",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#what-health-measures"
+      },
+      {
+        "text": "Health",
+        "href": "https://platform.plainconcepts.dev/docs/health"
+      },
+      {
+        "text": "engineering standard",
+        "href": "https://platform.plainconcepts.dev/docs/reference/engineering"
+      },
+      {
+        "text": "Phase 2 exists to make phase 3 safe",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#phase-2-exists-to-make-phase-3-safe"
+      },
+      {
+        "text": "2025 State of AI-assisted Software Development",
+        "href": "https://dora.dev/dora-report-2025/"
+      },
+      {
+        "text": "Outcomes belong to the business, means belong to engineering",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#outcomes-belong-to-the-business-means-belong-to-engineering"
+      },
+      {
+        "text": "The phases overlap",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#the-phases-overlap"
+      },
+      {
+        "text": "Principles",
+        "href": "https://platform.plainconcepts.dev/docs/principles"
+      },
+      {
+        "text": "The phases in detail",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#the-phases-in-detail"
+      },
+      {
+        "text": "1. DiscoveryDeciding what to build, and which constraints the build will have to",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/discovery"
+      },
+      {
+        "text": "2. FoundationsGuardrails as the deliverable, interactive and unattended agents, ",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/foundations"
+      },
+      {
+        "text": "3. Maintenance modeTwo intake doors, the eligibility boundary, and measuring it ",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/maintenance"
+      },
+      {
+        "text": "Measuring with HealthThe four areas Health measures, how fresh the data is, and ",
+        "href": "https://platform.plainconcepts.dev/docs/health"
+      },
+      {
+        "text": "Adopt in your projectThe day-one sequence: theme, harness, workflows, and regist",
+        "href": "https://platform.plainconcepts.dev/docs/adopt"
+      },
+      {
+        "text": "1. DiscoveryThe phase that decides what to build and which constraints the build",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work/discovery"
+      },
+      {
+        "text": "The four pillars",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#the-four-pillars"
+      },
+      {
+        "text": "What Health measures",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#what-health-measures"
+      },
+      {
+        "text": "Phase 2 exists to make phase 3 safe",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#phase-2-exists-to-make-phase-3-safe"
+      },
+      {
+        "text": "Outcomes belong to the business, means belong to engineering",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#outcomes-belong-to-the-business-means-belong-to-engineering"
+      },
+      {
+        "text": "The phases overlap",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#the-phases-overlap"
+      },
+      {
+        "text": "The phases in detail",
+        "href": "https://platform.plainconcepts.dev/docs/how-we-work#the-phases-in-detail"
+      }
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-overview-desktop",
+    "url": "https://health.platform.plainconcepts.dev/",
+    "title": "Project Health",
+    "controls": [
+      {
+        "text": "",
+        "aria": "Switch to dark theme"
+      },
+      {
+        "text": "How is this calculated?",
+        "aria": null
+      },
+      {
+        "text": "Show only these",
+        "aria": null
+      },
+      {
+        "text": "Engineering scorecard",
+        "aria": null
+      },
+      {
+        "text": "Delivery",
+        "aria": null
+      },
+      {
+        "text": "Agentic",
+        "aria": null
+      },
+      {
+        "text": "Code",
+        "aria": null
+      },
+      {
+        "text": "Actions2",
+        "aria": null
+      },
+      {
+        "text": "Family1",
+        "aria": null
+      },
+      {
+        "text": "Risk",
+        "aria": null
+      },
+      {
+        "text": "Engineering",
+        "aria": null
+      },
+      {
+        "text": "Gates",
+        "aria": null
+      },
+      {
+        "text": "Trend",
+        "aria": null
+      },
+      {
+        "text": "Name",
+        "aria": null
+      },
+      {
+        "text": "All4",
+        "aria": null
+      },
+      {
+        "text": "Needs attention2",
+        "aria": null
+      },
+      {
+        "text": "PRO2",
+        "aria": null
+      },
+      {
+        "text": "PRE1",
+        "aria": null
+      },
+      {
+        "text": "Not deployed0",
+        "aria": null
+      }
+    ],
+    "links": [
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Project Health",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "MobileEngineering declining-19 points in 30 days",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "BillingIn production at L17 of 9 gates \u00b7 score 72",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "Mobile",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "Billing",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "Checkout",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/"
+      },
+      {
+        "text": "Ledger",
+        "href": "https://health.platform.plainconcepts.dev/projects/ledger/"
+      },
+      {
+        "text": "Source and documentation",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agent Harness",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agentic Workflows",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      }
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-attention-filter",
+    "url": "https://health.platform.plainconcepts.dev/",
+    "title": "Project Health",
+    "controls": [
+      {
+        "text": "",
+        "aria": "Switch to dark theme"
+      },
+      {
+        "text": "How is this calculated?",
+        "aria": null
+      },
+      {
+        "text": "Show only these",
+        "aria": null
+      },
+      {
+        "text": "Engineering scorecard",
+        "aria": null
+      },
+      {
+        "text": "Delivery",
+        "aria": null
+      },
+      {
+        "text": "Agentic",
+        "aria": null
+      },
+      {
+        "text": "Code",
+        "aria": null
+      },
+      {
+        "text": "Actions2",
+        "aria": null
+      },
+      {
+        "text": "Family1",
+        "aria": null
+      },
+      {
+        "text": "Risk",
+        "aria": null
+      },
+      {
+        "text": "Engineering",
+        "aria": null
+      },
+      {
+        "text": "Gates",
+        "aria": null
+      },
+      {
+        "text": "Trend",
+        "aria": null
+      },
+      {
+        "text": "Name",
+        "aria": null
+      },
+      {
+        "text": "All4",
+        "aria": null
+      },
+      {
+        "text": "Needs attention2",
+        "aria": null
+      },
+      {
+        "text": "PRO2",
+        "aria": null
+      },
+      {
+        "text": "PRE1",
+        "aria": null
+      },
+      {
+        "text": "Not deployed0",
+        "aria": null
+      }
+    ],
+    "links": [
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Project Health",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "MobileEngineering declining-19 points in 30 days",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "BillingIn production at L17 of 9 gates \u00b7 score 72",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "Mobile",
+        "href": "https://health.platform.plainconcepts.dev/projects/mobile/"
+      },
+      {
+        "text": "Billing",
+        "href": "https://health.platform.plainconcepts.dev/projects/billing/"
+      },
+      {
+        "text": "Source and documentation",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agent Harness",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agentic Workflows",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      }
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-project-engineering",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/",
+    "title": "Project Health",
+    "controls": [
+      {
+        "text": "",
+        "aria": "Switch to dark theme"
+      },
+      {
+        "text": "Engineering",
+        "aria": null
+      },
+      {
+        "text": "Delivery",
+        "aria": null
+      },
+      {
+        "text": "Agentic",
+        "aria": null
+      },
+      {
+        "text": "Family",
+        "aria": null
+      },
+      {
+        "text": "Roadmap",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Threshold"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and threshold met."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Policy"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and within policy."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Threshold"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and threshold met."
+      },
+      {
+        "text": "",
+        "aria": "Threshold"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and threshold met."
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      }
+    ],
+    "links": [
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Project Health",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Back to projects",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "your-org/checkout",
+        "href": "https://github.com/your-org/checkout"
+      },
+      {
+        "text": "2026-06",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/2026-06/"
+      },
+      {
+        "text": "2026-07",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/2026-07/"
+      },
+      {
+        "text": "2026-08",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/2026-08/"
+      },
+      {
+        "text": "29 Aug \u00b7 successci.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9240"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905071"
+      },
+      {
+        "text": "25 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905082"
+      },
+      {
+        "text": "29 Aug \u00b7 successci.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9261"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905089"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905089"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905096"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905078"
+      },
+      {
+        "text": "29 Aug \u00b7 successdeploy-pre.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9296"
+      },
+      {
+        "text": "29 Aug \u00b7 successdeploy-pre.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9303"
+      },
+      {
+        "text": "CartService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Cart/CartService.cs#L288"
+      },
+      {
+        "text": "CartService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Domain/Cart/CartService.cs#L123"
+      },
+      {
+        "text": "PaymentsService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Payments/PaymentsService.cs#L193"
+      },
+      {
+        "text": "pagesService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/pages/pagesService.cs#L290"
+      },
+      {
+        "text": "componentsService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/components/componentsService.cs#L204"
+      },
+      {
+        "text": "PricingService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Domain/Pricing/PricingService.cs#L231"
+      },
+      {
+        "text": "src/Checkout.Application/Cart/CartService.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Cart/CartService.cs"
+      },
+      {
+        "text": "src/Checkout.Application/Payments/PaymentsService.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Payments/PaymentsService.cs"
+      },
+      {
+        "text": "src/web/pages/CheckoutPage.tsx",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/pages/CheckoutPage.tsx"
+      },
+      {
+        "text": "src/Checkout.Domain/Pricing/PriceRules.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Domain/Pricing/PriceRules.cs"
+      },
+      {
+        "text": "src/web/components/AddressForm.tsx",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/components/AddressForm.tsx"
+      },
+      {
+        "text": "src/web/components/PaymentForm.tsx",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/components/PaymentForm.tsx"
+      },
+      {
+        "text": "src/Checkout.Api/Endpoints/CartEndpoints.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Api/Endpoints/CartEndpoints.cs"
+      },
+      {
+        "text": "src/checkout/orders/service.ts",
+        "href": "https://github.com/your-org/checkout/blob/0000000/src/checkout/orders/service.ts"
+      },
+      {
+        "text": "src/checkout/api/client.ts",
+        "href": "https://github.com/your-org/checkout/blob/0000000/src/checkout/api/client.ts"
+      },
+      {
+        "text": "Source and documentation",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agent Harness",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agentic Workflows",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      }
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-project-mobile",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/",
+    "title": "Project Health",
+    "controls": [
+      {
+        "text": "",
+        "aria": "Switch to dark theme"
+      },
+      {
+        "text": "Engineering",
+        "aria": null
+      },
+      {
+        "text": "Delivery",
+        "aria": null
+      },
+      {
+        "text": "Agentic",
+        "aria": null
+      },
+      {
+        "text": "Family",
+        "aria": null
+      },
+      {
+        "text": "Roadmap",
+        "aria": null
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Threshold"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and threshold met."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Policy"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and within policy."
+      },
+      {
+        "text": "",
+        "aria": "Blocking"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present, blocking and passing."
+      },
+      {
+        "text": "",
+        "aria": "Threshold"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and threshold met."
+      },
+      {
+        "text": "",
+        "aria": "Threshold"
+      },
+      {
+        "text": "",
+        "aria": "Meets standard. Present and threshold met."
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      },
+      {
+        "text": "",
+        "aria": "What this means"
+      }
+    ],
+    "links": [
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Project Health",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Back to projects",
+        "href": "https://health.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "your-org/checkout",
+        "href": "https://github.com/your-org/checkout"
+      },
+      {
+        "text": "2026-06",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/2026-06/"
+      },
+      {
+        "text": "2026-07",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/2026-07/"
+      },
+      {
+        "text": "2026-08",
+        "href": "https://health.platform.plainconcepts.dev/projects/checkout/2026-08/"
+      },
+      {
+        "text": "29 Aug \u00b7 successci.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9240"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905071"
+      },
+      {
+        "text": "25 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905082"
+      },
+      {
+        "text": "29 Aug \u00b7 successci.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9261"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905089"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905089"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905096"
+      },
+      {
+        "text": "26 Aug \u00b7 successengineering-excellence facet",
+        "href": "https://github.com/your-org/checkout/actions/runs/905078"
+      },
+      {
+        "text": "29 Aug \u00b7 successdeploy-pre.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9296"
+      },
+      {
+        "text": "29 Aug \u00b7 successdeploy-pre.yml",
+        "href": "https://github.com/your-org/checkout/actions/runs/9303"
+      },
+      {
+        "text": "CartService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Cart/CartService.cs#L288"
+      },
+      {
+        "text": "CartService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Domain/Cart/CartService.cs#L123"
+      },
+      {
+        "text": "PaymentsService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Payments/PaymentsService.cs#L193"
+      },
+      {
+        "text": "pagesService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/pages/pagesService.cs#L290"
+      },
+      {
+        "text": "componentsService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/components/componentsService.cs#L204"
+      },
+      {
+        "text": "PricingService.Handle",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Domain/Pricing/PricingService.cs#L231"
+      },
+      {
+        "text": "src/Checkout.Application/Cart/CartService.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Cart/CartService.cs"
+      },
+      {
+        "text": "src/Checkout.Application/Payments/PaymentsService.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Application/Payments/PaymentsService.cs"
+      },
+      {
+        "text": "src/web/pages/CheckoutPage.tsx",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/pages/CheckoutPage.tsx"
+      },
+      {
+        "text": "src/Checkout.Domain/Pricing/PriceRules.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Domain/Pricing/PriceRules.cs"
+      },
+      {
+        "text": "src/web/components/AddressForm.tsx",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/components/AddressForm.tsx"
+      },
+      {
+        "text": "src/web/components/PaymentForm.tsx",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/web/components/PaymentForm.tsx"
+      },
+      {
+        "text": "src/Checkout.Api/Endpoints/CartEndpoints.cs",
+        "href": "https://github.com/your-org/checkout/blob/7a5814d409244b8e1a22ae464cde27c032cd80b4/src/Checkout.Api/Endpoints/CartEndpoints.cs"
+      },
+      {
+        "text": "src/checkout/orders/service.ts",
+        "href": "https://github.com/your-org/checkout/blob/0000000/src/checkout/orders/service.ts"
+      },
+      {
+        "text": "src/checkout/api/client.ts",
+        "href": "https://github.com/your-org/checkout/blob/0000000/src/checkout/api/client.ts"
+      },
+      {
+        "text": "Source and documentation",
+        "href": "https://github.com/PlainConceptsPlatform/project-health"
+      },
+      {
+        "text": "Platform Foundations",
+        "href": "https://platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agent Harness",
+        "href": "https://harness.platform.plainconcepts.dev/"
+      },
+      {
+        "text": "Agentic Workflows",
+        "href": "https://workflows.platform.plainconcepts.dev/"
+      }
+    ],
+    "bodyTextRetained": false
+  }
+]

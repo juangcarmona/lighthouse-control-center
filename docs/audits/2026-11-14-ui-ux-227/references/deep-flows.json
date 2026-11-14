@@ -1,0 +1,79 @@
+[
+  {
+    "name": "platform-app-preview",
+    "url": "https://platform.plainconcepts.dev/",
+    "overflow": false,
+    "selected": [],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "platform-app-hub",
+    "url": "https://platform.plainconcepts.dev/",
+    "overflow": false,
+    "selected": [],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-project-delivery",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/#delivery",
+    "overflow": false,
+    "selected": [
+      "Delivery"
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-project-agentic",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/#agentic",
+    "overflow": false,
+    "selected": [
+      "Agentic"
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-project-roadmap",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/#roadmap",
+    "overflow": false,
+    "selected": [
+      "Roadmap"
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-roadmap-dark",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/#roadmap",
+    "overflow": false,
+    "selected": [
+      "Roadmap"
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-roadmap-mobile",
+    "url": "https://health.platform.plainconcepts.dev/projects/checkout/#roadmap",
+    "overflow": true,
+    "selected": [
+      "Roadmap"
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-overview-mobile",
+    "url": "https://health.platform.plainconcepts.dev/",
+    "overflow": true,
+    "selected": [
+      "Engineering scorecard"
+    ],
+    "bodyTextRetained": false
+  },
+  {
+    "name": "health-overview-dark",
+    "url": "https://health.platform.plainconcepts.dev/",
+    "overflow": false,
+    "selected": [
+      "Engineering scorecard"
+    ],
+    "bodyTextRetained": false
+  }
+]
