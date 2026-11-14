@@ -1,0 +1,63 @@
+{
+  "revision": "2d7f3f8a7868246bf449e965fe0445108486b209",
+  "runId": "2026-11-09T22:19:04.158Z",
+  "suiteStatus": "passed",
+  "evidenceKind": "live",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productAcceptance": "Draft examples; execution does not approve the Product Change.",
+  "runProvenance": "The revision identifies HEAD; uncommitted harness changes, if present, are not attested by this field.",
+  "results": [
+    {
+      "testId": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+      "outcome": "passed",
+      "durationMs": 13415,
+      "sourceEvidence": [
+        {
+          "name": "source-authority",
+          "availability": "available",
+          "reason": null,
+          "missingReadScopes": [
+            "contents",
+            "pull_requests",
+            "variables"
+          ],
+          "sourceWritePerformed": false
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNAVAILABLE-ISSUE-ACTION",
+          "hash": "sha256:486de794faee8e8c603b72d6dc87114fb0da453602e889097ec4f414ed155579",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator can read an issue",
+            "A required source permission is unavailable"
+          ],
+          "when": "The operator inspects its actions",
+          "then": [
+            "The dependent action cannot be submitted",
+            "A specific explanation identifies the missing authority",
+            "Read access is not represented as action authority"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    }
+  ],
+  "uncoveredExamples": [
+    "SB-ANONYMOUS-WORKSPACE-DENIAL",
+    "SB-EXPLICIT-QUESTION-CONTINUATION",
+    "SB-FIND-REPOSITORY-ISSUE",
+    "SB-ORDINARY-ISSUE-COMMENT",
+    "SB-PARTIAL-REPOSITORY-COLLECTION",
+    "SB-READ-ISSUE-CONTEXT",
+    "SB-UNCERTAIN-ISSUE-COMMENT",
+    "SB-UNRESOLVED-INTERVENTION"
+  ]
+}

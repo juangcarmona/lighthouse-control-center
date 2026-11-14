@@ -1,0 +1,13 @@
+{
+  "issue": 57,
+  "pullRequest": "https://github.com/juangcarmona/sofa/pull/105",
+  "approvedPlanHead": "c9e77378f1b304e18eeef170f52a33d2a0db1dd8",
+  "decision": "approved",
+  "actor": "repository owner via task reply",
+  "answer": "S\u00ed, apruebo el plan y contin\u00faa",
+  "receivedAt": "2026-11-07T23:04:36.806195+00:00",
+  "scope": "Implement the final read-only registration/GitHub runners/committed adoption plan; existing protected decisions, verification and final independent review remain required.",
+  "priorAutomaticCorrectionRounds": 3,
+  "priorStop": "planning-stop.json",
+  "newAutomaticPlanReviewRequested": false
+}

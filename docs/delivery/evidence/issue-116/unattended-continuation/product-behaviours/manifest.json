@@ -1,0 +1,335 @@
+{
+  "recordedAt": "2026-11-09T21:20:27.139232+00:00",
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "applicationRevision": "6079e6f7964d0e2c5a992c470489e065131e33b9",
+  "liveReadSuiteRevision": "c8f8231f082b527cd9062a37916971d9528cffa9",
+  "receiptHarnessRevision": "f3b382a02724fa6d01aa0fa6973cee078afb451e",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productChangeStatus": "draft-unapproved",
+  "sourceComment": {
+    "id": 6751624256,
+    "actorId": 2834629,
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6751624256"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "9915f0b4afc177e74598417e7827b5715b89ba5ae4de87705e5a1d676466bd73"
+    },
+    {
+      "path": "actual-source-authority.json",
+      "sha256": "90f062a3921472cdb492a734829fcd9321b2bf37e39f1f2c79866240ed473fcb"
+    },
+    {
+      "path": "confirmed-comment.png",
+      "sha256": "46abe79fd00786f79ba0d00a2bd7635c45d7b31019fb8cbcc91174869f6318e3"
+    },
+    {
+      "path": "confirmed-source-comments.json",
+      "sha256": "13a44ccf6d764e35d365caabe190ed802e8343fa04a719c404e5ee1955b42d0d"
+    },
+    {
+      "path": "development-guidance-activation.json",
+      "sha256": "7b78651d264acbec5c62a38d47fcb09d8b57801c42e87f870cc981aee5583fee"
+    },
+    {
+      "path": "development-identity-activation.json",
+      "sha256": "6d024faa2b1387f5d5702673ae830c6b7efe8cd023946c43732e968ebcde6efa"
+    },
+    {
+      "path": "failed-existing-confirmation/structured-behaviours.json",
+      "sha256": "2d5cb0e6daacd68e962dbf29f6dbc1a7d5ce5a4dbf34ecc0455fc3b0cc328524"
+    },
+    {
+      "path": "failed-existing-confirmation/verification-evidence.json",
+      "sha256": "a8f30b68da72470c2f827dcf8846482f4920a1c3247712fea6aa6d8ca6f6a18e"
+    },
+    {
+      "path": "failed-existing-preparation/structured-behaviours.json",
+      "sha256": "7edd7f67284b1113fdb64ad6b51e8d882545002395db549fc8092e2ecf3f299a"
+    },
+    {
+      "path": "failed-existing-preparation/verification-evidence.json",
+      "sha256": "10562e5ea9edf40401d83d1f810664bf0a1156d2abffedc4ae10af54b915104b"
+    },
+    {
+      "path": "failed-fixture-1dbcfb4/playwright.log",
+      "sha256": "1cc82ae5229a85641301e6d2e9188ca9e5c266f0621df0292842450aa93f08a7"
+    },
+    {
+      "path": "failed-fixture-1dbcfb4/structured-behaviours.json",
+      "sha256": "551c88e7ad97d650b79ffc6e659110db0c0580c122dba1427534127fa74fdb72"
+    },
+    {
+      "path": "failed-fixture-1dbcfb4/verification-evidence.json",
+      "sha256": "668c9cb3fec9825ee4e969ce08412775f1ca4ff4c78a7cdea598ca0eb3aba1e5"
+    },
+    {
+      "path": "failed-prepared-capture/structured-behaviours.json",
+      "sha256": "cb82baff35db493eb8fcdfe7024ee0a99cbad4de21c262b1c9f721bb2822baca"
+    },
+    {
+      "path": "failed-prepared-capture/verification-evidence.json",
+      "sha256": "bfccb5774bee248b493dc9227dfecd563b623bb0941ec105050b8c022e19c57b"
+    },
+    {
+      "path": "failed-publication-first/structured-behaviours.json",
+      "sha256": "374244b78853214bb96c0393d93f0d699133360f394409d21d684459715a9ac8"
+    },
+    {
+      "path": "failed-publication-first/verification-evidence.json",
+      "sha256": "761fc7cebc42c0fc34552d51c6fde6dcb8a490cc488565654f07e567e62c0399"
+    },
+    {
+      "path": "failed-publication-second/structured-behaviours.json",
+      "sha256": "375d96c7f21d353cdc36cce882db6926c1c216ffabba263323c839e8c5437233"
+    },
+    {
+      "path": "failed-publication-second/verification-evidence.json",
+      "sha256": "e60908b572bab8d6f10e7cdde0bebd3f80bcf907036a510336eed60711e10a82"
+    },
+    {
+      "path": "fixture-6079e6f/structured-behaviours.json",
+      "sha256": "7c32111c91cf666d51d203eab5c0a498b08b64712614c567c73004b550428e9d"
+    },
+    {
+      "path": "fixture-6079e6f/verification-evidence.json",
+      "sha256": "15e6df272d228881a102b048769847a9bda4ca90baee7edbdd3f7a423a6a0481"
+    },
+    {
+      "path": "fixture-eccdcac/structured-behaviours.json",
+      "sha256": "19bf575982186cc59c08576151a786f2094a1687b0fdecac9a9f0631995b1b5d"
+    },
+    {
+      "path": "fixture-eccdcac/verification-evidence.json",
+      "sha256": "58db9c63b4f9a14a89ac96218ae9362170a07eacfac4975aec1dd8eca5abe2dc"
+    },
+    {
+      "path": "fixture-guidance-9f1e2f8/structured-behaviours.json",
+      "sha256": "ddda92838fb9eda4c0dddba988793bae6398e8202601c5e49fa8e6b12c4f2429"
+    },
+    {
+      "path": "fixture-guidance-9f1e2f8/verification-evidence.json",
+      "sha256": "709d4bb3bb43eea3a34cc0502f9ec83cbbd297a0d2c574057319233a20f23857"
+    },
+    {
+      "path": "fixture-identity-399fcd7/playwright.log",
+      "sha256": "193017632a026613cbdd0dc27f54c020aa7322aa962ef4f2b0203ba3a354d2c4"
+    },
+    {
+      "path": "fixture-identity-399fcd7/structured-behaviours.json",
+      "sha256": "2881eec40bb5a92dbf3280a79f1d7a10bb991f564df5893b17a2cfc6eb9e26e7"
+    },
+    {
+      "path": "fixture-identity-399fcd7/verification-evidence.json",
+      "sha256": "33a3db4111d9e30bee96547f5b30272f8b9bf88c60192400af65f7ef1b824684"
+    },
+    {
+      "path": "identity-qualification-summary.json",
+      "sha256": "724a526184c67626d3698dd570a43712c328dfe000455e0e0cc43d8535209310"
+    },
+    {
+      "path": "independent-review-receipts.json",
+      "sha256": "6716c3969862fda74f254fee6fc7a5a5ab4093a10a2cb880787f6e0d3fd26865"
+    },
+    {
+      "path": "interrupted-live-identity-399fcd7/structured-behaviours.json",
+      "sha256": "751836c617f705f00ff5ee4436e2f1e3495769ae91fb537808b85de1126ef543"
+    },
+    {
+      "path": "interrupted-live-identity-399fcd7/verification-evidence.json",
+      "sha256": "e1dc70aefd3efb22697324525cbf405bb7cae31010cc9ac3f9a71eb3925201f5"
+    },
+    {
+      "path": "issue-narrow.png",
+      "sha256": "d7f92bf1c099983c0e537ca549254fd4c938f2d44626981541aa60f487f56d30"
+    },
+    {
+      "path": "issue.png",
+      "sha256": "b8a43fd624a422b10fd11205679821787ff558acaad6339d386f1549cd5461ea"
+    },
+    {
+      "path": "live-498da8c/structured-behaviours.json",
+      "sha256": "65fab955487cbd9701d7548329affede676c35b6ef79a2791e9aec795ae65638"
+    },
+    {
+      "path": "live-498da8c/verification-evidence.json",
+      "sha256": "97fab26bc7a8a811f1516bc85abce624e28c93af4964c4eb885eb33edc7ade57"
+    },
+    {
+      "path": "live-authority-2d7f3f8/structured-behaviours.json",
+      "sha256": "6bec5cde84e3e34ceb885190ac7d810fb8a828d0830551cfe756de94c079649a"
+    },
+    {
+      "path": "live-authority-2d7f3f8/verification-evidence.json",
+      "sha256": "6f690e221880b1ec042bf8bc619546f4702c255ba81ba953ff76f1664dada4f4"
+    },
+    {
+      "path": "live-authority-be24388/action-authority.png",
+      "sha256": "22f952401ea0034ec86139392843b763fe64946a6bf9804190803eb5ab2860a9"
+    },
+    {
+      "path": "live-authority-be24388/structured-behaviours.json",
+      "sha256": "d489ba28e476e09174ba07edd3a2cf9105a7da90a23b3bbb9b07ad934f27db83"
+    },
+    {
+      "path": "live-authority-be24388/verification-evidence.json",
+      "sha256": "a78ccab91c676b4574e3d8cfd4154f1cf82d1b614093e077392ca0db5c987d5e"
+    },
+    {
+      "path": "live-c8f8231/structured-behaviours.json",
+      "sha256": "db67c682a9015e1afbcc5a90662ec1e47bf1cae9ec7acde6321280644f41c04b"
+    },
+    {
+      "path": "live-c8f8231/verification-evidence.json",
+      "sha256": "8b6626b23d34c1079e19e0057e4f524741c2eb7ae4bb7d14664d87a68a57e854"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/issue-narrow.png",
+      "sha256": "bd78e5ed2d1fb0565cab3438ab8daa49725882618146c02a44ed93faa36c7dd5"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/issue.png",
+      "sha256": "8cde8f630b396b157a2060322a78ee404149159eefbf89fa21bd3dcd901a7069"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/recovered-comment.png",
+      "sha256": "06396602f3b9aedf1710833e1ccbeb4b307754bea93524178a75dd717775bc8c"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/repository.png",
+      "sha256": "ec7f0278d63943eaf32fa71460d28257ab09943cc6ebe22275c5ebace96e3f8a"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/structured-behaviours.json",
+      "sha256": "bb6bd521bd92254abb1c15d314a4ad0fb50edfe6d62d7991ac6dd5ec48865619"
+    },
+    {
+      "path": "live-guidance-9f1e2f8/verification-evidence.json",
+      "sha256": "25fcc84deda95c9c2721937896e68ed85b4ae27540262abb24357cc07aa9b1f7"
+    },
+    {
+      "path": "live-identity-399fcd7/action-authority.png",
+      "sha256": "b8a43fd624a422b10fd11205679821787ff558acaad6339d386f1549cd5461ea"
+    },
+    {
+      "path": "live-identity-399fcd7/issue-narrow.png",
+      "sha256": "d7f92bf1c099983c0e537ca549254fd4c938f2d44626981541aa60f487f56d30"
+    },
+    {
+      "path": "live-identity-399fcd7/issue.png",
+      "sha256": "b8a43fd624a422b10fd11205679821787ff558acaad6339d386f1549cd5461ea"
+    },
+    {
+      "path": "live-identity-399fcd7/playwright.log",
+      "sha256": "a5046037c9c70e0d8e7e13250d3f107171036c5f63d1916e0ef2007830e0e821"
+    },
+    {
+      "path": "live-identity-399fcd7/recovered-comment.png",
+      "sha256": "06396602f3b9aedf1710833e1ccbeb4b307754bea93524178a75dd717775bc8c"
+    },
+    {
+      "path": "live-identity-399fcd7/repository.png",
+      "sha256": "8abe0b9dceda94075e4f0615ccd2a5efa39653ab1ea37d0db54bc3a3125ea64c"
+    },
+    {
+      "path": "live-identity-399fcd7/structured-behaviours.json",
+      "sha256": "d1c49772a7bf0719b6564a985475491751ba354ac0f007c7f083c425143627d9"
+    },
+    {
+      "path": "live-identity-399fcd7/verification-evidence.json",
+      "sha256": "e6112fbafe112485858481a07581f1794f8c72de7a5fabc1fb26defc5ff68d62"
+    },
+    {
+      "path": "live-publication-4a7ca88/structured-behaviours.json",
+      "sha256": "d35f54e4d2516ebe145c803ef39894c33d4a7a34420a684a2fa4b3cd8912a865"
+    },
+    {
+      "path": "live-publication-4a7ca88/verification-evidence.json",
+      "sha256": "81da92cb0bd162c27a2e6916eb044b5b469b53c21e9bce382dbae74a5ee9090c"
+    },
+    {
+      "path": "live-recovery-f3b382a/structured-behaviours.json",
+      "sha256": "fff1f7e4870439c32aa97780726c8c11f0628a877261e4d6947d9c4adf89718f"
+    },
+    {
+      "path": "live-recovery-f3b382a/verification-evidence.json",
+      "sha256": "bf276c5fe024e31c4ee2af4bf6a867a0a16296598606d25517ff7b5bcc760214"
+    },
+    {
+      "path": "live-settled-78f40e6/issue-narrow.png",
+      "sha256": "c3b7d9dbc73071af5f5c282e3ebccd59ebb36fdbdad8fcbe7ed04f541c19e838"
+    },
+    {
+      "path": "live-settled-78f40e6/issue.png",
+      "sha256": "3259d06a0dcb4a0de52730142e473187d478ed2aaee9997660171e58ff4141bf"
+    },
+    {
+      "path": "live-settled-78f40e6/structured-behaviours.json",
+      "sha256": "167602ee45deb8616084b1a64936ea55ab5fee6bcff536e53dc4f2bee56830b0"
+    },
+    {
+      "path": "live-settled-78f40e6/verification-evidence.json",
+      "sha256": "96ce26b79875e752c38a5fec10d28d7667f3497adad9e0c502309af5d15ceb9a"
+    },
+    {
+      "path": "productshape-validator-output.json",
+      "sha256": "84826a2448fb13c80567da318551360be2a4633f5da48377e145f105edcdbe0c"
+    },
+    {
+      "path": "recovered-comment.png",
+      "sha256": "06396602f3b9aedf1710833e1ccbeb4b307754bea93524178a75dd717775bc8c"
+    },
+    {
+      "path": "report-validation.json",
+      "sha256": "d6105303c4b74a2c4c96bd423b821782897cb1bea0ea2ef6b2d99fd2d642f977"
+    },
+    {
+      "path": "repository.png",
+      "sha256": "8abe0b9dceda94075e4f0615ccd2a5efa39653ab1ea37d0db54bc3a3125ea64c"
+    },
+    {
+      "path": "signin-readiness-diagnostic.json",
+      "sha256": "64822bcd7d7a08bbd63de6aa743dd962979e459645db892c2d86b510e6ebd8a1"
+    },
+    {
+      "path": "source-comment.png",
+      "sha256": "bb8c4ea6e20dcfd41fb95c3c79667b9beb3d0042de0cef38108d780a6ce20a15"
+    }
+  ],
+  "finalLiveHarnessRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "publicationHarnessRevision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
+  "confirmedSourceComments": [
+    {
+      "actorId": 2834629,
+      "createdAt": "2026-11-09T21:13:57Z",
+      "id": 6751624256,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6751624256"
+    },
+    {
+      "actorId": 2834629,
+      "createdAt": "2026-11-09T21:41:49Z",
+      "id": 6752210620,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752210620"
+    },
+    {
+      "actorId": 2834629,
+      "createdAt": "2026-11-09T21:44:35Z",
+      "id": 6752272812,
+      "url": "https://github.com/juangcarmona/lighthouse-control-center/issues/116#issuecomment-6752272812"
+    }
+  ],
+  "updatedAt": "2026-11-09T23:31:03.956607+00:00",
+  "currentApplicationRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "guidanceReadSuiteRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "latestAuthorityHarnessRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "latestFixtureRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "latestFullFixtureCasesPassed": 97,
+  "latestActualReadRecoveryCasesPassed": 5,
+  "passingSuiteReportDocuments": 12,
+  "unresolvedObservations": [
+    "Initial latest-activation sign-in failure; later diagnostic and five-case pass do not establish its cause.",
+    "Earlier intermittent controls unavailability; later available observations do not establish its cause."
+  ]
+}

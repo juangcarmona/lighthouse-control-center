@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-10T10:31:43.921Z",
+  "operation": "receipt",
+  "sourceWritePerformed": false,
+  "http": 200,
+  "availability": "available",
+  "reason": null,
+  "journalState": "uncertain",
+  "id": "ef66697729e54e15a87250d0024aae19",
+  "intent": {
+    "action": "comment",
+    "body": "Aceptación manual de #100: comentario ordinario, sin continuación."
+  },
+  "receipt": null
+}

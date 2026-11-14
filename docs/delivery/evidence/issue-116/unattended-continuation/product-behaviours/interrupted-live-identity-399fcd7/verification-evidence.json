@@ -1,0 +1,41 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "playwright-live",
+  "run-id": "2026-11-09T23:23:53.396Z",
+  "revision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "results": [
+    {
+      "test-id": " /  / product-behaviours.spec.mjs / live repository discovery preserves source identity and collection coverage",
+      "level": "end-to-end",
+      "outcome": "failed",
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / product-behaviours.spec.mjs / live issue context retains actual description conversation and source provenance",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    },
+    {
+      "test-id": " /  / product-behaviours.spec.mjs / live action authority explains unavailable dependencies without granting a write",
+      "level": "end-to-end",
+      "outcome": "failed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ]
+    }
+  ]
+}

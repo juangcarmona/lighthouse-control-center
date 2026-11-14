@@ -1,0 +1,96 @@
+{
+  "review": {
+    "head": "7d3869bed645979c8d927076e63d6ec730e5a748",
+    "verdict": "request-changes",
+    "findings": [
+      {
+        "severity": "medium",
+        "path": "src/web/public/factory.js:141-149",
+        "consequence": "When the configured repository set changes while the factory page remains open, refresh only adds/updates current account.repositories. It never removes cached collections for repositories no longer configured. Those old issue titles and source links remain rendered under the same dataScope, despite no longer being in configured-repository scope; evidence for them can also remain cached.",
+        "minimalFix": "On successful account response, prune repositories whose names are absent from account.repositories and remove their evidence entries before rendering/fetching; cover removing a configured repository between refreshes in a browser regression."
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "Configured scope and read-only behavior",
+        "verdict": "accept",
+        "rationale": "Server routes and handlers scope source access to configured repositories and expose only reads; branch config and labels do not grant source authority. The browser cache-pruning gap is reported separately."
+      },
+      {
+        "name": "Fresh issue/app authority",
+        "verdict": "accept",
+        "rationale": "RepositoryAccess rechecks connected-user and installation grants; the inherited50 known issue-read-grant loss is classified denied, with prior reader context cleared, and its regression is recorded. This does not close50."
+      },
+      {
+        "name": "Request initiation and connection generation",
+        "verdict": "accept",
+        "rationale": "SourceRequestGuard starts requests under the session lock and checks connection reference, generation, session identity, and stopped token; handlers recheck liveness around reads and before returning projections."
+      },
+      {
+        "name": "Source/API bounds and coverage",
+        "verdict": "accept",
+        "rationale": "Pages are explicit and capped at25 records and10 pages; responses and browser retention are bounded, PRs are excluded while raw page count is retained, and incomplete/error coverage is not represented as empty."
+      },
+      {
+        "name": "Exact-number lookup and search contract",
+        "verdict": "accept",
+        "rationale": "Exact ordinary-issue lookup directly addresses the requested number; collected-title search and local filters state their bounded scope. No exhaustive index or new command policy is required."
+      },
+      {
+        "name": "Default-branch metadata separation",
+        "verdict": "accept",
+        "rationale": "Configured and observed branches are separate projected facts, with conflicts displayed and no permission or repository-registration inference."
+      },
+      {
+        "name": "Source identity, async reads, and clearing",
+        "verdict": "request-changes",
+        "rationale": "Connection DataScope and frontend epochs prevent mixed-connection results; denied/replaced source and failed same-scope refresh have distinct clearing/stale behavior. However, removed repositories are not pruned from the browser cache on a successful account refresh (finding above)."
+      },
+      {
+        "name": "URL state and shared list/board filtering",
+        "verdict": "accept",
+        "rationale": "View and filter state is URL-backed, and both presentations use the same matches predicate; issue destinations and explicit paging are retained."
+      },
+      {
+        "name": "Historical evidence versus current authority",
+        "verdict": "accept",
+        "rationale": "Evidence is explicitly read, validated and tied to source-associated reports/runs; unread or unavailable evidence remains unknown and no current lease, eligibility, or absent-work conclusion is inferred."
+      },
+      {
+        "name": "Safe rendering, keyboard, narrow layout, and navigation/assets",
+        "verdict": "accept",
+        "rationale": "Source text is rendered inertly, links are constructed for GitHub, navigation is present, assets are public while data routes remain protected, and synthetic keyboard/390px browser coverage is reported. Physical-phone proof remains owner-deferred."
+      },
+      {
+        "name": "Verification and remaining acceptance gates",
+        "verdict": "accept",
+        "rationale": "Reported two-CPU verification passed39 Node,121 web,38 runtime, and29 browser tests. The unbounded CLR startup failures are not treated as green evidence. Exact-head hosted CI, actual connected-user issue/discovery acceptance, active reservation coverage, prerequisite50 acceptance/final judgement remain open; no final Done is claimed."
+      }
+    ],
+    "kind": "implementation-checkpoint",
+    "issue": 52,
+    "requestedModel": "openai/gpt-6-luna",
+    "requestedEffort": "high",
+    "reviewedAt": "2026-11-07T19:54:14.367Z",
+    "sourceReadOnly": true,
+    "requestPath": "/tmp/sofa-review-52-implementation-checkpoint-7d3869bed6-ce884864/context.json"
+  },
+  "correction": "Prune cached repositories against each successful current account catalog, clear earlier-scope evidence and redraw before slower collection reads. Unread configured repositories are placeholders with incomplete coverage, never false empty backlogs.",
+  "regression": {
+    "test": "removed repository titles and evidence disappear before a slow remaining refresh completes",
+    "redExitCode": 1,
+    "redLogSha256": "706ec4a060218cfdec0a239a481de9da23ad5242f75322d6362c41fdd3110714"
+  },
+  "fullVerification": {
+    "command": "npm run verify with inherited two-CPU affinity",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 121,
+      "retainedRuntime": 38,
+      "browser": 30
+    },
+    "logSha256": "b4a11a2b9ed91aa3ca4b899a73425ade6cb22bcd984fefc683460a5e4d79bbea"
+  },
+  "remaining": "Independent correction audit, exact-head CI and actual connected-user acceptance remain open. No Done verdict or phone proof is claimed."
+}

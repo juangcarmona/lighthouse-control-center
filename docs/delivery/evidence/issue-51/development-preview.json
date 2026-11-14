@@ -1,0 +1,65 @@
+{
+  "observedAt": "2026-11-08T09:27:31.527861+00:00",
+  "scope": "Reversible shared development preview; not final Done or integration",
+  "candidate": "ba9a4868043e658137b658bfa1e4bbe4443842aa",
+  "sourceContract": {
+    "pullRequest": 115,
+    "mergedRevision": "4c457c337640795a31492f7219cb0e497df9e232"
+  },
+  "service": "sofa-development-preview-controls.service",
+  "origin": "https://192.168.0.3:5443",
+  "checks": [
+    {
+      "route": "/health/live",
+      "status": 200
+    },
+    {
+      "route": "/api/session",
+      "status": 401
+    },
+    {
+      "route": "/api/controls/csrf",
+      "status": 401
+    },
+    {
+      "route": "/api/runtime/host",
+      "status": 401
+    },
+    {
+      "route": "/workspace/attention",
+      "status": 401
+    }
+  ],
+  "assets": [
+    {
+      "asset": "attention-controls.js",
+      "sha256": "48cf197f7121d129a2cf88c074ef0fd67058ec88ca20f6a5514db8fe3dcafcb2",
+      "matchesCandidate": true
+    },
+    {
+      "asset": "issue-actions.js",
+      "sha256": "fff7e60459b716350e03662e19a4f245fdc9a1ac5d22f57daa84931a16e061de",
+      "matchesCandidate": true
+    },
+    {
+      "asset": "factory.js",
+      "sha256": "a3e7f12438bc830e9ced23362d155dc9d7649396001fb83ffc826f584c00e239",
+      "matchesCandidate": true
+    },
+    {
+      "asset": "app.css",
+      "sha256": "431521ef3e4fc939fc138cf383b33aae77111927322f7886f1f108a07d599b2a",
+      "matchesCandidate": true
+    }
+  ],
+  "identity": "Existing isolated provider retained; restarting the application expires its process-local sessions and source connections; development password profile unchanged.",
+  "controls": "Private separate journal/key directories provisioned outside checkout; persistent command state is distinct from process-local authentication.",
+  "ownerReport": "Development App5658460 permissions updated and installation consent accepted.",
+  "actualAppUserEffects": "Pending freshly connected owner-browser qualification; no operator/PAT substitution.",
+  "review": "shared-preview-review.json",
+  "limitations": [
+    "Fixture/backend/browser checks are separate from actual connected-user source acceptance.",
+    "Physical-phone rehearsal was deferred by the owner.",
+    "Final #50/#48/#51/#52/#57 gates and production remain separate."
+  ]
+}

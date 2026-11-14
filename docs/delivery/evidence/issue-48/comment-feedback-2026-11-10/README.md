@@ -1,0 +1,32 @@
+# Comment feedback and long-thread correction
+
+Development qualification recorded 2026-11-10 for `juangcarmona/lighthouse-control-center`, repository ID `1425429121`, in existing PR #100 under #48/#116. This corrects the reported hidden confirmation and excessive issue-history scrolling. It does not accept the whole PR or complete source publication acceptance.
+
+## Change and evidence
+
+The editor now precedes closed conversation-history and description disclosures. Source content, pagination, collection bounds and identity checks remain available. Status, explicit confirmation, receipt and recovery stay beside the editor. Processing disables repeated clicks; the prepared state receives an explicit Confirm and send button. A confirmed publication requires a GitHub source receipt. Unknown outcomes remain unconfirmed and are never automatically resent. Same-scope refresh preserves opened disclosures; source replacement clears them.
+
+Application source is `0144c6c64820ab936920fe82061e1507543be617`; the additional state-specific recovery harness is `cd6e3bde4792e34bc2be86caf106a72dd8b134ed`. The installed backend, SDK and authority semantics are unchanged by this frontend correction. The [activation record](development-activation.json) verifies HTTP 200 and exact served JavaScript/CSS fingerprints. The previous development binary and private service override remain available for rollback. The existing working directory, environment, source grant, journal and key paths were retained; no credential or journal row was manually changed. Reconciliation records its own observed receipt normally.
+
+| Original report | Result and scope |
+| --- | --- |
+| `fixture-ci-0144/` | Hosted verification for PR head `0144c6c` passed at synthetic merge checkout `08bc5029bdb043a434817b2006597ed647991c94` (base `d24953de`), including 100 Playwright cases, 105 Node cases, 267 workspace .NET cases and 38 runtime cases. Product/model, strict OpenSpec, citations, architecture, Roslyn, security and documentation checks passed. Four composer screenshots use simulated source responses. |
+| `failed-live-prepared-state-changed/` | The earlier prepared-only test failed because the same selected action had become uncertain. This is retained as a state mismatch; it does not reproduce feedback locality. It stopped before source submission. |
+| `failed-live-locality-before/` | Against previous development app `399fcd74649eb5f17fbdfbf295156003226b405e`, receipt recovery matched the exact uncertain action, then failed because its status was absent inside the composer. It stopped before reconcile and performed zero prepare/submit requests. The uncommitted test delta at this run is retained as `recovery-harness-delta.patch.gz`; HEAD alone does not identify that harness. |
+| `live-uncertain-cd6e3bd/` | Clean committed harness against app `0144c6c`: one real HTTPS/Keycloak/GitHub case passed in 23.6 seconds. It recovered and reconciled the same intent, observed unknown source outcome, found visible focused local status, no send-confirmation button, collapsed history/description and no horizontal overflow. Exactly one receipt and one reconcile; zero prepare/submit requests. |
+
+The [repository CI](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42799887456) and [foundation CI](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42799887457) passed for exact PR head `0144c6c`. The hosted Playwright reporter identifies synthetic merge checkout `08bc5029bdb043a434817b2006597ed647991c94`; its `src/`, `tests/` and design-guide trees are identical to `0144c6c`, verified with Git. Original report revision is unchanged. The complete local verification also passed; its log predates the clean application commit and is retained with that limitation. Binding/reporter checks passed again after the additional uncertain-state harness. Actual provider E2E remains outside PR/push CI.
+
+## Actual comment outcome
+
+The selected existing action is `ef66697729e54e15a87250d0024aae19` for issue #116, containing the operator's manual acceptance comment. [Receipt read](source-receipt-before.json) and [read-only reconciliation](source-reconciliation-before.json) returned uncertain/unknown. The passing actual test retains the same intent and outcome. This does not prove publication, remote absence, or why the original action became uncertain. The journal's startup rule can make unclaimed preparations uncertain; no exact restart-cause conclusion is claimed here. No replacement comment was prepared or submitted against the live selected issue by this correction.
+
+Prepared confirmation and duplicate-click behavior are covered by delayed desktop/narrow browser fixtures. The prepared-only live test remains available but cannot pass against this now-uncertain intent; its assertion was not weakened to accept either state.
+
+## Visual and product scope
+
+Actual captures: [desktop light](live-uncertain-cd6e3bd/uncertain-1280-light.png), [desktop dark](live-uncertain-cd6e3bd/uncertain-1280-dark.png), [narrow light](live-uncertain-cd6e3bd/uncertain-390-light.png), [narrow dark](live-uncertain-cd6e3bd/uncertain-390-dark.png). Independent review inspected all four. Desktop capture is focused on feedback rather than the top of the page; narrow captures demonstrate local wrapping and visible uncertainty, not the complete page in one viewport.
+
+Original reporter documents retain requirement digests, draft Given/When/Then clauses, uncovered examples and limitations. The passing actual case contributes partial evidence to draft `SB-UNCERTAIN-ISSUE-COMMENT`: original intent, uncertainty and no resend. It does not establish the draft example's original lost-response premise or approve the Product Change. Fixture confirmation does not establish an actual source write. Neither report format validity nor this engineering review accepts product/session changes, dispatch/runtime acceptance, main integration or production deployment.
+
+The [independent review](independent-review.json) approves this bounded correction and development activation. PR #100 remains draft with its existing protected acceptance gaps. The [manifest](manifest.json) hashes retained artifacts. Logs are byte-preserved gzip files. No provider login form, password, cookie, token-bearing trace or private configuration is retained. Reproduction parameters are documented in [the test instructions](../../../../../tests/README.md); select the exact uncertain action and never enable publication to repeat this recovery check.
