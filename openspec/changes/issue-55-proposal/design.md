@@ -27,7 +27,7 @@ See proposal.md for motivation. The .NET Workspace module owns authenticated sou
 - [Concurrent equivalent ideas] → fresh source check and explicit operator confirmation reduce semantic duplicates; GitHub provides no atomic semantic-uniqueness constraint.
 - [Lost response or crash before sending] → retain uncertain intent and reconcile; never resend automatically, including after restart.
 - [Large repository] → fail closed after the bounded scan, with an explicit coverage limitation.
-- Browser checks cover the visual journey; the connected-user checks in #52 are already accepted.
+- Browser checks cover the fixture journey, not real connected-account acceptance for #55. The owner will validate create/link, retained and abandoned drafts, denied permission and induced lost-response reconciliation in a real test repository when accepting this increment. The accepted #52 prerequisite needs no repeat demo.
 
 ## Migration Plan
 

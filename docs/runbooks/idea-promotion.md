@@ -4,7 +4,7 @@ Open **Explore or revisit an idea** from Issues. Save a title, intended outcome,
 
 The single-instance draft store retains at most 25 ideas, including abandoned and promoted ideas. At capacity, creating a new draft is blocked; existing drafts and receipts remain readable. There is no automatic deletion or retention cleanup in this increment.
 
-Choose **Review creation** to verify the connected account and separate issue-write permission, inspect potentially related open and closed issues and review the exact title/body. Confirm only after checking that no candidate is equivalent. Equivalent normalized titles block creation; linking an existing issue requires read authority and never creates another issue. Saving edits invalidates the previous review.
+Choose **Review creation** to verify the connected account, inspect potentially related open and closed issues and review the exact title/body. Linking requires this candidate review under the same account and repository and read authority; it never creates another issue. Creation separately checks issue-write permission. Confirm only after checking that no candidate is equivalent. Equivalent normalized titles block creation. Saving edits invalidates the previous review.
 
 The source check scans up to ten pages of 100 records, including pull-request records. Incomplete or unavailable coverage blocks creation rather than claiming no duplicates. Semantic equivalence still needs operator judgement; GitHub does not provide atomic uniqueness across independently created ideas.
 
@@ -12,4 +12,4 @@ Creation records a one-shot intent before sending. If the response is lost, refr
 
 Confirmed source identity stays attached to the idea. Open that issue to use the existing shared Lighthouse controls; promotion does not authorize a stage or execution. No new agent-assisted exploration capability is offered.
 
-Checks cover create, link, denied permission, retained and abandoned drafts, and recovery after a lost response. The connected-user acceptance in #52 already covers this journey, so it does not need to be repeated. Publication and integration remain separate.
+Fixture checks cover create, link, denied permission, retained and abandoned drafts, and recovery after a lost response. The #52 prerequisite is accepted and needs no repeat demo, but it does not establish real connected-account acceptance for #55. The owner must still validate this increment in a real test repository: inspect and confirm the proposed issue before creation, link an existing issue without creating another, revisit and abandon drafts, observe denied permission, and induce a lost creation response then reconcile the original issue without another create. Publication and integration remain separate.

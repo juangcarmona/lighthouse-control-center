@@ -20,4 +20,5 @@
 
 - Trusted host independently verifies the candidate and unchanged PR #198 head/discussion before updating that same branch.
 - The connected-user checks in #52 are accepted and do not need to be repeated for this increment.
+- Owner acceptance for #55 still requires the real connected-account test in a test repository: create after proposal review and confirmation, link an existing issue, retain and abandon drafts, report denied permission, and reconcile an induced lost response without another create. Fixture evidence does not complete this acceptance.
 - Required forge CI, independent review and authorized integration remain separate. Do not publish, merge or archive from this worker.
