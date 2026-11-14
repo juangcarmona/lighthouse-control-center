@@ -5,9 +5,12 @@ using System.Text.RegularExpressions;
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal sealed record SourceCheck(string Name, string? Status, string? Conclusion, string? StartedAt, string? CompletedAt, long? Id = null, string? SourceUrl = null);
+internal sealed record SourceReview(long? Id, string? Actor, string? ActorType, string? State, string? SubmittedAt, string? CommitId, string? SourceUrl);
 internal sealed record RelatedPullRequest(int Number, string Availability, string SourceUrl, IReadOnlyList<string> ReferencedBy,
     string? Title = null, string? State = null, bool? Draft = null, string? HeadRevision = null, string? UpdatedAt = null,
-    string? ChecksAvailability = null, IReadOnlyList<SourceCheck>? Checks = null, string? Reason = null);
+    string? ChecksAvailability = null, IReadOnlyList<SourceCheck>? Checks = null, string? Reason = null,
+    string? CreatedAt = null, string? MergedAt = null, string? MergeRevision = null,
+    string ReviewsAvailability = "unavailable", IReadOnlyList<SourceReview>? Reviews = null);
 
 internal sealed partial class GetIssueEvidenceHandler
 {
@@ -16,7 +19,7 @@ internal sealed partial class GetIssueEvidenceHandler
       && url.AbsolutePath.StartsWith("/" + repository + "/", StringComparison.OrdinalIgnoreCase) ? url.AbsoluteUri : null;
 
   private async Task<IReadOnlyList<RelatedPullRequest>> ReadRelatedPullRequests(string repository, IssueContext page,
-      GitHubConnection connection, SourceRequestGuard guard, CancellationToken cancellationToken)
+      GitHubConnection connection, SourceRequestGuard guard, bool reviewsAllowed, CancellationToken cancellationToken)
   {
     var references = new Dictionary<int, List<string>>();
     var rows = new[] { (Body: page.Issue!.Body, Url: page.Issue.SourceUrl) }
@@ -64,9 +67,31 @@ internal sealed partial class GetIssueEvidenceHandler
             SourceJson.Text(row, "started_at"), SourceJson.Text(row, "completed_at"),
             SourceJson.Number(row, "id"), CheckUrl(SourceJson.Text(row, "html_url"), repository))).ToArray() : [];
         var complete = available && SourceJson.Number(checks.Value, "total_count") == mapped.Length;
+        var reviewsAvailability = "unavailable";
+        SourceReview[] reviews = [];
+        if (reviewsAllowed)
+        {
+          if (!guard.IsLive()) { related.Add(new(number, "disconnected", source, sources)); break; }
+          using var response = await transport.GetAsync("/repos/" + repository + "/pulls/" + number.ToString(CultureInfo.InvariantCulture)
+              + "/reviews?per_page=20&page=1", connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
+          if (response.Status == System.Net.HttpStatusCode.Unauthorized)
+          { related.Add(new(number, "disconnected", source, sources)); break; }
+          if (response.Successful && response.Value.ValueKind == JsonValueKind.Array && response.Value.GetArrayLength() <= 20)
+          {
+            // A short first page does not establish historical completeness or protected approval.
+            reviewsAvailability = "partial";
+            reviews = response.Value.EnumerateArray().Select(row => new SourceReview(SourceJson.Number(row, "id"),
+                row.TryGetProperty("user", out var user) ? SourceJson.Text(user, "login") : null,
+                row.TryGetProperty("user", out var actor) ? SourceJson.Text(actor, "type") : null,
+                SourceJson.Text(row, "state"), SourceJson.Text(row, "submitted_at"), SourceJson.Text(row, "commit_id"),
+                CheckUrl(SourceJson.Text(row, "html_url"), repository))).ToArray();
+          }
+        }
         related.Add(new(number, "available", source, sources, title, state, draft, revision, SourceJson.Text(pull.Value, "updated_at"),
             available ? complete ? "available" : "partial" : "unavailable", mapped,
-            "PR referenced explicitly by this issue/conversation. Check observations bind to the displayed head revision; missing permissions or incomplete inventory do not imply passing checks."));
+            "PR referenced explicitly by this issue/conversation. Check observations bind to the displayed head revision; missing permissions or incomplete inventory do not imply passing checks. Reviews cover only the first 20; protected approval and accepted delivery remain unknown.",
+            SourceJson.Text(pull.Value, "created_at"), SourceJson.Text(pull.Value, "merged_at"), SourceJson.Text(pull.Value, "merge_commit_sha"),
+            reviewsAvailability, reviews));
       }
       catch (OperationCanceledException) { related.Add(new(number, "unavailable", source, sources, Reason: "The evidence read budget was reached.")); break; }
       catch (InvalidOperationException) { related.Add(new(number, "unavailable", source, sources, Reason: "Source PR/check metadata is malformed.")); }

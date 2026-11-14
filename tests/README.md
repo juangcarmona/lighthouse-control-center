@@ -1,5 +1,13 @@
 # Tests
 
+For #158, `evidence-projections.test.mjs` covers source-version deduplication, distinct attempts,
+undated/window behavior, scope separation, bounded retention, committed-only adoption and a selected
+retained #99 replay. `IssueEvidenceTests.cs` covers source execution timing even for rejected results
+and PR creation/merge metadata without review permission. Existing authority/confinement assertions
+are preserved. The history/adoption browser cases use synthetic sources, including missing histories
+and a review whose protected role is unknown; they do not prove live acceptance. See
+[the history runbook](../docs/runbooks/issue-history.md) for limits and unfinished acceptance.
+
 `tests/product-behaviours/bindings.json` connects nine draft ProductShape Given/When/Then examples to their existing requirement digests and concrete Playwright cases. Node checks reject changed product sources, duplicate identities and missing case declarations. The browser reporter writes `structured-behaviours.json` and ProductShape-format verification evidence under a timestamped `test-results/product-behaviours/` directory. Fixture-backed browser results are integration evidence; they do not confirm a GitHub user effect or accept the draft Product Change. Each example retains its conjunctive outcomes and limitations.
 
 `npm run test:e2e:live` is a separate real-service suite, outside PR/push CI. It requires explicit `LCC_E2E_ORIGIN` (HTTPS), `LCC_E2E_REPOSITORY`, `LCC_E2E_ISSUE`, `LCC_E2E_USER` and `LCC_E2E_REALM_FILE` for the configured development Keycloak test account. Set `NODE_EXTRA_CA_CERTS` to the development CA for Playwright's Node HTTP client and, when needed, `LCC_E2E_BROWSER_HOME` to the existing isolated browser trust profile. It creates a fresh provider session and uses the application's retained, independently verified GitHub connection; it accepts no GitHub token or operator CLI fallback. It checks repository navigation, exact issue lookup, conversation, source-action restrictions and anonymous denial. Source tests must run against an explicitly selected configured repository/ordinary issue.

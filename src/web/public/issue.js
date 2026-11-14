@@ -1,11 +1,13 @@
 import { projectWorkspaceSourceIdentity, updateWorkspaceAccount, validateWorkspaceSourceIdentity, workspaceSourceIdentityGeneration } from './workspace-ui.js';
 import { renderActions, renderUnavailableActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
+import { issueHistory } from './evidence-projections.js';
 const byId = id => document.getElementById(id);
 const maximumTextBytes = 8 * 1024 * 1024;
 const encoder = new TextEncoder();
 let renderingBudget = { remaining: 5000 };
 let current, comments = [], bytes = 0, nextPage = null, pending = false, controller, revision = 0;
+let historyEvents = [];
 const initial = location.pathname.match(/^\/workspace\/issues\/([^/]+)\/([^/]+)\/(\d+)$/);
 if (initial) { byId('issue-picker').hidden = true; byId('issue-repository').value = initial[1] + '/' + initial[2]; byId('issue-number').value = initial[3]; }
 else {
@@ -29,6 +31,7 @@ function controlReason(data) {
       : diagnostic[2] === 'http-429' ? 'GitHub is rate limiting these checks. Refresh after the source limit resets.' : 'Refresh the source. If this persists, check the GitHub connection and source availability.');
 }
 function clear() {
+  historyEvents = [];
   renderingBudget = { remaining: 5000 };
   current = null; comments = []; bytes = 0; nextPage = null;
   byId('issue-title').textContent = initial ? 'Issue #' + initial[3] : 'Issue'; byId('issue-state').hidden = true; byId('evidence-status').textContent = '';
@@ -124,6 +127,7 @@ async function read(append = false) {
     if (data.availability !== 'available' || data.repository.toLowerCase() !== target.repository.toLowerCase()
         || typeof data.dataScope !== 'string' || !data.dataScope || data.number !== target.number || !data.issue || !data.conversation || !Array.isArray(data.conversation.items)) throw Error('Unverified source response');
     if (data.evidenceReadAllowed === false) {
+      historyEvents = [];
       byId('issue-evidence').replaceChildren();
       byId('evidence-status').textContent = 'Actions-read access is unavailable; previous execution evidence was removed.';
     }
@@ -189,9 +193,11 @@ async function readEvidence(target, page, snapshot, operation) {
       clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return;
     }
     if (data.availability === 'restricted') {
+      historyEvents = [];
       byId('issue-evidence').replaceChildren(); byId('evidence-status').textContent = data.reason; return;
     }
     if (data.availability !== 'available' || !Array.isArray(data.reports)) throw Error('Unavailable evidence');
+    showHistory({ ...data, repository: target.repository, number: target.number });
     byId('evidence-status').textContent = data.scope + ' Evidence observed: ' + (data.observedAt ?? 'unknown') + '. ' + (data.reason ?? '');
     for (const pull of data.pullRequests ?? []) {
       if (byId('related-pr-' + pull.number)) continue;
@@ -228,6 +234,42 @@ async function readEvidence(target, page, snapshot, operation) {
     if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)
       byId('evidence-status').textContent = 'Lifecycle artifacts are unavailable. Issue text and source reports remain readable; no result, lease or command authority is inferred.';
   }
+}
+
+function showHistory(data) {
+  const retained = historyEvents;
+  byId('issue-history')?.remove();
+  const history = document.createElement('details'); history.id = 'issue-history';
+  const summary = document.createElement('summary'); summary.textContent = 'Lighthouse history';
+  const content = document.createElement('div');
+  const start = document.createElement('input'), end = document.createElement('input');
+  start.type = end.type = 'datetime-local';
+  const startLabel = document.createElement('label'), endLabel = document.createElement('label');
+  startLabel.append('Window start (UTC) ', start); endLabel.append('Window end (UTC) ', end);
+  const apply = document.createElement('button'); apply.type = 'button'; apply.textContent = 'Apply history window';
+  history.append(summary, startLabel, endLabel, apply, content);
+  function render() {
+    const projection = issueHistory(data, retained, { start: start.value ? start.value + 'Z' : null, end: end.value ? end.value + 'Z' : null });
+    historyEvents = projection.events;
+    content.replaceChildren(paragraph(`Observed: ${data.observedAt ?? 'unknown'} · Conversation page: ${data.conversationPage ?? 'unknown'} · Repository ID: ${data.repositoryId ?? 'unknown'} · Issue ID: ${data.issueId ?? 'unknown'}`),
+      paragraph(`Source window: ${projection.start ?? 'unknown'} — ${projection.end ?? 'unknown'} · Equal times do not imply causality.`),
+      paragraph(projection.gaps), paragraph('Only this issue’s bounded evidence is retained in memory. Navigation or refresh may discard observations. ' + (projection.omitted ? `${projection.omitted} observations omitted by the 1,000-row / 1 MiB limit.` : '')));
+    for (const [title, rows] of [['Dated evidence', projection.dated], ['Undated evidence', projection.undated]]) {
+      const heading = document.createElement('h3'); heading.textContent = title; content.append(heading);
+      if (!rows.length) content.append(paragraph('No matching records collected; history is incomplete.'));
+      const list = document.createElement('ul');
+      for (const row of rows) {
+        const item = document.createElement('li');
+        item.append(paragraph(`${row.time ?? 'Source time unknown'} · ${row.kind} · ${row.detail}`));
+        const detail = document.createElement('details'), label = document.createElement('summary'); label.textContent = 'Event provenance';
+        detail.append(label, paragraph(`Source ID: ${row.identity ?? 'unknown'} · Attempt: ${row.attempt ?? 'unknown'} · Revision: ${row.revision ?? 'unknown'} · Observed: ${row.observedAt ?? 'unknown'}`));
+        if (row.sourceUrl) detail.append(sourceLink('Inspect history source', row.sourceUrl));
+        item.append(detail); list.append(item);
+      }
+      content.append(list);
+    }
+  }
+  apply.addEventListener('click', render); render(); byId('issue-evidence').prepend(history);
 }
 
 async function readControls(target, operation, initialBody = '') {

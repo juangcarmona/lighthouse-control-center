@@ -348,6 +348,22 @@ public static class WorkspaceModule
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
       return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "runtime.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
     });
+    app.MapGet("/api/repositories/{owner}/{repository}/adoption", async (string owner, string repository,
+        HttpContext context, OwnerSessions sessions, RepositoryAccess access, GetHostInventoryHandler host) =>
+    {
+      var record = sessions.Get(context.User)!;
+      var name = owner + "/" + repository;
+      var authority = await access.CheckAsync(record, name, context.RequestAborted).ConfigureAwait(false);
+      if (authority.Availability != SourceAvailability.Available || !authority.IssuesRead)
+        return Results.Json(new { availability = "denied", dataScope = authority.DataScope }, statusCode: 403);
+      var result = GetHostInventoryHandler.Bound(await host.Handle(new(record, name), context.RequestAborted).ConfigureAwait(false));
+      var current = await access.CheckAsync(record, name, context.RequestAborted).ConfigureAwait(false);
+      if (!ReferenceEquals(sessions.Get(record.Id), record)) return Results.StatusCode(401);
+      if (current.Availability != SourceAvailability.Available || !current.IssuesRead
+          || current.DataScope != authority.DataScope || current.Generation != authority.Generation)
+        return Results.Json(new { availability = "denied", dataScope = current.DataScope }, statusCode: 403);
+      return Results.Json(new { result.Availability, result.ObservedAt, result.Observation, result.Complete, result.Reason, dataScope = current.DataScope });
+    });
     app.MapGet("/api/runtime/host", async (HttpContext context, OwnerSessions sessions, GetHostInventoryHandler host) =>
     {
       var record = sessions.Get(context.User)!;
@@ -368,6 +384,7 @@ public static class WorkspaceModule
     foreach (var asset in new[] { (Path: "/app.js", File: "app.js", Type: "text/javascript"),
             (Path: "/app.css", File: "app.css", Type: "text/css"), (Path: "/tokens.css", File: "tokens.css", Type: "text/css"),
             (Path: "/factory.js", File: "factory.js", Type: "text/javascript"),
+            (Path: "/evidence-projections.js", File: "evidence-projections.js", Type: "text/javascript"),
             (Path: "/attention.js", File: "attention.js", Type: "text/javascript"),
             (Path: "/attention-controls.js", File: "attention-controls.js", Type: "text/javascript"),
             (Path: "/factory.css", File: "factory.css", Type: "text/css"),

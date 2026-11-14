@@ -2,13 +2,13 @@
 
 <!-- pdac-scope: cited -->
 
-These are future implementation tasks for the single authorized first increment, not completed work or independently approved child issues. Start only after owner design acceptance and separate implementation authorization; the future hold remains. See design.md for producer boundaries, alternatives and limits.
+The verified owner answers authorize this first increment and its seven named test corrections. This candidate adds a bounded read-only slice; keep tasks open until their full evidence is recorded. Connected-user qualification and owner visual acceptance remain explicit requirements, not fixture claims. See design.md for producer boundaries, alternatives and limits.
 
 ## 1. Repository adoption evidence
 
 - [ ] 1.1 Add the pure adoption normalization contract and fixtures for existing `adoptions[]` fields, source paths/revision/discovery time and independent category availability; verify CLI 0.12.65 and SDLC 0.22.4 remain declarations at the supplied revision, lock/workflow refs do not become installed facts, observed runs retain exact revision/attempt, and named-compatible/missing/incompatible comparison fixtures never invent policy (AC1).
 - [ ] 1.2 Add the scoped read-only adoption GET and narrow existing host-reader input to the selected configured checkout with no registrations; verify owner/repository checks, no unconfigured access, unchanged helper confinement/global slot/ten-second and response limits, no runner-administration query, safe source links, denied-scope clearing and no mutation in .NET/Node route and helper tests (AC1, AC5).
-- [ ] 1.3 Document the actual committed producer fields and initial no-baseline/unknown installed-policy state in the operator/runtime guidance and test documentation; verify examples match fixtures and ordinary issue reads remain available when adoption is unconfigured or unavailable (AC1).
+- [x] 1.3 Document the actual committed producer fields and initial no-baseline/unknown installed-policy state in the operator/runtime guidance and test documentation; verify examples match fixtures and ordinary issue reads remain available when adoption is unconfigured or unavailable (AC1). Delivered in `docs/runbooks/issue-history.md` and `tests/README.md`; Node adoption projection tests and the focused browser suite passed.
 
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
@@ -46,6 +46,8 @@ These are future implementation tasks for the single authorized first increment,
 
 ## Workflow follow-up
 
-- Owner design acceptance, a separate implementation request and removal of any implementation hold precede execution of these tasks. This proposal does not request automatic continuation.
+- Recovery candidate: additive adoption route/disclosure, source execution/PR/review metadata, pure bounded history projection and reader are delivered for review. Other tracked tasks remain open because their complete evidence is not available. In particular, no compatible baseline contract/comparison, source-bound rename joining, complete retained-chain browser replay, live connected-user qualification or owner visual acceptance is claimed. `npm run verify` passed (115 Node, 38 runtime .NET, 269 web .NET and 125 browser tests); `npm run test:visual` passed all 18 visual-contract tests, including the four issue-history combinations at 1280/390 px and light/dark. Screenshots were inspected for readability and layout.
+
+- Owner implementation authorization is recorded in the supplied issue answers; this candidate does not request automatic continuation or merge.
 - Integration, protected review, forge authorization, post-integration verification and deployment remain separate gates. Archive only through the provider after project review requirements are met.
 - Preserve #158's cohort durations, intervention denominators/rates and complete mission/delivery history as later work coordinated through #50/#54/#56. No follow-on issue creation or completion claim is authorized here.

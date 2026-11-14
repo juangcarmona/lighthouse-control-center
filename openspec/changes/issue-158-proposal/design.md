@@ -96,6 +96,10 @@ Run `npm run verify`, `npm run spec:validate`, `npm run product:citations` and e
 
 After separate owner acceptance and implementation authorization, land the additive adapters/projections, then presentation and same-slice verification. Optional missing inputs remain unknown for existing configurations. No database/config migration or new permission grant is required. Rollback removes the additive adoption route/history projection and UI while preserving the existing issue/runtime readers, source receipt history, commands and independent repository execution. Production deployment remains separate.
 
+## Implementation recovery
+
+The supplied owner answers authorize the first slice and seven exact test paths. No recovered implementation files are present in this checkout. Reuse the accepted specifications unchanged, preserve every existing safety assertion, and report partial implementation or unavailable live/visual qualification rather than weakening acceptance. Dependency installation precedes verification. New browser utilities must join the explicit static module inventory.
+
 ## Open Questions
 
 No unresolved decision blocks this bounded design. Broader cohorts, interval semantics, intervention denominators and complete accepted-delivery coverage remain separately refined work with #50/#54/#56. Owner review of this candidate is still required and is not inferred from a planned result.

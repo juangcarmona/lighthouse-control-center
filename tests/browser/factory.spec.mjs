@@ -3,6 +3,29 @@ import AxeBuilder from '@axe-core/playwright';
 const origin = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'}`;
 const makeIssue = (number, title, state = 'open', labels = []) => ({ id: number + 1000, number, title, state, labels,
   labelsComplete: true, updatedAt: '2026-11-07T10:00:00Z', sourceUrl: `https://github.com/example/repository/issues/${number}` });
+
+test('adoption is explicit committed evidence, not installed capability or policy; denial clears it', async ({ page }) => {
+  await fixture(page);
+  let denied = false;
+  await page.route('**/api/repositories/**/adoption', route => route.fulfill({ status: denied ? 403 : 200, json: {
+    availability: denied ? 'denied' : 'available', dataScope: 'factory-71', observedAt: '2026-11-14T10:00:00Z', complete: false,
+    observation: { adoptions: [{ repository: 'example/repository', revision: 'a'.repeat(40), collectedAt: '2026-11-14T09:00:00Z',
+      declaredCli: '0.12.65', lockedCli: '0.12.65', sdlcVersion: '0.22.4', workflowRef: '<script>source()</script>' }] }
+  } }));
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  await page.locator('#factory-project-summary').click();
+  const disclosure = page.locator('.lighthouse-adoption');
+  await disclosure.locator('summary').click();
+  await disclosure.getByRole('button', { name: 'Read adoption evidence' }).click();
+  await expect(disclosure).toContainText('declared: 0.12.65');
+  await expect(disclosure).toContainText('Installed: unknown');
+  await expect(disclosure).toContainText('No compatible baseline available');
+  await expect(disclosure.locator('script')).toHaveCount(0);
+  await expect(disclosure.getByRole('link', { name: 'Inspect committed revision' })).toHaveAttribute('href', 'https://github.com/example/repository/tree/' + 'a'.repeat(40));
+  denied = true;
+  await disclosure.getByRole('button', { name: 'Read adoption evidence' }).click();
+  await expect(page.locator('#factory-projects')).not.toContainText('0.12.65');
+});
 async function fixture(page) {
   let accountStatus = 0, accountState = 'linked', failure = 0, scope = 'factory-71', title = 'Ordinary work', actionsRead = true, configured = ['example/repository', 'example/other'], otherWait, pageWait;
   const methods = [], requests = [];
@@ -306,7 +329,7 @@ test('local filtering and refresh retain disclosures, while a replacement source
   const source = await fixture(page); await page.goto(origin + '/workspace/issues');
   await expect(page.locator('.factory-issue')).toHaveCount(3);
   await page.locator('#factory-project-summary').click();
-  const coverage = page.locator('.factory-project').filter({ has: page.getByRole('heading', { name: 'example/repository', exact: true }) }).locator('details');
+  const coverage = page.locator('.factory-project').filter({ has: page.getByRole('heading', { name: 'example/repository', exact: true }) }).locator('details').filter({ has: page.locator('summary', { hasText: 'Branch and source coverage' }) });
   const issueDetails = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' }).locator('details');
   await coverage.locator('summary').click(); await issueDetails.locator('summary').click();
   await page.locator('#factory-search').fill('Ordinary');

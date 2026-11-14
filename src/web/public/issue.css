@@ -72,3 +72,8 @@ button, summary { cursor: pointer; }
 .comment-composer .action-recovery { padding-top:.5rem; margin-top:.5rem; }
 .comment-composer .action-message { color:var(--lh-text); }
 #issue-description-details[open] > #issue-facts-details { margin-top:.5rem; }
+#issue-history { overflow-wrap:anywhere; }
+#issue-history > label { display:inline-grid; gap:.25rem; margin:.5rem .5rem .5rem 0; max-width:100%; }
+#issue-history ul { padding-left:1.25rem; }
+#issue-history li { border-top:1px solid var(--lh-border); padding-block:.5rem; }
+#issue-history li p { margin:.25rem 0; }
