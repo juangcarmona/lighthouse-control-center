@@ -2,59 +2,54 @@
 
 ## Purpose
 
-<!-- pdac-scope: cited -->
+Show one exact Actions attempt's OpenCode output-token measure with its source and evidence limits.
 
-Let an authorized operator inspect one exact execution's resource measurement and understand its source, calculation and evidence limitations.
+<!-- pdac-scope: cited -->
+<!-- pdac:cite id="UC-INSPECT-PROJECT-SIGNAL" digest="sha256:093d5d32237804a971d189d3074ea46fc2bc8d16e9b731307ad48145c955f52c" -->
 
 ## ADDED Requirements
 
-### Requirement: Exact-execution resource explanation
+### Requirement: Exact-attempt output-token observation
 
-The system SHALL explain a supported execution's resource measurement and its limits using a pinned shared definition.
+The system SHALL display `tokens.outputTokens` only from the supported OpenCode-native usage summary for the exact GitHub Actions run and attempt selected by the operator.
+
 <!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:00496ba5f763ca6f4062a45e000bda8fb429cfd674b0e638cd59fb3858449130" -->
 <!-- pdac:cite id="TERM-HEALTH-MEASUREMENT" digest="sha256:b830117f98118d9b596ec1f2947dc1b2b292eafea90bed9645db61fed664c0b0" -->
 
-#### Scenario: Supported output-token observation
+#### Scenario: Matching observed telemetry
 
-- **WHEN** accepted source evidence supplies observed coverage and numeric output tokens for an exact execution
-- **THEN** its detail identifies purpose, output-token unit, pinned formula/version, repository, run, attempt, execution window, source and observation times, sample counts and source records
-- **THEN** duplicate source records and native plus fallback observations follow the pinned shared selection, without double counting or adding reasoning/cache tokens
-- **THEN** the value makes no production-health, human-effort, billing or cross-run trend claim
+- **WHEN** the exact run attempt has one current, unexpired `lighthouse-<runId>-<attempt>` artifact with the supported schema and complete matching correlation records
+- **THEN** the detail shows the reported output-token count, repository/run/attempt, revision, source link, source update time and local observation time
+- **THEN** it states that the value is not cost, billing, health or delivery acceptance
 
-### Requirement: Independent measurement evidence states
+#### Scenario: Missing, expired or mismatched evidence
 
-The system SHALL preserve null values and distinguish coverage, freshness and applicability independently.
+- **WHEN** current Actions authority is unavailable, the run attempt or artifact is missing/ambiguous/expired, either required member is missing, telemetry is partial, or any binding differs
+- **THEN** output tokens remain unknown with an explanation; no zero, stale value or alternate credential is used
+
+#### Scenario: Artifact bounds
+
+- **WHEN** the archive is malformed, unsafe, oversized, or outside its 14-day retention
+- **THEN** the source is unavailable and no artifact contents are projected
+
+### Requirement: Pending resource families and history
+
+The system SHALL keep unimplemented producer families, billing/cost and cross-run trends unknown.
+
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 
-#### Scenario: Incomplete and stale input
+#### Scenario: No producer or comparable history
 
-- **WHEN** selected model steps are unfinished or collection gaps exist and the observation is stale
-- **THEN** the detail shows incomplete coverage with known starts/finishes and stale input with original timestamps, not a complete value or refreshed observation time
+- **WHEN** a resource family has no accepted source contract or no retained compatible observations exist
+- **THEN** its value or trend remains unavailable and is not rendered as zero or a composite score
 
-#### Scenario: Observed steps with missing token field
+### Requirement: Current authenticated source authority
 
-- **WHEN** the shared producer reports observed step coverage but a finished step has no numeric output-token value
-- **THEN** output tokens remain null/unavailable with the field limitation, while step counts retain their reported coverage
+The system SHALL read the exact run artifact only under current connected-user Actions-read authority and clear the private value when that identity or authority changes.
 
-#### Scenario: Unsupported families and deployment applicability
-
-- **WHEN** delivery, adoption, quality or resource measurements lack supported source definitions or observations
-- **THEN** each unsupported measurement remains explicitly unavailable, never zero or a passing result
-- **THEN** missing deployment evidence remains unknown; only source evidence establishing no deployment process permits not-applicable
-
-### Requirement: Authorized contributing source inspection
-
-The system SHALL expose contributing records only within the current authenticated repository authority.
 <!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
-<!-- pdac:cite id="UC-INSPECT-PROJECT-SIGNAL" digest="sha256:093d5d32237804a971d189d3074ea46fc2bc8d16e9b731307ad48145c955f52c" -->
 
-#### Scenario: Exact contributing records
+#### Scenario: Authority changes during read
 
-- **WHEN** the operator opens a supported signal
-- **THEN** source drill-down identifies only validated records associated with its exact repository, execution, workflow run and attempt, with bounded collection and retention limits
-
-#### Scenario: Denied, expired or incompatible source
-
-- **WHEN** source access is denied, an artifact is expired or its schema/correlation does not match
-- **THEN** its value is unavailable with a reason, and no alternate credential or broader artifact search is used
-- **THEN** loss of source identity or authority clears previously displayed private records
+- **WHEN** the connected account or its repository authority changes during a source read
+- **THEN** the read is discarded and the prior private output-token value is cleared
