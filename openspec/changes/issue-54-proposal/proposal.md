@@ -12,11 +12,10 @@ Let an admitted operator investigate one execution's reported output-token usage
 
 ## What Changes
 
-- Show delivery, harness/workflow adoption, quality and resource-consumption families, with unavailable reasons for unsupported producers.
-- Explain reported OpenCode output tokens for one exact execution: definition, calculation, identities, unit, times, counts, coverage, applicability and limitations.
-- Add authorized drill-down through a narrow normalized-telemetry artifact/member contract after existing reader prerequisites; the current application does not ingest these measurements.
-- Distinguish incomplete coverage, stale evidence, unavailable values and evidenced non-applicability. Null never becomes zero.
-- Retain the full issue #54 decomposition. S2 adds accepted delivery/adoption/quality producers; S3 adds defined retained comparisons. Neither is delivered by S1. No composite score, thresholds, billing, production-health, human-effort or trend claim is introduced.
+- Show one read-only OpenCode output-token value for an exact GitHub Actions run and attempt.
+- Read the existing retained Lighthouse artifact through the connected user's Actions permission. Check its usage summary and adjacent records against the selected repository, issue, revision, run, attempt and session.
+- Show the source, run/attempt and observation time. Missing, expired, partial, unsupported or mismatched evidence stays unknown.
+- Keep other metric families, history and comparisons under #54 for separate decisions and work. This slice adds no general artifact browser, telemetry storage, billing inference, composite score, threshold or delivery-health claim.
 
 ## Capabilities
 
@@ -47,20 +46,10 @@ Host-prepared impact reports connect these sources to ACT-OPERATOR and BC-ENGINE
 
 ### Source and implementation boundary
 
-The read-only main checkout has bounded GitHub observations, not the issue-reader handlers assembled through #112/#103/#105/#111 in #100 on `feat/50-issue-workspace`, candidate `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4`. That candidate identity is owner-supplied context, not a fresh merge receipt. Reuse it after default-branch integration and source/product acceptance; do not rebuild it from this older checkout.
+The owner authorized this exact slice in [PR #214](https://github.com/juangcarmona/lighthouse-control-center/pull/214#issuecomment-6874864694) and identified the existing telemetry artifact, supported summary fields, correlation records and 14-day retention. The implementation remains in draft PR #214 for exact-head checks and review. PR #100 is merged and the owner accepted #52; they are not pending gates for this slice.
 
-Owner-supplied candidate evidence limits IssueEvidence to input/result artifacts and the bridge to request/envelope/result JSON members. Artifact inventory alone cannot read normalized telemetry. S1 extends that reader narrowly under #57 coordination; it adds no arbitrary archive browser, operator CLI fallback, native traces, prompts or OpenCode logs.
+The reader uses only the named artifact members, checks current connected-user Actions-read authority and requires exact repository, revision, run and attempt correlation. It does not install telemetry, persist it, expose a general artifact browser, or broaden credentials. Other sources and shared Health history/detail semantics remain separate #54 work; this proposal does not approve those future slices.
 
-Expected impact is within the existing Workspace source/query boundary, its accepted bridge, browser signal presentation and their tests. No new service, database, provider dependency, orchestration or credential path is needed. ADR-0006/0007/0009 remain authoritative; proposed ADR-0010 is not accepted by this plan.
+The change stays within the existing Workspace source/query and Health presentation boundaries. It adds no service, database, provider dependency, orchestration or credential path. ADR-0006/0007/0009 remain authoritative; proposed ADR-0010 is not accepted by this plan.
 
-### Candidate evidence and dependencies
-
-The candidate pins SDLC `0.22.4`, CLI `0.12.65`, schema v1 and Lighthouse revision `879c4e75efebd945f8aea5b8ee09b97db62edbea`; see design.md for the immutable calculation references. One owner-reported #53 execution has 13,746 output tokens and null billed cost. It is not fresh collection, ongoing ingestion, a passed #53 stage or population evidence; that workflow's validation/publication failed.
-
-- D-52: LCC maintainer coordinates #52/#100 integration and source-scope acceptance; reuse configured identity.
-- D-57: LCC maintainer coordinates #57 reader contract, provenance, collection/retention evidence and separate acceptance. Inventory is not ingestion.
-- D-shared: Lighthouse shared-contract maintainer owns calculation semantics; LCC maintainer coordinates adoption. Package version alone is not a calculation definition.
-- D-53 and D-56: accepted adoption/delivery producers are later S2 dependencies; draft proposals #147/#148 are not implementation. Quality also needs a supported shared producer definition.
-- D-hold: maintainer retains `future` and separately decides implementation sequencing. S1 has no slice predecessors, but all applicable external prerequisites still gate implementation.
-
-This is a planned candidate for owner review, not accepted design, implementation, integration or release. Validation and Definition of Done are in design.md and dependency-ordered tasks.md.
+The checks and review for this proposal establish that it matches the owner's decision. They do not accept or merge the implementation. Exact-head CI, review, integration and later parent work remain separate.
