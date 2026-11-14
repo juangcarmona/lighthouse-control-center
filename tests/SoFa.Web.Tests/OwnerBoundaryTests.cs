@@ -415,17 +415,17 @@ public sealed class OwnerBoundaryTests
       {
         var values = new Dictionary<string, string?>
         {
-        ["SoFa:Origin"] = "https://workspace.invalid",
-        ["SoFa:Identity:Mode"] = "Development",
-        ["SoFa:Identity:SessionDirectory"] = Path.Combine(privateRoot, "sessions"),
-        ["SoFa:Identity:SessionKeyDirectory"] = Path.Combine(privateRoot, "keys"),
-        ["SoFa:Identity:Development:Issuer"] = "https://identity.invalid/realms/dev",
-        ["SoFa:Identity:Development:ClientId"] = "sofa-development",
-        ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
-        ["SoFa:Identity:Development:OwnerSubject"] = "owner-subject",
-        ["SoFa:Repositories:0"] = "example/repository",
-        ["SoFa:GitHub:ClientId"] = GitHubConfigured ? "development-user-app" : null,
-        ["SoFa:GitHub:ClientSecret"] = GitHubConfigured ? "isolated-user-app-value" : null,
+          ["SoFa:Origin"] = "https://workspace.invalid",
+          ["SoFa:Identity:Mode"] = "Development",
+          ["SoFa:Identity:SessionDirectory"] = Path.Combine(privateRoot, "sessions"),
+          ["SoFa:Identity:SessionKeyDirectory"] = Path.Combine(privateRoot, "keys"),
+          ["SoFa:Identity:Development:Issuer"] = "https://identity.invalid/realms/dev",
+          ["SoFa:Identity:Development:ClientId"] = "sofa-development",
+          ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
+          ["SoFa:Identity:Development:OwnerSubject"] = "owner-subject",
+          ["SoFa:Repositories:0"] = "example/repository",
+          ["SoFa:GitHub:ClientId"] = GitHubConfigured ? "development-user-app" : null,
+          ["SoFa:GitHub:ClientSecret"] = GitHubConfigured ? "isolated-user-app-value" : null,
         };
         if (ExplicitProjectRead)
         {
