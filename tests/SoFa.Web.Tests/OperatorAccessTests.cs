@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using JuanGCarmona.SoFa.Modules.Workspace.Identity;
+using JuanGCarmona.SoFa.Modules.Workspace.Source;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SoFa.Web.Tests;
 
@@ -32,6 +34,26 @@ public sealed class OperatorAccessTests
     Assert.Null(OwnerAdmission.Validate(OwnerAdmissionTests.Principal(subject: profile.OwnerSubject), profile, now, freshCeremony: true));
     Assert.Null(OwnerAdmission.Validate(OwnerAdmissionTests.Principal(subject: "operator-c"), profile, now, freshCeremony: true));
     Assert.Null(OwnerAdmission.Validate(OwnerAdmissionTests.Principal(issuer: "https://identity.invalid/other", subject: "operator-a"), profile, now, freshCeremony: true));
+  }
+
+  [Fact]
+  public async Task ExplicitOperatorSessionsDoNotShareOrRevokeEachOthersGitHubConnection()
+  {
+    var clock = new TestClock();
+    using var sessions = new OwnerSessions(Profile(Load()), clock);
+    var alpha = sessions.Get(await sessions.StoreAsync(new AuthenticationTicket(OwnerAdmissionTests.Principal(subject: "operator-a"), "owner")))!;
+    var beta = sessions.Get(await sessions.StoreAsync(new AuthenticationTicket(OwnerAdmissionTests.Principal(subject: "operator-b"), "owner")))!;
+    var alphaConnection = Connection(clock, "alpha");
+    var betaConnection = Connection(clock, "beta");
+
+    alpha.GitHub.Current = alphaConnection;
+    Assert.Null(beta.GitHub.Current);
+    beta.GitHub.Current = betaConnection;
+    Assert.NotSame(alphaConnection, beta.GitHub.Current);
+
+    GitHubAuthorization.Disconnect(alpha);
+    Assert.Null(alpha.GitHub.Current);
+    Assert.Same(betaConnection, beta.GitHub.Current);
   }
 
   [Theory]
@@ -76,4 +98,8 @@ public sealed class OperatorAccessTests
     OwnerSubject = "owner-subject",
     Access = access,
   };
+
+  private static GitHubConnection Connection(TestClock clock, string suffix) => new(71, "same-source-user",
+      new GitHubTokens(suffix + "-access-test", suffix + "-refresh-test", clock.GetUtcNow().AddHours(1), clock.GetUtcNow().AddHours(4)),
+      clock.GetUtcNow());
 }
