@@ -26,7 +26,9 @@ This is the documentation increment from PR #153, regrouped without expanding sc
 ## 4. Integrated documentation verification
 
 - [x] 4.1 Add R1–R9 receipt fields and AC-1–AC-8 traceability, then manually review links, source accuracy, developer limitations and prose; verify no live acceptance is claimed.
-- [ ] 4.2 Run policy dependency installation, container verification and strict implementation-plan check plus Markdown/OpenSpec/citation checks; record completed exit statuses and evidence, marking this task done only if required checks pass.
+- [x] 4.2 Run policy dependency installation, container verification and strict implementation-plan check plus Markdown/OpenSpec/citation checks; record completed exit statuses and evidence, marking this task done only if required checks pass.
+
+Container verification is supported by the [owner's exact-head receipt](https://github.com/juangcarmona/lighthouse-control-center/pull/195#issuecomment-6865640781) for `bb4738d4b712a4c2dc3ff279ff6cd9854ca74711`: `npm ci` followed by `npm run verify:container`, exit 0. The owner reports 106 Node, 22 security and 120 browser tests, strict OpenSpec, 279 valid citations, all 12 architecture sections, and .NET build/tests. Per that later feedback, the worker did not repeat container verification for this head; it reran policy installation and the documentation/plan checks with terminal receipts retained in the workflow evidence. This verifies the documentation increment only, not an external installation, deployment or #58 acceptance. The earlier browser timeout remains a failed historical attempt.
 
 ## Workflow follow-up
 
