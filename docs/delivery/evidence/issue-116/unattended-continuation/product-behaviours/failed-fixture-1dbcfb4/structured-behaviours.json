@@ -1,0 +1,726 @@
+{
+  "revision": "1dbcfb4873915b839f4f8b84ac8bca126fd69252",
+  "runId": "2026-11-09T23:17:42.139Z",
+  "suiteStatus": "failed",
+  "evidenceKind": "fixture",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productAcceptance": "Draft examples; execution does not approve the Product Change.",
+  "runProvenance": "The revision identifies HEAD; uncommitted harness changes, if present, are not attested by this field.",
+  "results": [
+    {
+      "testId": " /  / attention.spec.mjs / inbox label removal and failed refresh preserve uncertainty; denial and account switch clear private history",
+      "outcome": "passed",
+      "durationMs": 500,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNRESOLVED-INTERVENTION",
+          "hash": "sha256:4a7a44a8995fac99b68a3fa3cc1a73afbd6ca2ae7e846e5da3180ba11ce5061c",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed intervention is pending",
+            "A submitted response has no confirmed source resolution"
+          ],
+          "when": "The operator refreshes the intervention inbox",
+          "then": [
+            "The view does not claim the intervention resolved",
+            "The uncertain source outcome remains explained"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / attention.spec.mjs / verified intervention 1280: inspect on demand and reconcile explicit Continue",
+      "outcome": "passed",
+      "durationMs": 2024,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-EXPLICIT-QUESTION-CONTINUATION",
+          "hash": "sha256:f76dc06ca165982d3bcfa59540940033aec80721a9796fbd5c9ca86ea4445cbd",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed pending question exists",
+            "The repository supports continuation and the acting user is authorized"
+          ],
+          "when": "The operator inspects the question",
+          "then": [
+            "The actual source question is readable",
+            "Reply-and-continue is identified separately from an ordinary comment",
+            "The intended continuation effect is explained before confirmation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        },
+        {
+          "id": "SB-UNRESOLVED-INTERVENTION",
+          "hash": "sha256:4a7a44a8995fac99b68a3fa3cc1a73afbd6ca2ae7e846e5da3180ba11ce5061c",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed intervention is pending",
+            "A submitted response has no confirmed source resolution"
+          ],
+          "when": "The operator refreshes the intervention inbox",
+          "then": [
+            "The view does not claim the intervention resolved",
+            "The uncertain source outcome remains explained"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / attention.spec.mjs / verified intervention 390: inspect on demand and reconcile explicit Continue",
+      "outcome": "passed",
+      "durationMs": 1926,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-EXPLICIT-QUESTION-CONTINUATION",
+          "hash": "sha256:f76dc06ca165982d3bcfa59540940033aec80721a9796fbd5c9ca86ea4445cbd",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed pending question exists",
+            "The repository supports continuation and the acting user is authorized"
+          ],
+          "when": "The operator inspects the question",
+          "then": [
+            "The actual source question is readable",
+            "Reply-and-continue is identified separately from an ordinary comment",
+            "The intended continuation effect is explained before confirmation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        },
+        {
+          "id": "SB-UNRESOLVED-INTERVENTION",
+          "hash": "sha256:4a7a44a8995fac99b68a3fa3cc1a73afbd6ca2ae7e846e5da3180ba11ce5061c",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed intervention is pending",
+            "A submitted response has no confirmed source resolution"
+          ],
+          "when": "The operator refreshes the intervention inbox",
+          "then": [
+            "The view does not claim the intervention resolved",
+            "The uncertain source outcome remains explained"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / attention.spec.mjs / a late verified question cannot repopulate an inbox after its acting account changed",
+      "outcome": "passed",
+      "durationMs": 377,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNRESOLVED-INTERVENTION",
+          "hash": "sha256:4a7a44a8995fac99b68a3fa3cc1a73afbd6ca2ae7e846e5da3180ba11ce5061c",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed intervention is pending",
+            "A submitted response has no confirmed source resolution"
+          ],
+          "when": "The operator refreshes the intervention inbox",
+          "then": [
+            "The view does not claim the intervention resolved",
+            "The uncertain source outcome remains explained"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / factory.spec.mjs / factory 1280: list board filters evidence paging and keyboard",
+      "outcome": "passed",
+      "durationMs": 1915,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-FIND-REPOSITORY-ISSUE",
+          "hash": "sha256:df90c3585759330811c3f4361b7248b3e9799127cdf6dda6b5221daf93207026",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator can read a configured repository",
+            "An ordinary issue exists in that repository"
+          ],
+          "when": "The operator looks up that issue by its number",
+          "then": [
+            "The matching issue is reachable with its repository and issue identity",
+            "No workflow or issue transition is requested by navigation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        },
+        {
+          "id": "SB-PARTIAL-REPOSITORY-COLLECTION",
+          "hash": "sha256:1001434f5aa0273bdf64e56d79a9271fc430188de9f27b2f2b7722f9e3d0948e",
+          "acceptance": "draft-overlay",
+          "given": [
+            "Only part of a repository issue collection is available"
+          ],
+          "when": "The operator opens its issue list",
+          "then": [
+            "The collection identifies its incomplete scope",
+            "Missing records are not presented as an empty repository"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / factory.spec.mjs / factory 390: list board filters evidence paging and keyboard",
+      "outcome": "passed",
+      "durationMs": 1946,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-FIND-REPOSITORY-ISSUE",
+          "hash": "sha256:df90c3585759330811c3f4361b7248b3e9799127cdf6dda6b5221daf93207026",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator can read a configured repository",
+            "An ordinary issue exists in that repository"
+          ],
+          "when": "The operator looks up that issue by its number",
+          "then": [
+            "The matching issue is reachable with its repository and issue identity",
+            "No workflow or issue transition is requested by navigation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        },
+        {
+          "id": "SB-PARTIAL-REPOSITORY-COLLECTION",
+          "hash": "sha256:1001434f5aa0273bdf64e56d79a9271fc430188de9f27b2f2b7722f9e3d0948e",
+          "acceptance": "draft-overlay",
+          "given": [
+            "Only part of a repository issue collection is available"
+          ],
+          "when": "The operator opens its issue list",
+          "then": [
+            "The collection identifies its incomplete scope",
+            "Missing records are not presented as an empty repository"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / factory.spec.mjs / global issue list finds uncollected work by number and title, preserving list state",
+      "outcome": "passed",
+      "durationMs": 790,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-FIND-REPOSITORY-ISSUE",
+          "hash": "sha256:df90c3585759330811c3f4361b7248b3e9799127cdf6dda6b5221daf93207026",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator can read a configured repository",
+            "An ordinary issue exists in that repository"
+          ],
+          "when": "The operator looks up that issue by its number",
+          "then": [
+            "The matching issue is reachable with its repository and issue identity",
+            "No workflow or issue transition is requested by navigation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / factory.spec.mjs / canonical repository inventory opens a compact scoped issue list with semantic state badges",
+      "outcome": "passed",
+      "durationMs": 1954,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-FIND-REPOSITORY-ISSUE",
+          "hash": "sha256:df90c3585759330811c3f4361b7248b3e9799127cdf6dda6b5221daf93207026",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator can read a configured repository",
+            "An ordinary issue exists in that repository"
+          ],
+          "when": "The operator looks up that issue by its number",
+          "then": [
+            "The matching issue is reachable with its repository and issue identity",
+            "No workflow or issue transition is requested by navigation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / factory.spec.mjs / transient failure retains stale times while denied and replacement scopes remove old rows",
+      "outcome": "passed",
+      "durationMs": 500,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-PARTIAL-REPOSITORY-COLLECTION",
+          "hash": "sha256:1001434f5aa0273bdf64e56d79a9271fc430188de9f27b2f2b7722f9e3d0948e",
+          "acceptance": "draft-overlay",
+          "given": [
+            "Only part of a repository issue collection is available"
+          ],
+          "when": "The operator opens its issue list",
+          "then": [
+            "The collection identifies its incomplete scope",
+            "Missing records are not presented as an empty repository"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / issue context 1280: paginated, inert Markdown, blocked result, keyboard and accessibility",
+      "outcome": "passed",
+      "durationMs": 3452,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-READ-ISSUE-CONTEXT",
+          "hash": "sha256:c854e201602f4e72b8e14fc5a6f29e710562795a9304e9110f7471477fbcb7e8",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator has current read access to an ordinary issue",
+            "The issue has a description and conversation"
+          ],
+          "when": "The operator opens the issue",
+          "then": [
+            "Lighthouse Control Center displays its description and available conversation",
+            "The repository and issue source identities remain inspectable",
+            "The view explains its observation time and collection bounds"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / issue context 390: paginated, inert Markdown, blocked result, keyboard and accessibility",
+      "outcome": "passed",
+      "durationMs": 3318,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-READ-ISSUE-CONTEXT",
+          "hash": "sha256:c854e201602f4e72b8e14fc5a6f29e710562795a9304e9110f7471477fbcb7e8",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator has current read access to an ordinary issue",
+            "The issue has a description and conversation"
+          ],
+          "when": "The operator opens the issue",
+          "then": [
+            "Lighthouse Control Center displays its description and available conversation",
+            "The repository and issue source identities remain inspectable",
+            "The view explains its observation time and collection bounds"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / shared source question 1280: safe text, separate eligibility and no submission",
+      "outcome": "passed",
+      "durationMs": 3424,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNAVAILABLE-ISSUE-ACTION",
+          "hash": "sha256:486de794faee8e8c603b72d6dc87114fb0da453602e889097ec4f414ed155579",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator can read an issue",
+            "A required source permission is unavailable"
+          ],
+          "when": "The operator inspects its actions",
+          "then": [
+            "The dependent action cannot be submitted",
+            "A specific explanation identifies the missing authority",
+            "Read access is not represented as action authority"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / shared source question 390: safe text, separate eligibility and no submission",
+      "outcome": "passed",
+      "durationMs": 3195,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNAVAILABLE-ISSUE-ACTION",
+          "hash": "sha256:486de794faee8e8c603b72d6dc87114fb0da453602e889097ec4f414ed155579",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator can read an issue",
+            "A required source permission is unavailable"
+          ],
+          "when": "The operator inspects its actions",
+          "then": [
+            "The dependent action cannot be submitted",
+            "A specific explanation identifies the missing authority",
+            "Read access is not represented as action authority"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / a failed current-revision read exposes the bounded diagnostic and missing source grants",
+      "outcome": "passed",
+      "durationMs": 524,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNAVAILABLE-ISSUE-ACTION",
+          "hash": "sha256:486de794faee8e8c603b72d6dc87114fb0da453602e889097ec4f414ed155579",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator can read an issue",
+            "A required source permission is unavailable"
+          ],
+          "when": "The operator inspects its actions",
+          "then": [
+            "The dependent action cannot be submitted",
+            "A specific explanation identifies the missing authority",
+            "Read access is not represented as action authority"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / comment denial explains the source permission and links to account recovery without blocking a draft",
+      "outcome": "passed",
+      "durationMs": 490,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNAVAILABLE-ISSUE-ACTION",
+          "hash": "sha256:486de794faee8e8c603b72d6dc87114fb0da453602e889097ec4f414ed155579",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator can read an issue",
+            "A required source permission is unavailable"
+          ],
+          "when": "The operator inspects its actions",
+          "then": [
+            "The dependent action cannot be submitted",
+            "A specific explanation identifies the missing authority",
+            "Read access is not represented as action authority"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / timestamps and source identifiers stay inside collapsed provenance details",
+      "outcome": "passed",
+      "durationMs": 417,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-READ-ISSUE-CONTEXT",
+          "hash": "sha256:c854e201602f4e72b8e14fc5a6f29e710562795a9304e9110f7471477fbcb7e8",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator has current read access to an ordinary issue",
+            "The issue has a description and conversation"
+          ],
+          "when": "The operator opens the issue",
+          "then": [
+            "Lighthouse Control Center displays its description and available conversation",
+            "The repository and issue source identities remain inspectable",
+            "The view explains its observation time and collection bounds"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / an eligible Continue answer explains its enabled field when ordinary commenting is denied",
+      "outcome": "passed",
+      "durationMs": 438,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-INTERVENTION-INBOX",
+          "digest": "sha256:b60e605685fc15157ca76a876d7ee88f154b664b4cec0ec5add860c2cdb161f8"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-EXPLICIT-QUESTION-CONTINUATION",
+          "hash": "sha256:f76dc06ca165982d3bcfa59540940033aec80721a9796fbd5c9ca86ea4445cbd",
+          "acceptance": "draft-overlay",
+          "given": [
+            "A source-backed pending question exists",
+            "The repository supports continuation and the acting user is authorized"
+          ],
+          "when": "The operator inspects the question",
+          "then": [
+            "The actual source question is readable",
+            "Reply-and-continue is identified separately from an ordinary comment",
+            "The intended continuation effect is explained before confirmation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / failed prepare displays its reason and does not automatically retry or submit",
+      "outcome": "passed",
+      "durationMs": 464,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-UNCERTAIN-ISSUE-COMMENT",
+          "hash": "sha256:450d6815d8a2438de45d51b20244816cf5ad13e22a3fe5c9351a7b55f51ef2f6",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator confirmed an ordinary comment",
+            "Its source publication response was lost"
+          ],
+          "when": "The operator requests reconciliation",
+          "then": [
+            "The original comment intent remains identified",
+            "Lighthouse Control Center does not silently post another comment",
+            "The outcome remains uncertain until source evidence confirms it"
+          ],
+          "limitations": "Fixture-backed loss injection and live recovery contribute different evidence. The live case requires an exact existing comment ID and performs no prepare or submit; the separate failed-send run establishes the lost response. Execution does not accept this draft example."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / existing action explains recovery, keeps the new draft and requires explicit confirmation",
+      "outcome": "passed",
+      "durationMs": 1039,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-ORDINARY-ISSUE-COMMENT",
+          "hash": "sha256:1fff54e5dee8a79cc38ea76e617ebda26dd05891a7337a2a25b2488060e47289",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The acting GitHub user has current issue comment authority",
+            "The repository supports ordinary comments distinct from continuation"
+          ],
+          "when": "The operator explicitly confirms an ordinary comment",
+          "then": [
+            "The conversation contains the confirmed GitHub comment identity",
+            "The comment is attributed to the verified GitHub user",
+            "The action does not request continuation"
+          ],
+          "limitations": "Fixture confirmation does not establish a GitHub App-user effect. The existing-action case covers preserved draft/original intent and explicit recovery, without submitting a comment. Live confirmation requires an explicit selected issue and source write opt-in."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / explicit source action 1280: confirmation, lost response and recovery without another send",
+      "outcome": "passed",
+      "durationMs": 4090,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-ORDINARY-ISSUE-COMMENT",
+          "hash": "sha256:1fff54e5dee8a79cc38ea76e617ebda26dd05891a7337a2a25b2488060e47289",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The acting GitHub user has current issue comment authority",
+            "The repository supports ordinary comments distinct from continuation"
+          ],
+          "when": "The operator explicitly confirms an ordinary comment",
+          "then": [
+            "The conversation contains the confirmed GitHub comment identity",
+            "The comment is attributed to the verified GitHub user",
+            "The action does not request continuation"
+          ],
+          "limitations": "Fixture confirmation does not establish a GitHub App-user effect. The existing-action case covers preserved draft/original intent and explicit recovery, without submitting a comment. Live confirmation requires an explicit selected issue and source write opt-in."
+        },
+        {
+          "id": "SB-UNCERTAIN-ISSUE-COMMENT",
+          "hash": "sha256:450d6815d8a2438de45d51b20244816cf5ad13e22a3fe5c9351a7b55f51ef2f6",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator confirmed an ordinary comment",
+            "Its source publication response was lost"
+          ],
+          "when": "The operator requests reconciliation",
+          "then": [
+            "The original comment intent remains identified",
+            "Lighthouse Control Center does not silently post another comment",
+            "The outcome remains uncertain until source evidence confirms it"
+          ],
+          "limitations": "Fixture-backed loss injection and live recovery contribute different evidence. The live case requires an exact existing comment ID and performs no prepare or submit; the separate failed-send run establishes the lost response. Execution does not accept this draft example."
+        }
+      ]
+    },
+    {
+      "testId": " /  / issue.spec.mjs / explicit source action 390: confirmation, lost response and recovery without another send",
+      "outcome": "passed",
+      "durationMs": 4417,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-ORDINARY-ISSUE-COMMENT",
+          "hash": "sha256:1fff54e5dee8a79cc38ea76e617ebda26dd05891a7337a2a25b2488060e47289",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The acting GitHub user has current issue comment authority",
+            "The repository supports ordinary comments distinct from continuation"
+          ],
+          "when": "The operator explicitly confirms an ordinary comment",
+          "then": [
+            "The conversation contains the confirmed GitHub comment identity",
+            "The comment is attributed to the verified GitHub user",
+            "The action does not request continuation"
+          ],
+          "limitations": "Fixture confirmation does not establish a GitHub App-user effect. The existing-action case covers preserved draft/original intent and explicit recovery, without submitting a comment. Live confirmation requires an explicit selected issue and source write opt-in."
+        },
+        {
+          "id": "SB-UNCERTAIN-ISSUE-COMMENT",
+          "hash": "sha256:450d6815d8a2438de45d51b20244816cf5ad13e22a3fe5c9351a7b55f51ef2f6",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The operator confirmed an ordinary comment",
+            "Its source publication response was lost"
+          ],
+          "when": "The operator requests reconciliation",
+          "then": [
+            "The original comment intent remains identified",
+            "Lighthouse Control Center does not silently post another comment",
+            "The outcome remains uncertain until source evidence confirms it"
+          ],
+          "limitations": "Fixture-backed loss injection and live recovery contribute different evidence. The live case requires an exact existing comment ID and performs no prepare or submit; the separate failed-send run establishes the lost response. Execution does not accept this draft example."
+        }
+      ]
+    }
+  ],
+  "uncoveredExamples": [
+    "SB-ANONYMOUS-WORKSPACE-DENIAL"
+  ]
+}

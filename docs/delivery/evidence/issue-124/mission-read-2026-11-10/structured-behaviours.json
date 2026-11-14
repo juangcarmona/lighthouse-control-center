@@ -1,0 +1,92 @@
+{
+  "revision": "8c5cc49bd1ef9a5087caa0553d89a497833dd845",
+  "runId": "2026-11-10T18:29:44.562Z",
+  "suiteStatus": "passed",
+  "evidenceKind": "live",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productAcceptance": "Draft examples; execution does not approve the Product Change.",
+  "runProvenance": "The revision identifies HEAD; uncommitted harness changes, if present, are not attested by this field.",
+  "results": [
+    {
+      "testId": " /  / product-behaviours.spec.mjs / live repository discovery preserves source identity and collection coverage",
+      "outcome": "passed",
+      "durationMs": 12306,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-FACTORY-DISCOVERY",
+          "digest": "sha256:4ebd9c84897af61f0fb570eaf7a91e17a230b13192f37d470f810cd1984e94f9"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-FIND-REPOSITORY-ISSUE",
+          "hash": "sha256:df90c3585759330811c3f4361b7248b3e9799127cdf6dda6b5221daf93207026",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator can read a configured repository",
+            "An ordinary issue exists in that repository"
+          ],
+          "when": "The operator looks up that issue by its number",
+          "then": [
+            "The matching issue is reachable with its repository and issue identity",
+            "No workflow or issue transition is requested by navigation"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        },
+        {
+          "id": "SB-PARTIAL-REPOSITORY-COLLECTION",
+          "hash": "sha256:1001434f5aa0273bdf64e56d79a9271fc430188de9f27b2f2b7722f9e3d0948e",
+          "acceptance": "draft-overlay",
+          "given": [
+            "Only part of a repository issue collection is available"
+          ],
+          "when": "The operator opens its issue list",
+          "then": [
+            "The collection identifies its incomplete scope",
+            "Missing records are not presented as an empty repository"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    },
+    {
+      "testId": " /  / product-behaviours.spec.mjs / live issue context retains actual description conversation and source provenance",
+      "outcome": "passed",
+      "durationMs": 20779,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONTEXT",
+          "digest": "sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-READ-ISSUE-CONTEXT",
+          "hash": "sha256:c854e201602f4e72b8e14fc5a6f29e710562795a9304e9110f7471477fbcb7e8",
+          "acceptance": "draft-overlay",
+          "given": [
+            "An admitted operator has current read access to an ordinary issue",
+            "The issue has a description and conversation"
+          ],
+          "when": "The operator opens the issue",
+          "then": [
+            "Lighthouse Control Center displays its description and available conversation",
+            "The repository and issue source identities remain inspectable",
+            "The view explains its observation time and collection bounds"
+          ],
+          "limitations": "Fixture-backed checks do not establish live source/provider acceptance. A passing test contributes only its explicit assertions; conjunctive examples may require additional evidence."
+        }
+      ]
+    }
+  ],
+  "uncoveredExamples": [
+    "SB-ANONYMOUS-WORKSPACE-DENIAL",
+    "SB-EXPLICIT-QUESTION-CONTINUATION",
+    "SB-ORDINARY-ISSUE-COMMENT",
+    "SB-UNAVAILABLE-ISSUE-ACTION",
+    "SB-UNCERTAIN-ISSUE-COMMENT",
+    "SB-UNRESOLVED-INTERVENTION"
+  ]
+}

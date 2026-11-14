@@ -1,0 +1,33 @@
+{
+  "kind": "additional-boundary-evidence",
+  "issue": 57,
+  "head": "826278ce95504e7306e3f474cbae0e8de039cc7a",
+  "observedAt": "2026-11-08T06:37:39.638474+00:00",
+  "applicationCodeUnchangedFrom": "36246f8c6362e16aabaed2a390b5fdd0cd0be373",
+  "localVerification": {
+    "command": "DOTNET_PROCESSOR_COUNT=4 npm run verify",
+    "result": "passed",
+    "node": 60,
+    "web": 154,
+    "runtime": 38,
+    "browser": 41,
+    "productCitations": 158,
+    "arc42Sections": 12
+  },
+  "focusedLocalReaderCases": 21,
+  "coverage": "bounds-coverage.md",
+  "fixtureLimits": [
+    "512 MiB storage guard uses a stat fixture on a valid actual pack, not a physical large-pack acceptance claim",
+    "Ownership and unsupported platform use explicit runtime identity/platform fixtures, not host credential changes or Windows execution"
+  ],
+  "task1_1": "independent final audit pending; author has not marked it complete",
+  "remainingGates": [
+    "Stacked #50/#52 acceptance and integration",
+    "Actual intended connected App-user acceptance; existing App runner administration-read is not granted",
+    "Independent final eleven-dimension Done review and task reconciliation",
+    "Official spec integration, protected merge and retrospective"
+  ],
+  "newManualModelCall": false,
+  "nativeQualificationPreserved": "https://github.com/juangcarmona/sofa/actions/runs/42452259718",
+  "fullDone": false
+}

@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-11-08T09:06:52.402527+00:00",
+  "scope": "Combined development candidate for source-label inbox plus selected common question/actions; not full #51 Done",
+  "dependencies": {
+    "issue50": "285f9391633660991bd03dd512d5d9775d29ee52",
+    "issue48": "f8e3054092c45827e944c77e7829718934367baf",
+    "issue52": "3870fea62b19d2325390fd3c7efc0d110dfbc5d8",
+    "issue57": "74325167576113f0115b13c9ecdcb9b38b3ab0dc",
+    "defaultSourceContract": "https://github.com/juangcarmona/sofa/pull/115"
+  },
+  "fullVerify": {
+    "command": "DOTNET_PROCESSOR_COUNT=4 npm run verify",
+    "result": "passed",
+    "node": 77,
+    "web": 244,
+    "runtime": 38,
+    "browser": 53,
+    "currentCitations": 198
+  },
+  "focusedBrowser": {
+    "result": "3 passed",
+    "scope": "on-demand current question, explicit prepare/confirm/reconcile, no resolution on submitted receipt, source-only resolution, multiple contexts with unique accessible landmarks, inert text, keyboard,390/1280, late account change"
+  },
+  "mergeResolution": "Preserved both runtime administration and common control authority fields/checks; unioned module routes/assets and all anonymous boundary assertions. No policy/model/grant was changed.",
+  "knownLimits": [
+    "Source contract PR115 must merge before actual default-branch eligibility",
+    "Owner reports App permissions updated; current connected App-user authority and positive source effects remain unproven",
+    "Independent combined candidate review and hosted CI remain required",
+    "The active preview still serves previous read-only candidate",
+    "Full #50/#48/#51/#52/#57 acceptance, integration, retrospective and production gates remain separate"
+  ]
+}

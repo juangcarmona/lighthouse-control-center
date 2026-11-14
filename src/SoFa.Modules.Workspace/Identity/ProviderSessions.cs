@@ -122,6 +122,7 @@ internal sealed class ProviderSessions(OwnerSessions sessions, IdentityProfile p
                 });
         record.ProviderValidatedAt = clock.GetUtcNow();
         record.ProviderRetryAfter = default;
+        sessions.Persist(record);
       }
       return ProviderAuthority.Current;
     }

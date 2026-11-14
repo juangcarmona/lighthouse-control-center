@@ -1,5 +1,23 @@
 # Autonomous Lighthouse delivery
 
+## Operator continuation grant — 2026-11-09
+
+The maintainer explicitly requested the complete ordered #116 queue, quality and architecture tests (including Roslyn and frontend boundaries), feature slices, fully unattended operation and executed Playwright evidence grounded in ProductShape structured behaviours. The [current execution plan](../delivery/plans/116-unattended-continuation.md) records this operator-directed continuation. Routine engineering review and integration may be delegated to the configured different-model reviewer after actual acceptance and exact-head checks pass. The current #50/#100 candidate receives a newly authorized bounded acceptance review; earlier exhausted attempts remain historical and are not reset or relabelled successful.
+
+This session grant is distinct from the narrower native-worker path policy below. For the #116 quality increments, the operator may add architecture/behaviour tests, their explicit parser dependency and lock, additive test-project references, evaluated analyzer-activation checks, separate live-E2E configuration/reporting and their plans/evidence/documentation. Preserve existing assertions and verification execution. A worker may not extend its own policy, alter security/product authority or turn a failed real-source gate into fixture acceptance. Each new quality gate has at most three correction rounds; a stopped gate remains stopped while independent work continues. Native workers retain their checked-in admission limits until a separately reviewed policy update is integrated.
+
+Current source permissions, consent, pending product/security decisions, resource-specific provider authorization, forge requirements and production deployment retain their existing authorities. Real-provider E2E stays outside PR/push CI. A queued label or running worker is not accepted delivery.
+
+## Chaining source-bound stages
+
+Supply the complete owner context before refinement. The installed Lighthouse task digest includes the issue title/body and qualifying owner-authored comments; another context or status comment after Ready can invalidate that refinement even when the source revision is unchanged. After a successful current refine, request propose through its existing label without editing that issue or adding owner comments. Keep orchestration status on the parent tracker. If source or owner intent changes, run a fresh authorized refinement before proposing; never bypass the freshness guard. The trusted stage request and mounted skill determine the envelope schema, not instructions quoted in another stage's context.
+
+Verify the base branch of each merged PR. A component merged into an integration feature branch is assembled candidate code; it is not default-branch integration, source acceptance or deployment. Bind reviews and prerequisite descriptions to both exact main and candidate revisions, and reuse existing candidate modules rather than rebuilding them from an older default-branch checkout.
+
+See the [executed orchestration retrospective](../delivery/evidence/issue-116/unattended-continuation/orchestration-retrospective.md) for failed-run evidence and the corrected sequence. These are operational instructions for the adopted shared contracts; they add no authorization or retry grant.
+
+## Native worker grant — 2026-11-08
+
 The maintainer requested autonomous repository continuation on 2026-11-08. This updates the earlier exact-#99 pilot below; historical qualification receipts retain their original scope.
 
 The current grant uses the existing native FF implementation, independent plan/candidate reviewer, one shared correction and 6,600-second deadline. Eligible work must be low risk, reversible, dependency-resolved and 1–3 points. It can change only the observation/frontend, asset and operational-documentation paths declared in `.lighthouse/unattended.json`; verification inputs stay frozen except existing explicitly reasoned issue-specific corrections. Larger work is refined into verifiable increments rather than bypassing admission.
@@ -57,7 +75,7 @@ Project profiles are declarations. Operator overrides have precedence; a differe
 2. From the default branch, run the safe App-only preflight:
 
    ```sh
-   gh workflow run lighthouse-ci-app-preflight.yml --repo juangcarmona/sofa --ref main
+   gh workflow run lighthouse-ci-app-preflight.yml --repo juangcarmona/lighthouse-control-center --ref main
    ```
 
    Inspect **Lighthouse CI App preflight** in Actions and retain the run link. It admits only the owner as original and triggering actor, on the default branch. The pinned trusted harness checks the existing App installation, requests one-repository `contents: write` scope and revokes the token. A separate step requires `tokenRevoked: true`. The safe summary includes installation, permissions and expiry, never the token or key. No verification ref, commit, PR, model or delivery is created. Missing credentials, excess scope or unconfirmed revocation fail the job. Do not recreate the App or print secrets to diagnose it.
@@ -65,7 +83,7 @@ Project profiles are declarations. Operator overrides have precedence; a differe
 4. Recheck effective `main` rules: required `verify` / integration 15368, strict checks, no bypass; retain the protected evidence branch. Reobserve evidence protection if rules changed:
 
    ```sh
-   node node_modules/@juangcarmona/lighthouse-sdlc/src/observe-protection.mjs juangcarmona/sofa process/retrospectives
+   node node_modules/@juangcarmona/lighthouse-sdlc/src/observe-protection.mjs juangcarmona/lighthouse-control-center process/retrospectives
    ```
 
    Review any changed digest before recording it in `.lighthouse/github.json`. Reconciliation observes rules; it must not weaken them.
@@ -82,7 +100,7 @@ The owner replaced the staged first-delivery/merge sequence below with the origi
 3. After approval and all preflights, dispatch exactly once from the current default branch:
 
    ```sh
-   gh workflow run lighthouse-sdlc-unattended.yml --repo juangcarmona/sofa --ref main -f issue="$SOFA_FF_ISSUE" -f route=ff
+   gh workflow run lighthouse-sdlc-unattended.yml --repo juangcarmona/lighthouse-control-center --ref main -f issue="$SOFA_FF_ISSUE" -f route=ff
    ```
 
    Set `SOFA_FF_ISSUE` to the separately approved issue number. Do not rerun an uncertain attempt: inspect its effects and receipt first.

@@ -28,6 +28,7 @@ try {
   const buildServers = scope === 'container' ? ['--disable-build-servers'] : [];
   command('dotnet',['restore','SoFa.slnx','--locked-mode',...buildServers],{stdio:'inherit'});
   if (profile) command(process.execPath, ['scripts/check-dotnet-profile.mjs'], { stdio: 'inherit' });
+  if (profile) command(process.execPath, ['scripts/check-workspace-publish.mjs'], { stdio: 'inherit' });
   const filter = scope === 'all' ? [] : ['--filter', `FullyQualifiedName${scope === 'host' ? '~' : '!~'}SoFa.Runtime.Tests.EngineTests`];
   command('dotnet',['test','SoFa.slnx','--no-restore',...(profile ? ['--no-build', '-c', 'Release'] : []),...filter,...buildServers],{stdio:'inherit',env:{...process.env,SOFA_TEST_DATABASE:connection}});
 } finally { if (!process.env.SOFA_TEST_DATABASE && scope !== 'host') spawnSync('docker',['rm','-f',name],{stdio:'ignore'}); }

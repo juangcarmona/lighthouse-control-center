@@ -1,0 +1,73 @@
+{
+  "issue": 52,
+  "verdict": "ready",
+  "source": "Current issue52 and repository Definition of Ready; stale issue wording about product proposal is reconciled against accepted PR82 baseline.",
+  "dimensions": [
+    {
+      "name": "Title",
+      "status": "met",
+      "evidence": "Find configured repository work through search/list/board."
+    },
+    {
+      "name": "Description",
+      "status": "met",
+      "evidence": "Issue52 describes ordinary issue discovery and source-backed project context."
+    },
+    {
+      "name": "Actor / stakeholder",
+      "status": "met",
+      "evidence": "Personal factory owner."
+    },
+    {
+      "name": "Priority",
+      "status": "not-applicable",
+      "evidence": "No formal priority required by this project."
+    },
+    {
+      "name": "Dependencies",
+      "status": "met",
+      "evidence": "49 identity and50 shared issue reader; no command control needed."
+    },
+    {
+      "name": "Acceptance criteria",
+      "status": "met",
+      "evidence": "Six observable issue criteria, preserved by proposal/spec scenarios."
+    },
+    {
+      "name": "Scope",
+      "status": "met",
+      "evidence": "Read-only configured repositories; no ideas, commands, metrics, scheduling or drag writes."
+    },
+    {
+      "name": "Product rules",
+      "status": "met",
+      "evidence": "Accepted CHG-AUTHENTICATED-OPERATIONS-001 and cited canonical nodes."
+    },
+    {
+      "name": "Affected behaviour",
+      "status": "met",
+      "evidence": "Extend current attention-only navigation with ordinary issues; preserve existing overview."
+    },
+    {
+      "name": "Quality expectations",
+      "status": "met",
+      "evidence": "Protected source reads, bounded collection, stale/unknown separation, keyboard and390px layout."
+    },
+    {
+      "name": "Test impact",
+      "status": "not-applicable",
+      "evidence": "Not required atReady; explicit test plan is included in the proposal design."
+    },
+    {
+      "name": "Existing decisions",
+      "status": "met",
+      "evidence": "ADR6/7/9 and established workspace/source guard are consumed; no new deployment or persistence decision."
+    },
+    {
+      "name": "Unknowns / risks",
+      "status": "met",
+      "evidence": "Bounded title search covers collected rows only; limits and unknown associated evidence are explicit. Actual source acceptance remains a delivery check."
+    }
+  ],
+  "ownerAuthorization": "Explicit delivery/dependencies/necessary merges in this conversation; does not waive independent review or protected checks."
+}

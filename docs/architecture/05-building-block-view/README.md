@@ -9,7 +9,7 @@ description: The static decomposition of the system into building blocks.
 | Building block | Responsibility | Source |
 | --- | --- | --- |
 | Web entrypoint | HTTPS application, safe hosting/logging and module composition | [SoFa.Web](../../../src/SoFa.Web/Program.cs) |
-| Workspace module | Protected account/observation routes, owner admission, process-local sessions and explicit GitHub connection | [Module entrypoint](../../../src/SoFa.Modules.Workspace/WorkspaceModule.cs) |
+| Workspace module | Protected account/observation routes, owner admission, bounded sessions, protected credential persistence and separately verified GitHub connection | [Module entrypoint](../../../src/SoFa.Modules.Workspace/WorkspaceModule.cs) |
 | Source query adapters | Effective user/app permission checks, bounded/coalesced observations and account-status projection | [Source adapters](../../../src/SoFa.Modules.Workspace/Source/) |
 | Browser presentation | Source-keyed observations, account states and removal of data after authority loss | [Browser assets](../../../src/web/public/) |
 | Development composition | Workspace plus isolated identity container; external mode omits the provider | [AppHost composition](../../../src/SoFa.AppHost/WorkspaceComposition.cs) |
@@ -19,9 +19,21 @@ The workspace module is an application library, not an independently deployed se
 
 <!-- pdac:cite id="BC-EXECUTION" digest="sha256:a12712bab0b780d1a2132400bed82c4cca7c3ceeb187911dde55366d6581821e" -->
 
-## Target blocks not yet implemented
+## Issue reader, discovery and remaining target blocks
 
-Full paginated issue/conversation context, source capability/receipt adapters, a durable application command journal and signal projections remain target work. A future receipt reconciler observes exact source acknowledgments and does not schedule or automatically resubmit work. [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md) owns the proposed durability decision.
+The issue reader implements bounded conversation pages and optional source-associated stage/PR/check summaries. Its [query](../../../src/SoFa.Modules.Workspace/Source/GetIssueContextHandler.cs), [evidence adapter](../../../src/SoFa.Modules.Workspace/Source/IssueEvidence.cs) and [offline validator](../../../src/SoFa.Modules.Workspace/Source/SourceContract.cs) are implementation evidence. The #48 candidate adds a [shared source reader](../../../src/SoFa.Modules.Workspace/Source/GetIssueControlsHandler.cs) through a fixed tokenless [Node bridge](../../../src/SoFa.Modules.Workspace/Source/SourceControlBridge.cs); credentials and HTTP initiation remain in the .NET adapter. Public SDK 0.22.0 is adopted. Explicit command handlers and the protected SQLite journal implement the single-instance design; actual connected App-user acceptance remains open. Source admission remains owned by Lighthouse. See [ADR-0008](../09-architecture-decisions/0008-source-correlated-issue-commands.md).
+
+<!-- pdac:cite id="FR-ISSUE-CONTEXT" digest="sha256:131544b2398250b3ff601fca471bca8c9f9504876a670809cad21829baff4a73" -->
+
+## Implemented discovery projection
+
+The [factory query](../../../src/SoFa.Modules.Workspace/Source/GetFactoryPageHandler.cs) reuses current repository authority and atomic request admission for fixed metadata and ordinary-issue reads. It returns bounded explicit pages or an exact-number result, connection scope, coverage and separate configured/observed branch facts. The [browser view](../../../src/web/public/factory.js) uses one predicate for list/state-board views and preserves shared issue identities; evidence reads reuse #50. No database, source mutation or new execution component is introduced. Actual connected-user acceptance remains open.
+
+## Implemented runtime inventory adapter
+
+The [runtime queries](../../../src/SoFa.Modules.Workspace/Runtime/) coordinate owner-gated host observations and connected-user repository-runner reads. The [bounded tokenless helper](../../../src/workspace-tools/runtime-inventory.mjs) reads selected registration metadata and committed adoption through a private object view; it creates no execution worker, supervisor or journal. The [browser projection](../../../src/web/public/runtime.js) correlates repository-scoped identities and preserves unknown or conflicting observations. Source/read lifetime and authority belong to [section 08](../08-crosscutting-concepts/README.md); operational configuration belongs to the [runbook](../../runbooks/runtime-inventory.md).
+
+<!-- pdac:cite id="FR-RUNTIME-HEALTH" digest="sha256:f13856de8700ab35a6cca5fd6297e25a07719aa44f55f783d4079988eb535d7e" -->
 
 ## Proposed Control Center components
 

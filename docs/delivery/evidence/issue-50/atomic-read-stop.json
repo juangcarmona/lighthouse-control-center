@@ -1,0 +1,30 @@
+{
+  "scope": "Final read-stop correction and single-page generation binding for issue50.",
+  "prerequisite": "edca373 central SourceRequestGuard starts credential-bearing requests atomically under session invalidation lock, and disconnect/replacement cancels source I/O.",
+  "adapter": "Every source read including signed artifact initiation uses the mandatory guard. Signed assets receive no source credential.",
+  "pageHandoff": "One bounded page per connection; consumed once; same generation/repository/issue/page/snapshot; usable30seconds. Expired unconsumed memory may remain until next read or session cleanup, and is never used as authority.",
+  "regression": {
+    "generationMismatch": {
+      "before": {
+        "failed": 1,
+        "passed": 3
+      },
+      "after": "Current full111 web tests passed"
+    }
+  },
+  "verification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "tests": {
+      "node": 39,
+      "web": 111,
+      "legacyDotnet": 38,
+      "browser": 24
+    },
+    "logSha256": "6f7ed62f5b15dc46641ca368587790e4a36fae617bd7ed41999f81b56d3613df"
+  },
+  "limits": [
+    "Actual connected-user issue/conversation acceptance is not yet established.",
+    "This receipt does not declare Done; independent correction review and current-head hosted CI remain required."
+  ]
+}
