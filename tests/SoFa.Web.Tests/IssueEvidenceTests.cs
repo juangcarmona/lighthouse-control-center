@@ -13,6 +13,60 @@ public sealed class IssueEvidenceTests
   private static readonly string RunIdentity = new('b', 64);
 
   [Fact]
+  public async Task UnvalidatedResultRetainsSourceExecutionTimesWithoutInventingStageAcceptance()
+  {
+    using var fixture = Ready("version");
+    fixture.Handler.Responses["/repos/example/repository/actions/runs/500"] = _ => Json(new
+    {
+      id = 500,
+      run_attempt = 2,
+      status = "completed",
+      conclusion = "skipped",
+      head_sha = Revision,
+      run_started_at = "2026-11-13T09:00:00Z",
+      updated_at = "2026-11-13T10:00:00Z",
+      path = ".github/workflows/lighthouse-sdlc-router.yml",
+      repository = new { full_name = "example/repository" }
+    });
+    var evidence = await fixture.Evidence.Handle(new(new(await fixture.Session(), "example/repository", 7)), CancellationToken.None);
+    var result = Assert.Single(evidence.Reports);
+    Assert.Equal("unavailable", result.Availability);
+    Assert.Null(result.Result);
+    Assert.Equal("skipped", result.ExecutionConclusion);
+    Assert.Equal("2026-11-13T09:00:00Z", result.RunStartedAt);
+    Assert.Equal("2026-11-13T10:00:00Z", result.RunUpdatedAt);
+    Assert.Equal(Revision, result.RunRevision);
+    Assert.Equal(1, evidence.ConversationPage);
+    Assert.NotNull(evidence.IssueId);
+  }
+
+  [Fact]
+  public async Task RelatedPullRetainsCreationAndMergeButDoesNotReadReviewsWithoutGrant()
+  {
+    using var fixture = Ready();
+    fixture.Handler.ReportBody += "\nhttps://github.com/example/repository/pull/13";
+    fixture.Handler.Responses["/repos/example/repository/pulls/13"] = _ => Json(new
+    {
+      number = 13,
+      state = "closed",
+      created_at = "2026-11-12T10:00:00Z",
+      merged_at = "2026-11-13T10:00:00Z",
+      merge_commit_sha = Revision,
+      @base = new { repo = new { full_name = "example/repository" } },
+      head = new { sha = Revision }
+    });
+    fixture.Handler.Responses["/repos/example/repository/commits/" + Revision + "/check-runs"] = _ => Json(new
+    { total_count = 0, check_runs = Array.Empty<object>() });
+    var evidence = await fixture.Evidence.Handle(new(new(await fixture.Session(), "example/repository", 7)), CancellationToken.None);
+    var pull = Assert.Single(evidence.PullRequests!);
+    Assert.Equal("2026-11-12T10:00:00Z", pull.CreatedAt);
+    Assert.Equal("2026-11-13T10:00:00Z", pull.MergedAt);
+    Assert.Equal(Revision, pull.MergeRevision);
+    Assert.Equal("unavailable", pull.ReviewsAvailability);
+    Assert.DoesNotContain(fixture.Handler.Paths, path => path.EndsWith("/reviews", StringComparison.Ordinal));
+  }
+
+  [Fact]
   public async Task SourceAssociatedBlockedProposalRemainsDistinctFromItsSuccessfulWorkflow()
   {
     using var fixture = Ready();
