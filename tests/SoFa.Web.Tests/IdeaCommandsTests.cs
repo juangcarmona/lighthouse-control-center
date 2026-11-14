@@ -50,6 +50,14 @@ public sealed class IdeaCommandsTests
     var draft = await f.Save(session); f.Restart();
     Assert.Equal("Useful idea", Assert.Single(f.Commands.List().Ideas).Title);
     f.Handler.CanWrite = false;
+    var bypass = await f.Commands.Handle(session, new("link", draft.Id, draft.Revision, Number: 7), CancellationToken.None);
+    Assert.Equal("conflict", bypass.Availability);
+    Assert.Equal("draft", Assert.Single(bypass.Ideas).State);
+    Assert.Equal(0, f.Handler.IssueReads);
+    var review = await f.Commands.Handle(session, new("review", draft.Id, draft.Revision), CancellationToken.None);
+    draft = Assert.Single(review.Ideas);
+    Assert.Equal("reviewed", draft.State);
+    Assert.Contains(review.Related!, value => value.Number == 7);
     var linked = await f.Commands.Handle(session, new("link", draft.Id, draft.Revision, Number: 7), CancellationToken.None);
     Assert.Equal("linked", Assert.Single(linked.Ideas).State);
     Assert.Equal(70, Assert.Single(linked.Ideas).Source!.IssueId);
@@ -64,7 +72,10 @@ public sealed class IdeaCommandsTests
   {
     using var f = new Fixture(); var session = await f.Session(); var draft = await f.Save(session);
     f.Handler.CanWrite = false;
-    Assert.Equal("denied", (await f.Commands.Handle(session, new("review", draft.Id, draft.Revision), CancellationToken.None)).Availability);
+    draft = Assert.Single((await f.Commands.Handle(session, new("review", draft.Id, draft.Revision), CancellationToken.None)).Ideas);
+    Assert.Equal("reviewed", draft.State);
+    Assert.Equal("denied", (await f.Commands.Handle(session, new("create", draft.Id, draft.Revision), CancellationToken.None)).Availability);
+    Assert.Empty(f.Handler.Writes);
     f.Handler.CanWrite = true;
     draft = Assert.Single((await f.Commands.Handle(session, new("review", draft.Id, draft.Revision), CancellationToken.None)).Ideas);
     f.Handler.Equivalent = true;
@@ -127,6 +138,7 @@ public sealed class IdeaCommandsTests
     internal bool LoseResponse { get; set; }
     internal bool Equivalent { get; set; }
     internal bool HideCreated { get; set; }
+    internal int IssueReads { get; private set; }
     internal List<string> Writes { get; } = [];
     private string body = "Existing issue";
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -137,7 +149,7 @@ public sealed class IdeaCommandsTests
       {
         id = 70,
         number = 7,
-        title = Equivalent ? " useful   idea " : "Existing issue",
+        title = Equivalent ? " useful   idea " : "Useful idea follow-up",
         body,
         html_url = "https://github.com/example/repository/issues/7",
         user = new { id = 71 }
@@ -151,6 +163,7 @@ public sealed class IdeaCommandsTests
         if (LoseResponse) throw new HttpRequestException("Fixture lost response");
         return Reply(Issue(), HttpStatusCode.Created);
       }
+      if (path == "/repos/example/repository/issues/7") IssueReads++;
       return Reply(path switch
       {
         "/user" => new { id = 71, login = "verified-user", type = "User" },
@@ -158,7 +171,7 @@ public sealed class IdeaCommandsTests
         "/user/installations" => new { total_count = 1, installations = new[] { new { id = 9, app_id = 9001, account = new { login = "example" }, permissions = new { metadata = "read", issues = "write" } } } },
         "/user/installations/9/repositories" => new { total_count = 1, repositories = new[] { new { id = 22, full_name = "example/repository" } } },
         "/repos/example/repository/issues/7" => Issue(),
-        "/repos/example/repository/issues" => Equivalent || Writes.Count > 0 && !HideCreated ? new[] { Issue() } : Array.Empty<object>(),
+        "/repos/example/repository/issues" => Equivalent || Writes.Count == 0 || !HideCreated ? new[] { Issue() } : Array.Empty<object>(),
         _ => throw new InvalidOperationException("Unexpected source read: " + path)
       });
     }

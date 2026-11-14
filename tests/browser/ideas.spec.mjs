@@ -23,11 +23,13 @@ async function fixture(page) {
         draft = { ...input, id: input.id ?? 'a'.repeat(32), revision: (draft?.revision ?? 0) + 1, state: 'draft' };
         ideas = [draft];
       } else if (input.operation === 'review') {
-        if (deny) return route.fulfill({ status: 403, json: { ...response, availability: 'denied', reason: 'Current GitHub user and App issue-write permission is required.' } });
         draft.state = 'reviewed'; draft.revision++;
         response.related = [{ number: 9, title: '<img src=x onerror=alert(1)> related', equivalent: false }];
         response.preview = `## Intended outcome\n\n${draft.outcome}\n\n## Scope\n\n${draft.scope}`; response.actingUser = 'verified-user';
         response.reason = 'Nothing has been sent. Inspect candidates and exact content before confirming creation.';
+      } else if (input.operation === 'create' && deny) {
+        response.availability = 'denied'; response.reason = 'Current GitHub user and App issue-write permission is required.';
+        return route.fulfill({ status: 403, json: { ...response, ideas } });
       } else if (input.operation === 'create' && lost) {
         draft.state = 'uncertain'; draft.revision++; return route.abort();
       } else if (['create', 'reconcile', 'link'].includes(input.operation)) {
@@ -69,13 +71,15 @@ for (const width of [1280, 390]) for (const theme of ['light', 'dark']) {
     expect(source.operations).toEqual(['save', 'review', 'create']);
   });
 }
-test('ideas deny permission retains draft; existing issue link and abandonment do not create', async ({ page }) => {
+test('read-only users inspect candidates before linking; linking sends no write', async ({ page }) => {
   const source = await fixture(page); source.deny(); await page.goto(origin + '/workspace/ideas'); await draft(page);
+  const link = page.getByRole('button', { name: 'Link existing issue', exact: true });
+  await expect(link).toBeDisabled();
   await page.getByRole('button', { name: 'Review creation', exact: true }).click();
-  await expect(page.locator('#idea-status')).toContainText('issue-write permission');
-  await expect(page.getByLabel('Intended outcome', { exact: true })).toHaveValue('Retain <script>literal text</script>');
-  await page.getByLabel('Existing issue number', { exact: true }).fill('9');
-  await page.getByRole('button', { name: 'Link existing issue', exact: true }).click();
+  await expect(page.locator('#idea-review-panel')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Link #9', exact: true })).toBeVisible();
+  await expect(link).toBeEnabled();
+  await page.getByRole('button', { name: 'Link #9', exact: true }).click();
   await expect(page.getByRole('link', { name: /Open confirmed issue.*#9/ })).toBeVisible();
   expect(source.operations).toEqual(['save', 'review', 'link']);
 });

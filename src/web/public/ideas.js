@@ -14,7 +14,7 @@ function controls() {
   editor.querySelector('[type=submit]').disabled = busy || !editable;
   button('review').disabled = busy || !selected || dirty || !editable;
   button('abandon').disabled = busy || !selected || !editable;
-  button('link').disabled = busy || !selected || dirty || !editable;
+  button('link').disabled = busy || !selected || dirty || !editable || selected.state !== 'reviewed';
   button('create').disabled = busy || dirty || panel.hidden || !button('checked').checked;
   button('reconcile').hidden = selected?.state !== 'uncertain';
   button('reconcile').disabled = busy;

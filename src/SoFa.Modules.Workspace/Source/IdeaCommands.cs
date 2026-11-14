@@ -59,10 +59,12 @@ internal sealed class IdeaCommands(WorkspaceOptions settings, SourceControlAcces
     using var user = await transport.GetAsync("/user", lease.Connection.Tokens.Access, lease.Guard, budget.Token).ConfigureAwait(false);
     if (!user.Successful || SourceJson.Number(user.Value, "id") != lease.Connection.UserId || SourceJson.Text(user.Value, "type") != "User")
       return Fail("denied", "The current GitHub user could not be verified. Reconnect GitHub.");
-    if (command.Operation is "create" or "reconcile" && (draft.ActorId != lease.Connection.UserId || draft.RepositoryId != lease.Controls.RepositoryId))
-      return Fail("conflict", "The reviewed GitHub actor or repository changed. Do not submit this confirmation.");
+    if (command.Operation is ("create" or "reconcile" or "link")
+        && (draft.ActorId != lease.Connection.UserId || draft.RepositoryId != lease.Controls.RepositoryId))
+      return Fail("conflict", "The reviewed GitHub actor or repository changed. Review the candidates again.");
     if (command.Operation == "link")
     {
+      if (draft.State != "reviewed") return Fail("conflict", "Review related issues before linking an existing issue.");
       if (command.Number is not > 0) return Fail("invalid", "Choose a positive existing issue number.");
       using var issue = await transport.GetAsync("/repos/" + draft.Repository + "/issues/" + command.Number, lease.Connection.Tokens.Access, lease.Guard, budget.Token).ConfigureAwait(false);
       var identity = issue.Successful ? Identity(issue.Value, draft.Repository, lease.Controls.RepositoryId) : null;
@@ -86,10 +88,10 @@ internal sealed class IdeaCommands(WorkspaceOptions settings, SourceControlAcces
       return matches.Length == 1 ? Save(draft with { Source = Identity(matches[0], draft.Repository, lease.Controls.RepositoryId), State = "created" })
           : Fail("conflict", "No unique matching source issue is confirmed. The uncertain intent is retained; no retry was sent.");
     }
-    if (lease.Controls.CommentWrite != true) return Fail("denied", "Current GitHub user and App issue-write permission is required. The draft is retained; linking remains available.");
     if (command.Operation == "review")
       return Save(draft with { State = "reviewed", ActorId = lease.Connection.UserId, RepositoryId = lease.Controls.RepositoryId }) with
       { Related = related, Preview = Body(draft), ActingUser = lease.Connection.Login, Reason = "Nothing has been sent. Inspect candidates and exact content before confirming creation." };
+    if (lease.Controls.CommentWrite != true) return Fail("denied", "Current GitHub user and App issue-write permission is required. The draft is retained.");
     if (draft.State != "reviewed") return Fail("conflict", "Review the saved idea before confirming creation.");
     if (related.Any(value => value.Equivalent)) return Fail("conflict", "An equivalent title already exists. Link the existing issue instead of creating another.") with { Related = related };
     var final = await lease.Validate(budget.Token).ConfigureAwait(false);
