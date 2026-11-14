@@ -21,6 +21,7 @@ public static class WorkspaceModule
     services.AddSingleton<GitHubAuthorization>();
     services.AddSingleton<RepositoryAccess>();
     services.AddSingleton<GetObservationsHandler>();
+    services.AddSingleton<GetRunOutputTokensHandler>();
     services.AddSingleton<GetAccountStatusHandler>();
     services.AddSingleton<GetIssueContextHandler>();
     services.AddSingleton<GetIssueEvidenceHandler>();
@@ -364,6 +365,14 @@ public static class WorkspaceModule
       if (!ReferenceEquals(sessions.Get(record.Id), record)) return Results.StatusCode(401);
       result = GetRepositoryRunnersHandler.Bound(result);
       return Results.Json(result, statusCode: result.Availability switch { "disconnected" => 409, "denied" => 403, "busy" => 429, "unavailable" => 503, _ => 200 });
+    });
+    app.MapGet("/api/health/{owner}/{repository}/runs/{run:long}/output-tokens/{attempt:long}", async (string owner, string repository,
+        long run, long attempt, HttpContext context, OwnerSessions sessions, GetRunOutputTokensHandler usage) =>
+    {
+      var record = sessions.Get(context.User)!;
+      var result = await usage.Handle(new(record, owner + "/" + repository, run, attempt), context.RequestAborted).ConfigureAwait(false);
+      if (!ReferenceEquals(sessions.Get(record.Id), record)) return Results.StatusCode(401);
+      return Results.Json(result, statusCode: result.Availability switch { "disconnected" => 409, "denied" => 403, "unavailable" => 503, _ => 200 });
     });
     foreach (var asset in new[] { (Path: "/app.js", File: "app.js", Type: "text/javascript"),
             (Path: "/app.css", File: "app.css", Type: "text/css"), (Path: "/tokens.css", File: "tokens.css", Type: "text/css"),
