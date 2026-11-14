@@ -14,7 +14,8 @@ The installation runbook pins a historical development revision and leaves suppo
 - Classify executable/dependency versions, independent HTTPS/OIDC/GitHub configuration and optional runtime settings as pinned, operator-supplied or unresolved.
 - Document the current separate access-continuity and command-journal custody surfaces, while retaining #58 production custody and recovery decisions.
 - Provide backup/restore and compatible upgrade/rollback outlines, a clean-operator rehearsal matrix and exact-version receipt format. All live rehearsal rows remain planned, not passed.
-- Deliver only the documentation increment from proposal PR #153. No new installer, application behavior, provisioning, source mutation, deployment or acceptance is authorized here; the remaining #120 outcome stays open.
+- Extend the documentation increment from proposal PR #153 with the two owner-authorized regression-test paths: persisted session deadlines across restart and operator-selected External configuration without optional runtime/control providers. No production behavior, installer, provisioning, source mutation or deployment is added.
+- Use the owner's first installation, authenticated source connection, restart and recovery in their own environment as the pending #120 rehearsal; no second clean machine is required. Deterministic checks do not complete that rehearsal or #58 acceptance.
 
 ## Capabilities
 
@@ -28,7 +29,7 @@ None. The existing `owner-access`, `github-user-connection`, `identity-environme
 
 ## Impact
 
-Operational documentation and its OpenSpec plan only; no API, configuration schema, data format, dependency lock or cryptographic-purpose change. One non-root Linux x64 instance reuses the existing .NET/native UI and Aspire composition. Other operating systems, HA, concurrent writers, enterprise infrastructure and provider administration remain excluded.
+Operational documentation, its OpenSpec plan and additive assertions in `tests/SoFa.Web.Tests/OwnerSessionsTests.cs` and `tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs`; no API, configuration schema, data format, dependency lock or cryptographic-purpose change. One non-root Linux x64 instance reuses the existing .NET/native UI and Aspire composition. Other operating systems, HA, concurrent writers, enterprise infrastructure and provider administration remain excluded.
 
 This reuses unmerged proposal PR #153 at `1bb987a9e9b52febec11473f8da930c1a15e30a4`. Its original inspected main `d24953debaab37dfedf7745add1b47dae538a6d7`, historical runbook pin `4c457c337640795a31492f7219cb0e497df9e232` and owner-reported assembled #100 head `281bb63a0782b986603d9275fa1d38350404b00e` retain their separate meanings. The current host-supplied source is `d3a166bc2de76a0aa4b25c970baba30c29eb00f2`: journal and access-continuity code is now present, but presence is not accepted executable or actual-source qualification. No owner-reported feature head is promoted to a release.
 

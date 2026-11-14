@@ -38,7 +38,9 @@ For rollback, select the last verified source/artifact and compatible private co
 
 ## Independent rehearsal status and version inventory
 
-This is the documentation increment of [#120](https://github.com/juangcarmona/lighthouse-control-center/issues/120), based on [proposal #153](https://github.com/juangcarmona/lighthouse-control-center/pull/153). **No clean-operator installation, external security acceptance, restore or production approval is claimed.** One non-root, single-instance Linux x64 installation is the bounded target. Other operating systems, concurrent writers, HA and enterprise infrastructure are excluded. Reuse [#124's adoption and dogfooding guide](lighthouse-dogfooding.md), [#121's continuity runbook](repository-rename-continuity.md) and [#123's asset inventory](../../assets/lighthouse-control-center/); this is not another installation or branding path.
+This retains the documentation increment of [#120](https://github.com/juangcarmona/lighthouse-control-center/issues/120), based on [proposal #153](https://github.com/juangcarmona/lighthouse-control-center/pull/153), with additive restart/configuration regressions in draft PR #195. **No operator installation, external security acceptance, restore or production approval is claimed.** One non-root, single-instance Linux x64 installation is the bounded target. Other operating systems, concurrent writers, HA and enterprise infrastructure are excluded. Reuse [#124's adoption and dogfooding guide](lighthouse-dogfooding.md), [#121's continuity runbook](repository-rename-continuity.md) and [#123's asset inventory](../../assets/lighthouse-control-center/); this is not another installation or branding path.
+
+The [owner's 2026-11-14 decision](https://github.com/juangcarmona/lighthouse-control-center/pull/195#issuecomment-6871544869) makes their first installation, authenticated source connection, restart and recovery in their own environment sufficient for the #120 rehearsal once performed and recorded. A second clean machine is not required. That rehearsal remains pending and does not establish production approval, #58 security/custody acceptance, a released artifact or deployment.
 
 Relative source links below refer to host-supplied inspected revision `d3a166bc2de76a0aa4b25c970baba30c29eb00f2`. Values are checked-in declarations, not installed-version or acceptance receipts. Reconcile every row against the exact executable selected for the later rehearsal.
 
@@ -62,7 +64,7 @@ Relative source links below refer to host-supplied inspected revision `d3a166bc2
 | --- | --- | --- |
 | Accepted executable and controls | Juan, integration owner: exact accepted revision/artifact and #100/#48 source qualification | Do not install an unaccepted feature head as a release or rebuild an alternate workspace/journal/auth path |
 | External security and custody | Juan, #58 security owner: real external identity/TLS/custody/recovery matrix, encryption, retention and restore policy | No production origin, credentials, deployment or recovery acceptance inferred from this document |
-| Tested environment | Operator with Juan/release owner: nominated Linux/toolchain tuple and clean-environment receipt | No support claim from version ranges or an existing developer machine |
+| Tested environment | Operator with Juan/release owner: nominated Linux/toolchain tuple and first-startup receipt in the owner's environment | No support or production claim from version ranges; no second clean machine required |
 | Actual rehearsal | Juan/operator: explicit authorization, permitted sources, test cases and safe evidence reviewer | Do not create source commands, change provider grants or perform installation merely to populate receipts |
 
 These gates do not block documenting prerequisites. They do block the later executable acceptance. Keep the remaining #120 outcome open and coordinate sequencing on #116; this document does not remove an implementation/rehearsal hold or approve deployment.
@@ -113,15 +115,15 @@ Current setup uses non-root application ownership, separate mode0700 directories
 
 ### Planned restore, upgrade and rollback sequence
 
-1. Obtain the accepted artifact, #58 custody decisions, nominated clean Linux baseline and separate rehearsal authorization. Record a metadata-only compatibility manifest and protected backup destination.
+1. Record the selected candidate, Linux baseline, applicable custody decisions and owner/operator rehearsal authorization. Record a metadata-only compatibility manifest and protected backup destination. Production recovery acceptance still requires #58.
 2. Stop the single application writer without stopping independent repository execution. Use the accepted version's consistent backup method; capture complete session data/key and command data/key-marker pairs, including required WAL files, plus protected configuration/TLS references. Never copy only a live database.
 3. Restore while stopped under approved access controls. Preserve bindings and key purposes; validate artifact/schema/configuration compatibility before enabling access. Do not publish backup contents as receipts.
 4. Start the documented launcher with the operator's private configuration. Verify online provider/source authority or fresh login/linking as required by the selected version; inspect retained original command/source IDs and reconcile against original source evidence. An absent result remains uncertain, not permission to resend.
 5. Upgrade only with a verified compatible artifact and backup. Roll back only with a verified prior artifact and compatible state/configuration; incompatible state stops the procedure. Do not downgrade over newer records, cancel/redispatch work, revive the retired supervisor or expose an anonymous observer.
 
-## Clean-operator rehearsal matrix — planned, not executed
+## Owner/operator rehearsal matrix — planned, not executed
 
-All rows require an exact accepted executable, nominated clean environment and separate operator authorization. External identity/security/recovery rows require #58's real matrix. No fixture, package installation, screenshot or development-provider pass substitutes for actual external/source acceptance. Failure retains its receipt and existing upstream owner; it does not justify alternate implementation or weakened checks.
+All rows require an exact selected executable, recorded operator environment and operator authorization. The owner's first startup/connection/restart/recovery is sufficient; no second clean machine is required. Production external identity/security/recovery acceptance requires #58's real matrix. No fixture, package installation, screenshot or development-provider pass substitutes for actual external/source acceptance. Failure retains its receipt and existing upstream owner; it does not justify alternate implementation or weakened checks.
 
 | Case | Additional prerequisites | Expected observable result | Safe receipt |
 | --- | --- | --- | --- |
@@ -156,4 +158,4 @@ For each attempt record: case/criterion IDs; planned/executed status; exact appl
 
 Run existing WorkspaceOptions/Composition, owner/provider/session, GitHub authority and ControlJournal tests through the repository checks. `npm run verify` is the full deterministic/host lane; `npm run verify:identity:host` is the separate isolated real-provider E2E lane on a capable host, not a new PR/push requirement. Actual external-provider and real App consent/revocation receipts remain separate from both. The host independently rechecks this candidate and exact-head CI/integration remain future requirements.
 
-For later R3/R6, retain sanitized post-callback account/repository and cleared/denied views only. Reuse light/dark desktop/narrow keyboard/focus checks when applicable. Exclude login setup, callback URLs/queries, codes, credentials, private source content, HARs, traces and raw browser logs. An independent reviewer must check logs/screenshots/artifacts before publication. Physical-phone acceptance remains owner-deferred; viewport checks do not prove it. This documentation-only increment changes no UI or assets and requires no new visual publication decision.
+For later R3/R6, retain sanitized post-callback account/repository and cleared/denied views only. Reuse light/dark desktop/narrow keyboard/focus checks when applicable. Exclude login setup, callback URLs/queries, codes, credentials, private source content, HARs, traces and raw browser logs. An independent reviewer must check logs/screenshots/artifacts before publication. Physical-phone acceptance remains owner-deferred; viewport checks do not prove it. This documentation and regression-test increment changes no UI or assets and requires no new visual publication decision.

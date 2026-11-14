@@ -14,7 +14,7 @@ Unlike the original proposal baseline, `OwnerIdentity.cs` and `OwnerSessionVault
 
 ## Goals / Non-Goals
 
-**Goals:** a classified version/configuration inventory, named decision owners, version-specific custody outline, rollback boundaries and acceptance/receipt mapping in one canonical runbook.
+**Goals:** a classified version/configuration inventory, named decision owners, version-specific custody outline, rollback boundaries and acceptance/receipt mapping in one canonical runbook, plus deterministic regression coverage of existing restart and independent configuration behavior.
 
 **Non-Goals:** an installer/service manager, binary distribution, new auth/journal/storage implementation, provider administration, production security policy or live installation/rehearsal. No personal infrastructure, ambient `gh` or alternate authority path is introduced.
 
@@ -51,7 +51,9 @@ The issue contains six acceptance bullets; PR #153 expanded them into AC-1–AC-
 
 No UI is changed; no new screenshot or visual publication approval is needed for this documentation increment. Later R3/R6 use safe post-callback account/repository/denial views, light/dark desktop/narrow keyboard/focus checks, and the existing owner-deferred physical-phone boundary. Never retain login/callback screens, HARs, traces, tokens, raw browser logs or private source content.
 
-Run required policy commands and relevant Markdown/OpenSpec/citation checks through the managed command slot, recording terminal exit codes. Existing WorkspaceOptions/Composition, owner/provider/session, GitHub authority and ControlJournal tests remain unchanged. Full host verification and separate `verify:identity:host` remain separate receipts; Docker-in-Docker is unsupported. Development-provider and source fixtures do not prove actual external identity or real App consent/revocation.
+Run required policy commands and relevant Markdown/OpenSpec/citation checks through the managed command slot, recording terminal exit codes. The owner authorized additive regressions only in OwnerSessionsTests and WorkspaceOptionsTests; preserve all existing session, grant-custody, configuration and identity-denial assertions and other frozen verification inputs. The restart test compares persisted idle and absolute deadlines exactly and rejects access at the idle deadline. Both selected identity profiles load operator inputs without runtime registrations, checkouts or control-journal providers. Full host verification and separate `verify:identity:host` remain separate receipts; Docker-in-Docker is unsupported. Development-provider and source fixtures do not prove actual external identity or real App consent/revocation.
+
+The owner's 2026-11-14 decision supersedes the separate-clean-machine requirement: their first startup in their own environment, including installation, authenticated source connection, restart and recovery, counts once performed and recorded. Keep it pending; neither these tests nor this documentation establish production approval, #58 acceptance, a released artifact or deployment.
 
 ## Risks / Trade-offs
 
@@ -64,7 +66,7 @@ Run required policy commands and relevant Markdown/OpenSpec/citation checks thro
 
 ## Migration Plan
 
-This increment changes documentation only. Rollback is a reviewed documentation revert preserving historical evidence. Later Juan, as integration/security/release owner, nominates an accepted executable and baseline, resolves #58, and explicitly authorizes rehearsal. No current stage result authorizes release/deployment or removes the remaining issue hold. #121/#123/#124 ownership is unchanged.
+This increment changes documentation and additive regression assertions only. Rollback is a reviewed revert preserving historical evidence; there is no application data migration. Later Juan, as integration/security/release owner, records the selected candidate and environment and performs the first-startup rehearsal. Production custody/security acceptance remains #58 work. No current stage result authorizes release/deployment. #121/#123/#124 ownership is unchanged.
 
 ## Deferred dependency decisions
 
