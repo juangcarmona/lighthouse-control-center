@@ -1,0 +1,179 @@
+{
+  "capturedAt": "2026-11-14T19:02:46.516Z",
+  "sourceWrites": [],
+  "steps": [
+    {
+      "flow": "initial-issue-load",
+      "events": [
+        {
+          "kind": "dom-ready",
+          "ms": 109.40000009536743
+        },
+        {
+          "kind": "first-issue",
+          "ms": 5407.200000047684,
+          "count": 34
+        }
+      ]
+    },
+    {
+      "flow": "board",
+      "columns": [
+        "Open issues",
+        "#227 · Auditoría manual de usabilidad y UI/UX: flujos, continuidad y propuestas visuales",
+        "#53 · Inspect repository versions configuration and explained deviations",
+        "#119 · Add explicit project and provider access scopes for multiple operators",
+        "#54 · Explain project health and comparable trends from verifiable signals",
+        "#156 · Inspect source-backed engineering quality facets over time",
+        "#55 · Explore an idea and explicitly create or link its GitHub issue",
+        "#159 · Inspect GitHub Actions usage and storage with honest cost coverage",
+        "#225 · [aw] Failed jobs: apply review",
+        "#120 · Package and rehearse an independent Control Center installation",
+        "Closed issues",
+        "Unknown issue state"
+      ],
+      "text": "Open issues\n#227 · Auditoría manual de usabilidad y UI/UX: flujos, continuidad y propuestas visuales\nOpen\n5m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#53 · Inspect repository versions configuration and explained deviations\nOpen\n5m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#119 · Add explicit project and provider access scopes for multiple operators\nOpen\n5m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#54 · Explain project health and comparable trends from verifiable signals\nOpen\n6m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#156 · Inspect source-backed engineering quality facets over time\nOpen\n6m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#55 · Explore an idea and explicitly create or link its GitHub issue\nOpen\n6m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#159 · Inspect GitHub Actions usage and storage with honest cost coverage\nOpen\n16m\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#225 · [aw] Failed jobs: apply review\nOpen\n1h\n\nStale collection; current activity and labels are unknown.\n\nSource details\n#120 · Package and rehearse an independent Control Center installation\nOpen\n3h\n\nStale collection; current activity and labels are unknown.\n\nSource details\nClosed issues\n\nNo matching collected issues.\n\nUnknown issue state\n\nNo matching collected issues."
+    },
+    {
+      "flow": "exact-number-search",
+      "url": "https://192.168.0.3:5443/workspace/issues?view=list&repository=juangcarmona%2Flighthouse-control-center&search=%2348",
+      "count": 1,
+      "text": "#48 · Operate a real issue from SoFa with contextual Propose and safe comments\nOpen\n3d\nSource details"
+    },
+    {
+      "flow": "long-issue",
+      "url": "https://192.168.0.3:5443/workspace/issues/juangcarmona/lighthouse-control-center/48",
+      "text": "Skip to issue context\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nlighthouse-control-center\n/ #48\nOperate a real issue from SoFa with contextual Propose and safe comments\nOpen\n\nIssue context loaded from GitHub.\n\nAdd a comment\nSource details\nIssue actions\n\nAvailable actions are shown below. Prepare first, then review and confirm the exact effect before sending.\n\nLighthouse actions\nReview Refine\nReview Propose\nReview answer and continue\n\nRefine, Propose unavailable: Workflow dispatch is unavailable. Verify repository access and the GitHub App Actions: write grant/current dispatch authority, then refresh.\n\nContinue unavailable: The repository automation policy could not be verified, so this action is unavailable.\n\nCurrent question and action availability\nConversation\nAdd a comment\nYour comment or answer\n\nPublishes a GitHub comment as the connected account. It does not resume work. Review it before sending.\n\nReview comment\nRecover previous action\nConversation history · 11 read / 11 source comments · End observed\nDescription and metadata\nIssue metadata\nOutcome\n\nAs Juan, I want to request Propose or eligible Refine and publish a comment from an issue workspace, then follow the exact source outcome without routinely editing GitHub labels or leaving SoFa.\n\nOwner-authorized dependency delivery for #51/#52/#57/#88. Development identity #49 is merged; the #50 reader and source-only observations are implemented with acceptance limits. Concrete plan: https://github.com/juangcarmona/sofa/pull/112. Independent Luna High technical planning review accepted all eleven dimensions at d40b364d7ace70bd65edb439e99cd675f2eee2f4. The owner accepted PR #112, ADR-0008 and the protected journal design on 2026-11-08. Lighthouse CLI 0.12.61 / SDLC 0.22.0 is published and its official source contract is merged through PR #115. The owner confirmed updated development App permissions and installation consent. Actual connected App-user effects and the final delivery gates remain to be demonstrated. #58 owns production readiness; node-home provisioning does not block development.\n\nExisting evidence and scope split\n\nPreserve #47 and its reports:\n\nRefinement: https://github.com/juangcarmona/sofa/issues/47#issuecomment-6410966096 — run 40287921209.\nBlocked proposal: https://github.com/juangcarmona/sofa/issues/47#issuecomment-6412062941 — run 40294746514.\n\nIts body and relevant owner conversation participate in the task digest. This story does not replace the refinement or inherit its Ready verdict. #47 retains Refine and the shared submission foundation; #50 owns the issue read model; this story reuses both. Resolve identity and correlation through linked work and recheck evidence before resuming #47's proposal. No labels or later-stage authority are changed by this backlog preparation.\n\nAcceptance Criteria\nFrom #50's real issue context, display recommended and other supported actions with a brief effect and acting GitHub identity. Shared Lighthouse eligibility uses current permissions, capability version, evidence, reservations and source state. Unavailable actions have specific explanations.\nRecheck session, source authority and relevant state on the server before submission; the repository rechecks at admission. Changed state produces an explanation and no stale dispatch.\nRequest Propose after valid refinement and offer Refine when permitted. Propose submission does not imply admission, an existing proposal, approval or implementation authority.\nPersist command intent and source receipts; repeated clicks, reconnects, competing tabs and retries do not create duplicate work. Conflicting payloads under one request identity are rejected.\nUse the exact source run receipt and the shared request identity. A timeout or process restart around dispatch remains uncertain until reconciled. Never choose a recent matching run or silently resend.\nShow request, source admission/rejection, queued/running state, human wait and published stage outcome separately. A completed workflow with a blocked result is not success. The owner can read results and related proposal/PR/check evidence inside SoFa.\nPublish comments attributed to the verified GitHub user with a confirmed source comment ID or an explicit uncertain result. Reconcile uncertain posts before retry.\nOrdinary comments do not request continuation, including on needs-info issues. Reply-and-continue is a separate explicit supported action bound to the pending question and current grant. Do not modify labels to work around shared policy.\nAllow ordinary comments during active work with a pre-submit explanation when source input freshness will be invalidated. Show the subsequent source consequence without automatically requesting another execution.\nKeep issue state, lifecycle stage, command, execution, reservation and human wait separate. Preserve triage → refine → propose → implement → integrate → review.\nDemonstrate the full first-delivery journey on a real test issue from desktop and a phone over LAN/VPN: authenticated reading, authorized/denied actions, changed state, duplicates, lost responses, exact correlation, comment behavior and visible result. Closing SoFa does not stop admitted work.\nDependencies and product traceability\n#49: Keycloak container in Aspire for development, configured external production Keycloak on node-home, and separate GitHub user authorization. Provider direction is decided.\n#50: issue description, paginated conversation and source evidence.\n#47: Refine and shared command submission foundation; preserve its existing evidence.\nhttps://github.com/juangcarmona/lighthouse/issues/119: versioned action decisions, source request receipts/deduplication and explicit comment continuation. Consume and verify a compatible release; do not copy its policy into SoFa.\n#45 / PR #46: implemented read-only observation baseline.\nCHG-AUTHENTICATED-OPERATIONS-001: UC-OPERATE-ISSUE, FR-AUTHORIZED-ENTRY, FR-ISSUE-CONTEXT, FR-ISSUE-CONVERSATION, BR-EXPLICIT-WORK-COMMANDS, QR-MOBILE-OPERATIONS, QR-EXECUTION-SECURITY and CON-TRUSTED-LAN.\nADR-0006 remains accepted. Canonical arc42 views and the development decisions in merged #49 explain the implemented identity boundary. ADR-0008 and its protected SQLite/receipt design in #112 were accepted by the owner before implementation. The former local draft branch is historical.\nVerification and boundaries\n\nUse deterministic adapter/security tests plus actual connected App-user source and responsive/keyboard evidence. The owner waived physical-phone rehearsal; do not request it again or claim it ran. Current GitHub dispatch documentation provides an exact run ID in a successful response; verify the selected API version and actual user-token behavior. That receipt alone does not resolve a lost response, source duplication or comment continuation.\n\nThe authenticated-operations Product Change was applied and accepted through #82. The delivery conversation authorizes necessary technical dependency work and merges; this issue does not itself grant stage continuation, product/security decisions or protected approvals. The accepted persistent journal and explicit handlers are implemented in #112; exact-head hosted checks and actual connected-user qualification remain separate. No scheduler, worker allocation, public hosting or household administration is introduced. Production secrets/backup/deployment evidence belongs to #58 and infra.homelab; it does not prevent local functional development.\n\nNext increment: #51 intervention inbox, #52 discovery/project views and #53 configuration deviations. Later horizon: #54 explainable health, #55 idea promotion, #56 delivery actions/evidence and #57 resource visibility. These are tracked work, not prerequisites for this story.\n\nOriginal Markdown\nDelivery evidence"
+    },
+    {
+      "flow": "draft-written",
+      "editable": true
+    },
+    {
+      "flow": "draft-return",
+      "draft": "",
+      "events": [
+        {
+          "kind": "dom-ready",
+          "ms": 69.29999995231628
+        }
+      ]
+    },
+    {
+      "flow": "warmed-collection",
+      "events": [
+        {
+          "kind": "dom-ready",
+          "ms": 68.20000004768372
+        },
+        {
+          "kind": "first-issue",
+          "ms": 2194.600000143051,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "flow": "return-350ms",
+      "issues": 0,
+      "text": "Checking current source authority…"
+    },
+    {
+      "flow": "return-first-data",
+      "wallMs": 3838,
+      "events": [
+        {
+          "kind": "dom-ready",
+          "ms": 101.39999985694885
+        },
+        {
+          "kind": "first-issue",
+          "ms": 3756.199999809265,
+          "count": 34
+        }
+      ],
+      "status": "Checking current source authority…"
+    },
+    {
+      "flow": "controlled-503-refresh",
+      "issues": 33,
+      "text": " npm installation\nOpen\n1h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #659 · [aw] Failed jobs: implement\nClosed\n2h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #656 · [aw] Failed jobs: product-change\nClosed\n3h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #654 · [aw] Failed jobs: refine\nClosed\n3h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #653 · [aw] Failed jobs: refine\nClosed\n3h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #641 · Clean execution-owned runner resources after every attempt and recover interrupted cleanup\nOpen\n4h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #655 · [aw] Failed jobs: product-change\nClosed\n4h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #652 · Provide daily repository housekeeping for all Lighthouse adopters\nOpen\n4h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #633 · Remove the 512-artifact ceiling for large ProductShape models\nClosed\n6h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #590 · Define and produce source-bound accepted-delivery receipts\nOpen\n6h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse #594 · Define source-bound engineering practice evidence and optional levels\nOpen\n6h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #227 · Auditoría manual de usabilidad y UI/UX: flujos, continuidad y propuestas visuales\nOpen\n5m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #53 · Inspect repository versions configuration and explained deviations\nOpen\n5m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #119 · Add explicit project and provider access scopes for multiple operators\nOpen\n6m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #54 · Explain project health and comparable trends from verifiable signals\nOpen\n6m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #156 · Inspect source-backed engineering quality facets over time\nOpen\n6m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #55 · Explore an idea and explicitly create or link its GitHub issue\nOpen\n7m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #159 · Inspect GitHub Actions usage and storage with honest cost coverage\nOpen\n17m\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #225 · [aw] Failed jobs: apply review\nOpen\n1h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/lighthouse-control-center #120 · Package and rehearse an independent Control Center installation\nOpen\n3h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #330 · [aw] Failed jobs: refine\nOpen\n5h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #329 · Continuously verify Structured Behaviours with E2E tests and Engineering portal evidence\nOpen\n5h\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #323 · [aw] Failed jobs: refine\nOpen\n1d\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #215 · Feature 1: Private 1:1 conversation foundation and reliable messaging\nOpen\n1d\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #322 · [aw] Failed jobs: refine\nOpen\n1d\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #321 · [aw] Failed jobs: refine\nOpen\n1d\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #320 · [aw] Failed jobs: refine\nOpen\n1d\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #237 · Resolve Household Assets product and architecture decisions\nOpen\n3d\n\nStale collection; current activity and labels are unknown.\n\nSource details\njuangcarmona/domusmind #235 · Epic: Household assets, obligations, paperwork and history\nOpen\n3d\n\nStale collection; current activity and labels are unknown.\n\nSource details\nEvidence filters and coverage\nSource coverage · 3 repositories · 3 partial"
+    },
+    {
+      "flow": "no-match",
+      "text": "0 issues · Partial coverage",
+      "resultsText": "No match in the collected scope. Remaining or unavailable source records may contain work."
+    },
+    {
+      "flow": "320px-200-percent",
+      "rootFont": "32px",
+      "overflow": false,
+      "scrollWidth": 320,
+      "viewport": 320
+    },
+    {
+      "flow": "touch-targets",
+      "targets": [
+        {
+          "label": "Overview",
+          "width": 111.515625,
+          "height": 44
+        },
+        {
+          "label": "Repositories",
+          "width": 134.828125,
+          "height": 44
+        },
+        {
+          "label": "Inbox",
+          "width": 83.71875,
+          "height": 44
+        },
+        {
+          "label": "Issues",
+          "width": 89.125,
+          "height": 44
+        },
+        {
+          "label": "Health",
+          "width": 91.40625,
+          "height": 44
+        },
+        {
+          "label": "Runtime",
+          "width": 104.5625,
+          "height": 44
+        },
+        {
+          "label": "Account",
+          "width": 102.140625,
+          "height": 44
+        },
+        {
+          "label": "Refresh collection",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Light appearance",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Dark appearance",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "System appearance",
+          "width": 44,
+          "height": 44
+        }
+      ]
+    }
+  ],
+  "reference": {
+    "url": "https://lighthouse.jgcarmona.com/",
+    "status": "captured"
+  }
+}

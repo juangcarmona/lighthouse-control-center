@@ -1,0 +1,78 @@
+{
+  "checks": [
+    "Project filter, title search, no match, list mode, issue navigation, local draft restore, preview and focus verified.",
+    "320px width at 200% root text (32px) has no page overflow."
+  ],
+  "screenshots": [
+    {
+      "file": "proposal-board-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "proposal-board-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "proposal-board-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "proposal-board-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "proposal-detail-desktop-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "proposal-detail-desktop-light.png",
+      "width": 1440,
+      "height": 1000,
+      "overflow": false
+    },
+    {
+      "file": "proposal-detail-mobile-dark.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    },
+    {
+      "file": "proposal-detail-mobile-light.png",
+      "width": 390,
+      "height": 844,
+      "overflow": false
+    }
+  ],
+  "axe": [
+    {
+      "view": "board",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "board",
+      "theme": "light",
+      "violations": []
+    },
+    {
+      "view": "detail",
+      "theme": "dark",
+      "violations": []
+    },
+    {
+      "view": "detail",
+      "theme": "light",
+      "violations": []
+    }
+  ]
+}

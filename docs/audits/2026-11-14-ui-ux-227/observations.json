@@ -1,0 +1,673 @@
+{
+  "capturedAt": "2026-11-14T19:02:00.695Z",
+  "origin": "https://192.168.0.3:5443",
+  "certificate": "Private development certificate; browser ignoreHTTPSErrors enabled for this isolated audit only.",
+  "results": [
+    {
+      "name": "01-account",
+      "path": "/workspace",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace",
+      "settledMs": 2914,
+      "text": "Skip to account\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\n/ Account\nWorkspace\n\nOwner identity verified. GitHub account connection is separate.\n\nGitHub connected as juangcarmona.\n\nTechnical identity details\n\nGitHub connection verified. Repository permissions refresh automatically.\n\nIdentity verification details\njuangcarmona/lighthouse: issues read allowed; Actions read allowed; issue write permission confirmed. Checked: 2026-11-14T19:00:45.769Z.\njuangcarmona/lighthouse-control-center: issues read allowed; Actions read allowed; issue write permission confirmed. Checked: 2026-11-14T19:00:45.769Z.\njuangcarmona/domusmind: issues read allowed; Actions read allowed; issue write permission confirmed. Checked: 2026-11-14T19:00:45.769Z.\nConnect GitHub account\nDisconnect GitHub\n\nOpen fleet overview\n\nDisconnect removes the locally stored GitHub grant for this owner across active sessions. To revoke the provider-side grant too, use GitHub authorized Apps.\n\nOwner sessions expire after two hours without user activity or twelve hours after authentication. Identity-provider authority is checked online at least every five minutes; a failed due check blocks access.\n\nSign out ends this browser's owner session. The separately authorized GitHub connection remains available for a later owner session and is checked with GitHub before use.\n\nSign out",
+      "modes": [
+        {
+          "file": "01-account-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "01-account-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "01-account-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        },
+        {
+          "file": "01-account-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "02-overview",
+      "path": "/workspace/operations",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/operations",
+      "settledMs": 6819,
+      "text": "Skip to repositories\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nOverview\nOverview\n\nUpdated 07:00 PM · refreshes automatically\n\nRepository\nAll repositories\njuangcarmona/lighthouse\njuangcarmona/lighthouse-control-center\njuangcarmona/domusmind\nSource and coverage\n3 / 3\nRepositories\n4\nActive workflows\n0\nNeeds your attention\n0\nUnavailable repositories\nNeeds your attention\n\nNo human waits in the collected issues.\n\nActive workflows\nRunning\nLighthouse verification\nin_progress\n\nElapsed from source start: 2 minutes as of observation · 2026-11-14T18:58:49.000Z\n\njuangcarmona/lighthouse · Source details\nLighthouse package contracts\nin_progress\n\nElapsed from source start: 2 minutes as of observation · 2026-11-14T18:58:49.000Z\n\njuangcarmona/lighthouse · Source details\napply-review #53 · request 6882292566\nin_progress\n\nElapsed from source start: 27 minutes as of observation · 2026-11-14T18:33:14.000Z\n\njuangcarmona/lighthouse-control-center · Source details\nQueued / pending / requested\napply-review #159 · request 6882451740\nqueued\njuangcarmona/lighthouse-control-center · Source details\nRepositories\njuangcarmona/lighthouse\nObserved\nObservation details\nIssues\nOpen workflow actions ↗\nIssues ↗\nOther collected work (1)\nRecent completed runs\nUnclassified source statuses\njuangcarmona/lighthouse-control-center\nObserved\nObservation details\nIssues\nOpen workflow actions ↗\nIssues ↗\nOther collected work (4)\nRecent completed runs\nUnclassified source statuses\njuangcarmona/domusmind\nObserved\nObservation details\nIssues\nOpen workflow actions ↗\nIssues ↗\nOther collected work (0)\n\nNo attention labels in the collected issues.\n\nRecent completed runs\nUnclassified source statuses\nLighthouse Control Center\nObserved evidence · Independent repository execution",
+      "modes": [
+        {
+          "file": "02-overview-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 878.796875
+        },
+        {
+          "file": "02-overview-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 878.796875
+        },
+        {
+          "file": "02-overview-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 1187.265625
+        },
+        {
+          "file": "02-overview-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 1187.265625
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "03-repositories",
+      "path": "/workspace/repositories",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/repositories?view=list",
+      "settledMs": 6672,
+      "text": "Skip to issues\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nRepositories\nRepositories\nFilter repositories\nRepository coverage\njuangcarmona/lighthouse\n\n16 issues · Partial\n\nBranch and source coverage\njuangcarmona/lighthouse-control-center\n\n9 issues · Partial\n\nBranch and source coverage\njuangcarmona/domusmind\n\n9 issues · Partial\n\nBranch and source coverage",
+      "modes": [
+        {
+          "file": "03-repositories-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 103.84375
+        },
+        {
+          "file": "03-repositories-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 103.84375
+        },
+        {
+          "file": "03-repositories-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 151.84375
+        },
+        {
+          "file": "03-repositories-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 151.84375
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "04-issues",
+      "path": "/workspace/issues",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/issues?view=list",
+      "settledMs": 6501,
+      "text": "Skip to issues\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nIssues\nIssues\nSearch issues\nRepository\nAll repositories\njuangcarmona/lighthouse\njuangcarmona/lighthouse-control-center\njuangcarmona/domusmind\nIssue state\nAll states\nOpen\nClosed\nUnknown\nView\nList\nBoard\nIssues\n\n34 issues · Partial coverage\n\njuangcarmona/lighthouse #596 · Worker recovery and human attention index\nOpen\n7m\nSource details\njuangcarmona/lighthouse #608 · Worker implement: Source or owner intent changed\nOpen\n25m\nSource details\njuangcarmona/lighthouse #661 · Align .NET execution prerequisites with the current SDK and Aspire profile\nOpen\n26m\nSource details\njuangcarmona/lighthouse #663 · [aw] Failed jobs: implement\nClosed\n1h\nSource details\njuangcarmona/lighthouse #584 · Prevent .NET worker scratch exhaustion after npm installation\nOpen\n1h\nSource details\njuangcarmona/lighthouse #659 · [aw] Failed jobs: implement\nClosed\n2h\nSource details\njuangcarmona/lighthouse #656 · [aw] Failed jobs: product-change\nClosed\n3h\nSource details\njuangcarmona/lighthouse #654 · [aw] Failed jobs: refine\nClosed\n3h\nSource details\njuangcarmona/lighthouse #653 · [aw] Failed jobs: refine\nClosed\n3h\nSource details\njuangcarmona/lighthouse #641 · Clean execution-owned runner resources after every attempt and recover interrupted cleanup\nOpen\n4h\nSource details\njuangcarmona/lighthouse #655 · [aw] Failed jobs: product-change\nClosed\n4h\nSource details\njuangcarmona/lighthouse #652 · Provide daily repository housekeeping for all Lighthouse adopters\nOpen\n4h\nSource details\njuangcarmona/lighthouse #633 · Remove the 512-artifact ceiling for large ProductShape models\nClosed\n6h\nSource details\njuangcarmona/lighthouse #590 · Define and produce source-bound accepted-delivery receipts\nOpen\n6h\nSource details\njuangcarmona/lighthouse #594 · Define source-bound engineering practice evidence and optional levels\nOpen\n6h\nSource details\njuangcarmona/lighthouse #273 · Reduce agent-visible tool and prompt noise without weakening verification\nOpen\n6h\nSource details\njuangcarmona/lighthouse-control-center #227 · Auditoría manual de usabilidad y UI/UX: flujos, continuidad y propuestas visuales\nOpen\n3m\nSource details\njuangcarmona/lighthouse-control-center #53 · Inspect repository versions configuration and explained deviations\nOpen\n3m\nSource details\njuangcarmona/lighthouse-control-center #119 · Add explicit project and provider access scopes for multiple operators\nOpen\n3m\nSource details\njuangcarmona/lighthouse-control-center #54 · Explain project health and comparable trends from verifiable signals\nOpen\n4m\nSource details\njuangcarmona/lighthouse-control-center #156 · Inspect source-backed engineering quality facets over time\nOpen\n4m\nSource details\njuangcarmona/lighthouse-control-center #55 · Explore an idea and explicitly create or link its GitHub issue\nOpen\n5m\nSource details\njuangcarmona/lighthouse-control-center #159 · Inspect GitHub Actions usage and storage with honest cost coverage\nOpen\n15m\nSource details\njuangcarmona/lighthouse-control-center #225 · [aw] Failed jobs: apply review\nOpen\n1h\nSource details\njuangcarmona/lighthouse-control-center #120 · Package and rehearse an independent Control Center installation\nOpen\n3h\nSource details\njuangcarmona/domusmind #330 · [aw] Failed jobs: refine\nOpen\n5h\nSource details\njuangcarmona/domusmind #329 · Continuously verify Structured Behaviours with E2E tests and Engineering portal evidence\nOpen\n5h\nSource details\njuangcarmona/domusmind #323 · [aw] Failed jobs: refine\nOpen\n1d\nSource details\njuangcarmona/domusmind #215 · Feature 1: Private 1:1 conversation foundation and reliable messaging\nOpen\n1d\nSource details\njuangcarmona/domusmind #322 · [aw] Failed jobs: refine\nOpen\n1d\nSource details\njuangcarmona/domusmind #321 · [aw] Failed jobs: refine\nOpen\n1d\nSource details\njuangcarmona/domusmind #320 · [aw] Failed jobs: refine\nOpen\n1d\nSource details\njuangcarmona/domusmind #237 · Resolve Household Assets product and architecture decisions\nOpen\n3d\nSource details\njuangcarmona/domusmind #235 · Epic: Household assets, obligations, paperwork and history\nOpen\n3d\nSource details\nEvidence filters and coverage\nSource coverage · 3 repositories · 3 partial",
+      "modes": [
+        {
+          "file": "04-issues-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 128.4375
+        },
+        {
+          "file": "04-issues-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 128.4375
+        },
+        {
+          "file": "04-issues-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 216.4375
+        },
+        {
+          "file": "04-issues-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 216.4375
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "05-project",
+      "path": "/workspace/repositories/juangcarmona/lighthouse-control-center",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/repositories/juangcarmona/lighthouse-control-center?view=list",
+      "settledMs": 5817,
+      "text": "Skip to issues\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nRepositories\n/ lighthouse-control-center\njuangcarmona/lighthouse-control-center\nSearch issues\nIssue state\nAll states\nOpen\nClosed\nUnknown\nView\nList\nBoard\nIssues\n\n9 issues · Partial coverage\n\n#227 · Auditoría manual de usabilidad y UI/UX: flujos, continuidad y propuestas visuales\nOpen\n3m\nSource details\n#53 · Inspect repository versions configuration and explained deviations\nOpen\n3m\nSource details\n#119 · Add explicit project and provider access scopes for multiple operators\nOpen\n4m\nSource details\n#54 · Explain project health and comparable trends from verifiable signals\nOpen\n4m\nSource details\n#156 · Inspect source-backed engineering quality facets over time\nOpen\n4m\nSource details\n#55 · Explore an idea and explicitly create or link its GitHub issue\nOpen\n5m\nSource details\n#159 · Inspect GitHub Actions usage and storage with honest cost coverage\nOpen\n15m\nSource details\n#225 · [aw] Failed jobs: apply review\nOpen\n1h\nSource details\n#120 · Package and rehearse an independent Control Center installation\nOpen\n3h\nSource details\nEvidence filters and coverage\nSource coverage · 1 repository · 1 partial",
+      "modes": [
+        {
+          "file": "05-project-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 128.4375
+        },
+        {
+          "file": "05-project-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 128.4375
+        },
+        {
+          "file": "05-project-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 216.4375
+        },
+        {
+          "file": "05-project-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 216.4375
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "06-issue",
+      "path": "/workspace/issues/juangcarmona/lighthouse-control-center/227",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/issues/juangcarmona/lighthouse-control-center/227",
+      "settledMs": 12342,
+      "text": "Skip to issue context\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nlighthouse-control-center\n/ #227\nAuditoría manual de usabilidad y UI/UX: flujos, continuidad y propuestas visuales\nOpen\n\nIssue context loaded from GitHub.\n\nAdd a comment\nSource details\nIssue actions\n\nAvailable actions are shown below. Prepare first, then review and confirm the exact effect before sending.\n\nLighthouse actions\nReview Refine\nReview Propose\nReview answer and continue\n\nRefine, Propose unavailable: Workflow dispatch is unavailable. Verify repository access and the GitHub App Actions: write grant/current dispatch authority, then refresh.\n\nContinue unavailable: The repository automation policy could not be verified, so this action is unavailable.\n\nCurrent question and action availability\nConversation\nAdd a comment\nYour comment or answer\n\nPublishes a GitHub comment as the connected account. It does not resume work. Review it before sending.\n\nReview comment\nRecover previous action\nConversation history · 0 read / 0 source comments · End observed\nDescription and metadata\nDelivery evidence",
+      "modes": [
+        {
+          "file": "06-issue-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "06-issue-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "06-issue-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        },
+        {
+          "file": "06-issue-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "07-inbox",
+      "path": "/workspace/attention",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/attention?view=list",
+      "settledMs": 6027,
+      "text": "Skip to inbox\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nInbox\n\nNEEDS YOUR ATTENTION\n\nInbox\n\nVerify source questions on demand; label context alone proves no wait.\n\nRepository\nAll repositories\njuangcarmona/lighthouse\njuangcarmona/lighthouse-control-center\njuangcarmona/domusmind\nTitle or issue number\nApply search\n\nOrder: source-label observations, then stale or unobserved contexts; oldest issue update first, source identity breaks ties. Age does not establish urgency. Collection coverage is shown per project.\n\nHow to read this inbox\nObserved intervention contexts\n\n0 collected label contexts. Inspect a context to verify its current question and supported actions.\n\nNo labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.\n\nSource coverage · 3 repositories · 3 partial",
+      "modes": [
+        {
+          "file": "07-inbox-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 0
+        },
+        {
+          "file": "07-inbox-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184,
+          "firstRowY": 569.828125
+        },
+        {
+          "file": "07-inbox-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 851.546875
+        },
+        {
+          "file": "07-inbox-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390,
+          "firstRowY": 851.546875
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "08-runtime",
+      "path": "/workspace/runtime",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/runtime",
+      "settledMs": 2990,
+      "text": "Skip to runtime inventory\nLighthouse\nControl Center\nOverview\nRepositories\nInbox\nIssues\nHealth\nRuntime\nAccount\njuangcarmona\nGitHub connected\nRuntime inventory\n\nFLEET INFRASTRUCTURE\n\nRuntime inventory\n\nLocal registrations, GitHub runner observations and committed Lighthouse versions.\n\nEach source is read independently. Use its refresh button for a new observation.\n\nRegistered on this host\nRefresh host evidence\n\n3 configured registrations, 2 configured checkouts · incomplete selected coverage. Collected: 2026-11-14T19:01:46.852Z.\n\nsofa-registration\nRepository\njuangcarmona/sofa\nRegistered runner ID\n22\nRegistration name\nbastion-sofa-gh-aw\nFile modified\n2026-10-26T07:33:39.510Z\nCollected\n2026-11-14T19:01:46.638Z\n\nNo scoped GitHub identity match observed.\n\nProcess health and available capacity are unobserved.\n\nlighthouse-registration\nRepository\njuangcarmona/lighthouse\nRegistered runner ID\n21\nRegistration name\nbastion-lighthouse-gh-aw\nFile modified\n2026-10-27T06:04:06.336Z\nCollected\n2026-11-14T19:01:46.645Z\n\nNo scoped GitHub identity match observed.\n\nProcess health and available capacity are unobserved.\n\ndomusmind-registration\nRepository\njuangcarmona/domusmind\nRegistered runner ID\n22\nRegistration name\nlighthouse-domusmind-ghaw-runner\nFile modified\n2026-10-31T06:24:14.110Z\nCollected\n2026-11-14T19:01:46.648Z\n\nNo scoped GitHub identity match observed.\n\nProcess health and available capacity are unobserved.\n\nGitHub runners\nRefresh GitHub evidence\n\nGitHub observations cover configured repositories only. Unavailable, denied and stale sources do not establish current host health or capacity.\n\njuangcarmona/lighthouse\n\nAdministration-read authority for this user and matching App installation is not confirmed.\n\nRunner settingsWorkflow activity\njuangcarmona/lighthouse-control-center\n\nAdministration-read authority for this user and matching App installation is not confirmed.\n\nRunner settingsWorkflow activity\njuangcarmona/domusmind\n\nAdministration-read authority for this user and matching App installation is not confirmed.\n\nRunner settingsWorkflow activity\nCommitted Lighthouse adoption\n\nValues at each configured checkout's commit. They do not prove installed or deployed versions.\n\njuangcarmona/lighthouse-control-center\n\nCommitted adoption could not be verified within the supported local metadata/storage bounds.\n\njuangcarmona/lighthouse\nDeclared CLI\nUnknown\nLocked CLI\nUnknown\nSDLC manifest\nUnknown\nWorkflow source ref\nea5ce4fd1e09bb98e2c520d132a826c24cb50e0a\nObserved commit\n59ded863109b045e399931dbad61e6cfdb698107\nCollected\n2026-11-14T19:01:46.653Z\n\nPartial committed evidence; missing values remain unknown.\n\nOpen source commit\nSources and limits",
+      "modes": [
+        {
+          "file": "08-runtime-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "08-runtime-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "08-runtime-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        },
+        {
+          "file": "08-runtime-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        }
+      ],
+      "axe": [],
+      "settled": true
+    },
+    {
+      "name": "09-health",
+      "path": "/workspace/health",
+      "status": 200,
+      "url": "https://192.168.0.3:5443/workspace/health",
+      "settledMs": 7184,
+      "text": "Skip to health\nLighthouse\nControl Center\nOverview\nRepositories\nHealth\nInbox\nIssues\nRuntime\nAccount\njuangcarmona\nGitHub connected\nHealth\n\nConfigured repositories only · read-only observations · no overall health score.\n\nProjects\n\nEngineering evidence across configured repositories. Source coverage is bounded; no overall score is calculated.\n\nConfigured projects\n3\nAuthorized repository catalog\nActions observed\n3 / 3\nLatest 20 runs per readable project\nNeeds investigation\n2\nA failure in the collected Actions runs\nEvidence unknown\n0\nDenied or unavailable source read\nNeeds investigation (2)\nShow only these\njuangcarmona/lighthouse\n1 failed of 20 collected Actions runs · Observed · partial coverage\njuangcarmona/domusmind\n2 failed of 20 collected Actions runs · Observed · partial coverage\nAll 3\nNeeds investigation 2\nEvidence unknown 0\n\n3 of 3 configured projects shown\n\nPROJECT\nENGINEERING\nACTIONS EVIDENCE\nENVIRONMENT\njuangcarmona/lighthouse\nObserved · partial coverage · 0 min ago\nUnavailable\nNo comparable engineering assessment\n1 failed / 20 collected\nUnknown\nPRE / PRO / production not verified\nCollection scope and freshness\njuangcarmona/lighthouse-control-center\nObserved · partial coverage · 0 min ago\nUnavailable\nNo comparable engineering assessment\n0 failed / 20 collected\nUnknown\nPRE / PRO / production not verified\nCollection scope and freshness\njuangcarmona/domusmind\nObserved · partial coverage · 0 min ago\nUnavailable\nNo comparable engineering assessment\n2 failed / 20 collected\nUnknown\nPRE / PRO / production not verified\nCollection scope and freshness",
+      "modes": [
+        {
+          "file": "09-health-desktop-dark.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "09-health-desktop-light.png",
+          "overflow": false,
+          "scrollWidth": 1440,
+          "viewport": 1440,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 184
+        },
+        {
+          "file": "09-health-mobile-dark.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "dark",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        },
+        {
+          "file": "09-health-mobile-light.png",
+          "overflow": false,
+          "scrollWidth": 390,
+          "viewport": 390,
+          "theme": "light",
+          "rootFont": "16px",
+          "bodyFont": "15px",
+          "rail": 390
+        }
+      ],
+      "axe": [],
+      "settled": true
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682845768
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682847533
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682850594
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682852487
+    },
+    {
+      "path": "/api/observations",
+      "status": 200,
+      "time": 1794682856312
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682859524
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682861628
+    },
+    {
+      "path": "/api/factory/juangcarmona/domusmind",
+      "status": 200,
+      "time": 1794682864582
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse-control-center",
+      "status": 200,
+      "time": 1794682864792
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse",
+      "status": 200,
+      "time": 1794682865099
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682868062
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682870146
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse",
+      "status": 200,
+      "time": 1794682873357
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse-control-center",
+      "status": 200,
+      "time": 1794682873462
+    },
+    {
+      "path": "/api/factory/juangcarmona/domusmind",
+      "status": 200,
+      "time": 1794682873463
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682876760
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682878522
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse-control-center",
+      "status": 200,
+      "time": 1794682881486
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682884610
+    },
+    {
+      "path": "/api/issues/juangcarmona/lighthouse-control-center/227",
+      "status": 200,
+      "time": 1794682886858
+    },
+    {
+      "path": "/api/issues/juangcarmona/lighthouse-control-center/227/evidence",
+      "status": 200,
+      "time": 1794682888380
+    },
+    {
+      "path": "/api/issues/juangcarmona/lighthouse-control-center/227/controls",
+      "status": 200,
+      "time": 1794682895862
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682898767
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682900384
+    },
+    {
+      "path": "/api/factory/juangcarmona/domusmind",
+      "status": 200,
+      "time": 1794682903457
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse-control-center",
+      "status": 200,
+      "time": 1794682903483
+    },
+    {
+      "path": "/api/factory/juangcarmona/lighthouse",
+      "status": 200,
+      "time": 1794682903686
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682906491
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682906492
+    },
+    {
+      "path": "/api/runtime/host",
+      "status": 200,
+      "time": 1794682906856
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682908406
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682911304
+    },
+    {
+      "path": "/api/session",
+      "status": 200,
+      "time": 1794682911305
+    },
+    {
+      "path": "/api/connections/github",
+      "status": 200,
+      "time": 1794682913123
+    },
+    {
+      "path": "/api/observations",
+      "status": 200,
+      "time": 1794682917404
+    }
+  ],
+  "errors": []
+}

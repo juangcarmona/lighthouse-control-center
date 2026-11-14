@@ -1,0 +1,123 @@
+{
+  "auditDate": "2026-11-14",
+  "origin": "https://192.168.0.3:5443",
+  "processStartedUTC": "2026-11-13T10:40:10Z",
+  "packageDirectoryName": "preview-controls-7c0809d",
+  "runtimeBinarySHA256": {
+    "JuanGCarmona.SoFa.Web.dll": "80e9ab08aa3472a62cbdb1689ee2388968be62067f3f4c4c3820c3566947be00",
+    "JuanGCarmona.SoFa.Modules.Workspace.dll": "d1173e9f92ea6e84fab05971f93ae185504ce147b4473f6b84232bb173a2d8d9"
+  },
+  "checkoutHead": "ca01bfc4b31af118385a793dc4d5cb523423af74",
+  "remoteMainObserved": "48c0b1b2ba32f830e6e3d7e000d712f6844c674c",
+  "assets": [
+    {
+      "name": "app.js",
+      "servedSHA256": "6b4fd72b66c008a3247e1e98ab223baca65cf92835eb600ee5e1acfb6fe0c649",
+      "sourceSHA256": {
+        "HEAD": "6b4fd72b66c008a3247e1e98ab223baca65cf92835eb600ee5e1acfb6fe0c649",
+        "origin/main": "6b4fd72b66c008a3247e1e98ab223baca65cf92835eb600ee5e1acfb6fe0c649",
+        "7c0809d": "6b4fd72b66c008a3247e1e98ab223baca65cf92835eb600ee5e1acfb6fe0c649"
+      }
+    },
+    {
+      "name": "app.css",
+      "servedSHA256": "44733cfd66c51977a2a1f0789f58a36326a3977fb53032bc707cecb8c705d508",
+      "sourceSHA256": {
+        "HEAD": "0abd578e5b05d73be23d30df25e08ec0bbb5caf6b58cf15560357c31a4c3b58c",
+        "origin/main": "44733cfd66c51977a2a1f0789f58a36326a3977fb53032bc707cecb8c705d508",
+        "7c0809d": "44733cfd66c51977a2a1f0789f58a36326a3977fb53032bc707cecb8c705d508"
+      }
+    },
+    {
+      "name": "factory.js",
+      "servedSHA256": "6688c3422381cfcdeb421f12f2f0533a7cefaa71720de4b690d6c47bb4fce349",
+      "sourceSHA256": {
+        "HEAD": "6688c3422381cfcdeb421f12f2f0533a7cefaa71720de4b690d6c47bb4fce349",
+        "origin/main": "6688c3422381cfcdeb421f12f2f0533a7cefaa71720de4b690d6c47bb4fce349",
+        "7c0809d": "6688c3422381cfcdeb421f12f2f0533a7cefaa71720de4b690d6c47bb4fce349"
+      }
+    },
+    {
+      "name": "factory.css",
+      "servedSHA256": "e6917bec0732a08042363f13e7df0474efe84a969c680a7f6110cb8344e258a3",
+      "sourceSHA256": {
+        "HEAD": "e6917bec0732a08042363f13e7df0474efe84a969c680a7f6110cb8344e258a3",
+        "origin/main": "e6917bec0732a08042363f13e7df0474efe84a969c680a7f6110cb8344e258a3",
+        "7c0809d": "e6917bec0732a08042363f13e7df0474efe84a969c680a7f6110cb8344e258a3"
+      }
+    },
+    {
+      "name": "issue.js",
+      "servedSHA256": "c946682f99be6a0b124482b9be3b948622c97c0472e3d1fe480f700fa7e3cb5c",
+      "sourceSHA256": {
+        "HEAD": "c946682f99be6a0b124482b9be3b948622c97c0472e3d1fe480f700fa7e3cb5c",
+        "origin/main": "c946682f99be6a0b124482b9be3b948622c97c0472e3d1fe480f700fa7e3cb5c",
+        "7c0809d": "c946682f99be6a0b124482b9be3b948622c97c0472e3d1fe480f700fa7e3cb5c"
+      }
+    },
+    {
+      "name": "issue.css",
+      "servedSHA256": "900e14323852211ecb62ddac38e2adc9d948c1520602d99014f3cd484264bc36",
+      "sourceSHA256": {
+        "HEAD": "900e14323852211ecb62ddac38e2adc9d948c1520602d99014f3cd484264bc36",
+        "origin/main": "900e14323852211ecb62ddac38e2adc9d948c1520602d99014f3cd484264bc36",
+        "7c0809d": "900e14323852211ecb62ddac38e2adc9d948c1520602d99014f3cd484264bc36"
+      }
+    },
+    {
+      "name": "account.js",
+      "servedSHA256": "85652c46f377ec233e61a41408b0ca7588222a302867a0e61756af1e45ecf979",
+      "sourceSHA256": {
+        "HEAD": "85652c46f377ec233e61a41408b0ca7588222a302867a0e61756af1e45ecf979",
+        "origin/main": "85652c46f377ec233e61a41408b0ca7588222a302867a0e61756af1e45ecf979",
+        "7c0809d": "85652c46f377ec233e61a41408b0ca7588222a302867a0e61756af1e45ecf979"
+      }
+    },
+    {
+      "name": "runtime.js",
+      "servedSHA256": "a7ce02e1d0d5411ac13db7af859a6cc9ce8c911a017db70a85cae3e41f617c9e",
+      "sourceSHA256": {
+        "HEAD": "a7ce02e1d0d5411ac13db7af859a6cc9ce8c911a017db70a85cae3e41f617c9e",
+        "origin/main": "a7ce02e1d0d5411ac13db7af859a6cc9ce8c911a017db70a85cae3e41f617c9e",
+        "7c0809d": "a7ce02e1d0d5411ac13db7af859a6cc9ce8c911a017db70a85cae3e41f617c9e"
+      }
+    },
+    {
+      "name": "workspace-ui.js",
+      "servedSHA256": "9fd1a292f95d9803d4b4948dcae4bb8932508cb4c77fa08818aecb4d0cb6b1d2",
+      "sourceSHA256": {
+        "HEAD": "0ee00c8a5145ad26d2eb47dc8fc27f19f335813e69b6d9f07fa15ce1a753b28e",
+        "origin/main": "9fd1a292f95d9803d4b4948dcae4bb8932508cb4c77fa08818aecb4d0cb6b1d2",
+        "7c0809d": "9fd1a292f95d9803d4b4948dcae4bb8932508cb4c77fa08818aecb4d0cb6b1d2"
+      }
+    },
+    {
+      "name": "read-projection-cache.js",
+      "servedSHA256": "8cac79060eeda7b52ae1c7d3152405f9e9cc2f9aec924d3ca3c09504e4400840",
+      "sourceSHA256": {
+        "HEAD": "8cac79060eeda7b52ae1c7d3152405f9e9cc2f9aec924d3ca3c09504e4400840",
+        "origin/main": "8cac79060eeda7b52ae1c7d3152405f9e9cc2f9aec924d3ca3c09504e4400840",
+        "7c0809d": "8cac79060eeda7b52ae1c7d3152405f9e9cc2f9aec924d3ca3c09504e4400840"
+      }
+    },
+    {
+      "name": "health.js",
+      "servedSHA256": "7957d6f3c99f29bfc302e2ac5fc674e0ab4b7b9fe0af51379e977a21520594b5",
+      "sourceSHA256": {
+        "HEAD": null,
+        "origin/main": "7957d6f3c99f29bfc302e2ac5fc674e0ab4b7b9fe0af51379e977a21520594b5",
+        "7c0809d": "7957d6f3c99f29bfc302e2ac5fc674e0ab4b7b9fe0af51379e977a21520594b5"
+      }
+    },
+    {
+      "name": "health.css",
+      "servedSHA256": "6b208f4dbbe06fbb208db8ab9f6b014a06af07ab0dd7e988724a6123800e5712",
+      "sourceSHA256": {
+        "HEAD": null,
+        "origin/main": "6b208f4dbbe06fbb208db8ab9f6b014a06af07ab0dd7e988724a6123800e5712",
+        "7c0809d": "6b208f4dbbe06fbb208db8ab9f6b014a06af07ab0dd7e988724a6123800e5712"
+      }
+    }
+  ],
+  "limits": "Package directory name is a provenance hint, not a complete revision attestation. Asset SHA256 comparisons establish those files only. No service restart or deployment occurred."
+}

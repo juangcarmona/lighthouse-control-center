@@ -1,0 +1,35 @@
+{
+  "capturedAt": "2026-11-14T19:08:52.063Z",
+  "sourceWritePerformed": false,
+  "steps": [
+    {
+      "flow": "load-next-issue-page",
+      "before": 9,
+      "after": 32,
+      "count": "32 issues · Partial coverage"
+    },
+    {
+      "flow": "read-issue-evidence",
+      "status": "Historical source evidence loaded.",
+      "card": "#53 · Inspect repository versions configuration and explained deviations\nOpen\n2m\nSource details\n\nCollected labels: enhancement, pr-draft\n\nReported stages: unknown / unread · Linked runs: unknown / unread\n\nEvidence observed: 2026-11-14T19:08:32.797Z · Published source results and GitHub execution are distinct. Current eligibility, live host leases and absent work are not inferred from this bounded page.\n\nRefresh issue evidence\nGitHub issue"
+    },
+    {
+      "flow": "health-project",
+      "url": "https://192.168.0.3:5443/workspace/health/juangcarmona/lighthouse",
+      "text": "Health / juangcarmona/lighthouse\n\nConfigured repositories only · read-only observations · no overall health score.\n\njuangcarmona/lighthouse\n\nObserved · partial coverage · Latest 20 workflow runs and first 100 open issue records; not a complete delivery audit\n\nCollection scope and freshness\nActions runs\n20\nLatest collected source records\nFailed runs\n0\nSource conclusions in this collection\nEngineering level\nUnavailable\nNo comparable assessment source\nEnvironment\nUnknown\nPRE / PRO / production not verified\nDelivery\nEngineering quality\nLighthouse adoption/autonomy\nResources\nDelivery\n\nGitHub Actions workflow outcomes in the latest collected scope. These are execution results, not deployment or delivery acceptance.\n\n20 latest collected runs · 0 failed\nPR review #666 · juangcarmona\ncompleted · success\nPublic engineering site\nin_progress · Conclusion unknown\nLighthouse .NET verification\nin_progress · Conclusion unknown\nLighthouse visual verification\ncompleted · success\nRelease\nin_progress · Conclusion unknown\nLighthouse verification\nin_progress · Conclusion unknown\nLighthouse package contracts\nin_progress · Conclusion unknown\nDelivery after CI # · juangcarmona\ncompleted · success\nstage #661 · github-actions[bot]\nin_progress · Conclusion unknown\nPR review #666 · cloudflare-workers-and-pages[bot]\ncompleted · skipped\nPublic engineering site\ncompleted · success\nLighthouse package contracts\ncompleted · success\nLighthouse .NET verification\ncompleted · success\nLighthouse verification\ncompleted · success\nLighthouse visual verification\ncompleted · success\nPR review #665 · juangcarmona\ncompleted · success\nRelease\ncompleted · success\nLighthouse package contracts\ncompleted · success\nLighthouse verification\ncompleted · success\nPR review #665 · juangcarmona\ncompleted · success\nEngineering quality\n\nEngineering level, gates, coverage, mutation and security are unavailable until their source assessments and definitions are supplied.\n\nNo engineering score, level or passing gate is inferred from workflow conclusions.\n\nLighthouse adoption/autonomy\n\nAgentic and code measurements are unavailable. Committed version inventory is separate from installed adoption.\n\nNo agent success, autonomy, AI usage or code quality value is inferred from this Actions collection.\n\nResources\n\nProvider cost, tokens, CPU, memory and storage measurements are unavailable. Runner registration does not establish free capacity.\n\nEnvironment deployment is unknown: no verified PRE, PRO or production target result is in this collection.\n\nInspect runtime and version inventory\n\nTrends unavailable: no comparable historical samples or definition-change boundaries are supplied yet. No missing interval is treated as zero."
+    },
+    {
+      "flow": "health-run",
+      "url": "https://192.168.0.3:5443/workspace/health/juangcarmona/lighthouse/runs/43630349730",
+      "text": "Health / juangcarmona/lighthouse\n\nConfigured repositories only · read-only observations · no overall health score.\n\nObserved · partial coverage\n\nCollection scope and freshness\nBack to project health\nPR review #666 · juangcarmona\n\nGitHub Actions · exact contributing run\n\nSource result\ncompleted · success\nObserved\n2026-11-14T19:08:36.186Z · 0 min ago\nPurpose\nInvestigate this workflow execution. Delivery acceptance and deployment require separate evidence.\nOpen exact contributing GitHub run\nSource fields and limitations\n\nTrends unavailable: no comparable historical samples or definition-change boundaries are supplied yet. No missing interval is treated as zero."
+    },
+    {
+      "flow": "keyboard-first-tab",
+      "focused": {
+        "tag": "A",
+        "text": "Skip to issues",
+        "outline": "solid"
+      }
+    }
+  ]
+}
