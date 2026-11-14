@@ -34,7 +34,7 @@ None. `factory-overview` covers workflow observations, not configuration compari
 
 Extend the existing ASP.NET Core workspace module and connected-user GitHub transport; add a read-only project query and browser presentation under the existing web assets. Add projection, permission, budget and browser tests in the current test suites. No database migration, new adapter service, runtime/provider administration, registry integration, repository registration change or mutation API.
 
-Delivery depends on accepted #52/#103 discovery and #50/#48 reader delivery. Their component changes are assembled in the current PR #100 feature candidate at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4`, including the #103 and #112 commits. This is not integration to `main` or acceptance of the parent issues: `main` at `d24953debaab37dfedf7745add1b47dae538a6d7` still lacks those candidate handlers, and #48/#52 remain open. Reuse this candidate implementation; before #53 implementation, verify PR #100 integration into `main`, exact interfaces and real source acceptance. The candidate ADR-0008 file records `Accepted`, while `main` records `Proposed`; reconcile the source-bound #48 decision receipts before relying on that difference. ADR-0006/0007/0009 remain authoritative and ADR-0010 remains proposed. Keep `future` until the maintainer explicitly resolves the existing release conditions.
+PR #100 is merged to `main`, so its discovery and connected-user reader components are available and reused. Issue #52 is closed; #48 and #50 remain open as separate work. This bounded #53 implementation reads only configured-repository files through the connected GitHub user and makes no issue, workflow, or repository writes; it does not claim those other issues are accepted. The owner authorized this read-only increment in the issue/PR conversation. Keep merge, release, deployment and the remaining parent-issue decisions separate. ADR-0008 is accepted on `main`; ADR-0006/0007/0009 remain authoritative and ADR-0010 remains proposed.
 
 ## Product Authority and Evidence
 
@@ -63,8 +63,4 @@ The groups below organize the evidence planned by this proposal. They are propos
 
 ## Completion Boundary
 
-This is a planned candidate for owner review, not an approved design or implementation. Definition of Done later requires evidence for proposal verification groups VG-1–VG-8, current citations, required CI at the exact implementation head, documentation, independent review and the lifecycle's explicit protected decisions. See design.md for support limits and tasks.md for ordered implementation and validation.
-
-## Operator recovery provenance
-
-Native proposal run `42704809531` produced these four candidate documents, then failed strict validation in its publisher. This operator recovery removes the archive-unsafe preamble and keeps the configured citation placement, shortens six requirement summaries and retains every original clause in explicit scenarios. The new repository-scoped route uses the current candidate’s repository terminology. Validation and independent draft review are recorded separately; the native run remains failed, `future` stays in place, and no product acceptance, prerequisite acceptance or implementation is claimed.
+The owner authorized this bounded read-only implementation; PR #197 remains a draft candidate. Product acceptance, merge, release and deployment remain separate decisions. Definition of Done requires evidence for proposal verification groups VG-1–VG-8, current citations, required CI at the exact implementation head, documentation, independent review and the lifecycle's explicit protected decisions. See design.md for support limits and tasks.md for current evidence and remaining review work.

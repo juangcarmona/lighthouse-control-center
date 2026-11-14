@@ -4,40 +4,40 @@ pdac-scope: cited
 
 # Tasks
 
-Implementation is held by `future`. These unchecked tasks describe later work, not authorization or completed evidence. VG-1–VG-8 refer only to the proposal verification groups mapped in [proposal.md](proposal.md#proposal-verification-matrix); they are not numbered acceptance criteria from the original issue.
+The owner authorized the bounded, read-only configuration inspection now implemented in draft PR #197. Merge, release, deployment, and acceptance of separate parent work remain distinct. Checkboxes below record evidence actually present in this candidate; the remaining tasks identify what still needs review. VG-1–VG-8 refer only to the proposal verification groups mapped in [proposal.md](proposal.md#proposal-verification-matrix); they are not numbered acceptance criteria from the original issue.
 
 ## 1. Confirm delivery prerequisites before coding
 
-- [ ] 1.1 Verify PR #100 integrates the already-assembled #52/#103 discovery and #50/#48 reader components into `main`; obtain the existing parent-issue/source acceptance and reconcile ADR-0008 through #48 decision receipts. Verify exact integrated interfaces before implementation; do not duplicate the candidate components.
-- [ ] 1.2 Maintainer explicitly resolves the implementation hold through the existing lifecycle and reviews this proposal; verify a recorded release decision before starting group 2.
-- [ ] 1.3 Refresh the project-detail, discovery, source-scope and issue/evidence reader contracts against the accepted head; deliver an interface map and confirm the additive route uses those paths without duplicating prerequisites.
+- [x] 1.1 Verify PR #100 is merged to `main` and its discovery/source interfaces are present. #48 and #50 remain separate open work; this endpoint uses only configured-repository, connected-user content reads and does not claim their issue/action acceptance.
+- [x] 1.2 Record the owner's authorization for this bounded read-only implementation in the PR and issue conversation; merge, release and deployment are still pending.
+- [x] 1.3 Recheck the existing repository access, connected-user identity and bounded source-read contracts. The new route is additive and does not duplicate discovery or issue readers.
 
 ## 2. Project source facts and supported interpretations
 
-- [ ] 2.1 Add pinned CLI 0.12.65 manifest/upgrade schemas and owner-supplied SDLC 0.22.4 compatibility fixtures with integrity/source receipts; verify offline schema tests reject the SDLC forbidden asset keys without relaxing the schema (VG-7).
-- [ ] 2.2 Implement the design support table for six fixed source files and two bounded managed workflow sources, preserving field provenance and raw unsupported facts; verify fixture tests retain manifest/upgrade/contract/package/lock dimensions and duplicate-key/unknown-schema diagnostics (VG-1, VG-7).
-- [ ] 2.3 Implement conflict and root-npm applicability projections; verify tests retain every conflicting declaration and require complete supported evidence for narrowly scoped not-applicable, never inferring adoption from absent/denied files (VG-4).
-- [ ] 2.4 Document supported paths, versions, unsupported semantics and fixture lineage alongside the projection; verify documentation matches the support-table test cases and synthetic variants are labelled (VG-1, VG-4, VG-7).
+- [x] 2.1 Add pinned CLI 0.12.65 manifest/upgrade schemas and owner-supplied SDLC 0.22.4 compatibility fixtures with integrity/source receipts; verify offline schema tests reject the SDLC forbidden asset keys without relaxing the schema (VG-7). The released SDLC contract/schema are pinned at `evidence/schemas/sdlc-0.22.4/`; `ReleasedSdlcContractFixtureIsUnsupportedByItsClosedDeclaredSchema` asserts the declared extra asset keys against the unchanged closed schema.
+- [x] 2.2 Implement the bounded source support table and provenance; focused projector tests cover manifest, upgrade, npm declaration/lock dimensions, duplicate keys and unknown schemas (VG-1, VG-7).
+- [x] 2.3 Preserve separate facts and unsupported states; tests cover denied/missing content and bounded applicability without inferring runtime installation or non-adoption (VG-4).
+- [x] 2.4 Document supported paths, versions, unsupported semantics and fixture lineage in [repository-configuration.md](../../../docs/repository-configuration.md) (VG-1, VG-4, VG-7).
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
 <!-- pdac:cite id="FR-PROJECT-DISCOVERY" digest="sha256:fb93a1c32232be6a679aa7aa074e9b6c0efd871cd48592b6b8d56996c36a2382" -->
 
 ## 3. Deliver the authorized bounded read query
 
-- [ ] 3.1 Extend the existing connected-user transport for immutable configuration reads and add the workspace query/GET route; verify contract tests resolve the branch once, bind every file to that commit, require content-read authority and reject arbitrary paths, URLs, symlinks, unconfigured repositories and mutating methods (VG-1, VG-6).
-- [ ] 3.2 Apply the eight-content-read, two-concurrent-read, 256 KiB/file, 1 MiB aggregate, 2 MiB response and 30-second budgets; verify boundary tests show incomplete/unavailable reasons rather than truncating into valid facts (VG-4).
-- [ ] 3.3 Add scoped 15-second coalescing and lifecycle invalidation; verify injected-clock and transport tests check permission before reuse, preserve old times only for permitted stale fallback, and clear/cancel on session/account/generation/repository-authority changes including late responses (VG-4, VG-8).
-- [ ] 3.4 Document query shape, availability mapping, read bounds, refresh and content-grant limitations; verify API examples against contract fixtures and confirm request traces contain only permitted read operations (VG-1, VG-6).
+- [x] 3.1 Add the configured-repository GET query using the connected-user reader and immutable commit; focused tests verify the single branch resolution, content grant, route bounds and absence of issue/dispatch writes (VG-1, VG-6).
+- [x] 3.2 Enforce the content-read, file, aggregate and response limits; boundary tests verify partial/unknown results without truncation (VG-4).
+- [x] 3.3 Scope the short cache to session, account, repository and authority, check permissions before reuse, and clear results on authority changes; tests cover stale reads, permission loss and late responses (VG-4, VG-8).
+- [x] 3.4 Document route, authority, read limits, refresh and content-grant constraints in [repository-configuration.md](../../../docs/repository-configuration.md) (VG-1, VG-6).
 <!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 
 ## 4. Explain comparisons and navigation in project detail
 
-- [ ] 4.1 Add explicit same-scope baseline selection and deterministic compatible comparisons; verify tests cover scoped match, lower declaration, equal source identity, conflicting pins, different contracts, ranges and missing expectations with both origins visible (VG-2).
-- [ ] 4.2 Render declared/lock-resolved facts separately and installed/latest/policy-required unknown slots; verify no baseline is labelled latest or required and no declaration proves runtime installation (VG-3).
-- [ ] 4.3 Display source-linked exception declarations through the existing evidence path with unsupported/unassessed validity; verify the intentional-exception fixture preserves the difference and enforces no invented owner/review-date contract (VG-5).
-- [ ] 4.4 Add immutable configuration links and explicitly linked maintenance-work navigation using existing readers/safe links; verify missing linkage remains unknown, hostile text stays inert, unsafe/out-of-scope links are rejected and navigation creates no upgrade/write/issue/dispatch requests (VG-6).
-- [ ] 4.5 Enforce current dataScope/repository/epoch checks, at most two in-memory repository projections and 4 MiB retention with no persistent browser storage; verify account-change late responses cannot restore cleared facts or baseline selections (VG-4, VG-8).
-- [ ] 4.6 Document the operator journey, comparison limitations, exception status and refresh semantics; verify each documented state can be reached in a labelled fixture demonstration (VG-2, VG-3, VG-5, VG-6).
+- [x] 4.1 Add explicit second-repository selection and only compare facts with compatible scope and contract identity; preserve both observed origins (VG-2).
+- [x] 4.2 Keep declared and lock-resolved facts separate; latest, installed and required-policy values remain unknown (VG-3).
+- [x] 4.3 Show exception declarations as unassessed, with source provenance; no validity contract is invented (VG-5).
+- [x] 4.4 Add immutable source links and exact, same/configured-repository issue links; unsafe strings remain inert and no write is sent (VG-6).
+- [x] 4.5 Bound browser memory to two repository projections and 4 MiB, clear on scope/account changes and avoid persistent storage (VG-4, VG-8).
+- [x] 4.6 Document comparison limitations, exception status and refresh semantics in [repository-configuration.md](../../../docs/repository-configuration.md) (VG-2, VG-3, VG-5, VG-6).
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 <!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->
