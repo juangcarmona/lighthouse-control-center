@@ -2,6 +2,10 @@
 
 <!-- pdac-scope: cited -->
 
+## Purpose
+
+Explain repository-produced coverage for a declared scope using exact source identity, without turning absent evidence into a passing quality verdict.
+
 ## ADDED Requirements
 
 ### Requirement: Coverage uses exact CI source identity
