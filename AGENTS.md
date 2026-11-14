@@ -1,6 +1,6 @@
 # Lighthouse Control Center repository instructions
 
-Read [README.md](README.md), [docs/README.md](docs/README.md), and [docs/engineering-lifecycle.md](docs/engineering-lifecycle.md) before making changes. Read the relevant ProductShape and ArcShape documents before changing product behavior or architecture.
+Read [README.md](README.md) and [docs/README.md](docs/README.md) before making changes. Read the relevant ProductShape and ArcShape documents before changing product behavior or architecture.
 
 ## GitHub target verification
 
@@ -12,13 +12,10 @@ Before a GitHub write, run `node scripts/check-repository-target.mjs <owner/repo
 - Architecture belongs to `docs/architecture/` and explains how the implementation realizes accepted product intent. Use ArcShape's generated structure and the installed `architecture-docs` skill. Do not invent product requirements or architectural facts.
 - Significant architecture decisions belong in `docs/architecture/09-architecture-decisions/` through the ArcShape ADR workflow.
 - Implementation and tests belong under `src/` and `tests/`.
-- The shared Agentic SDLC configuration belongs to `docs/engineering-lifecycle.md`. Follow it across work items; keep the shared lifecycle authoritative for Lighthouse Control Center.
 
 ## Working agreements
 
-- Use the repository's installed `agentic-sdlc` capabilities for refinement, proposal, implementation, integration, review, and status.
 - Keep product definition changes distinct from implementation plans and delivery work.
-- Preserve the established shared lifecycle labels, readiness and completion gates, retrospective practice, and human-only decisions.
 - Keep generated ProductShape, ArcShape, and shared skill files under their installers' ownership. Update them through the relevant CLI or installer.
 - Do not choose an application framework, runtime, domain model, or deployment shape until product intent and architecture have been established.
 
@@ -32,7 +29,7 @@ Before a GitHub write, run `node scripts/check-repository-target.mjs <owner/repo
 
 ## Autonomous continuation
 
-For unattended work, read [the current delivery grant](docs/runbooks/lighthouse-unattended.md) and the Fast Forward section of [the engineering lifecycle](docs/engineering-lifecycle.md). Use the existing Lighthouse entrypoints and exact issue policy; retain source-bound independent review, required CI and protected human decisions.
+For unattended work, read [the current delivery grant](docs/runbooks/lighthouse-unattended.md). Use the existing Lighthouse entrypoints and exact issue policy; retain source-bound independent review, required CI and protected human decisions.
 
 ## Validation
 

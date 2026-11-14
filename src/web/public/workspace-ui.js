@@ -8,6 +8,7 @@ const paths = {
   attention: 'M12 3 2 21h20ZM12 9v5m0 3v1',
   issues: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM12 7v6m0 3v1',
   runtime: 'M3 3h18v7H3Zm0 11h18v7H3ZM6 6h1m-1 11h1',
+  health: 'M3 12h4l3-8 4 16 3-8h4',
   account: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM4 21v-3a8 8 0 0 1 16 0v3',
   refresh: 'M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1',
   collapse: 'M3 4h18v16H3ZM8 4v16m8-12-4 4 4 4',
@@ -76,6 +77,12 @@ function identityLink(className) {
   copy.append(document.createElement('strong'), document.createTextNode(' '), document.createElement('small')); link.append(copy); return link;
 }
 function enhance() {
+  document.querySelectorAll('.workspace-nav').forEach(navigation => {
+    if (!navigation.querySelector('a[href="/workspace/health"]') && navigation.childElementCount) {
+      const link = document.createElement('a'); link.href = '/workspace/health'; link.textContent = 'Health';
+      navigation.insertBefore(link, navigation.querySelector('a[href="/workspace/runtime"]'));
+    }
+  });
   let changedNavigation = false;
   document.querySelectorAll('.workspace-nav a').forEach(link => {
     if (link.querySelector('svg')) return;
