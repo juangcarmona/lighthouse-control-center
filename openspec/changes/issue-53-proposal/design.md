@@ -6,9 +6,9 @@ pdac-scope: cited
 
 ## Context
 
-See proposal.md for motivation and authority. `main` at `d24953debaab37dfedf7745add1b47dae538a6d7` has connected-user transport, repository access checks and bounded observations under `src/SoFa.Modules.Workspace/Source/`; it does not contain the supplied discovery/issue-reader handlers. The current PR #100 feature candidate at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4` already assembles those component changes, including #103 and #112, but is not merged to `main` and has not satisfied the parent issue acceptance. `GitHubObservations.ReadRepositoryAsync` checks permission before a 15-second scoped cache and checks connection generation before returning results. Its issue/action permissions are not a substitute for content-read authority.
+See proposal.md for motivation and authority. PR #100 merged into `main` as `877bb1fd6219becdbd07e342d0bbc6eeedec517b`, integrating the #52/#103 discovery and #48/#50 reader components. #52 was accepted and closed on 2026-11-13; #48 and #50 remain open for their separate acceptance. The existing #53 implementation PR #197 is authorized for the bounded read-only configuration comparison described in proposal.md, using the connected account's content-read authority. `GitHubObservations.ReadRepositoryAsync` checks permission before a 15-second scoped cache and checks connection generation before returning results. Its issue/action permissions are not a substitute for content-read authority.
 
-The PR #100 candidate interfaces at `eb9d51a7bb7bd883b97b139d57c9553d8f51d8e4` are the existing implementation to reuse, not a separate proposal to rebuild. Revalidate their exact interfaces, main integration and source acceptance before implementation. The candidate ADR-0008 file records `Accepted`, while `main` records `Proposed`; reconcile the #48 source-bound decision receipts at pickup without treating this proposal as an ADR decision. Preserve ADR-0006 observation independence, ADR-0007 identity separation and ADR-0009 .NET/Aspire ownership. No dependency on proposed ADR-0010 or a new ADR-0008 decision.
+The interfaces integrated by PR #100 are the existing implementation to reuse, not a separate proposal to rebuild. Verify that PR #197 uses the exact current interfaces and remains within the owner-authorized scope. ADR-0008 remains Proposed on `main`; its source-bound #48 decision receipts do not gate this read-only comparison unless the implementation uses that issue-command contract. Preserve ADR-0006 observation independence, ADR-0007 identity separation and ADR-0009 .NET/Aspire ownership. No dependency on proposed ADR-0010 or a new ADR-0008 decision.
 
 ## Goals / Non-Goals
 
@@ -87,7 +87,7 @@ Alternative: upgrade buttons or automatic maintenance issue creation change auth
 
 ## Risks / Trade-offs
 
-- [Prerequisites are assembled in an unmerged candidate] → Maintainer must integrate PR #100 into `main`, obtain the existing #52/#48 acceptance and refresh exact interfaces before implementation; reuse the component work rather than replacing it here.
+- [Earlier proposal listed pending prerequisites] → PR #100 is merged and #52 is accepted. Issues #48 and #50 remain separate; keep PR #197 within the owner's bounded #53 authorization and use the integrated interfaces without replacing them.
 - [Limited contract support] → Keep raw evidence available, unsupported status explicit and comparison disabled where semantics are missing. Shared contract expansion is separate work.
 - [Repository size exceeds budgets] → Report bounded partial coverage. Do not raise limits silently or recursively crawl monorepos.
 - [Access loss races with a read] → Permission-before-reuse, generation/epoch checks and clearing tests cover server and browser paths.
@@ -96,7 +96,7 @@ Alternative: upgrade buttons or automatic maintenance issue creation change auth
 
 ## Migration Plan
 
-No persisted data or repository configuration changes. After prerequisite acceptance and explicit implementation release, land projection and tests, then the read-only route, then project presentation and browser checks. Update support documentation with each slice. Deploy through the existing application process only after normal acceptance; this proposal authorizes no deployment. Roll back the additive route/presentation together; source delivery and configuration remain untouched. Clear ephemeral projections on application restart or scope change.
+No persisted data or repository configuration changes. Implement the authorized scope through existing PR #197: land projection and tests, then the read-only route, then project presentation and browser checks. Keep each slice within the current owner authorization and the verification plan. Deploy through the existing application process only after normal acceptance; this proposal authorizes no deployment. Roll back the additive route/presentation together; source delivery and configuration remain untouched. Clear ephemeral projections on application restart or scope change.
 
 ## Validation and Visual Evidence Plan
 
