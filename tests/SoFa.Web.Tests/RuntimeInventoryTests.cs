@@ -9,6 +9,7 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 using JuanGCarmona.SoFa.Modules.Workspace.Runtime;
 using JuanGCarmona.SoFa.Modules.Workspace.Source;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Configuration;
 
 namespace SoFa.Web.Tests;
 
@@ -63,6 +64,19 @@ public sealed class RuntimeInventoryTests
     Assert.Contains("self-hosted", runner.Labels);
     Assert.DoesNotContain("token", JsonSerializer.Serialize(result), StringComparison.OrdinalIgnoreCase);
     Assert.Equal(1, fixture.Source.RunnerCalls);
+  }
+
+  [Fact]
+  public async Task ProjectReadGrantDoesNotAuthorizeRepositoryRunnerInventory()
+  {
+    using var fixture = new Fixture(explicitProjectRead: true);
+    var result = await fixture.Runners.Handle(new(await fixture.Session(), "example/repository"), CancellationToken.None);
+    Assert.Equal("unavailable", result.Availability);
+    Assert.False(result.Complete);
+    Assert.Empty(result.Runners);
+    Assert.Contains("provider/resource scopes", result.Reason, StringComparison.OrdinalIgnoreCase);
+    Assert.Empty(fixture.Source.Paths);
+    Assert.Equal(0, fixture.Source.RunnerCalls);
   }
 
   [Fact]
@@ -320,24 +334,45 @@ public sealed class RuntimeInventoryTests
     internal WorkspaceOptions Settings { get; }
     private readonly GitHubTransport transport;
     internal GetRepositoryRunnersHandler Runners { get; }
-    internal Fixture(long? appId = 123)
+    internal Fixture(long? appId = 123, bool explicitProjectRead = false)
     {
+      var profile = OwnerAdmissionTests.Profile();
+      if (explicitProjectRead)
+      {
+        var accessConfig = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+          ["Access:Projects:0:Id"] = "project-a",
+          ["Access:Projects:0:Repository"] = "example/repository",
+          ["Access:Operators:0:Issuer"] = profile.Issuer.AbsoluteUri,
+          ["Access:Operators:0:Subject"] = "operator-a",
+          ["Access:Operators:0:Grants:0:Project"] = "project-a",
+          ["Access:Operators:0:Grants:0:Permission"] = "read",
+        }).Build();
+        profile = new IdentityProfile
+        {
+          Issuer = profile.Issuer,
+          ClientId = profile.ClientId,
+          OwnerSubject = profile.OwnerSubject,
+          Access = OperatorAccess.Load(accessConfig.GetSection("Access"), profile.Issuer, ["example/repository"]),
+        };
+      }
       Settings = new()
       {
         Origin = new("https://workspace.invalid"),
         IdentityMode = "Development",
-        Identity = OwnerAdmissionTests.Profile(),
+        Identity = profile,
         Repositories = ["example/repository"],
         GitHubAppId = appId,
         GitHubClientId = "test-client"
       };
       Sessions = new(Settings.Identity, Clock); transport = new(Source);
       var authorization = new GitHubAuthorization(Settings, Sessions, transport, Clock);
-      Runners = new(Sessions, authorization, new(Settings, Sessions, authorization, transport, Clock), transport, Slots, Clock);
+      Runners = new(Settings, Sessions, authorization, new(Settings, Sessions, authorization, transport, Clock), transport, Slots, Clock);
     }
     internal async Task<OwnerSession> Session()
     {
-      var principal = OwnerAdmissionTests.Principal(authenticationTime: Clock.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
+      var principal = OwnerAdmissionTests.Principal(subject: Settings.Identity.Access is null ? "owner-subject" : "operator-a",
+          authenticationTime: Clock.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
       var record = Sessions.Get(await Sessions.StoreAsync(new AuthenticationTicket(principal, "owner")))!;
       record.GitHub.Current = new(71, "verified-user", new("fixture-token", "fixture-refresh", Clock.GetUtcNow().AddHours(1), Clock.GetUtcNow().AddHours(4)), Clock.GetUtcNow());
       return record;

@@ -12,7 +12,7 @@ internal sealed record RepositoryRunner(long Id, string Name, string? Os, string
 internal sealed record RepositoryRunners(string Repository, string Availability, DateTimeOffset ObservedAt,
     IReadOnlyList<RepositoryRunner> Runners, long? SourceTotal, bool Complete, string? DataScope = null, string? Reason = null);
 
-internal sealed class GetRepositoryRunnersHandler(OwnerSessions sessions, GitHubAuthorization authorization,
+internal sealed class GetRepositoryRunnersHandler(WorkspaceOptions settings, OwnerSessions sessions, GitHubAuthorization authorization,
     RepositoryAccess access, GitHubTransport transport, RuntimeReadSlots slots, TimeProvider clock)
     : IQueryHandler<GetRepositoryRunners, RepositoryRunners>
 {
@@ -22,6 +22,8 @@ internal sealed class GetRepositoryRunnersHandler(OwnerSessions sessions, GitHub
   public async Task<RepositoryRunners> Handle(GetRepositoryRunners query, CancellationToken cancellationToken)
   {
     RepositoryRunners Failure(string state, string reason, long? total = null) => new(query.Repository, state, clock.GetUtcNow(), [], total, false, Reason: reason);
+    if (settings.Identity.Access is not null)
+      return Failure("unavailable", "Repository runner inventory is unavailable in explicit mode until qualified provider/resource scopes are supported.");
     if (!slots.GitHub.Wait(0, cancellationToken)) return Failure("busy", "Two runtime source queries are already in progress. Retry explicitly.");
     try
     {
