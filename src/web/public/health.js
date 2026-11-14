@@ -183,8 +183,32 @@ function projectView(repository, row) {
   }
   if (!row.runs?.length) delivery.append(node('p', row.availability === 'available' ? 'No workflow runs in the successfully collected scope; this is not a health verdict.' : 'Workflow evidence unavailable; Actions and Issues read permission and a successful source observation are required.'));
   fragment.append(delivery);
-  const engineering = family('Engineering quality', 'Engineering level, gates, coverage, mutation and security are unavailable until their source assessments and definitions are supplied.');
-  engineering.id = 'engineering'; engineering.append(node('p', 'No engineering score, level or passing gate is inferred from workflow conclusions.', 'health-empty-signal'));
+  const engineering = family('Engineering quality', 'Coverage is limited to the named test and application scope below. It is informational and does not gate CI. Other quality measures are unavailable until their own sources exist.');
+  engineering.id = 'engineering';
+  const evidence = row.coverageEvidence;
+  const expectedPercentage = evidence && Number.isSafeInteger(evidence.linesCovered) && Number.isSafeInteger(evidence.linesValid)
+      && evidence.linesValid > 0 ? Math.round(evidence.linesCovered / evidence.linesValid * 10000) / 100 : NaN;
+  if (evidence?.availability === 'available' && Number.isSafeInteger(evidence.linesCovered) && Number.isSafeInteger(evidence.linesValid)
+      && evidence.linesValid > 0 && evidence.linesCovered >= 0 && evidence.linesCovered <= evidence.linesValid
+      && Number.isSafeInteger(evidence.runId) && evidence.runId > 0 && Number.isSafeInteger(evidence.attempt) && evidence.attempt > 0
+      && /^[a-f0-9]{40}$/.test(evidence.sourceCommit || '') && /^[a-f0-9]{40}$/.test(evidence.testedCommit || '')
+      && Number.isFinite(evidence.percentage) && evidence.percentage === expectedPercentage) {
+    engineering.append(node('p', `${evidence.percentage}% line coverage · ${evidence.linesCovered} of ${evidence.linesValid} lines`, 'health-sample-label'),
+      node('p', evidence.scope, 'health-empty-signal'), facts([
+        ['Definition', 'coverage-lines-v1'], ['Source revision', evidence.sourceCommit], ['Tested revision', evidence.testedCommit],
+        ['CI run / attempt', `${evidence.runId} / ${evidence.attempt}`], ['Observed', time(evidence.observedAt)]
+      ]));
+    if (typeof evidence.runUrl === 'string') {
+      try {
+        const url = new URL(evidence.runUrl);
+        if (url.origin === 'https://github.com' && url.pathname === '/' + repository + '/actions/runs/' + evidence.runId
+            && !url.search && !url.hash) {
+          const source = link('Open exact CI run', url.href); source.rel = 'noreferrer noopener'; engineering.append(source);
+        }
+      } catch { /* Invalid source links are omitted. */ }
+    }
+  } else engineering.append(node('p', evidence?.reason || 'Coverage is unknown until a complete report matches the exact repository, commit, CI run and attempt.', 'health-empty-signal'));
+  engineering.append(node('p', 'No engineering score, passing gate, mutation or security result is inferred from coverage.', 'health-empty-signal'));
   const adoption = family('Lighthouse adoption/autonomy', 'Agentic and code measurements are unavailable. Committed version inventory is separate from installed adoption.');
   adoption.id = 'adoption'; adoption.append(node('p', 'No agent success, autonomy, AI usage or code quality value is inferred from this Actions collection.', 'health-empty-signal'));
   const resources = family('Resources', 'Provider cost, tokens, CPU, memory and storage measurements are unavailable. Runner registration does not establish free capacity.');
@@ -271,6 +295,22 @@ async function refresh() {
       if (!permission || permission.availability !== 'available' || !permission.actionsRead || !permission.issuesRead) continue;
       repositories.set(row.repository, ['available', 'stale'].includes(row.availability) && Array.isArray(row.runs) ? row
         : { ...row, runs: undefined, availability: 'unavailable' });
+    }
+    const selectedRow = selected && !runId ? repositories.get(selected) : null;
+    if (selectedRow && observed(selectedRow)) {
+      try {
+        const coverageResponse = await fetch('/api/health/coverage/' + selected.split('/').map(encodeURIComponent).join('/'),
+          { cache: 'no-store', signal: AbortSignal.timeout(35000) });
+        if (requestEpoch !== epoch) return;
+        if ([401, 403, 409].includes(coverageResponse.status)) { clear('Coverage source authority changed. Verify Account and refresh.'); return; }
+        const evidence = coverageResponse.ok ? await coverageResponse.json() : null;
+        if (evidence && !validateWorkspaceSourceIdentity(evidence, scope, account.userId, generation)) {
+          clear('Source account changed. Refresh after verification.'); return;
+        }
+        selectedRow.coverageEvidence = evidence ?? { availability: 'unknown', reason: 'Coverage source is unavailable; the current measurement is unknown.' };
+      } catch {
+        selectedRow.coverageEvidence = { availability: 'unknown', reason: 'Coverage source could not be checked; the current measurement is unknown.' };
+      }
     }
     render(); byId('health-status').textContent = 'Configured repositories only · read-only observations · no overall health score.';
   } catch {

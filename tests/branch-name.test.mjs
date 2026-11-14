@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 const check = branch => spawnSync(process.execPath, ['scripts/check-branch-name.mjs', branch], { encoding: 'utf8' });
 
 test('accepts numbered authored branches and dependency-provider branches', () => {
-  for (const branch of ['lighthouse/implement-47-aabbccddeeff', 'lighthouse/propose-47-aabbccddeeff', 'fix/37-dependency-branch-checks', 'docs/25-implementation-learning', 'dependabot/npm_and_yarn/dot-agents/skills/architecture-docs/snapshot/dompurify-3.4.17', 'dependabot/npm_and_yarn/dot-agents/skills/architecture-docs/snapshot/multi-010aad1c49', 'dependabot/github_actions/actions/checkout-7']) {
+  for (const branch of ['lighthouse/implement-47-aabbccddeeff', 'lighthouse/propose-47-aabbccddeeff', 'chore/156-lighthouse-implement-42ae92f10963', 'chore/117-lighthouse-propose-0123456789ab', 'fix/37-dependency-branch-checks', 'docs/25-implementation-learning', 'dependabot/npm_and_yarn/dot-agents/skills/architecture-docs/snapshot/dompurify-3.4.17', 'dependabot/npm_and_yarn/dot-agents/skills/architecture-docs/snapshot/multi-010aad1c49', 'dependabot/github_actions/actions/checkout-7']) {
     const result = check(branch);
     assert.equal(result.status, 0, `${branch}: ${result.stderr}`);
   }
@@ -29,8 +29,8 @@ test('generated foundation guard and manifest admit the established automation b
   try {
     assert.equal(spawnSync('git', ['init', '--quiet', directory]).status, 0);
     for (const [allowed, branches] of [
-      [true, ['fix/49-identity-boundary', 'lighthouse/propose-49-2de94e5eefdb', 'lighthouse/implement-99-aabbccddeeff', 'dependabot/npm_and_yarn/snapshot/tool-1.0.0', 'dependabot/github_actions/actions/checkout-7']],
-      [false, ['feature/49-identity', 'fix/0-invalid', 'lighthouse/implement-0-aabbccddeeff', 'lighthouse/implement-99-main', 'lighthouse/arbitrary-49-aabbccddeeff', 'dependabot/unknown/tool']],
+      [true, ['fix/49-identity-boundary', 'lighthouse/propose-49-2de94e5eefdb', 'lighthouse/implement-99-aabbccddeeff', 'chore/156-lighthouse-implement-42ae92f10963', 'dependabot/npm_and_yarn/snapshot/tool-1.0.0', 'dependabot/github_actions/actions/checkout-7']],
+      [false, ['feature/49-identity', 'fix/0-invalid', 'lighthouse/implement-0-aabbccddeeff', 'lighthouse/implement-99-main', 'lighthouse/arbitrary-49-aabbccddeeff', 'chore/0-lighthouse-implement-42ae92f10963', 'chore/156-lighthouse-implement-not-a-sha', 'dependabot/unknown/tool']],
     ]) {
       for (const branch of branches) {
         assert.equal(pattern.test(branch), allowed, `manifest: ${branch}`);
