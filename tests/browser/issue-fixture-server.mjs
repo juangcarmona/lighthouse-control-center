@@ -6,6 +6,7 @@ const require = createRequire(import.meta.url);
 const root = new URL('../../src/web/public/', import.meta.url);
 const assets = new Map(['workspace-ui.js', 'read-projection-cache.js', 'lighthouse.svg', 'account.css', 'account.js', 'attention.html', 'attention.js', 'attention-controls.js', 'runtime.html', 'runtime.js', 'runtime.css', 'factory.html', 'factory.js', 'factory.css', 'issue.html', 'issue.js', 'issue-actions.js', 'markdown.js', 'app.css', 'issue.css'].map(file => ['/' + file, new URL(file, root)]));
 assets.set('/tokens.css', require.resolve('@juangcarmona/lighthouse-ui/tokens.css'));
+assets.set('/evidence-projections.js', new URL('evidence-projections.js', root));
 createServer(async (request, response) => {
   const path = request.url.split('?')[0];
   const file = path === '/workspace/attention' ? new URL('attention.html', root) : path === '/workspace/factory' || path === '/workspace/issues' || path.startsWith('/workspace/repositories') ? new URL('factory.html', root) : path.startsWith('/workspace/issues/') ? new URL('issue.html', root) : assets.get(path);

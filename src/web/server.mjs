@@ -9,6 +9,7 @@ const assets = new Map([
   ['/', [new URL('./public/index.html', import.meta.url), 'text/html']],
   ['/workspace-ui.js', [new URL('./public/workspace-ui.js', import.meta.url), 'text/javascript']],
   ['/read-projection-cache.js', [new URL('./public/read-projection-cache.js', import.meta.url), 'text/javascript']],
+  ['/evidence-projections.js', [new URL('./public/evidence-projections.js', import.meta.url), 'text/javascript']],
   ['/lighthouse.svg', [new URL('./public/lighthouse.svg', import.meta.url), 'image/svg+xml']],
   ['/app.js', [new URL('./public/app.js', import.meta.url), 'text/javascript']],
   ['/app.css', [new URL('./public/app.css', import.meta.url), 'text/css']],

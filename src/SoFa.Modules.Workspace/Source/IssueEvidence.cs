@@ -13,9 +13,11 @@ internal sealed record StageEvidence(long CommentId, string SourceUrl, string Av
     string? Result = null, string? Gate = null, string? SourceRevision = null, long? RunId = null, int? Attempt = null,
     string? ExecutionStatus = null, string? ExecutionConclusion = null, string? Reason = null,
     IReadOnlyList<string>? MissingEvidence = null, IReadOnlyList<string>? PendingReview = null,
-    string? ExecutionRequestId = null, string? Question = null, IReadOnlyList<SourceArtifact>? Artifacts = null);
+    string? ExecutionRequestId = null, string? Question = null, IReadOnlyList<SourceArtifact>? Artifacts = null,
+    string? ReportCreatedAt = null, string? RunStartedAt = null, string? RunUpdatedAt = null, string? RunRevision = null);
 internal sealed record IssueEvidence(string Availability, DateTimeOffset ObservedAt, IReadOnlyList<StageEvidence> Reports,
-    string Scope, string? Reason = null, IReadOnlyList<RelatedPullRequest>? PullRequests = null, string? DataScope = null);
+    string Scope, string? Reason = null, IReadOnlyList<RelatedPullRequest>? PullRequests = null, string? DataScope = null,
+    long? RepositoryId = null, long? IssueId = null, int? ConversationPage = null);
 
 internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, GetIssueContextHandler context,
     GitHubAuthorization authorization, RepositoryAccess access, GitHubTransport transport, TimeProvider clock) : IQueryHandler<GetIssueEvidence, IssueEvidence>
@@ -76,11 +78,11 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
           GitHubAuthorization.Invalidate(record, connection);
           return new("disconnected", clock.GetUtcNow(), [], Scope, "GitHub rejected the connected-user credential.");
         }
-        reports.Add(report);
+        reports.Add(report with { ReportCreatedAt = comment.CreatedAt });
       }
       catch (OperationCanceledException) { reports.Add(new(comment.Id, comment.SourceUrl, "unavailable", Reason: "Evidence read timed out or was cancelled.")); break; }
     }
-    var related = await ReadRelatedPullRequests(query.Context.Repository, page, connection, guard, budget.Token).ConfigureAwait(false);
+    var related = await ReadRelatedPullRequests(query.Context.Repository, page, connection, guard, authority.PullRequestsRead, budget.Token).ConfigureAwait(false);
     if (related.Any(pull => pull.Availability == "disconnected"))
     {
       GitHubAuthorization.Invalidate(record, connection);
@@ -90,15 +92,18 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
       if (!ReferenceEquals(sessions.Get(record.Id), record) || !ReferenceEquals(record.GitHub.Current, connection) || record.GitHub.Generation != generation)
         return new("disconnected", clock.GetUtcNow(), [], Scope, "The source identity or authority changed.");
     return new("available", clock.GetUtcNow(), reports, Scope,
-        "Published source results and GitHub execution are distinct. Current eligibility, live host leases and absent work are not inferred from this bounded page.", related, connection.DataScope);
+        "Published source results and GitHub execution are distinct. Current eligibility, live host leases and absent work are not inferred from this bounded page.", related, connection.DataScope,
+        authority.RepositoryId, page.Issue?.Id, page.Conversation.Page);
   }
 
   private async Task<StageEvidence> ReadReport(string repository, int number, IssueComment comment,
       GitHubConnection connection, SourceRequestGuard guard, CancellationToken cancellationToken)
   {
     IReadOnlyList<SourceArtifact>? references = null;
+    string? startedAt = null, updatedAt = null, runRevision = null;
     StageEvidence Unknown(string reason, long? run = null, int? attempt = null, string? execution = null, string? conclusion = null) =>
-        new(comment.Id, comment.SourceUrl, "unavailable", RunId: run, Attempt: attempt, ExecutionStatus: execution, ExecutionConclusion: conclusion, Reason: reason, Artifacts: references);
+        new(comment.Id, comment.SourceUrl, "unavailable", RunId: run, Attempt: attempt, ExecutionStatus: execution, ExecutionConclusion: conclusion, Reason: reason, Artifacts: references,
+            RunStartedAt: startedAt, RunUpdatedAt: updatedAt, RunRevision: runRevision);
     var marker = Regex.Matches(comment.Body, @"<!-- lighthouse-actions:([a-f0-9]{64}) -->");
     var stages = Regex.Matches(comment.Body, @"<!-- lighthouse-stage:([a-z]+):(passed|blocked) -->");
     var links = Regex.Matches(comment.Body, @"\[Workflow run\]\(https://github\.com/" + Regex.Escape(repository) + @"/actions/runs/([1-9][0-9]*)\)", RegexOptions.IgnoreCase);
@@ -110,6 +115,9 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
     if (run.Status == HttpStatusCode.Unauthorized) return new(comment.Id, comment.SourceUrl, "disconnected");
     if (!run.Successful || SourceJson.Number(run.Value, "id") != id) return Unknown("Exactly referenced workflow execution is unavailable.", id);
     var attempt = SourceJson.Number(run.Value, "run_attempt");
+    startedAt = SourceJson.Text(run.Value, "run_started_at");
+    updatedAt = SourceJson.Text(run.Value, "updated_at");
+    runRevision = SourceJson.Text(run.Value, "head_sha");
     var status = SourceJson.Text(run.Value, "status"); var conclusion = SourceJson.Text(run.Value, "conclusion");
     if (attempt is not > 0 or > int.MaxValue) return Unknown("Source run attempt is unavailable.", id, execution: status, conclusion: conclusion);
     if (!guard.IsLive()) return new(comment.Id, comment.SourceUrl, "disconnected");
@@ -172,7 +180,8 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
     return new(comment.Id, comment.SourceUrl, "available", stage, outcome, SourceJson.Text(result, "gate"), revision, id, (int)attempt,
         status, conclusion, "Published source result; this read does not validate current admission, continuation authority or live host reservation.",
         TextArray(result, "missingEvidence"), TextArray(result, "pendingReview"),
-        ExecutionRequestId: SourceJson.Text(request, "runId"), Question: Question(result), Artifacts: references);
+        ExecutionRequestId: SourceJson.Text(request, "runId"), Question: Question(result), Artifacts: references,
+        RunStartedAt: startedAt, RunUpdatedAt: updatedAt, RunRevision: runRevision);
   }
 
   private static string? Question(JsonElement result) => result.TryGetProperty("output", out var output)
