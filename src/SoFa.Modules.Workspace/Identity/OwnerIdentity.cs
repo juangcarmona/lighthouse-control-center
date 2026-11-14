@@ -29,6 +29,8 @@ internal static class OwnerIdentity
     services.AddSingleton(sp =>
     {
       var settings = sp.GetRequiredService<WorkspaceOptions>();
+      if (settings.Identity.Access is not null)
+        return new OwnerSessions(settings.Identity, sp.GetRequiredService<TimeProvider>());
       return new OwnerSessions(settings.Identity, sp.GetRequiredService<TimeProvider>(),
           settings.OwnerSessionDirectory!, settings.OwnerSessionKeyDirectory!, settings.GitHubClientId, settings.GitHubAppId);
     });
@@ -166,6 +168,23 @@ internal static class OwnerIdentity
       if (authority != ProviderAuthority.Current)
       {
         await AccessFailure(context, authority == ProviderAuthority.Revoked ? 401 : 503).ConfigureAwait(false);
+        return;
+      }
+      var settings = context.RequestServices.GetRequiredService<WorkspaceOptions>();
+      if (settings.Identity.Access is not null
+          && context.Request.Path.StartsWithSegments("/api/runtime"))
+      {
+        // Project-read grants do not authorize host or repository runtime inventory.
+        context.Response.StatusCode = 404;
+        return;
+      }
+      if (settings.Identity.Access is not null
+          && context.Request.RouteValues["owner"] is string owner
+          && context.Request.RouteValues["repository"] is string repository
+          && !settings.CanRead(record, owner + "/" + repository))
+      {
+        // Unknown and excluded targets have exactly the same empty response, before source I/O.
+        context.Response.StatusCode = 404;
         return;
       }
     }

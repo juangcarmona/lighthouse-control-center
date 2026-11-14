@@ -24,6 +24,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       string? githubClientId = null, long? githubAppId = null)
       : this(profile, clock)
   {
+    if (profile.Access is not null) return; // Explicit mode never opens/restores the legacy vault.
     vault = new OwnerSessionVault(dataDirectory, keyDirectory, profile, githubClientId, githubAppId);
     durableGitHub = RestoreGrant(vault.ReadGrant());
     foreach (var stored in vault.ReadSessions())
@@ -59,6 +60,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       {
         rotations.Remove(ticket.Principal);
         if (!ReferenceEquals(Get(original.Id), original)
+            || ticket.Principal.FindFirst("sub")?.Value != original.Subject
             || OwnerAdmission.Validate(ticket.Principal, profile, clock.GetUtcNow(), false)?.AuthenticationTime != original.AuthenticationTime)
           throw new InvalidOperationException("The session can no longer change its reference.");
         var previous = original.Id;
@@ -140,7 +142,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       if (record.Id != key || !ReferenceEquals(Get(key), record)) return Task.CompletedTask;
       var admission = OwnerAdmission.Validate(ticket.Principal, profile, clock.GetUtcNow(), freshCeremony: false);
       var identity = ticket.Principal.FindAll(SessionClaim).ToArray();
-      if (!record.Active || admission?.AuthenticationTime != record.AuthenticationTime
+      if (!record.Active || ticket.Principal.FindFirst("sub")?.Value != record.Subject || admission?.AuthenticationTime != record.AuthenticationTime
           || identity.Length != 1 || identity[0].Value != key)
       {
         Remove(record);
@@ -217,7 +219,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       if (sessions.TryGetValue(record.Id, out var current) && ReferenceEquals(record, current))
         sessions.TryRemove(record.Id, out _);
       record.Ticket.Properties.StoreTokens([]);
-      record.GitHub.Clear(cancelConnection: false);
+      record.GitHub.Clear(cancelConnection: profile.Access is not null);
     }
   }
 
@@ -274,8 +276,13 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     }
   }
 
-  internal void DisconnectGitHubGrant()
+  internal void DisconnectGitHubGrant(OwnerSession? actor = null)
   {
+    if (profile.Access is not null)
+    {
+      if (actor is not null) lock (actor.Sync) actor.GitHub.Clear();
+      return;
+    }
     lock (admissionLock)
     {
       var active = sessions.Values.OrderBy(record => record.Id, StringComparer.Ordinal).ToArray();
@@ -294,6 +301,17 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
   internal bool SetGitHubGrant(OwnerSession actor, GitHubConnection connection, long expectedAttempt)
   {
     BeforeGitHubGrantCommit?.Invoke();
+    if (profile.Access is not null)
+    {
+      lock (actor.Sync)
+      {
+        if (!ReferenceEquals(Get(actor.Id), actor) || actor.GitHub.Attempt != expectedAttempt
+            || actor.GitHub.CommittingAttempt != expectedAttempt) return false;
+        actor.GitHub.Clear();
+        actor.GitHub.Current = connection;
+        return true;
+      }
+    }
     lock (admissionLock)
     {
       var active = sessions.Values.OrderBy(record => record.Id, StringComparer.Ordinal).ToArray();
@@ -351,13 +369,19 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
   private static StoredGitHubConnection ToStored(GitHubConnection connection) => new(connection.UserId, connection.Login,
       connection.Tokens.Access, connection.Tokens.Refresh, connection.Tokens.AccessDeadline, connection.Tokens.RefreshDeadline, connection.DataScope);
 
-  public void Dispose() => vault?.Dispose();
+  public void Dispose()
+  {
+    if (profile.Access is not null)
+      foreach (var record in sessions.Values) Remove(record);
+    vault?.Dispose();
+  }
 }
 
 internal sealed class OwnerSession(string id, AuthenticationTicket ticket, DateTimeOffset authenticationTime,
     DateTimeOffset absoluteDeadline, DateTimeOffset idleDeadline, DateTimeOffset providerValidatedAt)
 {
   internal object Sync { get; } = new();
+  internal string Subject { get; } = ticket.Principal.FindFirst("sub")?.Value ?? "";
   internal OwnerSessions? Sessions { get; set; }
   internal string Id { get; set; } = id;
   internal AuthenticationTicket Ticket { get; set; } = ticket;

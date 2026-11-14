@@ -6,6 +6,7 @@ using JuanGCarmona.SoFa.Modules.Workspace;
 using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 using JuanGCarmona.SoFa.Modules.Workspace.Source;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Configuration;
 
 namespace SoFa.Web.Tests;
 
@@ -89,6 +90,29 @@ public sealed class FactoryDiscoveryTests
     Assert.Empty(ended.Issues);
   }
 
+  [Fact]
+  public async Task TwoOperatorsReadOnlyTheirProjectsAndAnUnlistedIdentityCannotEstablishASession()
+  {
+    using var fixture = new Fixture(multiOperator: true);
+    var alphaOperator = await fixture.Session("operator-a");
+    var betaOperator = await fixture.Session("operator-b");
+
+    var alpha = await fixture.Query.Handle(new(alphaOperator, "example/repository"), CancellationToken.None);
+    Assert.Equal("available", alpha.Availability);
+    Assert.All(alpha.Issues, issue => Assert.StartsWith("https://github.com/example/repository/issues/", issue.SourceUrl, StringComparison.Ordinal));
+
+    var reads = fixture.Source.Paths.Count;
+    var crossScope = await fixture.Query.Handle(new(alphaOperator, "example/other"), CancellationToken.None);
+    Assert.Equal("denied", crossScope.Availability);
+    Assert.Empty(crossScope.Issues);
+    Assert.DoesNotContain(fixture.Source.Paths.Skip(reads), path => path.StartsWith("/repos/example/other", StringComparison.Ordinal));
+
+    var beta = await fixture.Query.Handle(new(betaOperator, "example/other"), CancellationToken.None);
+    Assert.Equal("available", beta.Availability);
+    Assert.All(beta.Issues, issue => Assert.StartsWith("https://github.com/example/other/issues/", issue.SourceUrl, StringComparison.Ordinal));
+    await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.Session("operator-c"));
+  }
+
   private static HttpResponseMessage Response(object value, HttpStatusCode status = HttpStatusCode.OK) => new(status)
   { Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json") };
 
@@ -100,15 +124,42 @@ public sealed class FactoryDiscoveryTests
     internal GetFactoryPageHandler Query { get; }
     internal string IssueGrant { get; set; } = "read";
     private readonly GitHubTransport transport;
-    internal Fixture()
+    internal Fixture(bool multiOperator = false)
     {
-      Sessions = new(OwnerAdmissionTests.Profile(), Clock);
+      var profile = OwnerAdmissionTests.Profile();
+      if (multiOperator)
+      {
+        var accessValues = new Dictionary<string, string?>
+        {
+          ["Access:Projects:0:Id"] = "project-a",
+          ["Access:Projects:0:Repository"] = "example/repository",
+          ["Access:Projects:1:Id"] = "project-b",
+          ["Access:Projects:1:Repository"] = "example/other",
+          ["Access:Operators:0:Issuer"] = profile.Issuer.AbsoluteUri,
+          ["Access:Operators:0:Subject"] = "operator-a",
+          ["Access:Operators:0:Grants:0:Project"] = "project-a",
+          ["Access:Operators:0:Grants:0:Permission"] = "read",
+          ["Access:Operators:1:Issuer"] = profile.Issuer.AbsoluteUri,
+          ["Access:Operators:1:Subject"] = "operator-b",
+          ["Access:Operators:1:Grants:0:Project"] = "project-b",
+          ["Access:Operators:1:Grants:0:Permission"] = "read",
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(accessValues).Build();
+        profile = new IdentityProfile
+        {
+          Issuer = profile.Issuer,
+          ClientId = profile.ClientId,
+          OwnerSubject = profile.OwnerSubject,
+          Access = OperatorAccess.Load(config.GetSection("Access"), profile.Issuer, ["example/repository", "example/other"]),
+        };
+      }
+      Sessions = new(profile, Clock);
       transport = new(Source);
       var settings = new WorkspaceOptions
       {
         Origin = new("https://workspace.invalid"),
         IdentityMode = "Development",
-        Identity = OwnerAdmissionTests.Profile(),
+        Identity = profile,
         Repositories = ["example/repository", "example/other"],
         RepositoryBranches = new Dictionary<string, string> { ["example/repository"] = "expected" }
       };
@@ -144,9 +195,10 @@ public sealed class FactoryDiscoveryTests
       labels = Array.Empty<object>(),
       updated_at = "2026-11-07T10:00:00Z"
     };
-    internal async Task<OwnerSession> Session()
+    internal async Task<OwnerSession> Session(string subject = "owner-subject")
     {
-      var principal = OwnerAdmissionTests.Principal(authenticationTime: Clock.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
+      var principal = OwnerAdmissionTests.Principal(subject: subject,
+          authenticationTime: Clock.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
       var session = Sessions.Get(await Sessions.StoreAsync(new AuthenticationTicket(principal, "owner")))!;
       session.GitHub.Current = new(71, "verified-user", new("isolated-source-access", "isolated-source-refresh",
         Clock.GetUtcNow().AddHours(1), Clock.GetUtcNow().AddHours(4)), Clock.GetUtcNow());

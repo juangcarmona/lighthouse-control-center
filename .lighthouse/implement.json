@@ -564,6 +564,70 @@
     }
   }
 ,
+  "119": {
+    "reviewRequired": true,
+    "scope": "Implement issue #119 only. Permit the single listed project-read authorization regression while preserving every other frozen verification input, the single-owner default and unavailable runtime/provider/resource grants.",
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/",
+        "src/SoFa.Web/SoFa.Web.csproj",
+        "src/SoFa.Web/packages.lock.json",
+        "src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj",
+        "src/SoFa.Modules.Workspace/packages.lock.json",
+        "src/dotnet/",
+        "tests/SoFa.Web.Tests/OwnerBoundaryTests.cs"
+      ],
+      "corrections": {
+        "tests/SoFa.Web.Tests/OwnerBoundaryTests.cs": "Issue #119: prove directly that a project-only read grant cannot read GitHub runner inventory in explicit access mode. Preserve existing owner-boundary, session, source-authority and no-write assertions."
+      }
+    }
+  },
   "53": {
     "reviewRequired": true,
     "scope": "Implement issue #53 only. Permit the single listed configuration-projection regression test while preserving every other frozen verification input and all read-only/no-policy boundaries.",

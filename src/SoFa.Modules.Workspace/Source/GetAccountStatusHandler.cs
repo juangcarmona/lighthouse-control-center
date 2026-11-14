@@ -23,7 +23,7 @@ internal sealed class GetAccountStatusHandler(WorkspaceOptions settings, OwnerSe
     }
     long generation;
     lock (record.Sync) generation = record.GitHub.Generation;
-    var authorities = await Task.WhenAll(settings.Repositories.Select(repository => access.CheckAsync(record, repository, cancellationToken))).ConfigureAwait(false);
+    var authorities = await Task.WhenAll(settings.ReadableRepositories(record).Select(repository => access.CheckAsync(record, repository, cancellationToken))).ConfigureAwait(false);
     lock (record.Sync)
     {
       if (!ReferenceEquals(sessions.Get(record.Id), record) || !ReferenceEquals(record.GitHub.Current, connection)

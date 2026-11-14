@@ -28,6 +28,10 @@ internal sealed class WorkspaceOptions
 
   public override string ToString() => "WorkspaceOptions (credentials withheld)";
 
+  internal bool CanRead(OwnerSession session, string repository) => Repositories.Contains(repository, StringComparer.OrdinalIgnoreCase)
+      && (Identity.Access is null || Identity.Access.CanRead(session.Subject, repository));
+  internal IEnumerable<string> ReadableRepositories(OwnerSession session) => Repositories.Where(repository => CanRead(session, repository));
+
   public static WorkspaceOptions Load(IConfiguration configuration)
   {
     var section = configuration.GetSection("SoFa");
@@ -93,7 +97,16 @@ internal sealed class WorkspaceOptions
       OwnerSessionKeyDirectory = section["Identity:SessionKeyDirectory"],
       Origin = origin,
       IdentityMode = mode,
-      Identity = new IdentityProfile { Issuer = issuer, ClientId = client, ClientSecret = secret, OwnerSubject = subject, RequiredAssurance = mode == "Development" ? "1" : "2" },
+      Identity = new IdentityProfile
+      {
+        Issuer = issuer,
+        ClientId = client,
+        ClientSecret = secret,
+        OwnerSubject = subject,
+        RequiredAssurance = mode == "Development" ? "1" : "2",
+        Access = section.GetChildren().Any(child => child.Key.Equals("Access", StringComparison.OrdinalIgnoreCase))
+          ? OperatorAccess.Load(section.GetSection("Access"), issuer, repositories) : null
+      },
       Repositories = repositories,
       RepositoryBranches = branches,
       GitHubClientId = githubClient,
