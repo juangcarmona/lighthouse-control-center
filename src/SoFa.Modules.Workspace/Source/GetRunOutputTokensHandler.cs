@@ -77,7 +77,7 @@ internal sealed class GetRunOutputTokensHandler(WorkspaceOptions settings, Owner
           || total < artifacts.GetArrayLength() || total > 100)
         return Failure("unavailable", "The bounded Actions artifact inventory is incomplete or malformed.");
 
-      var expectedName = "lighthouse-" + query.RunId.ToString(CultureInfo.InvariantCulture) + "-" + query.Attempt.ToString(CultureInfo.InvariantCulture);
+      var expectedName = "lighthouse-telemetry-agent-" + query.Attempt.ToString(CultureInfo.InvariantCulture);
       var matches = artifacts.EnumerateArray().Where(row => SourceJson.Text(row, "name") == expectedName).ToArray();
       if (matches.Length != 1) return Failure("unavailable", "The exact telemetry artifact is missing or ambiguous.");
       var artifact = matches[0];

@@ -75,6 +75,21 @@ public sealed class RunOutputTokensTests
     Assert.Empty(fixture.Handler.AssetReads);
   }
 
+  [Fact]
+  public async Task RunSpecificArtifactNameIsNotAcceptedAsTelemetry()
+  {
+    using var fixture = Ready();
+    fixture.Handler.Responses["/repos/example/repository/actions/runs/500/artifacts"] = _ => Json(new
+    {
+      total_count = 1,
+      artifacts = new[] { Artifact(fixture, name: "lighthouse-500-2") }
+    });
+    var result = await fixture.OutputTokens.Handle(new(await fixture.Session(), "example/repository", 500, 2), CancellationToken.None);
+    Assert.Equal("unavailable", result.Availability);
+    Assert.Null(result.OutputTokens);
+    Assert.Empty(fixture.Handler.AssetReads);
+  }
+
   [Theory]
   [InlineData("malformed")]
   [InlineData("oversized")]
@@ -136,10 +151,10 @@ public sealed class RunOutputTokensTests
 
   }
 
-  private static object Artifact(IssueContextTests.Fixture fixture, bool expired = false) => new
+  private static object Artifact(IssueContextTests.Fixture fixture, bool expired = false, string name = "lighthouse-telemetry-agent-2") => new
   {
     id = 13,
-    name = "lighthouse-500-2",
+    name,
     expired,
     size_in_bytes = 500,
     created_at = fixture.Clock.GetUtcNow().AddDays(-1).ToString("O", CultureInfo.InvariantCulture),
