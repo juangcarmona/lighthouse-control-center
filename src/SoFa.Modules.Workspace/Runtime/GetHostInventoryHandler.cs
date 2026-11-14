@@ -6,7 +6,7 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Runtime;
 
-internal sealed record GetHostInventory(OwnerSession Session);
+internal sealed record GetHostInventory(OwnerSession Session, string? Repository = null);
 internal sealed record HostInventory(string Availability, DateTimeOffset ObservedAt, int RegistrationCount, int CheckoutCount,
     bool Complete, JsonElement? Observation = null, string? Reason = null);
 
@@ -29,7 +29,10 @@ internal sealed class GetHostInventoryHandler(WorkspaceOptions settings, OwnerSe
     if (settings.Identity.Access is not null)
       return new("unavailable", clock.GetUtcNow(), 0, 0, false,
           Reason: "Host-wide inventory is unavailable in explicit mode until qualified provider/resource scopes are supported.");
-    HostInventory Failure(string state) => new(state, clock.GetUtcNow(), settings.Runtime.Registrations.Count, settings.Runtime.Checkouts.Count,
+    var registrations = query.Repository is null ? settings.Runtime.Registrations : [];
+    var checkouts = query.Repository is null ? settings.Runtime.Checkouts
+        : settings.Runtime.Checkouts.Where(s => string.Equals(s.Repository, query.Repository, StringComparison.OrdinalIgnoreCase)).ToArray();
+    HostInventory Failure(string state) => new(state, clock.GetUtcNow(), registrations.Count, checkouts.Count,
         false, Reason: state == "busy" ? "Another host observation is in progress. Retry explicitly." : "Host evidence is unavailable; no empty inventory is inferred.");
     if (!slots.Host.Wait(0, cancellationToken)) return Failure("busy");
     string? scratch = null;
@@ -54,8 +57,8 @@ internal sealed class GetHostInventoryHandler(WorkspaceOptions settings, OwnerSe
       File.SetUnixFileMode(scratch, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
       var input = JsonSerializer.SerializeToUtf8Bytes(new
       {
-        registrations = settings.Runtime.Registrations.Select(s => new { alias = s.Alias, directory = s.Directory }),
-        checkouts = settings.Runtime.Checkouts.Select(s => new { repository = s.Repository, directory = s.Directory }),
+        registrations = registrations.Select(s => new { alias = s.Alias, directory = s.Directory }),
+        checkouts = checkouts.Select(s => new { repository = s.Repository, directory = s.Directory }),
         trustedGroupIds = settings.Runtime.TrustedGroupIds,
         scratch,
       });
@@ -112,13 +115,13 @@ internal sealed class GetHostInventoryHandler(WorkspaceOptions settings, OwnerSe
         using var document = JsonDocument.Parse(bytes);
         var value = document.RootElement;
         if (value.ValueKind != JsonValueKind.Object || !value.TryGetProperty("availability", out var availability) || availability.GetString() != "available"
-            || !value.TryGetProperty("registrations", out var registrations) || registrations.ValueKind != JsonValueKind.Array || registrations.GetArrayLength() != settings.Runtime.Registrations.Count
-            || !value.TryGetProperty("adoptions", out var adoptions) || adoptions.ValueKind != JsonValueKind.Array || adoptions.GetArrayLength() != settings.Runtime.Checkouts.Count)
+            || !value.TryGetProperty("registrations", out var registrationRows) || registrationRows.ValueKind != JsonValueKind.Array || registrationRows.GetArrayLength() != registrations.Count
+            || !value.TryGetProperty("adoptions", out var adoptions) || adoptions.ValueKind != JsonValueKind.Array || adoptions.GetArrayLength() != checkouts.Count)
           return Failure("unavailable");
         lock (record.Sync)
         {
           if (budget.IsCancellationRequested || !ReferenceEquals(sessions.Get(record.Id), record)) return Failure("disconnected");
-          return new("available", clock.GetUtcNow(), settings.Runtime.Registrations.Count, settings.Runtime.Checkouts.Count,
+          return new("available", clock.GetUtcNow(), registrations.Count, checkouts.Count,
               value.TryGetProperty("complete", out var complete) && complete.ValueKind == JsonValueKind.True, value.Clone());
         }
       }

@@ -10,7 +10,8 @@ internal sealed record ControlAuthority(long RepositoryId, long AppId, string Da
     bool PublicRepository);
 internal sealed record RepositoryAuthority(string Repository, SourceAvailability Availability, bool IssuesRead,
     bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt, bool AdministrationRead = false, string? DataScope = null, long? Generation = null,
-    SourceAvailability AdministrationAvailability = SourceAvailability.Unavailable, ControlAuthority? Controls = null);
+    SourceAvailability AdministrationAvailability = SourceAvailability.Unavailable, ControlAuthority? Controls = null,
+    bool PullRequestsRead = false, long? RepositoryId = null);
 
 internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions sessions, GitHubAuthorization authorization,
     GitHubTransport transport, TimeProvider clock)
@@ -103,7 +104,12 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
                     Both(WriteGrant(grants, "issues"), UserWrite(userPermissions)), Both(WriteGrant(grants, "actions"), UserWrite(userPermissions)),
                     PublicRepository(repo.Value) && PublicRepository(item));
               return new RepositoryAuthority(repository, metadata ? SourceAvailability.Available : SourceAvailability.Denied,
-                  metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now, administration == SourceAvailability.Available, connection.DataScope, generation, administration, controlAuthority);
+                  metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now, administration == SourceAvailability.Available, connection.DataScope, generation, administration, controlAuthority,
+                  metadata && Permission(grants, "pull_requests"),
+                  SourceJson.Number(repo.Value, "id") is > 0 and <= 9_007_199_254_740_991
+                      && SourceJson.Number(repo.Value, "id") == SourceJson.Number(item, "id")
+                      && string.Equals(SourceJson.Text(repo.Value, "full_name"), repository, StringComparison.OrdinalIgnoreCase)
+                      ? SourceJson.Number(repo.Value, "id") : null);
             }
           }
           if (Complete(accessible.Value, repositories.GetArrayLength(), repoPage)) return Unknown(SourceAvailability.Denied);
