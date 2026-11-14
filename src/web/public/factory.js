@@ -98,12 +98,16 @@ function renderConfiguration() {
   const selectedRepository = compareRepository.value;
   compareRepository.replaceChildren(...repositoryOptions);
   compareRepository.value = configured.find(name => name === selectedRepository) ?? '';
-  byId('configuration-load-comparison').disabled = !compareRepository.value || configurationLoading;
-  byId('configuration-refresh').disabled = configurationLoading;
+  byId('configuration-load-comparison').disabled = !compareRepository.value;
+  byId('configuration-refresh').disabled = false;
   byId('configuration-refresh').setAttribute('aria-busy', String(configurationLoading));
   list.replaceChildren();
-  const projections = [...configurationProjections.values()];
-  const facts = projections.flatMap(projection => projection.facts.map(fact => ({ ...fact, repository: projection.repository })));
+  const now = Date.now();
+  const projections = [...configurationProjections.values()].map(projection => {
+    const observedAt = Date.parse(projection.observedAt);
+    return { ...projection, stale: projection.freshness !== 'fresh' || !Number.isFinite(observedAt) || now - observedAt > 15000 };
+  });
+  const facts = projections.flatMap(projection => projection.facts.map(fact => ({ ...fact, repository: projection.repository, stale: projection.stale })));
   if (!facts.some(fact => `${fact.repository.toLowerCase()}\n${fact.id}` === configurationBaseline)) configurationBaseline = '';
   const comparisonGroups = new Map();
   for (const fact of facts) {
@@ -112,7 +116,7 @@ function renderConfiguration() {
   }
   const options = [node('option', 'No comparison selected')]; options[0].value = '';
   for (const fact of facts) {
-    const option = node('option', `${fact.repository} · ${fact.component} · ${fact.factKind} · ${fact.rawValue}`); option.value = `${fact.repository.toLowerCase()}\n${fact.id}`; options.push(option);
+    const option = node('option', `${fact.repository} · ${fact.component} · ${fact.factKind} · ${fact.rawValue}${fact.stale ? ' · stale' : ''}`); option.value = `${fact.repository.toLowerCase()}\n${fact.id}`; option.disabled = fact.stale; options.push(option);
   }
   picker.replaceChildren(...options);
   picker.value = facts.some(fact => `${fact.repository.toLowerCase()}\n${fact.id}` === configurationBaseline) ? configurationBaseline : '';
@@ -121,13 +125,14 @@ function renderConfiguration() {
     const article = node('article', undefined, 'factory-issue');
     const factKey = `${fact.repository.toLowerCase()}:${fact.id}`;
     article.append(node('h3', `${fact.repository} · ${fact.component} · ${fact.factKind}`),
-      node('p', `Observed value: ${fact.rawValue}`),
+      node('p', `Observed value: ${fact.rawValue}${fact.stale ? ' · stale; do not use as a current comparison' : ''}`),
       node('p', `Source: ${fact.sourcePath} · ${fact.revision} · ${time(fact.observedAt)}`),
       node('p', `Contract: ${fact.contractIdentity} · interpretation: ${fact.interpretation}`));
     const baseline = values.get(configurationBaseline);
     if (baseline) {
       let verdict = 'Unassessed: selected expectation is not comparable to this fact.';
-      if (baseline.id === fact.id) verdict = 'Selected baseline: this fact is the named expectation.';
+      if (fact.stale || baseline.stale) verdict = 'Unassessed: one or both observations are stale. Inspect both repositories again before comparing.';
+      else if (baseline.id === fact.id) verdict = 'Selected baseline: this fact is the named expectation.';
       else if (baseline.component === fact.component && baseline.factKind === fact.factKind && baseline.contractIdentity === fact.contractIdentity) {
         const left = fact.rawValue.match(/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/);
         const right = baseline.rawValue.match(/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/);
@@ -154,7 +159,7 @@ function renderConfiguration() {
     list.append(article);
   }
   if (current) {
-    const expired = current.freshness === 'fresh' && Date.now() - Date.parse(current.observedAt) > 15000;
+    const expired = projections.find(projection => projection.repository.toLowerCase() === currentKey)?.stale ?? true;
     const freshness = expired ? 'stale' : current.freshness;
     const statusText = `${current.availability} · ${current.coverage} coverage · ${freshness} · commit ${current.observedRevision ?? 'unknown'} · ${time(current.observedAt)}`;
     byId('configuration-status').textContent = statusText + (current.reasons?.length ? ` · ${current.reasons.join(' ')}` : '')
