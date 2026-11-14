@@ -333,6 +333,16 @@ public static class WorkspaceModule
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
       return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "index.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
     });
+    foreach (var route in new[] { "/workspace/health", "/workspace/health/{owner}/{repository}", "/workspace/health/{owner}/{repository}/runs/{run:long}" })
+    {
+      app.MapGet(route, async (HttpContext context, OwnerSessions sessions) =>
+      {
+        sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
+        if (context.Request.RouteValues["owner"] is string owner && context.Request.RouteValues["repository"] is string repository
+            && !settings.Repositories.Contains(owner + "/" + repository, StringComparer.OrdinalIgnoreCase)) return (IResult)Results.NotFound();
+        return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "health.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      });
+    }
     app.MapGet("/workspace/runtime", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
@@ -362,6 +372,7 @@ public static class WorkspaceModule
             (Path: "/attention-controls.js", File: "attention-controls.js", Type: "text/javascript"),
             (Path: "/factory.css", File: "factory.css", Type: "text/css"),
             (Path: "/runtime.js", File: "runtime.js", Type: "text/javascript"), (Path: "/runtime.css", File: "runtime.css", Type: "text/css"),
+            (Path: "/health.js", File: "health.js", Type: "text/javascript"), (Path: "/health.css", File: "health.css", Type: "text/css"),
             (Path: "/issue.js", File: "issue.js", Type: "text/javascript"),
             (Path: "/issue-actions.js", File: "issue-actions.js", Type: "text/javascript"),
             (Path: "/markdown.js", File: "markdown.js", Type: "text/javascript"), (Path: "/issue.css", File: "issue.css", Type: "text/css"),

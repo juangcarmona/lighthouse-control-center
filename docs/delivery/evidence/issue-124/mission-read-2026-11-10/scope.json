@@ -1,0 +1,27 @@
+{
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "issue": 124,
+  "applicationSource": "0144c6c64820ab936920fe82061e1507543be617",
+  "testHarnessSource": "8c5cc49bd1ef9a5087caa0553d89a497833dd845",
+  "integratedMain": "877bb1fd6219becdbd07e342d0bbc6eeedec517b",
+  "applicationSourceTreeMatchesIntegratedMain": true,
+  "testHarnessTreeMatchesIntegratedMain": true,
+  "actualOrigin": "https://192.168.0.3:5443",
+  "runId": "2026-11-10T18:29:44.562Z",
+  "sourceWritePerformed": false,
+  "cases": [
+    "repository discovery and exact issue lookup",
+    "issue context, conversation, source provenance and narrow layout"
+  ],
+  "result": "2 passed in 35.6s",
+  "sourceGrant": "Retained application GitHub account; no operator token supplied to application.",
+  "notEstablished": [
+    "full issue-to-workflow-attempt-PR/check/integration correlation",
+    "new ordinary comment publication",
+    "native PR154 completion proof",
+    "release/adoption of upstream archived-plan repair",
+    "production deployment",
+    "acceptance of draft ProductShape examples"
+  ]
+}

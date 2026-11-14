@@ -91,29 +91,74 @@ function runCard(repo, run) {
   return li;
 }
 function list(items) { const ul = node('ul', undefined, 'items'); ul.append(...items); return ul; }
-let snapshot, busy = false, projectionScope, projectionEpoch = 0;
+let snapshot, busy = false, projectionScope, verifiedScope, verifiedDeniedRepositories, accountProjectionEpoch = 0, projectionEpoch = 0;
 function validSnapshot(data) {
   return Array.isArray(data?.repositories) && data.repositories.every(repository => typeof repository.repository === 'string'
     && (!['available', 'stale'].includes(repository.availability) || Array.isArray(repository.runs) && Array.isArray(repository.attention)));
+}
+function clearObservations(status, failure) {
+  updateWorkspaceAccount({ state: status === 409 ? 'unlinked' : 'expired' });
+  const setupRequired = status === 409 && failure?.state === 'unconfigured';
+  const heldFocus = $('repositories').contains(document.activeElement);
+  showObservationControls(false);
+  showWorkspaceNavigation(status === 409);
+  snapshot = undefined;
+  projectionEpoch++;
+  clearProjectionCache(); projectionScope = undefined; verifiedScope = undefined; verifiedDeniedRepositories = undefined;
+  $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
+  for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
+  $('count-scope').textContent = 'No authorized observation is available.';
+  $('connection').textContent = setupRequired ? 'GitHub setup required before operations can load.'
+    : status === 409 ? 'Connect or verify your GitHub account to view observations.'
+    : status === 401 ? 'Your owner session has ended. Sign in again to view observations.' : 'Access to this workspace is denied.';
+  const account = node('a', 'Open account'); account.href = '/workspace';
+  const heading = node('h2', setupRequired ? 'Complete the GitHub connection' : 'Account verification required');
+  const explanation = node('p', setupRequired
+    ? 'Your Lighthouse Control Center sign-in is verified. Register the development GitHub App, install it on the selected repositories, then connect your account.'
+    : 'Open your account to check the connection and repository access.');
+  $('repositories').replaceChildren(heading, explanation, account);
+  if (heldFocus) account.focus({ preventScroll: true });
+}
+function staleObservations() {
+  if (!snapshot) return;
+  snapshot = { ...snapshot, repositories: snapshot.repositories.map(repository => ({ ...repository,
+    availability: repository.availability === 'available' ? 'stale' : repository.availability })) };
+  render(snapshot);
 }
 async function restoreProjection() {
   if (location.pathname !== '/workspace/operations') return;
   const epoch = projectionEpoch;
   try {
     const response = await fetch('/api/connections/github', { cache: 'no-store', signal: AbortSignal.timeout(35000) });
-    if ([401, 403, 409].includes(response.status)) { updateWorkspaceAccount({ state: response.status === 409 ? 'unlinked' : 'expired' }); clearProjectionCache(); return; }
-    if (!response.ok) return;
-    const account = await response.json(); updateWorkspaceAccount(account);
-    if (epoch !== projectionEpoch || snapshot) return;
-    if (account.state !== 'linked' || typeof account.dataScope !== 'string') { clearProjectionCache(); return; }
-    projectionScope = account.dataScope;
-    const cached = readProjectionCache(projectionScope, 'operations');
-    if (snapshot || !validSnapshot(cached) || cached.dataScope !== projectionScope) return;
-    const allowed = new Set((account.repositories ?? []).filter(repository => repository.availability === 'available' && repository.issuesRead && repository.actionsRead).map(repository => repository.repository.toLowerCase()));
-    const restored = { ...cached, repositories: cached.repositories.filter(repository => allowed.has(repository.repository.toLowerCase())).map(repository => ({ ...repository, availability: repository.availability === 'available' ? 'stale' : repository.availability })) };
+    if (epoch !== projectionEpoch) return;
+    if ([401, 403, 409].includes(response.status)) { clearObservations(response.status); return; }
+    if (!response.ok) throw Error();
+    const account = await response.json();
+    if (epoch !== projectionEpoch) return;
+    updateWorkspaceAccount(account);
+    if (account.state === 'unavailable') throw Error();
+    if (account.state !== 'linked' || typeof account.dataScope !== 'string') { clearObservations(409, account); return; }
+    if (projectionScope && projectionScope !== account.dataScope) {
+      clearObservations(409); updateWorkspaceAccount(account);
+      $('connection').textContent = 'The source account changed. Refresh to read current observations.';
+      return;
+    }
+    projectionScope = account.dataScope; verifiedScope = account.dataScope; accountProjectionEpoch++;
+    const grants = account.repositories ?? [];
+    const readable = new Set(grants.filter(repository => repository.availability === 'available' && repository.issuesRead && repository.actionsRead).map(repository => repository.repository.toLowerCase()));
+    verifiedDeniedRepositories = new Set(grants.filter(repository => repository.availability === 'denied' || repository.availability === 'available' && (!repository.issuesRead || !repository.actionsRead)).map(repository => repository.repository.toLowerCase()));
+    const cached = snapshot ?? readProjectionCache(projectionScope, 'operations');
+    if (!validSnapshot(cached) || cached.dataScope !== projectionScope) return;
+    const restored = { ...cached, repositories: cached.repositories.filter(repository => readable.has(repository.repository.toLowerCase())).map(repository => ({ ...repository, availability: !snapshot && repository.availability === 'available' ? 'stale' : repository.availability })) };
+    if (restored.repositories.length !== cached.repositories.length) clearProjectionCache(projectionScope);
+    if (snapshot) { render(restored); snapshot = restored; return; }
     showObservationControls(true); showWorkspaceNavigation(true); render(restored); snapshot = restored;
     $('connection').textContent = 'Restored previous observations · refreshing in the background. Current activity is not yet confirmed.';
-  } catch { /* A failed scope check never opens stored private observations. */ }
+  } catch {
+    if (epoch !== projectionEpoch) return;
+    staleObservations();
+    $('connection').textContent = snapshot ? 'Account verification unavailable. Previously shown observations may be stale. Refresh to try again.' : 'Account verification unavailable. No stored observations were opened. Refresh to try again.';
+  }
 }
 function render(data) {
   const root = $('repositories'), focused = document.activeElement;
@@ -191,38 +236,28 @@ function render(data) {
 }
 async function refresh() {
   if (busy) return;
-  const refreshFocused = document.activeElement === $('refresh');
+  const epoch = projectionEpoch, accountEpoch = accountProjectionEpoch, refreshFocused = document.activeElement === $('refresh');
   busy = true; $('refresh').disabled = true; $('repositories').setAttribute('aria-busy', 'true');
   try {
     const response = await fetch('/api/observations', { signal: AbortSignal.timeout(35000) });
+    if (epoch !== projectionEpoch) return;
     if ([401, 403, 409].includes(response.status)) {
-      updateWorkspaceAccount({ state: response.status === 409 ? 'unlinked' : 'expired' });
       const failure = await response.json().catch(() => null);
-      const setupRequired = response.status === 409 && failure?.state === 'unconfigured';
-      const heldFocus = $('repositories').contains(document.activeElement);
-      showObservationControls(false);
-      showWorkspaceNavigation(response.status === 409);
-      snapshot = undefined;
-      projectionEpoch++;
-      clearProjectionCache(); projectionScope = undefined;
-      $('repository-filter').replaceChildren(Object.assign(node('option', 'All repositories'), { value: '' }));
-      for (const id of ['repo-count', 'active-count', 'attention-count', 'unknown-count']) $(id).textContent = '—';
-      $('count-scope').textContent = 'No authorized observation is available.';
-      $('connection').textContent = setupRequired ? 'GitHub setup required before operations can load.'
-        : response.status === 409 ? 'Connect or verify your GitHub account to view observations.'
-        : response.status === 401 ? 'Your owner session has ended. Sign in again to view observations.' : 'Access to this workspace is denied.';
-      const account = node('a', 'Open account'); account.href = '/workspace';
-      const heading = node('h2', setupRequired ? 'Complete the GitHub connection' : 'Account verification required');
-      const explanation = node('p', setupRequired
-        ? 'Your Lighthouse Control Center sign-in is verified. Register the development GitHub App, install it on the selected repositories, then connect your account.'
-        : 'Open your account to check the connection and repository access.');
-      $('repositories').replaceChildren(heading, explanation, account);
-      if (heldFocus) account.focus({ preventScroll: true });
+      if (epoch !== projectionEpoch) return;
+      clearObservations(response.status, failure);
       return;
     }
     if (!response.ok) throw Error();
-    const data = await response.json();
+    let data = await response.json();
+    if (epoch !== projectionEpoch) return;
     if (!validSnapshot(data)) throw Error();
+    // A concurrent account check can invalidate the scope or grants of this earlier read.
+    if (accountEpoch !== accountProjectionEpoch && verifiedScope && verifiedScope !== data.dataScope) {
+      clearObservations(409);
+      $('connection').textContent = 'The source account changed. Refresh to read current observations.';
+      return;
+    }
+    if (accountEpoch !== accountProjectionEpoch && verifiedDeniedRepositories) data = { ...data, repositories: data.repositories.filter(repository => !verifiedDeniedRepositories.has(repository.repository.toLowerCase())) };
     if (typeof data.dataScope === 'string') {
       if (projectionScope && projectionScope !== data.dataScope) clearProjectionCache(projectionScope);
       projectionScope = data.dataScope; writeProjectionCache(projectionScope, data, 'operations');
@@ -230,6 +265,8 @@ async function refresh() {
     showObservationControls(true); showWorkspaceNavigation(true); render(data); snapshot = data;
     $('connection').textContent = `Updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · refreshes automatically`;
   } catch {
+    if (epoch !== projectionEpoch) return;
+    staleObservations();
     $('connection').textContent = snapshot ? 'Refresh failed. Previously shown observations may be stale. Try refreshing again.' : 'Refresh failed. No observation is available. Try refreshing again.';
   } finally {
     busy = false; $('refresh').disabled = false; $('repositories').setAttribute('aria-busy', 'false');
