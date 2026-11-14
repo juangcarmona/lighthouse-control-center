@@ -172,6 +172,13 @@ internal static class OwnerIdentity
       }
       var settings = context.RequestServices.GetRequiredService<WorkspaceOptions>();
       if (settings.Identity.Access is not null
+          && context.Request.Path.StartsWithSegments("/api/runtime"))
+      {
+        // Project-read grants do not authorize host or repository runtime inventory.
+        context.Response.StatusCode = 404;
+        return;
+      }
+      if (settings.Identity.Access is not null
           && context.Request.RouteValues["owner"] is string owner
           && context.Request.RouteValues["repository"] is string repository
           && !settings.CanRead(record, owner + "/" + repository))

@@ -20,7 +20,7 @@ test('native FF delegates routine work while retaining supervised decisions and 
   assert.equal(policy.merge, true);
   assert.throws(() => validateUnattendedPolicy({ ...policy, enabled: false }, 'ff'), /disabled/);
   const entries = json('.lighthouse/implement.json');
-  assert.deepEqual(Object.keys(entries).sort(), ['120', '158', '159', '47', '48', '50', '51', '52', '53', '57', '58', '99', 'defaults']);
+  assert.deepEqual(Object.keys(entries).sort(), ['119', '120', '158', '159', '47', '48', '50', '51', '52', '53', '57', '58', '99', 'defaults']);
   for (const issue of [47, 48, 50, 51, 52, 57, 58]) {
     assert.equal(entries[issue].reviewRequired, true, String(issue));
     assert.deepEqual(entries[issue].verification.corrections, {}, String(issue));
@@ -39,6 +39,7 @@ test('native FF delegates routine work while retaining supervised decisions and 
   assert.deepEqual(Object.keys(entries['99'].verification.corrections).sort(), ['tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs', 'tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
   validateImplementationPolicy(entries['99'], 99);
   const boundedExceptions = {
+    119: ['tests/SoFa.Web.Tests/OwnerBoundaryTests.cs'],
     53: ['tests/SoFa.Web.Tests/RepositoryConfigurationTests.cs'],
     120: ['tests/SoFa.Web.Tests/OwnerSessionsTests.cs', 'tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs'],
     158: ['tests/README.md', 'tests/SoFa.Web.Tests/IssueEvidenceTests.cs', 'tests/browser/factory.spec.mjs',
@@ -119,6 +120,7 @@ test('the exact operational test corrections remain required and cannot open oth
 test('issue-specific test exceptions admit only reviewed files and require each test to remain present', () => {
   const entries = json('.lighthouse/implement.json');
   const cases = {
+    119: ['tests/SoFa.Web.Tests/OwnerBoundaryTests.cs'],
     53: ['tests/SoFa.Web.Tests/RepositoryConfigurationTests.cs'],
     120: ['tests/SoFa.Web.Tests/OwnerSessionsTests.cs', 'tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs'],
     158: ['tests/README.md', 'tests/SoFa.Web.Tests/IssueEvidenceTests.cs', 'tests/browser/factory.spec.mjs',
