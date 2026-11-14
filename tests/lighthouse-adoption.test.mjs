@@ -208,3 +208,21 @@ test('credential preflight is owner-triggered on the default branch and uses onl
   assert.match(verify, /jobs:\n  verify:/);
   assert.match(verify, /run: npm run verify/);
 });
+
+
+test('installed workers preserve execution limits while allowing host admission and disabling failure issues', () => {
+  for (const stage of ['triage', 'refine', 'propose', 'implement', 'apply-review', 'integrate', 'review']) {
+    const source = read(`.github/workflows/lighthouse-sdlc-${stage}.md`).toString();
+    const lock = read(`.github/workflows/lighthouse-sdlc-${stage}.lock.yml`).toString();
+    assert.match(source, /report-failure-as-issue: false/);
+    assert.match(source, /report-failed-jobs: false/);
+    assert.match(source, /^if: github.run_attempt == 1 &&/m);
+    assert.match(source, /  prepare:\n    if: github.run_attempt == 1/);
+    assert.match(source, /if: always\(\) && github.run_attempt == 1 && needs.prepare.result/);
+    assert.doesNotMatch(lock, /report_failed_jobs\.cjs|GH_AW_REPORT_FAILED_JOBS: "true"/);
+    const agent = lock.split('\n  agent:\n')[1].split('\n  conclusion:\n')[0];
+    assert.match(agent, /timeout-minutes: 180/);
+    const execution = agent.split('- name: OpenCode progress and result')[1];
+    assert.equal(Number(execution.match(/timeout-minutes: (\d+)/)[1]), ['implement', 'apply-review'].includes(stage) ? 55 : 15);
+  }
+});
