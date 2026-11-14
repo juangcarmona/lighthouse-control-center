@@ -1,0 +1,69 @@
+{
+  "head": "1c9356031673861ccdf1a8e42c29111b6c3bc7c0",
+  "verdict": "accept",
+  "findings": [],
+  "dimensions": [
+    {
+      "dimension": "acceptance criteria",
+      "status": "pending",
+      "evidence": "Technical checkpoint is supported for a reversible DEVELOPMENT preview only. Actual connected App-user consent, permissions, and accepted source effects remain unproven."
+    },
+    {
+      "dimension": "completeness",
+      "status": "incomplete",
+      "evidence": "Plan tasks 2.2\u20132.3, 3.1\u20133.4, and 4.1\u20134.3 remain unchecked. Full DoD, integration, production, and issue closure are not established."
+    },
+    {
+      "dimension": "tests",
+      "status": "passed with limits",
+      "evidence": "Reported full verification passed (49 Node, 168 web, 38 runtime, 30 browser); 51 focused journal/command tests and 4 focused browser tests. Controlled provider tests do not prove actual source acceptance or native Continue/question resolution."
+    },
+    {
+      "dimension": "quality checks",
+      "status": "passed with limits",
+      "evidence": "Reported full local npm verify and final docs/security checks passed. Hosted exact-head and provider lanes remain pending."
+    },
+    {
+      "dimension": "security",
+      "status": "technically suitable; external gates pending",
+      "evidence": "Reviewed the journal, private-directory protections, source bridge, handlers, routes, tests, and browser controls. No concrete code/security finding identified. Private storage is not provisioned for this candidate and fails closed."
+    },
+    {
+      "dimension": "design conformance",
+      "status": "technically suitable; qualification pending",
+      "evidence": "Implementation follows the accepted ADR-0008 and owner-accepted protected SQLite design. Actual App-user authority and source acceptance remain separate gates."
+    },
+    {
+      "dimension": "documentation",
+      "status": "partial",
+      "evidence": "Checkpoint evidence records verification and limits. Realized architecture, operating/rollback documentation, and ADR status updates remain Plan task 4.2."
+    },
+    {
+      "dimension": "product/spec consistency",
+      "status": "partial",
+      "evidence": "Public CLI 0.12.61 / SDK 0.22.0 adoption and 224-file upstream equality are reported. Shared #50/#51 facts and unknown/revoked/missing-contract behavior remain incomplete Plan tasks 2.2\u20132.3."
+    },
+    {
+      "dimension": "evidence",
+      "status": "partial",
+      "evidence": "Owner acceptance of PR #112 and ADR-0008 is recorded; release and test evidence is retained. Actual connected App-user consent/effects, hosted exact-head results, and native Continue qualification are pending. Historical receipts remain historical."
+    },
+    {
+      "dimension": "review",
+      "status": "passed for this checkpoint",
+      "evidence": "Independent read-only review at the specified head found no concrete code/security gap. This is not merge approval or a substitute for remaining protected reviews and gates."
+    },
+    {
+      "dimension": "known limitations",
+      "status": "documented; gates remain",
+      "evidence": "No candidate deployment; current preview remains issue #51. Shared prerequisites, external consent/source acceptance, production persistence and key custody (#58), hosted checks, integration, and post-merge evidence remain open."
+    }
+  ],
+  "kind": "controls-checkpoint",
+  "issue": 48,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-08T08:32:08.294454+00:00",
+  "sourceReadOnly": true,
+  "transport": "Standalone reviewer returned final structured JSON; writable envelope remained null, recovered final JSON after validating head/verdict/all eleven dimensions"
+}

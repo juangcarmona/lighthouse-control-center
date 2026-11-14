@@ -2,9 +2,7 @@
 
 ![Lighthouse Control Center: a bench overlooking the blue bay, sailboats and lighthouse.](assets/lighthouse-control-center/readme-banner.png)
 
-SoFa is evolving into Lighthouse Control Center.
-
-SoFa observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and an independent runtime executes agents. SoFa projects source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
+Lighthouse Control Center observes engineering activity and delivery evidence across configured repositories. GitHub workflows own orchestration and independent runtimes execute agents. Lighthouse Control Center presents source evidence and highlights decisions or missing information; stopping it does not stop repository delivery.
 
 ## Open the authenticated workspace
 
@@ -14,21 +12,32 @@ The supported entrypoint is the .NET workspace composed by Aspire with an isolat
 SOFA_CONFIG_FILE="$HOME/.config/sofa-dev/development.json" npm start
 ```
 
-Open the exact HTTPS address configured in that private file. Owner admission uses the configured issuer/subject and verified password in development; the external identity profile retains MFA. Connect a GitHub account separately; repository observations use that user's effective app/repository authority. Credentials remain server-side. A restart ends local sessions and source connections.
+Open the exact HTTPS address configured in that private file. Owner admission uses the configured issuer/subject and verified password in development; the external identity profile retains MFA. Connect a GitHub account separately; repository observations use that user's effective app/repository authority. Credentials remain server-side in the protected access-continuity store. A valid returning session survives an application restart after online provider verification; a new session for the same operator reuses the separately retained GitHub connection after source verification. The [development identity runbook](docs/runbooks/development-identity.md) covers custody, first-upgrade migration and revocation.
 
 The account view shows the acting account, source-check times and configured repository permissions. The operations view retains the first bounded observation slice: active workflow groups, source revisions, human-wait labels, repository filtering and safe GitHub links. Source-update age is separate from observation time; unavailable evidence stays unknown. Workflow waiting does not identify an approver. Counts cover the latest twenty runs and first hundred open issue records per configured repository, with PR records excluded from attention.
 
-Observation data is coalesced within the owner/session connection scope for fifteen seconds. Permission checks precede cache reuse. Background polling does not renew the session; authority loss clears displayed records and counts. Temporary transport failure retains old source times with a stale warning. Issue commands, full discovery/boards/inbox and runtime/capacity metrics remain work under #50/#51/#52/#57 and their dependencies.
+Observation data is coalesced within the owner/session connection scope for fifteen seconds. Permission checks precede cache reuse. Background polling does not renew the session; authority loss clears displayed records and counts. Temporary transport failure retains old source times with a stale warning. The issue list at `/workspace/issues` opens source issues; selecting one opens its reader and bounded conversation pages. Optional evidence reads reuse the displayed conversation page without downloading it again, recheck source permissions and preserve exact source associations and use the installed Lighthouse result validator; unavailable or expired artifacts remain explicit. Actual connected-user issue-reader acceptance and live reservation coverage remain open under #50; the desktop GitHub connection and operational observations were confirmed for #49. This development candidate also implements discovery, intervention contexts, local runner observations and explicit source-backed actions as described below. Actual connected-user acceptance remains separate from fixture verification; capacity and health metrics are not inferred.
 
 Development Keycloak protocol, revocation and outage behavior have a separate nightly/manual E2E suite, outside PR/push CI. The owner confirmed actual GitHub connection and operational data on a computer. Physical-phone rehearsal was deferred by the owner; narrow browser tests do not establish physical-device acceptance. Production custody, persistence and deployment remain #58 work.
 
 Install browser prerequisites with `npx playwright install --with-deps chromium` before verification. CI retains safe post-callback screenshots and reports. Its identity-provider test requires `libnss3-tools` for an isolated browser trust database.
 
+## Inspect observed interventions
+
+Open `/workspace/attention` for source-labeled waits and separate source/observation times. Inspect a selected context to verify its current source question and permitted common actions. Prepare and confirm explicitly; only a source receipt establishes resolution. Opening, ordinary commenting or a missing label never proves resolution. See the [intervention inbox runbook](docs/runbooks/intervention-inbox.md) for coverage, history, privacy and the pending shared-control acceptance.
+
+## Find configured work
+
+Open `/workspace/repositories` for the repository inventory, select a repository to see its issues, or open `/workspace/issues` for the cross-repository issue list. The old `/workspace/factory` path remains a compatible list alias. Title search and combined filters cover visibly collected pages; exact-number lookup can reach an issue outside those pages. Load more extends the bounded collection, while Refresh starts it again. Source times, denied/unavailable repositories, partial labels and unknown report/associated-run facts remain visible. The board groups GitHub open/closed state and never requests a transition.
+
+Optional `SoFa:RepositoryBranches` entries map an already configured repository to its expected default branch. The discovered branch is a separate source fact; conflict or missing metadata grants no permission. Use Read issue evidence for the existing source-associated #50 summaries and open the shared reader from every card. Health/version metrics remain separate #57 work. This is a read-only implementation; actual connected-user discovery acceptance is not established by its fixtures.
+
 ## Repository map
+
+The #48 development candidate uses the released public SDK 0.22.0 for current questions, eligibility and source-backed Refine, Propose, ordinary comments and explicit Continue. Configure the intended numeric `SoFa:GitHub:AppId`, effective App-user permissions and separate protected command storage as described in [Development issue controls](docs/runbooks/issue-controls.md). Prepare and inspect an effect before confirmation. The durable SQLite claim permits one exact source POST; duplicates, lost responses and restored preparations reconcile the original intent. Source admission, execution and question/stage outcomes stay distinct. Missing contract, authority or storage blocks actions while ordinary reads remain available. Actual connected App-user qualification remains open; controlled fixtures and a reviewed candidate do not imply deployment. Published applications bundle and verify the selected SDK outside checkout ancestry.
 
 - [`docs/product/`](docs/product/README.md): ProductShape model and Product Changes.
 - [`docs/architecture/`](docs/architecture/README.md): ArcShape-managed arc42 architecture documentation.
-- [`docs/engineering-lifecycle.md`](docs/engineering-lifecycle.md): shared Agentic SDLC gates and working agreements.
 - [`src/`](src/README.md): authenticated workspace, source observations, repository tooling and retained legacy execution code.
 - [`tests/`](tests/README.md): runtime, PostgreSQL, container, bridge and repository tests.
 
@@ -56,3 +65,7 @@ Both the historical CLI snapshot and authenticated web projection include `runAt
 The former supervisor is retained for historical rollback, disabled by default and no longer started by AppHost. See [ADR-0006](docs/architecture/09-architecture-decisions/0006-observe-repository-owned-workflows.md).
 
 The repository's own development workflows use the pinned Lighthouse gh-aw/OpenCode adapter. See [repository workflow operation](docs/runbooks/repository-workflows.md) for runner setup, stage requests, evidence and recovery.
+
+See the [Lighthouse adoption inventory and dogfooding guide](docs/runbooks/lighthouse-dogfooding.md) for the current package/profile/source-contract baseline, reproducible verification and the still-pending authenticated mission demonstration.
+
+The runtime inventory at `/workspace/runtime` reads configured local runner registrations and committed Lighthouse versions separately from permission-gated GitHub runner observations. See the [runtime inventory runbook](docs/runbooks/runtime-inventory.md) for private sources, explicit filesystem trust, limits and unavailable evidence. Registrations and matching source IDs do not prove process health or free capacity.

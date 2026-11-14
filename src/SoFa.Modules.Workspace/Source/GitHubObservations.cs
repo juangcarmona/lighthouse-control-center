@@ -10,7 +10,7 @@ internal sealed record ObservedRun(long Id, string? Name, string? Status, string
 internal sealed record ObservedIssue(int Number, string? Title, IReadOnlyList<string> Labels, string? Url, string? UpdatedAt);
 internal sealed record ObservedRepository(string Repository, DateTimeOffset ObservedAt, string Availability, string Scope,
     IReadOnlyList<ObservedRun>? Runs = null, IReadOnlyList<ObservedIssue>? Attention = null, string? Reason = null);
-internal sealed record ObservationSnapshot(IReadOnlyList<ObservedRepository> Repositories, int RefreshAfterSeconds);
+internal sealed record ObservationSnapshot(IReadOnlyList<ObservedRepository> Repositories, int RefreshAfterSeconds, string? DataScope = null);
 internal sealed record CachedObservation(GitHubConnection Connection, long Generation, Task<ObservedRepository> Collection, DateTimeOffset ExpiresAt);
 
 internal sealed record GetObservations(OwnerSession Session);
@@ -30,7 +30,7 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
     var repositories = await Task.WhenAll(settings.Repositories.Select(repository =>
         ReadRepositoryAsync(record, connection, generation, repository, cancellationToken))).ConfigureAwait(false);
     lock (record.Sync)
-      return Live(record, connection, generation) ? new ObservationSnapshot(repositories, 15) : null;
+      return Live(record, connection, generation) ? new ObservationSnapshot(repositories, 15, connection.DataScope) : null;
   }
 
   private async Task<ObservedRepository> ReadRepositoryAsync(OwnerSession record, GitHubConnection connection,

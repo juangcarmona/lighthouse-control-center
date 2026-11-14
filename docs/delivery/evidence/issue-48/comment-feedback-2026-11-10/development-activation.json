@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-11-10T10:39:20.947720+00:00",
+  "origin": "https://192.168.0.3:5443",
+  "rootHttp": 200,
+  "appSource": "0144c6c64820ab936920fe82061e1507543be617",
+  "harnessSource": "cd6e3bd",
+  "assets": [
+    {
+      "asset": "issue.js",
+      "http": 200,
+      "sha256": "c946682f99be6a0b124482b9be3b948622c97c0472e3d1fe480f700fa7e3cb5c",
+      "matches": true
+    },
+    {
+      "asset": "issue-actions.js",
+      "http": 200,
+      "sha256": "e9bde570c343756ae11a698b6c191bafeba8eb44ede8aa177742ea5840f1835f",
+      "matches": true
+    },
+    {
+      "asset": "issue.css",
+      "http": 200,
+      "sha256": "900e14323852211ecb62ddac38e2adc9d948c1520602d99014f3cd484264bc36",
+      "matches": true
+    }
+  ],
+  "rollbackRetained": true,
+  "configurationAndStoresUnchanged": true
+}

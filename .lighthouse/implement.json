@@ -563,4 +563,275 @@
       "corrections": {}
     }
   }
+,
+  "53": {
+    "reviewRequired": true,
+    "scope": "Implement issue #53 only. Permit the single listed configuration-projection regression test while preserving every other frozen verification input and all read-only/no-policy boundaries.",
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/",
+        "src/SoFa.Web/SoFa.Web.csproj",
+        "src/SoFa.Web/packages.lock.json",
+        "src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj",
+        "src/SoFa.Modules.Workspace/packages.lock.json",
+        "src/dotnet/",
+        "tests/SoFa.Web.Tests/RepositoryConfigurationTests.cs"
+      ],
+      "corrections": {
+        "tests/SoFa.Web.Tests/RepositoryConfigurationTests.cs": "Issue #53: add focused assertions for source-backed repository-configuration facts and comparisons. Preserve existing access, provenance, unknown-value and read-only assertions; no other verification input is admitted."
+      }
+    }
+  },
+  "120": {
+    "reviewRequired": true,
+    "scope": "Implement issue #120 only. Permit the two listed installation and session-recovery regression-test paths; preserve all other frozen verification inputs and the owner's single-machine acceptance boundary.",
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/",
+        "src/SoFa.Web/SoFa.Web.csproj",
+        "src/SoFa.Web/packages.lock.json",
+        "src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj",
+        "src/SoFa.Modules.Workspace/packages.lock.json",
+        "src/dotnet/",
+        "tests/SoFa.Web.Tests/OwnerSessionsTests.cs",
+        "tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs"
+      ],
+      "corrections": {
+        "tests/SoFa.Web.Tests/OwnerSessionsTests.cs": "Issue #120: verify owner-session idle and absolute deadlines survive a process restart without renewal. Preserve existing session and grant-custody assertions.",
+        "tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs": "Issue #120: verify an independent external installation uses operator-supplied identity and repository inputs without optional runtime/control providers. Preserve existing configuration and identity-denial assertions."
+      }
+    }
+  },
+  "158": {
+    "reviewRequired": true,
+    "scope": "Implement issue #158 only. Permit changes to the seven listed evidence-history regression-test paths; preserve all other frozen verification inputs and source-authority boundaries.",
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/",
+        "src/SoFa.Web/",
+        "src/SoFa.Modules.Workspace/",
+        "src/dotnet/",
+        "tests/README.md",
+        "tests/SoFa.Web.Tests/IssueEvidenceTests.cs",
+        "tests/browser/factory.spec.mjs",
+        "tests/browser/issue-fixture-server.mjs",
+        "tests/browser/issue.spec.mjs",
+        "tests/evidence-projections.test.mjs",
+        "tests/frontend-architecture.test.mjs"
+      ],
+      "corrections": {
+        "tests/README.md": "Issue #158: document the bounded evidence-history fixture and browser coverage. Preserve the existing test inventory and scope limitations.",
+        "tests/SoFa.Web.Tests/IssueEvidenceTests.cs": "Issue #158: assert exact workflow revision and pull-request date/review-availability source facts. Preserve existing source and authority assertions.",
+        "tests/browser/factory.spec.mjs": "Issue #158: select the existing coverage disclosure by its explicit key so the browser test remains specific after History is added. Preserve the asserted project coverage behavior.",
+        "tests/browser/issue-fixture-server.mjs": "Issue #158: serve the two new local evidence-projection modules to the isolated browser fixture only.",
+        "tests/browser/issue.spec.mjs": "Issue #158: cover evidence-history gaps, source labels, keyboard disclosure and narrow/light-dark rendering. Preserve existing issue-reader checks.",
+        "tests/evidence-projections.test.mjs": "Issue #158: add bounded projection tests for adoption facts, source-link confinement, retries, chronology, unknown dates and protected decision distinctions.",
+        "tests/frontend-architecture.test.mjs": "Issue #158: record the two local evidence-history module dependencies in the existing frontend dependency assertion."
+      }
+    }
+  },
+  "159": {
+    "reviewRequired": true,
+    "scope": "Implement issue #159 only. Permit the two listed Actions-usage regression-test paths; preserve read-only scope, unknown billing and all other frozen verification inputs.",
+    "paths": [
+      "*"
+    ],
+    "checks": [
+      [
+        "npm",
+        "ci",
+        "--ignore-scripts"
+      ],
+      [
+        "env",
+        "CI=true",
+        "npm",
+        "run",
+        "verify:container"
+      ]
+    ],
+    "verification": {
+      "paths": [
+        "package.json",
+        "package-lock.json",
+        "scripts/",
+        "tests/",
+        "playwright.config.mjs",
+        "Directory.Build.props",
+        "SoFa.slnx",
+        "src/SoFa.Runtime/SoFa.Runtime.csproj",
+        "src/SoFa.Runtime/packages.lock.json",
+        "src/SoFa.AppHost/SoFa.AppHost.csproj",
+        "src/SoFa.AppHost/packages.lock.json",
+        "src/tooling/security/",
+        ".github/workflows/",
+        ".github/aw/",
+        ".lighthouse/",
+        ".product/",
+        ".agents/",
+        ".claude/",
+        "docs/product/",
+        "docs/architecture/",
+        ".gitleaks.toml",
+        ".markdownlint-cli2.jsonc",
+        ".gitignore",
+        "commitlint.config.mjs",
+        "lighthouse.json",
+        "skills-lock.json",
+        ".editorconfig",
+        "openspec/config.yaml",
+        "openspec/schemas/",
+        "openspec/specs/",
+        "src/SoFa.Web/SoFa.Web.csproj",
+        "src/SoFa.Web/packages.lock.json",
+        "src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj",
+        "src/SoFa.Modules.Workspace/packages.lock.json",
+        "src/dotnet/",
+        "tests/SoFa.Web.Tests/ActionsUsageTests.cs",
+        "tests/browser/actions-usage.spec.mjs"
+      ],
+      "corrections": {
+        "tests/SoFa.Web.Tests/ActionsUsageTests.cs": "Issue #159: add focused read-only source tests for Actions usage, bounded coverage and unknown billing. Preserve permission and fail-closed assertions.",
+        "tests/browser/actions-usage.spec.mjs": "Issue #159: exercise the read-only usage card provenance, coverage and unknown states in the isolated browser fixture. Preserve existing Health behavior."
+      }
+    }
+  }
 }

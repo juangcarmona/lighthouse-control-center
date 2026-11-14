@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-09T16:45:33.027Z",
+  "sourceRevision": "62ff524ddc50fa2525340034250d84d1d2ad01d0",
+  "tlsValidated": true,
+  "realDevelopmentLogin": true,
+  "actualGitHubAccountLinked": true,
+  "repositoryInventoryCount": 2,
+  "canonicalRepositoryNavigation": true,
+  "firstIssueY": 128.4375,
+  "scopedIssueTitleOmitsRepository": true,
+  "headerHeight": 48,
+  "sidebarWidth": 184,
+  "collapsedSidebarWidth": 60,
+  "desktopRefreshSize": {
+    "width": 32,
+    "height": 32
+  },
+  "themeButtonSize": {
+    "width": 37.59375,
+    "height": 32
+  },
+  "mobileIdentityVisible": true,
+  "mobileOverflow": false,
+  "fullWidthIssueDescription": true,
+  "noNestedIssueScrollbar": true,
+  "globalIssueList": true,
+  "legacyFactoryRoutePreserved": true,
+  "servedAssetsMatch": true,
+  "hashes": {
+    "app.css": "0abd578e5b05d73be23d30df25e08ec0bbb5caf6b58cf15560357c31a4c3b58c",
+    "workspace-ui.js": "b5d8d3ab77320dabe2d078aca7492b3cfb99c4550ddd22bdfd37558fef833775",
+    "factory.js": "7dda32f645a111e8132863561e40aa6d65bda83fba3f3fcf89dcdc777340b00e",
+    "factory.css": "e6917bec0732a08042363f13e7df0474efe84a969c680a7f6110cb8344e258a3",
+    "issue.js": "dcc4f53e1039c8f932089579b013b33f1b10c249214688a9c97edd1fa7a4fbbb",
+    "issue.css": "b4da8ca4680dde688d57a2f4dd14ec7bc38ef44ca26bd6238985f45e313db75a",
+    "issue-actions.js": "52846b6829bfae8411a5f21a18ef77b91a65fe7395f3ba1f9d4c6ef7ef0edda0",
+    "account.js": "85652c46f377ec233e61a41408b0ca7588222a302867a0e61756af1e45ecf979"
+  },
+  "sourceWritePerformed": false
+}

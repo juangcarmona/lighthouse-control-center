@@ -1,0 +1,26 @@
+{
+  "scope": "Read-only source-label projection; full issue51 and shared-control acceptance remain pending.",
+  "planReviewedHead": "d7d6f7c4b096a2c7d62cd2966cf08eebf9f1e862",
+  "verification": {
+    "command": "DOTNET_PROCESSOR_COUNT=4 npm run verify",
+    "status": "passed",
+    "node": 58,
+    "web": 154,
+    "runtime": 38,
+    "browser": 44,
+    "subsequentDocsOnlyLint": "passed"
+  },
+  "browserEvidence": {
+    "kind": "synthetic source fixtures, inspected screenshots",
+    "desktop": "test-results/browser/attention-inbox-1280-dark--b8919--deduplication-and-keyboard/inbox-1280-dark.png",
+    "narrow": "test-results/browser/attention-inbox-390-light--bd3e8--deduplication-and-keyboard/inbox-390-light.png",
+    "observations": "Distinct factual label cards, escaped hostile title, source/observation timestamps, visible keyboard focus, no horizontal overflow; narrow light and desktop dark. No real connected-user question/response or physical-phone acceptance claimed."
+  },
+  "architecture": "No architecture documentation impact: existing authorized factory query, shared issue reader and deployment reused; no execution or admission mechanism added.",
+  "pending": [
+    "Exact candidate hosted CI",
+    "Independent read-only code checkpoint",
+    "Updated live preview",
+    "Released shared controls and full source question/resolution acceptance"
+  ]
+}

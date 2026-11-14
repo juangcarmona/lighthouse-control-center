@@ -1,0 +1,9 @@
+# Hosted browser bootstrap reconciliation
+
+Required CI runs [43035048469](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43035048469) and [43035413614](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43035413614) failed before repository verification. Playwright dependency installation repeatedly failed to resolve `azure.archive.ubuntu.com`, selected from the hosted runner's APT mirror list. Each execution spent approximately ten minutes retrying package requests. Original failed-step logs are retained as gzip; the [manifest](manifest.json) hashes their exact bytes.
+
+An earlier candidate (`062b6c0`) prepared a bounded official-mirror override. Before integration, the independently delivered [PR #176](https://github.com/juangcarmona/lighthouse-control-center/pull/176) supplied a smaller correction: install the pinned Chromium browser using the hosted image's existing system libraries. Its full [hosted verification](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43037699534) passed. PR #170 then integrated that correction and the patched Aspire graph at main `d202ec363059b3dc5da429b6c85a301159f05dd5`, after [current-head CI](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43038504994) passed.
+
+The current candidate preserves main's qualified browser preparation exactly: `npx --no -- playwright install chromium`, followed by the complete required `npm run verify`. The alternate mirror/timeouts override is superseded and absent from the final workflow. No operator-machine APT setting was changed. All browser tests and security checks remain required; missing system libraries would fail the real browser suite.
+
+Fresh final-head CI remains mandatory after this reconciliation. Neither the earlier failed executions nor local syntax checks are declared hosted passes. Retain one preparation path rather than duplicate the independently delivered fix.

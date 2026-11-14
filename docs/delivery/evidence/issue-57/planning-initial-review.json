@@ -1,0 +1,88 @@
+{
+  "head": "231460e61799672bee85925ede82fdedc24774d8",
+  "verdict": "request-changes",
+  "findings": [
+    {
+      "id": "R57-1",
+      "severity": "high",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "19",
+      "title": "Owner-session loss does not cancel an in-flight local read",
+      "detail": "The design says to recheck the owner session before publishing and to kill children on cancellation, but the existing session lifecycle (`src/SoFa.Modules.Workspace/Identity/OwnerSessions.cs:154-177`) has no cancellation signal for local work when a session expires or is removed. `RequestAborted` alone does not fire when the owner logs out in another request. A Node/Git helper can therefore continue reading configured private paths after authorization is revoked, even if its response is ultimately discarded.",
+      "minimal_fix": "Link host-reader cancellation to session lifetime (add and cancel a session-scoped token on removal/expiry), and test logout/expiry during a blocked helper: the process tree must stop and no result may publish."
+    },
+    {
+      "id": "R57-2",
+      "severity": "medium",
+      "path": "openspec/changes/issue-57-proposal/design.md",
+      "lines": "19, 31, 35",
+      "title": "Bounded individual reads still permit unbounded concurrent refresh work",
+      "detail": "The local route can launch work for up to ten registrations and ten checkouts, while concurrent explicit refreshes have no specified admission/concurrency cap. GitHub refreshes can likewise overlap across requests. Per-command time/output limits do not bound aggregate child processes, API calls, or memory under repeated requests. The existing transport and session guards provide cancellation/authority safety, not refresh serialization or a concurrency budget.",
+      "minimal_fix": "Specify and implement a small per-session or global in-flight refresh limit (including child-process fan-out), with defined coalescing/rejection behavior; test concurrent refreshes and cancellation without exceeding the cap."
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "Acceptance criteria",
+      "status": "planned",
+      "evidence": "Tasks 1-4 and the runtime-inventory scenarios cover the explicit first slice; future capacity/usage criteria are honestly deferred."
+    },
+    {
+      "name": "Implementation completeness",
+      "status": "planned",
+      "evidence": "Tasks 1-4.4 cover implementation, integration, spec synchronization and limitations; no implementation is claimed."
+    },
+    {
+      "name": "Tests",
+      "status": "planned-with-gap",
+      "evidence": "Design 41-46 and tasks 1-4 include source, .NET and browser tests, but omit owner-session-loss cancellation and concurrent refresh bounds."
+    },
+    {
+      "name": "Quality checks",
+      "status": "planned",
+      "evidence": "Design 47 and task 4.3 require full npm verification and hosted CI; not evidence that they have run."
+    },
+    {
+      "name": "Security",
+      "status": "planned-with-gap",
+      "evidence": "Separation, fixed read-only sources, redaction and GitHub authority are specified; session-loss cancellation during local reads is missing."
+    },
+    {
+      "name": "Architecture / design conformance",
+      "status": "planned",
+      "evidence": "Design uses the existing Workspace/ADR-0006 observer boundary and does not add execution or persistence authority."
+    },
+    {
+      "name": "Documentation",
+      "status": "planned",
+      "evidence": "Task 4.2 calls for architecture, README and configuration documentation updates."
+    },
+    {
+      "name": "Product / spec consistency",
+      "status": "planned",
+      "evidence": "Cited accepted product nodes and proposed runtime-inventory spec are included; broader health/usage is not claimed."
+    },
+    {
+      "name": "Evidence",
+      "status": "planned",
+      "evidence": "Design 46-47 and task 4.3 require actual selected-host observations, safe receipts, CI and explicit source limitations."
+    },
+    {
+      "name": "Human review",
+      "status": "planned",
+      "evidence": "Task 4.3 requires fresh independent final-head review; configured reviewer remains distinct and protected gates are retained."
+    },
+    {
+      "name": "Known limitations",
+      "status": "planned",
+      "evidence": "Proposal 28, design 11/46 and task 4.4 explicitly defer capacity, usage, process health and other future scope."
+    }
+  ],
+  "kind": "plan",
+  "issue": 57,
+  "requestedModel": "openai/gpt-6-luna",
+  "requestedEffort": "high",
+  "reviewedAt": "2026-11-07T20:49:04.893Z",
+  "sourceReadOnly": true,
+  "requestPath": "/tmp/sofa-review-57-plan-231460e617-673bb9b8/context.json"
+}

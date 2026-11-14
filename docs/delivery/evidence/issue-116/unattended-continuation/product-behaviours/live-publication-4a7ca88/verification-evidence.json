@@ -1,0 +1,19 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "playwright-live",
+  "run-id": "2026-11-09T21:43:39.641Z",
+  "revision": "4a7ca88daf78f0b427e1b5b4593f3cb893a5e7c4",
+  "results": [
+    {
+      "test-id": " /  / product-behaviours.spec.mjs / live ordinary comment is confirmed by its source identity without continuation",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    }
+  ]
+}

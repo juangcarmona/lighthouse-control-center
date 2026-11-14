@@ -1,0 +1,98 @@
+{
+  "kind": "actual-selected-host-operator-read-not-acting-user-acceptance",
+  "helperSha256": "f00025fa0b194c7ba9f618dff3d7e22e63a517f215b95bff66fb9f4c1748e2f2",
+  "observation": {
+    "availability": "available",
+    "observedAt": "2026-11-08T00:09:10.889Z",
+    "registrationCount": 2,
+    "checkoutCount": 2,
+    "configured": true,
+    "complete": false,
+    "registrations": [
+      {
+        "alias": "sofa-registration",
+        "availability": "available",
+        "collectedAt": "2026-11-08T00:09:10.889Z",
+        "repository": "juangcarmona/sofa",
+        "id": 22,
+        "name": "bastion-sofa-gh-aw",
+        "modifiedAt": "2026-10-26T07:33:39.510Z"
+      },
+      {
+        "alias": "lighthouse-registration",
+        "availability": "available",
+        "collectedAt": "2026-11-08T00:09:10.892Z",
+        "repository": "juangcarmona/lighthouse",
+        "id": 21,
+        "name": "bastion-lighthouse-gh-aw",
+        "modifiedAt": "2026-10-27T06:04:06.336Z"
+      }
+    ],
+    "adoptions": [
+      {
+        "repository": "juangcarmona/sofa",
+        "availability": "available",
+        "collectedAt": "2026-11-08T00:09:10.895Z",
+        "revision": "bb3c2aef11951937a9203a6abc861ae9483791b2",
+        "declaredCli": "0.12.55",
+        "lockedCli": "0.12.55",
+        "sdlcVersion": "0.21.6",
+        "workflowRef": "860624fcca7eeb676a8d1945088452a6d321061d",
+        "sourceUrl": "https://github.com/juangcarmona/sofa/tree/bb3c2aef11951937a9203a6abc861ae9483791b2",
+        "complete": true
+      },
+      {
+        "repository": "juangcarmona/lighthouse",
+        "availability": "available",
+        "collectedAt": "2026-11-08T00:09:11.113Z",
+        "revision": "860624fcca7eeb676a8d1945088452a6d321061d",
+        "declaredCli": null,
+        "lockedCli": null,
+        "sdlcVersion": null,
+        "workflowRef": "83a7796e254f897f40074d6d1bed3d733fc59e32",
+        "sourceUrl": "https://github.com/juangcarmona/lighthouse/tree/860624fcca7eeb676a8d1945088452a6d321061d",
+        "complete": false
+      }
+    ]
+  },
+  "independentSupervision": {
+    "kind": "operator-container-state-observation-not-runtime-health-feature",
+    "before": [
+      {
+        "name": "lighthouse-sofa-ghaw-runner",
+        "running": true,
+        "pid": 2946004,
+        "startedAt": "2026-11-07T08:24:33.484084188Z"
+      },
+      {
+        "name": "lighthouse-lighthouse-ghaw-runner",
+        "running": true,
+        "pid": 2919378,
+        "startedAt": "2026-11-07T08:08:40.000147968Z"
+      }
+    ],
+    "after": [
+      {
+        "name": "lighthouse-sofa-ghaw-runner",
+        "running": true,
+        "pid": 2946004,
+        "startedAt": "2026-11-07T08:24:33.484084188Z"
+      },
+      {
+        "name": "lighthouse-lighthouse-ghaw-runner",
+        "running": true,
+        "pid": 2919378,
+        "startedAt": "2026-11-07T08:08:40.000147968Z"
+      }
+    ],
+    "unchangedDuringRead": true,
+    "controlActionPerformed": false
+  },
+  "limits": [
+    "Selected local sources only; private directories withheld",
+    "Operator host read, not connected-user GitHub administration acceptance",
+    "Lighthouse author checkout lacks a complete installed adoption tuple; unknown values retained",
+    "No process health, capacity, usage or production readiness claim",
+    "Phone acceptance owner-deferred; no physical-device test claimed"
+  ]
+}
