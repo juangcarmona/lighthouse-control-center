@@ -25,6 +25,7 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
 {
   private const int MaximumFileBytes = 256 * 1024;
   private const int MaximumAggregateBytes = 1024 * 1024;
+  private const int MaximumTreeReads = 4;
   private static readonly string[] FixedPaths = ["lighthouse.json", ".lighthouse/upgrade.json", ".lighthouse/sdlc.json",
       ".lighthouse/commands.json", "package.json", "package-lock.json"];
   private sealed record CacheEntry(RepositoryConfigurationProjection Projection, DateTimeOffset StoredAt, int Bytes);
@@ -40,6 +41,7 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
             new
             {
               maximumContentReads = 8,
+              maximumTreeReads = MaximumTreeReads,
               maximumConcurrentReads = 2,
               maximumFileBytes = MaximumFileBytes,
               maximumAggregateBytes = MaximumAggregateBytes,
@@ -136,6 +138,83 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
         return cached.Projection;
       }
 
+      var rootTreeSha = SourceJson.Text(resolved.Value.GetProperty("commit").GetProperty("tree"), "sha");
+      if (rootTreeSha is not { Length: 40 } || !rootTreeSha.All(Uri.IsHexDigit))
+        return Failure("unavailable", "The configured branch commit did not identify a source tree.", connection.DataScope);
+
+      var treeReads = 0;
+      async Task<(HttpStatusCode Status, Dictionary<string, (string Mode, string Type, string? Sha)>? Entries)> ReadTree(string sha)
+      {
+        if (++treeReads > MaximumTreeReads) return (0, null);
+        using var response = await transport.GetAsync("/repos/" + query.Repository + "/git/trees/" + Uri.EscapeDataString(sha),
+            connection.Tokens.Access, guard, budget.Token).ConfigureAwait(false);
+        if (!Live()) return (0, null);
+        if (!response.Successful || !response.Value.TryGetProperty("tree", out var tree)
+            || tree.ValueKind != JsonValueKind.Array
+            || response.Value.TryGetProperty("truncated", out var truncated) && truncated.ValueKind == JsonValueKind.True)
+          return (response.Status, null);
+        var entries = new Dictionary<string, (string Mode, string Type, string? Sha)>(StringComparer.Ordinal);
+        foreach (var item in tree.EnumerateArray())
+          if (SourceJson.Text(item, "path") is { Length: > 0 } path)
+            entries[path] = (SourceJson.Text(item, "mode") ?? "", SourceJson.Text(item, "type") ?? "", SourceJson.Text(item, "sha"));
+        return (response.Status, entries);
+      }
+
+      var trees = new Dictionary<string, Dictionary<string, (string Mode, string Type, string? Sha)>?>(StringComparer.Ordinal);
+      var rootTree = await ReadTree(rootTreeSha).ConfigureAwait(false);
+      trees[""] = rootTree.Entries;
+      if (rootTree.Status == HttpStatusCode.Unauthorized)
+      {
+        GitHubAuthorization.Invalidate(record, connection);
+        return Failure("disconnected", "GitHub rejected the source credential.", connection.DataScope);
+      }
+      if (rootTree.Status == HttpStatusCode.Forbidden)
+      {
+        ClearRepository(record.Id, query.Repository);
+        return Failure("denied", "The current connected-user tree read was denied; collected facts were cleared.", connection.DataScope);
+      }
+      if (rootTree.Entries is null && rootTree.Status != HttpStatusCode.NotFound
+          && await RetainStale("The repository tree could not be verified; the earlier commit and observation time are retained.", budget.Token).ConfigureAwait(false) is { } staleTree)
+        return staleTree;
+
+      foreach (var directory in new[] { ".lighthouse", ".github", ".github/workflows" })
+      {
+        var slash = directory.LastIndexOf('/');
+        var parent = slash < 0 ? "" : directory[..slash];
+        var name = slash < 0 ? directory : directory[(slash + 1)..];
+        var parentTree = trees.GetValueOrDefault(parent);
+        if (parentTree is null)
+        {
+          trees[directory] = null;
+          continue;
+        }
+        if (!parentTree.TryGetValue(name, out var entry))
+        {
+          trees[directory] = new(StringComparer.Ordinal);
+          continue;
+        }
+        if (entry.Mode != "040000" || entry.Type != "tree" || entry.Sha is not { Length: 40 } treeSha || !treeSha.All(Uri.IsHexDigit))
+        {
+          trees[directory] = null;
+          continue;
+        }
+        var childTree = await ReadTree(treeSha).ConfigureAwait(false);
+        trees[directory] = childTree.Entries;
+        if (childTree.Status == HttpStatusCode.Unauthorized)
+        {
+          GitHubAuthorization.Invalidate(record, connection);
+          return Failure("disconnected", "GitHub rejected the source credential.", connection.DataScope);
+        }
+        if (childTree.Status == HttpStatusCode.Forbidden)
+        {
+          ClearRepository(record.Id, query.Repository);
+          return Failure("denied", "The current connected-user tree read was denied; collected facts were cleared.", connection.DataScope);
+        }
+        if (childTree.Entries is null && childTree.Status != HttpStatusCode.NotFound
+            && await RetainStale("The repository tree could not be verified; the earlier commit and observation time are retained.", budget.Token).ConfigureAwait(false) is { } staleChildTree)
+          return staleChildTree;
+      }
+
       var sources = new List<RepositoryConfigurationSource>();
       var facts = new List<RepositoryConfigurationFact>();
       var reasons = new List<string>();
@@ -157,6 +236,21 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
         }
         reads++;
         var sourceTime = clock.GetUtcNow();
+        var slash = path.LastIndexOf('/');
+        var directory = slash < 0 ? "" : path[..slash];
+        var name = slash < 0 ? path : path[(slash + 1)..];
+        var sourceTree = trees.GetValueOrDefault(directory);
+        if (sourceTree is null || !sourceTree.TryGetValue(name, out var treeEntry))
+        {
+          sources.Add(new(path, revision, sourceTime, "unavailable", "unsupported", ["The source path could not be verified as a regular file in the selected commit tree."]));
+          continue;
+        }
+        if (treeEntry.Mode is not ("100644" or "100755") || treeEntry.Type != "blob")
+        {
+          sources.Add(new(path, revision, sourceTime, "unavailable", "unsupported",
+              [treeEntry.Mode == "120000" ? "Symbolic links are not followed; their targets are not attributed to this path." : "The source is not a regular repository file."]));
+          continue;
+        }
         var relative = "contents/" + path + "?ref=" + revision.ToLowerInvariant();
         using var response = await transport.GetAsync("/repos/" + query.Repository + "/" + relative,
             connection.Tokens.Access, guard, budget.Token).ConfigureAwait(false);
@@ -275,11 +369,13 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
           new
           {
             maximumContentReads = 8,
+            maximumTreeReads = MaximumTreeReads,
             maximumConcurrentReads = 2,
             maximumFileBytes = MaximumFileBytes,
             maximumAggregateBytes = MaximumAggregateBytes,
             deadlineSeconds = 30,
             reads,
+            treeReads,
             decodedBytes = totalBytes
           },
           linkedSources, facts, reasons);

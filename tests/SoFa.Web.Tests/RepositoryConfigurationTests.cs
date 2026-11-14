@@ -11,6 +11,10 @@ namespace SoFa.Web.Tests;
 public sealed class RepositoryConfigurationTests
 {
   private static readonly string[] ExpectedResolutions = ["0.12.68", "0.12.66"];
+  private const string RootTree = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  private const string LighthouseTree = "cccccccccccccccccccccccccccccccccccccccc";
+  private const string GithubTree = "dddddddddddddddddddddddddddddddddddddddd";
+  private const string WorkflowsTree = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
   private const string Manifest = """{"schemaVersion":1,"baseline":"0.1.0","product":"Example","profiles":["node-tooling"],"integrations":{"productShape":"0.23.0","arcShape":null},"packages":{"sdlc":{"name":"@juangcarmona/lighthouse-sdlc","version":"0.12.0"}},"managed":[".github/workflows/ci.yml"]}""";
   private const string Upgrade = """{"schemaVersion":1,"package":{"name":"@juangcarmona/lighthouse","version":"0.12.68"},"baseline":"0.1.0","capabilities":{"harness":"1","sdlc":null},"adoption":{"labels":{"id":"labels","status":"drifted","selection":"opt-in","provider":"github","version":"4","catalogVersion":"0.5.0","nextAction":"#77","recordPath":".lighthouse/reconciliation/labels.json"}},"projections":{"sdlc":"1"},"lastAppliedMigration":"upgrade-0.12.68","files":{"LIGHTHOUSE.md":{"hash":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","scope":"harness"}}}""";
   private static readonly JsonSerializerOptions JsonOptions = new()
@@ -281,6 +285,21 @@ public sealed class RepositoryConfigurationTests
   }
 
   [Fact]
+  public async Task ConfigurationReaderDoesNotFollowSymlinkedFiles()
+  {
+    using var fixture = new Fixture(contentsGrant: "read");
+    fixture.Handler.SymlinkPaths.Add("package.json");
+
+    var result = await fixture.Query.Handle(new(await fixture.Session(), "example/repository"), CancellationToken.None);
+
+    var source = Assert.Single(result.Sources, item => item.Path == "package.json");
+    Assert.Equal("unavailable", source.Availability);
+    Assert.Contains("Symbolic links are not followed", Assert.Single(source.Diagnostics));
+    Assert.DoesNotContain("/repos/example/repository/contents/package.json", fixture.Handler.Paths);
+    Assert.DoesNotContain(result.Facts, fact => fact.SourcePath == "package.json");
+  }
+
+  [Fact]
   public async Task RevisionAndRelatedWorkLinksAreBoundToSafeGitHubTargets()
   {
     using var fixture = new Fixture(contentsGrant: "read");
@@ -376,6 +395,7 @@ public sealed class RepositoryConfigurationTests
     internal string? ContentsGrant { get; set; }
     internal bool FailContentReads { get; set; }
     internal int? DenyContentReadAt { get; set; }
+    internal HashSet<string> SymlinkPaths { get; } = new(StringComparer.Ordinal);
     internal Dictionary<string, string> ContentOverrides { get; } = new(StringComparer.Ordinal);
     internal bool PauseFirstContentRead { get; set; }
     internal TaskCompletionSource ContentReadStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -417,7 +437,21 @@ public sealed class RepositoryConfigurationTests
           account = new { login = "example" }, permissions = new { metadata = "read", issues = "read", actions = "read", variables = "read", contents = ContentsGrant, pull_requests = "read" } } }
         },
         "/user/installations/9/repositories" => new { total_count = 1, repositories = new[] { new { id = 22, full_name = "example/repository", visibility = "private", @private = true } } },
-        "/repos/example/repository/commits/main" => new { sha = new string('a', 40) },
+        "/repos/example/repository/commits/main" => new { sha = new string('a', 40), commit = new { tree = new { sha = RootTree } } },
+        "/repos/example/repository/git/trees/" + RootTree => Tree("", [
+          File("lighthouse.json"), File("package.json"), File("package-lock.json"),
+          new { path = ".lighthouse", mode = "040000", type = "tree", sha = LighthouseTree },
+          new { path = ".github", mode = "040000", type = "tree", sha = GithubTree }
+        ]),
+        "/repos/example/repository/git/trees/" + LighthouseTree => Tree(".lighthouse", [
+          File(".lighthouse/upgrade.json"), File(".lighthouse/sdlc.json"), File(".lighthouse/commands.json")
+        ]),
+        "/repos/example/repository/git/trees/" + GithubTree => Tree(".github", [
+          new { path = "workflows", mode = "040000", type = "tree", sha = WorkflowsTree }
+        ]),
+        "/repos/example/repository/git/trees/" + WorkflowsTree => Tree(".github/workflows", [
+          File(".github/workflows/ci.yml"), File(".github/workflows/two.yml"), File(".github/workflows/three.yml")
+        ]),
         _ when path.StartsWith("/repos/example/repository/contents/", StringComparison.Ordinal) => Content(path),
         _ => throw new InvalidOperationException("Unexpected configuration source read: " + path)
       };
@@ -439,5 +473,15 @@ public sealed class RepositoryConfigurationTests
       };
       return new { type = "file", encoding = "base64", content = Convert.ToBase64String(Encoding.UTF8.GetBytes(text)) };
     }
+
+    private object File(string path) => new
+    {
+      path = Path.GetFileName(path),
+      mode = SymlinkPaths.Contains(path) ? "120000" : "100644",
+      type = "blob",
+      sha = new string('f', 40)
+    };
+
+    private static object Tree(string _, object[] entries) => new { truncated = false, tree = entries };
   }
 }
