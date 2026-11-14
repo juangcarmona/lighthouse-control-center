@@ -35,6 +35,13 @@ The [runtime queries](../../../src/SoFa.Modules.Workspace/Runtime/) coordinate o
 
 <!-- pdac:cite id="FR-RUNTIME-HEALTH" digest="sha256:f13856de8700ab35a6cca5fd6297e25a07719aa44f55f783d4079988eb535d7e" -->
 
+## Implemented coverage evidence
+
+The [CI producer](../../../.github/workflows/verify.yml) publishes an optional attempt-named report for the explicitly scoped `SoFa.Web.Tests` run. The [coverage query](../../../src/SoFa.Modules.Workspace/Source/GetCoverageEvidenceHandler.cs) requires current Actions read authority, a complete artifact inventory and matching numeric repository identity, source commit, workflow run and attempt. Missing, expired, oversized or mismatched reports remain unknown; the coverage step does not change CI success. Health requests this evidence only for the selected project and links the exact source run.
+
+<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:00496ba5f763ca6f4062a45e000bda8fb429cfd674b0e638cd59fb3858449130" -->
+<!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
+
 ## Proposed Control Center components
 
 These are extensions under [Proposed ADR-0010](../09-architecture-decisions/0010-administer-independent-runtime-providers.md), not deployed components.

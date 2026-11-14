@@ -1,4 +1,5 @@
 using System.Net;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using JuanGCarmona.SoFa.Modules.Workspace;
@@ -434,6 +435,34 @@ public sealed class GitHubAuthorizationTests
     else Assert.Equal(expected, json.GetProperty("event").GetString());
   }
 
+  [Fact]
+  public async Task CoverageReaderRequiresTheAttemptNamedReportFromTheExactSourceRun()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var result = await fixture.Coverage.Handle(new GetCoverageEvidence(record, "example/repository"), CancellationToken.None);
+    Assert.Equal("available", result.Availability);
+    Assert.Equal(82.5, result.Percentage);
+    Assert.Equal(2, result.Attempt);
+    Assert.Equal(71, result.RunId);
+    Assert.Contains("GET /repos/example/repository/actions/runs/71/artifacts", fixture.Handler.Calls);
+    Assert.Contains("GET /repos/example/repository/actions/artifacts/77/zip", fixture.Handler.Calls);
+    Assert.DoesNotContain("isolated-user-access", JsonSerializer.Serialize(result));
+  }
+
+  [Fact]
+  public async Task CoverageReaderKeepsAReportFromAnotherAttemptUnknown()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    fixture.Handler.CoverageReportAttempt = 1;
+    var result = await fixture.Coverage.Handle(new GetCoverageEvidence(record, "example/repository"), CancellationToken.None);
+    Assert.Equal("unknown", result.Availability);
+    Assert.Null(result.Percentage);
+  }
+
   private sealed class SourceFixture : IDisposable
   {
     private readonly GitHubTransport transport;
@@ -443,6 +472,7 @@ public sealed class GitHubAuthorizationTests
     internal GitHubAuthorization Authorization { get; }
     internal RepositoryAccess Access { get; }
     internal GetObservationsHandler Observations { get; }
+    internal GetCoverageEvidenceHandler Coverage { get; }
 
     internal SourceFixture()
     {
@@ -460,6 +490,7 @@ public sealed class GitHubAuthorizationTests
       Authorization = new GitHubAuthorization(settings, Sessions, transport, Clock);
       Access = new RepositoryAccess(settings, Sessions, Authorization, transport, Clock);
       Observations = new GetObservationsHandler(settings, Sessions, Authorization, Access, transport, Clock);
+      Coverage = new GetCoverageEvidenceHandler(settings, Sessions, Authorization, Access, transport, Clock);
     }
 
     internal async Task<OwnerSession> Session()
@@ -502,12 +533,37 @@ public sealed class GitHubAuthorizationTests
     internal bool DataUnavailable { get; set; }
     internal HttpStatusCode? DataStatus { get; set; }
     internal string? RunMetadata { get; set; }
+    internal long CoverageReportAttempt { get; set; } = 2;
     internal Action<HttpRequestMessage>? OnRequest { get; set; }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
       Calls.Add(request.Method + " " + request.RequestUri!.AbsolutePath);
       OnRequest?.Invoke(request);
+      if (request.RequestUri.Host == "coverage.blob.core.windows.net")
+      {
+        var report = new
+        {
+          schemaVersion = 1,
+          definitionVersion = "coverage-lines-v1",
+          repository = "example/repository",
+          repositoryId = 99,
+          runId = 71,
+          attempt = CoverageReportAttempt,
+          sourceHeadCommit = new string('a', 40),
+          testedCommit = new string('b', 40),
+          workflowPath = ".github/workflows/verify.yml",
+          scope = "SoFa.Web.Tests exercising SoFa.Modules.Workspace and SoFa.Web",
+          tool = "coverlet.collector 6.0.4 / Cobertura",
+          generatedAt = DateTimeOffset.UtcNow,
+          linesCovered = 165,
+          linesValid = 200
+        };
+        using var compressed = new MemoryStream();
+        using (var archive = new ZipArchive(compressed, ZipArchiveMode.Create, leaveOpen: true))
+        using (var writer = new StreamWriter(archive.CreateEntry("coverage.json").Open())) writer.Write(JsonSerializer.Serialize(report));
+        return new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(compressed.ToArray()) };
+      }
       if (request.RequestUri.Host == "github.com")
       {
         Assert.Equal(HttpMethod.Post, request.Method);
@@ -527,9 +583,32 @@ public sealed class GitHubAuthorizationTests
       Assert.Equal(HttpMethod.Get, request.Method);
       Assert.Equal("isolated-user-access", request.Headers.Authorization?.Parameter);
       if (request.RequestUri.AbsolutePath == "/repos/example/repository")
-        return Response(HttpStatusCode.OK, new { permissions = new { pull = CanRead, push = CanWrite } });
+        return Response(HttpStatusCode.OK, new { id = 99, full_name = "example/repository", permissions = new { pull = CanRead, push = CanWrite } });
       QueryHelpers.ParseQuery(request.RequestUri.Query).TryGetValue("page", out var pageValue);
       var page = pageValue.ToString();
+      if (request.RequestUri.AbsolutePath == "/repos/example/repository/actions/workflows/verify.yml/runs")
+        return Response(HttpStatusCode.OK, new
+        {
+          total_count = 1,
+          workflow_runs = new[] { new
+        {
+          id = 71, run_attempt = 2, head_sha = new string('a', 40), path = ".github/workflows/verify.yml", status = "completed",
+          html_url = "https://github.com/example/repository/actions/runs/71", repository = new { id = 99, full_name = "example/repository" }
+        } }
+        });
+      if (request.RequestUri.AbsolutePath == "/repos/example/repository/actions/runs/71/artifacts")
+        return Response(HttpStatusCode.OK, new
+        {
+          total_count = 1,
+          artifacts = new[] { new
+        { id = 77, name = "lighthouse-coverage-71-2", expired = false, size_in_bytes = 256 } }
+        });
+      if (request.RequestUri.AbsolutePath == "/repos/example/repository/actions/artifacts/77/zip")
+      {
+        var redirect = new HttpResponseMessage(HttpStatusCode.Found);
+        redirect.Headers.Location = new Uri("https://coverage.blob.core.windows.net/artifact.zip");
+        return redirect;
+      }
       if (request.RequestUri.AbsolutePath == "/repos/example/repository/actions/runs")
       {
         if (DataWait is not null) await DataWait;

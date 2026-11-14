@@ -7,7 +7,11 @@ const repository = 'example/a-very-long-repository-name-for-engineering-health-e
 const observedAt = '2026-11-11T00:00:00Z';
 const screenshotDir = process.env.LIGHTHOUSE_EVIDENCE_DIR || 'test-results/evidence/screenshots';
 async function fixture(page) {
-  const state = { denied: false, unavailable: false, accountUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [], paths: [] };
+  const state = { denied: false, unavailable: false, accountUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [], paths: [], coverage: {
+    availability: 'available', percentage: 82.5, linesCovered: 165, linesValid: 200,
+    scope: 'SoFa.Web.Tests exercising SoFa.Modules.Workspace and SoFa.Web', sourceCommit: 'a'.repeat(40), testedCommit: 'b'.repeat(40),
+    runId: 42, attempt: 2, observedAt, runUrl: 'https://github.com/' + repository + '/actions/runs/42'
+  } };
   await page.route('**/health.js', route => readFile(new URL('../../src/web/public/health.js', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/javascript' })));
   await page.route('**/health.css', route => readFile(new URL('../../src/web/public/health.css', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/css' })));
   await page.route('**/workspace/health**', async route => {
@@ -20,6 +24,7 @@ async function fixture(page) {
     if (path === '/api/connections/github') return route.fulfill({ json: state.accountUnavailable ? { state: 'unavailable' } : { state: 'linked', login: 'demo', dataScope: state.scope, userId: 1, repositories: [
       { repository, availability: state.denied ? 'denied' : 'available', actionsRead: true, issuesRead: true },
       { repository: 'example/denied', availability: 'denied' }, { repository: 'example/unavailable', availability: 'unavailable' }] } });
+    if (path === '/api/health/coverage/' + repository) return route.fulfill({ json: state.coverage ?? { availability: 'unknown', reason: 'No matching exact-attempt coverage report is available.' } });
     if (state.unavailable) return route.fulfill({ status: 503, json: {} });
     return route.fulfill({ json: { dataScope: state.sourceScope, repositories: [{ repository, availability: 'available', observedAt,
       scope: 'Latest 20 workflow runs; not a complete delivery audit', runs: [{ id: 42, name: state.runName, status: 'completed', conclusion: 'failure', runAttempt: 2,
@@ -50,6 +55,20 @@ test('health fleet to project to exact contributing source is read-only and hone
   await expect(page.locator('.health-detail img')).toHaveCount(0);
   await expect(page.locator('#health-results')).toContainText('Trends unavailable');
   expect(state.methods.every(method => method === 'GET')).toBe(true);
+});
+test('project Health shows coverage only with exact attempt evidence and keeps it informational', async ({ page }) => {
+  const state = await fixture(page);
+  await page.goto(origin + '/workspace/health/' + repository);
+  await expect(page.getByText('82.5% line coverage · 165 of 200 lines')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open exact CI run' })).toHaveAttribute('href', state.coverage.runUrl);
+  await expect(page.getByText('informational and does not gate CI')).toBeVisible();
+  expect(state.paths).toContain('/api/health/coverage/' + repository);
+});
+test('project Health keeps coverage unknown when no exact-attempt report exists', async ({ page }) => {
+  const state = await fixture(page); state.coverage = null;
+  await page.goto(origin + '/workspace/health/' + repository);
+  await expect(page.getByText('No matching exact-attempt coverage report is available.')).toBeVisible();
+  await expect(page.getByText(/% line coverage/)).toHaveCount(0);
 });
 test('temporary account and source failure retain stale visible evidence but denied authority removes records', async ({ page }) => {
   const state = await fixture(page); await page.goto(origin + '/workspace/health/' + repository + '/runs/42');
