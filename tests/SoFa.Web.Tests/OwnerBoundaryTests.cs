@@ -368,6 +368,18 @@ public sealed class OwnerBoundaryTests
     Assert.Equal(JsonValueKind.Null, disconnected.RootElement.GetProperty("login").ValueKind);
   }
 
+  [Fact]
+  public async Task ExplicitProjectReadGrantCannotReadRepositoryRuntimeInventory()
+  {
+    await using var app = new OwnerApplication { ExplicitProjectRead = true };
+    using var client = app.Client();
+    await client.GetAsync(await app.Begin(client));
+    var callsBeforeRuntimeRead = app.Source.Calls.Count;
+
+    Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/runtime/example/repository")).StatusCode);
+    Assert.Equal(callsBeforeRuntimeRead, app.Source.Calls.Count);
+  }
+
   private static string Token(string html) => WebUtility.HtmlDecode(Regex.Match(html,
       "name=\"__RequestVerificationToken\" value=\"([^\"]+)\"", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1)).Groups[1].Value);
 
@@ -382,6 +394,7 @@ public sealed class OwnerBoundaryTests
     internal string? Invalid { get; init; }
     internal int TokenExchanges;
     internal bool GitHubConfigured { get; init; } = true;
+    internal bool ExplicitProjectRead { get; init; }
     internal TimeSpan? NonceLifetime { get; init; }
     internal Action? BeforeIssue { get; set; }
     internal Func<CookieValidatePrincipalContext, Task>? OnValidated { get; set; }
@@ -398,20 +411,33 @@ public sealed class OwnerBoundaryTests
       Directory.CreateDirectory(privateRoot, privateMode);
       Directory.CreateDirectory(Path.Combine(privateRoot, "sessions"), privateMode);
       Directory.CreateDirectory(Path.Combine(privateRoot, "keys"), privateMode);
-      builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
+      builder.ConfigureAppConfiguration((_, configuration) =>
       {
-        ["SoFa:Origin"] = "https://workspace.invalid",
-        ["SoFa:Identity:Mode"] = "Development",
-        ["SoFa:Identity:SessionDirectory"] = Path.Combine(privateRoot, "sessions"),
-        ["SoFa:Identity:SessionKeyDirectory"] = Path.Combine(privateRoot, "keys"),
-        ["SoFa:Identity:Development:Issuer"] = "https://identity.invalid/realms/dev",
-        ["SoFa:Identity:Development:ClientId"] = "sofa-development",
-        ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
-        ["SoFa:Identity:Development:OwnerSubject"] = "owner-subject",
-        ["SoFa:Repositories:0"] = "example/repository",
-        ["SoFa:GitHub:ClientId"] = GitHubConfigured ? "development-user-app" : null,
-        ["SoFa:GitHub:ClientSecret"] = GitHubConfigured ? "isolated-user-app-value" : null,
-      }));
+        var values = new Dictionary<string, string?>
+        {
+          ["SoFa:Origin"] = "https://workspace.invalid",
+          ["SoFa:Identity:Mode"] = "Development",
+          ["SoFa:Identity:SessionDirectory"] = Path.Combine(privateRoot, "sessions"),
+          ["SoFa:Identity:SessionKeyDirectory"] = Path.Combine(privateRoot, "keys"),
+          ["SoFa:Identity:Development:Issuer"] = "https://identity.invalid/realms/dev",
+          ["SoFa:Identity:Development:ClientId"] = "sofa-development",
+          ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
+          ["SoFa:Identity:Development:OwnerSubject"] = "owner-subject",
+          ["SoFa:Repositories:0"] = "example/repository",
+          ["SoFa:GitHub:ClientId"] = GitHubConfigured ? "development-user-app" : null,
+          ["SoFa:GitHub:ClientSecret"] = GitHubConfigured ? "isolated-user-app-value" : null,
+        };
+        if (ExplicitProjectRead)
+        {
+          values["SoFa:Access:Projects:0:Id"] = "example-project";
+          values["SoFa:Access:Projects:0:Repository"] = "example/repository";
+          values["SoFa:Access:Operators:0:Issuer"] = "https://identity.invalid/realms/dev";
+          values["SoFa:Access:Operators:0:Subject"] = "owner-subject";
+          values["SoFa:Access:Operators:0:Grants:0:Project"] = "example-project";
+          values["SoFa:Access:Operators:0:Grants:0:Permission"] = "read";
+        }
+        configuration.AddInMemoryCollection(values);
+      });
       builder.ConfigureServices(services =>
       {
         services.AddSingleton<TimeProvider>(Clock);

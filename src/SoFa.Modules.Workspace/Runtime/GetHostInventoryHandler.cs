@@ -26,6 +26,9 @@ internal sealed class GetHostInventoryHandler(WorkspaceOptions settings, OwnerSe
 
   public async Task<HostInventory> Handle(GetHostInventory query, CancellationToken cancellationToken)
   {
+    if (settings.Identity.Access is not null)
+      return new("unavailable", clock.GetUtcNow(), 0, 0, false,
+          Reason: "Host-wide inventory is unavailable in explicit mode until qualified provider/resource scopes are supported.");
     var registrations = query.Repository is null ? settings.Runtime.Registrations : [];
     var checkouts = query.Repository is null ? settings.Runtime.Checkouts
         : settings.Runtime.Checkouts.Where(s => string.Equals(s.Repository, query.Repository, StringComparison.OrdinalIgnoreCase)).ToArray();

@@ -27,7 +27,7 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
     if (connection is null) return null;
     long generation;
     lock (record.Sync) generation = record.GitHub.Generation;
-    var repositories = await Task.WhenAll(settings.Repositories.Select(repository =>
+    var repositories = await Task.WhenAll(settings.ReadableRepositories(record).Select(repository =>
         ReadRepositoryAsync(record, connection, generation, repository, cancellationToken))).ConfigureAwait(false);
     lock (record.Sync)
       return Live(record, connection, generation) ? new ObservationSnapshot(repositories, 15, connection.DataScope) : null;

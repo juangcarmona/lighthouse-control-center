@@ -102,7 +102,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
 
   internal static void Disconnect(OwnerSession record)
   {
-    record.Sessions?.DisconnectGitHubGrant();
+    record.Sessions?.DisconnectGitHubGrant(record);
   }
 
   internal async Task<GitHubConnection?> CurrentAsync(OwnerSession record, CancellationToken cancellationToken)

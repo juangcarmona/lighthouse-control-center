@@ -142,7 +142,9 @@ public static class WorkspaceModule
                   + candidate.UserId.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".</p></details>"
                   + Form("/connections/github/confirm", token, "Confirm account replacement");
       }
-      return Html("Workspace", "<p>Owner identity verified. GitHub account connection is separate.</p>"
+      return Html("Workspace", (settings.Identity.Access is null
+          ? "<p>Owner identity verified. GitHub account connection is separate.</p>"
+          : "<p>Operator identity verified. Only explicitly assigned projects are visible. GitHub account connection is separate. Multiuser source actions and provider operations are unsupported.</p>")
           + (feedback.Length == 0 ? "" : "<p role=\"status\">" + feedback + "</p>")
               + account
               + "<p id=\"account-status\" role=\"status\" aria-live=\"polite\">Checking current repository authority…</p><ul id=\"repository-authority\" aria-label=\"Configured repository permissions\"></ul>"
@@ -151,9 +153,11 @@ public static class WorkspaceModule
               + "<div id=\"github-disconnect\"" + (canDisconnect ? "" : " hidden") + ">"
               + Form("/connections/github/disconnect", token, "Disconnect GitHub") + "</div>"
               + "<p><a href=\"/workspace/operations\">Open fleet operations</a></p>"
-              + "<p>Disconnect removes the locally stored GitHub grant for this owner across active sessions. To revoke the provider-side grant too, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
+              + (settings.Identity.Access is null
+                ? "<p>Disconnect removes the locally stored GitHub grant for this owner across active sessions. To revoke the provider-side grant too, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
+                : "<p>Disconnect removes this session's GitHub connection only. Sign out, expiry and application restart require fresh sign-in and GitHub linking. Other operators and sessions keep their own connections.</p>")
               + "<p>Owner sessions expire after two hours without user activity or twelve hours after authentication. Identity-provider authority is checked online at least every five minutes; a failed due check blocks access.</p>"
-              + "<p>Sign out ends this browser's owner session. The separately authorized GitHub connection remains available for a later owner session and is checked with GitHub before use.</p>"
+              + (settings.Identity.Access is null ? "<p>Sign out ends this browser's owner session. The separately authorized GitHub connection remains available for a later owner session and is checked with GitHub before use.</p>" : "")
               + Form("/auth/logout", token, "Sign out"), account: true);
     });
     app.MapPost("/connections/github/start", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions, GitHubAuthorization github) =>
