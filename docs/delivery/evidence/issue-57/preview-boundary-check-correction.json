@@ -1,0 +1,7 @@
+{
+  "kind": "operator-preview-verification-assumption-corrected",
+  "head": "36246f8c6362e16aabaed2a390b5fdd0cd0be373",
+  "observation": "All protected inventory endpoints including HTML returned401 without a session; static JS200. The first operator script wrongly expected302 for HTML. Application code was correct and unchanged.",
+  "rollback": "Previous52 service restored before retry",
+  "applicationAssertionsWeakened": false
+}

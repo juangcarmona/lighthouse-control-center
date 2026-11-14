@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@juangcarmona/lighthouse",
-    "version": "0.12.65"
+    "version": "0.12.68"
   },
   "baseline": "0.1.0",
   "capabilities": {
@@ -35,10 +35,10 @@
     "harness": "1",
     "sdlc": "1"
   },
-  "lastAppliedMigration": "upgrade-0.12.65",
+  "lastAppliedMigration": "upgrade-0.12.68",
   "files": {
     "LIGHTHOUSE.md": {
-      "hash": "94650e3864168bc5cffa61c3e7cf50dbaa7031bfc85e113dca8dfdd8dce5c3c2",
+      "hash": "688278b561cb866ef2e5f173ce22ea91e04be0e68160809571842bd3938f5139",
       "scope": "harness"
     },
     "scripts/lighthouse-guard.mjs": {
@@ -59,6 +59,14 @@
     },
     ".agents/skills/lighthouse-init/SKILL.md": {
       "hash": "48e1692c905934d9ddceb180ee8cfafda193683d3f21debb54d8287ada068ddc",
+      "scope": "harness"
+    },
+    "docs/design/DESIGN.md": {
+      "hash": "7aad6f6f307ee14ce32f86d676f70e32960a96362e23515f7363da09cd3752c2",
+      "scope": "harness"
+    },
+    ".agents/skills/lighthouse-ui/SKILL.md": {
+      "hash": "c43f923dcea56a311b5e508b957150bd72731a11babc76c613be92927f19a1b2",
       "scope": "harness"
     },
     "docs/profiles/dotnet/README.md": {
@@ -94,11 +102,11 @@
       "scope": "harness"
     },
     ".lighthouse/sdlc.json": {
-      "hash": "017be70eccfc5da6bbba8d82e1a1c6fe25057906c3b4e9bfc90118130459df95",
+      "hash": "e9582d91c97cf73e785d8acefaafd40e9a71ff54acb2ff40f71c5b5bbd792f56",
       "scope": "sdlc"
     },
     ".lighthouse/commands.json": {
-      "hash": "ed5639551964e018bb3d859e3d536b51d7cb8d41f703519676831da9a2a07408",
+      "hash": "a8d278ce934d7bdc5d15811dd653b80770cc8809751f6c0c1f9bb7bb6a5423e8",
       "scope": "sdlc"
     }
   }

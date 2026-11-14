@@ -1,8 +1,8 @@
-import { readFile, writeFile, mkdir, realpath } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, lstat, realpath } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { isIP } from 'node:net';
-import { resolve, dirname, basename, sep, isAbsolute } from 'node:path';
+import { resolve, sep, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 process.umask(0o077);
@@ -21,15 +21,36 @@ function address(key, issuer = false) {
 const origin = address('--origin');
 const issuer = address('--issuer', true);
 if (!values.get('--directory') || !isAbsolute(values.get('--directory'))) throw Error('Select an absolute private directory outside the repository.');
-const directory = resolve(await realpath(dirname(resolve(values.get('--directory')))), basename(values.get('--directory')));
+const directory = resolve(values.get('--directory'));
 const repository = await realpath(fileURLToPath(new URL('..', import.meta.url)));
 if (directory === repository || directory.startsWith(repository + sep)) throw Error('Keep development secrets outside the checkout.');
 const testAccounts = values.get('--test-accounts') === true;
 if (typeof process.getuid !== 'function' || process.getuid() === 0) throw Error('Create the private development setup as a non-root POSIX user.');
 if (!testAccounts && !values.get('--owner-subject')) throw Error('Supply the exact provider owner subject, or request isolated synthetic test accounts.');
+async function checkPrivateAncestors(target) {
+  const parts = target.slice(1).split(sep).filter(Boolean);
+  let current = '/';
+  for (const part of parts.slice(0, -1)) {
+    current = resolve(current, part);
+    let details;
+    try { details = await lstat(current); }
+    catch { throw Error('The selected directory parent must already exist and be private.'); }
+    const rootSticky = details.uid === 0 && (details.mode & 0o1000) !== 0;
+    if (details.isSymbolicLink() || !details.isDirectory() || ![0, process.getuid()].includes(details.uid)
+      || ((details.mode & 0o022) !== 0 && !rootSticky))
+      throw Error('Use existing parent directories owned by root or this user without group or world write access.');
+  }
+  try { await lstat(target); throw Error('The selected setup directory already exists.'); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+}
+await checkPrivateAncestors(directory);
 await mkdir(directory, { mode: 0o700 }); // Refuse to overwrite an existing private setup.
 const tls = resolve(directory, 'tls');
 await mkdir(tls, { mode: 0o700 });
+const ownerSessions = resolve(directory, 'owner-sessions');
+const ownerSessionKeys = resolve(directory, 'owner-session-keys');
+await mkdir(ownerSessions, { mode: 0o700 });
+await mkdir(ownerSessionKeys, { mode: 0o700 });
 const privateWrite = (path, data) => writeFile(path, data, { mode: 0o600, flag: 'wx' });
 const secret = () => randomBytes(32).toString('base64url');
 const ownerSubject = testAccounts ? randomUUID() : values.get('--owner-subject');
@@ -69,9 +90,9 @@ for (const [name, url] of [['app', origin], ['identity', issuer]]) {
 await privateWrite(resolve(directory, 'trust-bundle.pem'), await readFile('/etc/ssl/certs/ca-certificates.crt', 'utf8') + '\n' + await readFile(ca, 'utf8'));
 await privateWrite(resolve(directory, 'development.json'), JSON.stringify({
   Kestrel: { Endpoints: { Https: { Url: origin.origin, Certificate: { Path: resolve(tls, 'app.crt'), KeyPath: resolve(tls, 'app.key') } } } },
-  SoFa: { Origin: origin.origin, Identity: { Mode: 'Development', Development: {
+  SoFa: { Origin: origin.origin, Identity: { Mode: 'Development', SessionDirectory: ownerSessions, SessionKeyDirectory: ownerSessionKeys, Development: {
     ProviderUser: `${process.getuid()}:0`, Issuer: issuer.href, ClientId: 'sofa-development', ClientSecret: clientSecret, OwnerSubject: ownerSubject,
-  } }, Repositories: ['juangcarmona/lighthouse', 'juangcarmona/sofa'] },
+  } }, Repositories: ['juangcarmona/lighthouse', 'juangcarmona/lighthouse-control-center'] },
 }, null, 2));
 await privateWrite(resolve(directory, 'provider.env'), [
   'KC_BOOTSTRAP_ADMIN_USERNAME=development-admin', 'KC_BOOTSTRAP_ADMIN_PASSWORD=' + secret(),

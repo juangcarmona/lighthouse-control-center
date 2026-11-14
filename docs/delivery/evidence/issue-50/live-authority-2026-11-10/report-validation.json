@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-11-10T09:22:35+00:00",
+  "command": "prodshape --serialization-version v1alpha2 evidence verify verification-evidence.json --format json",
+  "exitCode": 0,
+  "cliVersion": "0.23.0",
+  "validationContext": "Disposable v1alpha2 ProductShape view; tracked v1alpha1 configuration unchanged.",
+  "byteIdenticalBaselineMarkdownFiles": 87,
+  "documents": 1,
+  "diagnostics": [],
+  "outputCapture": "Exact CLI stdout is retained in productshape-validator-output.json."
+}

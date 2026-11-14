@@ -10,12 +10,46 @@ using JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Identity;
 
-internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock) : ITicketStore
+internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock) : ITicketStore, IDisposable
 {
+  private readonly OwnerSessionVault? vault;
   internal const string SessionClaim = "sofa:session";
   private readonly ConcurrentDictionary<string, OwnerSession> sessions = new(StringComparer.Ordinal);
   private readonly object admissionLock = new();
   private readonly ConditionalWeakTable<ClaimsPrincipal, OwnerSession> rotations = new();
+  private GitHubConnection? durableGitHub;
+  internal Action? BeforeGitHubGrantCommit { get; set; }
+
+  internal OwnerSessions(IdentityProfile profile, TimeProvider clock, string dataDirectory, string keyDirectory,
+      string? githubClientId = null, long? githubAppId = null)
+      : this(profile, clock)
+  {
+    vault = new OwnerSessionVault(dataDirectory, keyDirectory, profile, githubClientId, githubAppId);
+    durableGitHub = RestoreGrant(vault.ReadGrant());
+    foreach (var stored in vault.ReadSessions())
+    {
+      if (stored.Id.Length != 43 || stored.Id.Any(c => !(char.IsAsciiLetterOrDigit(c) || c is '-' or '_'))
+          || stored.Ticket.Length is < 1 or > 65536) throw new IOException("Owner session checkpoint is invalid.");
+      var ticket = TicketSerializer.Default.Deserialize(stored.Ticket);
+      if (ticket is null) throw new IOException("Owner session checkpoint is invalid.");
+      var reference = ticket.Principal.FindAll(SessionClaim).Take(2).ToArray();
+      if (reference.Length != 1 || reference[0].Value != stored.Id) throw new IOException("Owner session checkpoint is invalid.");
+      var now = clock.GetUtcNow();
+      if (stored.IdleDeadline <= now || stored.AbsoluteDeadline <= now)
+      { vault.DeleteSession(stored.Id); continue; }
+      var admission = OwnerAdmission.Validate(ticket.Principal, profile, now, freshCeremony: false);
+      if (admission?.AuthenticationTime != stored.AuthenticationTime
+          || admission.AbsoluteDeadline != stored.AbsoluteDeadline || stored.IdleDeadline > stored.AbsoluteDeadline)
+      { vault.DeleteSession(stored.Id); continue; }
+      if (sessions.Count >= 32)
+        throw new IOException("Owner session checkpoint exceeds its live-session bound.");
+      var record = new OwnerSession(stored.Id, ticket, stored.AuthenticationTime, stored.AbsoluteDeadline,
+          stored.IdleDeadline, DateTimeOffset.MinValue);
+      record.Sessions = this;
+      record.GitHub.Current = durableGitHub;
+      if (!sessions.TryAdd(stored.Id, record)) throw new IOException("Owner session checkpoint contains duplicate references.");
+    }
+  }
 
   public Task<string> StoreAsync(AuthenticationTicket ticket)
   {
@@ -36,7 +70,10 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
         SetReference(ticket, replacement);
         ticket.Properties.ExpiresUtc = original.AbsoluteDeadline;
         ticket.Properties.AllowRefresh = false;
-        ticket.Properties.IsPersistent = false;
+        ticket.Properties.IsPersistent = true;
+        if (vault is not null)
+          vault.RotateSession(previous, new StoredOwnerSession(replacement, TicketSerializer.Default.Serialize(ticket),
+              original.AuthenticationTime, original.AbsoluteDeadline, original.IdleDeadline));
         if (!sessions.TryRemove(previous, out _) || !sessions.TryAdd(replacement, original))
           throw new InvalidOperationException("Could not rotate the session reference.");
         original.Id = replacement;
@@ -58,11 +95,14 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       ticket.Properties.IssuedUtc = now;
       ticket.Properties.ExpiresUtc = admission.AbsoluteDeadline;
       ticket.Properties.AllowRefresh = false;
-      ticket.Properties.IsPersistent = false;
+      ticket.Properties.IsPersistent = true;
       var record = new OwnerSession(id, ticket, admission.AuthenticationTime,
-          admission.AbsoluteDeadline, Earlier(now.AddMinutes(15), admission.AbsoluteDeadline), now);
+          admission.AbsoluteDeadline, Earlier(now.AddHours(2), admission.AbsoluteDeadline), now);
+      record.Sessions = this;
+      record.GitHub.Current = durableGitHub;
       if (!sessions.TryAdd(id, record))
         throw new InvalidOperationException("Could not establish a new session reference.");
+      Persist(record);
       return Task.FromResult(id);
     }
   }
@@ -109,6 +149,7 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       ticket.Properties.ExpiresUtc = record.AbsoluteDeadline;
       ticket.Properties.AllowRefresh = false;
       record.Ticket = ticket;
+      Persist(record);
     }
     return Task.CompletedTask;
   }
@@ -146,7 +187,8 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     {
       var now = clock.GetUtcNow();
       if (record.Id != key || !record.Active || now >= record.IdleDeadline || now >= record.AbsoluteDeadline) return false;
-      record.IdleDeadline = Earlier(now.AddMinutes(15), record.AbsoluteDeadline);
+      record.IdleDeadline = Earlier(now.AddHours(2), record.AbsoluteDeadline);
+      Persist(record);
       return true;
     }
   }
@@ -169,21 +211,154 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     lock (record.Sync)
     {
       if (!record.Active) return;
+      vault?.DeleteSession(record.Id);
       record.Active = false;
+      record.Stopped.Cancel();
       if (sessions.TryGetValue(record.Id, out var current) && ReferenceEquals(record, current))
         sessions.TryRemove(record.Id, out _);
       record.Ticket.Properties.StoreTokens([]);
-      record.GitHub.Clear();
+      record.GitHub.Clear(cancelConnection: false);
     }
   }
 
   private static DateTimeOffset Earlier(DateTimeOffset first, DateTimeOffset second) => first < second ? first : second;
+
+  internal void Persist(OwnerSession record)
+  {
+    if (vault is null) return;
+    try
+    {
+      lock (record.Sync)
+      {
+        var current = record.GitHub.Current;
+        var stored = new StoredOwnerSession(record.Id, TicketSerializer.Default.Serialize(record.Ticket),
+            record.AuthenticationTime, record.AbsoluteDeadline, record.IdleDeadline);
+        if (current is not null)
+        {
+          durableGitHub = current;
+          vault.StoreSessionAndGrant(stored, ToStored(current));
+        }
+        else vault.StoreSession(stored);
+      }
+    }
+    catch
+    {
+      Remove(record);
+      throw new InvalidOperationException("Protected owner session storage is unavailable.");
+    }
+  }
+
+  internal void RevokeGitHubGrant(GitHubConnection? connection)
+  {
+    lock (admissionLock)
+    {
+      // An invalidation belongs to the connection that failed verification. If a
+      // replacement won the owner-level transition first, its grant must survive.
+      if (connection is not null && (durableGitHub is not null
+          ? !ReferenceEquals(connection, durableGitHub)
+          : !sessions.Values.Any(record => ReferenceEquals(record.GitHub.Current, connection)))) return;
+      connection ??= durableGitHub ?? sessions.Values.Select(record => record.GitHub.Current).FirstOrDefault(value => value is not null);
+      if (connection is null) { vault?.DeleteGrant(); durableGitHub = null; return; }
+      var matching = sessions.Values.Where(record => ReferenceEquals(record.GitHub.Current, connection))
+          .OrderBy(record => record.Id, StringComparer.Ordinal).ToArray();
+      foreach (var record in matching) Monitor.Enter(record.Sync);
+      try
+      {
+        vault?.DeleteGrant();
+        connection.Stopped.Cancel();
+        foreach (var record in matching)
+          if (ReferenceEquals(record.GitHub.Current, connection)) record.GitHub.Clear();
+        durableGitHub = null;
+      }
+      finally { foreach (var record in matching.Reverse()) Monitor.Exit(record.Sync); }
+    }
+  }
+
+  internal void DisconnectGitHubGrant()
+  {
+    lock (admissionLock)
+    {
+      var active = sessions.Values.OrderBy(record => record.Id, StringComparer.Ordinal).ToArray();
+      foreach (var record in active) Monitor.Enter(record.Sync);
+      try
+      {
+        vault?.DeleteGrant();
+        durableGitHub?.Stopped.Cancel();
+        foreach (var record in active) record.GitHub.Clear();
+        durableGitHub = null;
+      }
+      finally { foreach (var record in active.Reverse()) Monitor.Exit(record.Sync); }
+    }
+  }
+
+  internal bool SetGitHubGrant(OwnerSession actor, GitHubConnection connection, long expectedAttempt)
+  {
+    BeforeGitHubGrantCommit?.Invoke();
+    lock (admissionLock)
+    {
+      var active = sessions.Values.OrderBy(record => record.Id, StringComparer.Ordinal).ToArray();
+      foreach (var record in active) Monitor.Enter(record.Sync);
+      try
+      {
+        if (!actor.Active || !sessions.TryGetValue(actor.Id, out var current) || !ReferenceEquals(current, actor)
+            || actor.GitHub.Attempt != expectedAttempt || actor.GitHub.CommittingAttempt != expectedAttempt) return false;
+        var oldConnections = active.ToDictionary(record => record, record => record.GitHub.Current);
+        var previous = oldConnections.Values.Where(value => value is not null && !ReferenceEquals(value, connection))
+            .Distinct(ReferenceEqualityComparer.Instance).Cast<GitHubConnection>().ToArray();
+        foreach (var record in active)
+        {
+          if (!record.Active) continue;
+          record.GitHub.Current = connection;
+          record.GitHub.Replacement?.Stopped.Cancel();
+          record.GitHub.Replacement = null;
+          record.GitHub.Authorization = null;
+          record.GitHub.CommittingAttempt = 0;
+          record.GitHub.Attempt++;
+          record.GitHub.Observations.Clear();
+          record.GitHub.Generation++;
+        }
+        try { vault?.StoreGrant(ToStored(connection)); }
+        catch
+        {
+          foreach (var record in active)
+          {
+            record.GitHub.Current = oldConnections[record];
+            record.GitHub.Generation++;
+          }
+          throw new InvalidOperationException("Protected owner session storage is unavailable.");
+        }
+        durableGitHub = connection;
+        foreach (var old in previous) old.Stopped.Cancel();
+        return true;
+      }
+      finally { foreach (var record in active.Reverse()) Monitor.Exit(record.Sync); }
+    }
+  }
+
+  private GitHubConnection? RestoreGrant(StoredGitHubConnection? stored)
+  {
+    var now = clock.GetUtcNow();
+    if (stored is null || stored.UserId is not (> 0 and <= 9_007_199_254_740_991)
+        || stored.Login.Length is < 1 or > 39 || !System.Text.RegularExpressions.Regex.IsMatch(stored.Login,
+            "^[A-Za-z0-9][A-Za-z0-9-]{0,38}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100))
+        || stored.Access.Length is < 1 or > 4096 || stored.Refresh.Length is < 1 or > 4096
+        || stored.DataScope.Length != 32 || !stored.DataScope.All(Uri.IsHexDigit) || stored.RefreshDeadline <= now)
+    { if (stored is not null) vault?.DeleteGrant(); return null; }
+    return new GitHubConnection(stored.UserId, stored.Login,
+        new GitHubTokens(stored.Access, stored.Refresh, stored.AccessDeadline, stored.RefreshDeadline), DateTimeOffset.MinValue, stored.DataScope);
+  }
+
+  private static StoredGitHubConnection ToStored(GitHubConnection connection) => new(connection.UserId, connection.Login,
+      connection.Tokens.Access, connection.Tokens.Refresh, connection.Tokens.AccessDeadline, connection.Tokens.RefreshDeadline, connection.DataScope);
+
+  public void Dispose() => vault?.Dispose();
 }
 
 internal sealed class OwnerSession(string id, AuthenticationTicket ticket, DateTimeOffset authenticationTime,
     DateTimeOffset absoluteDeadline, DateTimeOffset idleDeadline, DateTimeOffset providerValidatedAt)
 {
   internal object Sync { get; } = new();
+  internal OwnerSessions? Sessions { get; set; }
   internal string Id { get; set; } = id;
   internal AuthenticationTicket Ticket { get; set; } = ticket;
   internal DateTimeOffset AuthenticationTime { get; } = authenticationTime;
@@ -193,5 +368,6 @@ internal sealed class OwnerSession(string id, AuthenticationTicket ticket, DateT
   internal DateTimeOffset ProviderRetryAfter { get; set; }
   internal Task<ProviderAuthority>? ProviderRefresh { get; set; }
   internal bool Active { get; set; } = true;
+  internal CancellationTokenSource Stopped { get; } = new();
   internal GitHubSession GitHub { get; } = new();
 }

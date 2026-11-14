@@ -1,0 +1,56 @@
+{
+  "kind": "operator-qualification-summary",
+  "recordedAt": "2026-11-09T23:30:39.720596+00:00",
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "applicationRevision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+  "environment": "development",
+  "checks": [
+    {
+      "check": "Node",
+      "revision": "1dbcfb4873915b839f4f8b84ac8bca126fd69252",
+      "passed": 105
+    },
+    {
+      "check": "strict OpenSpec",
+      "revision": "1dbcfb4873915b839f4f8b84ac8bca126fd69252",
+      "passed": 19
+    },
+    {
+      "check": "current product citations",
+      "revision": "1dbcfb4873915b839f4f8b84ac8bca126fd69252",
+      "current": 220,
+      "invalid": 0
+    },
+    {
+      "check": "fixture Playwright full suite",
+      "revision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+      "passed": 97,
+      "originalLog": "fixture-identity-399fcd7/playwright.log",
+      "mappedResults": 21,
+      "draftExampleContributions": 8
+    },
+    {
+      "check": "actual-service Playwright read/recovery suite",
+      "revision": "399fcd74649eb5f17fbdfbf295156003226b405e",
+      "passed": 5,
+      "originalLog": "live-identity-399fcd7/playwright.log",
+      "sourceWritePerformed": false
+    },
+    {
+      "check": "official ProductShape passing-suite report validation",
+      "documents": 12,
+      "diagnostics": []
+    }
+  ],
+  "retainedFailureScopes": [
+    "failed-fixture-1dbcfb4",
+    "interrupted-live-identity-399fcd7"
+  ],
+  "limits": [
+    "Draft structured examples remain unapplied.",
+    "Original cold-start sign-in and earlier intermittent controls unavailability remain unexplained.",
+    "Actual Refine/Propose/Continue source acceptance remains open.",
+    "Main integration and production deployment are not established by development qualification."
+  ]
+}

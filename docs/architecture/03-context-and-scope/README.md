@@ -6,15 +6,15 @@ description: The system boundary, its users, and its external interfaces.
 
 # 03. System context
 
-The owner uses an authenticated SoFa browser workspace or GitHub directly. GitHub owns issue, conversation, run, PR and artifact records. Lighthouse owns shared lifecycle and evidence semantics; repository workflows and the independent executor own delivery.
+The owner uses an authenticated Lighthouse Control Center browser workspace or GitHub directly. GitHub owns issue, conversation, run, PR and artifact records. Lighthouse owns shared lifecycle and evidence semantics; repository workflows and the independent executor own delivery.
 
 <!-- pdac:cite id="BR-GITHUB-SOURCE" digest="sha256:fd8141424d5fead38ed55d54689511fc445467133706e875371cc3199af8ab1a" -->
 
 ```mermaid
 flowchart LR
   accTitle: Authenticated observation and independent repository delivery
-  accDescr: The owner accesses SoFa through HTTPS. SoFa authenticates with its configured provider and reads GitHub using a separately connected user. Repository workflows execute independently of SoFa.
-  Owner[Owner browser] -->|HTTPS| Workspace[SoFa workspace]
+  accDescr: The owner accesses Lighthouse Control Center through HTTPS. Lighthouse Control Center authenticates with its configured provider and reads GitHub using a separately connected user. Repository workflows execute independently of Lighthouse Control Center.
+  Owner[Owner browser] -->|HTTPS| Workspace[Lighthouse Control Center workspace]
   Workspace -->|OIDC and S256| Identity[Configured identity provider]
   Workspace -->|GitHub App user reads| GitHub[GitHub source APIs]
   Workflows[Repository workflows] --> Executor[Independent executor]
@@ -33,7 +33,7 @@ flowchart LR
 
 <!-- pdac:cite id="BR-LAN-PRIVILEGE-BOUNDARY" digest="sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac" -->
 
-The implemented blocks are in [section 05](../05-building-block-view/README.md); environment mapping is in [section 07](../07-deployment-view/README.md). Actual GitHub consent and physical-device acceptance are evidence gaps, not inferred from test fixtures.
+The implemented blocks are in [section 05](../05-building-block-view/README.md); environment mapping is in [section 07](../07-deployment-view/README.md). The owner confirmed actual desktop GitHub connection and operational data for #49. Actual connected-user issue-reader acceptance remains open; physical-device rehearsal was owner-deferred and is not inferred from narrow browser tests.
 
 ## Proposed Control Center planes and authorities
 

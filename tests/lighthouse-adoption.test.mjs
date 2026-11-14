@@ -20,7 +20,7 @@ test('native FF delegates routine work while retaining supervised decisions and 
   assert.equal(policy.merge, true);
   assert.throws(() => validateUnattendedPolicy({ ...policy, enabled: false }, 'ff'), /disabled/);
   const entries = json('.lighthouse/implement.json');
-  assert.deepEqual(Object.keys(entries).sort(), ['47', '48', '50', '51', '52', '57', '58', '99', 'defaults']);
+  assert.deepEqual(Object.keys(entries).sort(), ['120', '158', '159', '47', '48', '50', '51', '52', '53', '57', '58', '99', 'defaults']);
   for (const issue of [47, 48, 50, 51, 52, 57, 58]) {
     assert.equal(entries[issue].reviewRequired, true, String(issue));
     assert.deepEqual(entries[issue].verification.corrections, {}, String(issue));
@@ -38,6 +38,28 @@ test('native FF delegates routine work while retaining supervised decisions and 
   assert.deepEqual(entries['99'].verification.paths, [...implementation.verification.paths, 'tests/observation.test.mjs', 'tests/browser/observation.spec.mjs', 'tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs']);
   assert.deepEqual(Object.keys(entries['99'].verification.corrections).sort(), ['tests/SoFa.Web.Tests/GitHubAuthorizationTests.cs', 'tests/browser/observation.spec.mjs', 'tests/observation.test.mjs']);
   validateImplementationPolicy(entries['99'], 99);
+  const boundedExceptions = {
+    53: ['tests/SoFa.Web.Tests/RepositoryConfigurationTests.cs'],
+    120: ['tests/SoFa.Web.Tests/OwnerSessionsTests.cs', 'tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs'],
+    158: ['tests/README.md', 'tests/SoFa.Web.Tests/IssueEvidenceTests.cs', 'tests/browser/factory.spec.mjs',
+      'tests/browser/issue-fixture-server.mjs', 'tests/browser/issue.spec.mjs', 'tests/evidence-projections.test.mjs',
+      'tests/frontend-architecture.test.mjs'],
+    159: ['tests/SoFa.Web.Tests/ActionsUsageTests.cs', 'tests/browser/actions-usage.spec.mjs'],
+  };
+  for (const [issue, exact] of Object.entries(boundedExceptions)) {
+    const entry = entries[issue];
+    assert.equal(entry.reviewRequired, true, issue);
+    assert.deepEqual(entry.checks, implementation.checks, issue);
+    assert.deepEqual(Object.keys(entry.verification.corrections).sort(), [...exact].sort(), issue);
+    const expectedPaths = issue === '158' ? implementation.verification.paths.flatMap(path => ({
+      'src/SoFa.Web/SoFa.Web.csproj': ['src/SoFa.Web/'],
+      'src/SoFa.Web/packages.lock.json': [],
+      'src/SoFa.Modules.Workspace/SoFa.Modules.Workspace.csproj': ['src/SoFa.Modules.Workspace/'],
+      'src/SoFa.Modules.Workspace/packages.lock.json': [],
+    }[path] ?? [path])) : implementation.verification.paths;
+    assert.deepEqual(entry.verification.paths, [...expectedPaths, ...exact], issue);
+    validateImplementationPolicy(entry, Number(issue));
+  }
   const enabled = policy;
   validateUnattendedPolicy(enabled, 'ff');
   assert.throws(() => validateUnattendedPolicy(enabled, 'hotfix'));
@@ -91,6 +113,40 @@ test('the exact operational test corrections remain required and cannot open oth
   for (const path of ['tests/web.test.mjs', 'package.json', '.lighthouse/unattended.json']) {
     const changed = new Map(before).set(path, { mode: '100644', content: Buffer.from('changed') });
     assert.throws(() => verificationIntegrity(before, changed, granted, 99), /Verification inputs changed/);
+  }
+});
+
+test('issue-specific test exceptions admit only reviewed files and require each test to remain present', () => {
+  const entries = json('.lighthouse/implement.json');
+  const cases = {
+    53: ['tests/SoFa.Web.Tests/RepositoryConfigurationTests.cs'],
+    120: ['tests/SoFa.Web.Tests/OwnerSessionsTests.cs', 'tests/SoFa.Web.Tests/WorkspaceOptionsTests.cs'],
+    158: ['tests/README.md', 'tests/SoFa.Web.Tests/IssueEvidenceTests.cs', 'tests/browser/factory.spec.mjs',
+      'tests/browser/issue-fixture-server.mjs', 'tests/browser/issue.spec.mjs', 'tests/evidence-projections.test.mjs',
+      'tests/frontend-architecture.test.mjs'],
+    159: ['tests/SoFa.Web.Tests/ActionsUsageTests.cs', 'tests/browser/actions-usage.spec.mjs'],
+  };
+  for (const [issue, exact] of Object.entries(cases)) {
+    const granted = entries[issue];
+    const required = granted.verification.paths.filter(path => !path.endsWith('/'));
+    const before = new Map();
+    for (const path of required) {
+      try { before.set(path, { mode: '100644', content: read(path) }); }
+      catch (error) { if (!exact.includes(path)) throw error; }
+    }
+    const after = new Map(before);
+    for (const path of exact) {
+      const content = before.has(path) ? Buffer.concat([before.get(path).content, Buffer.from('\n// approved issue-specific coverage\n')]) : Buffer.from('approved test source');
+      after.set(path, { mode: '100644', content });
+    }
+    assert.deepEqual(verificationIntegrity(before, after, granted, Number(issue)).corrections.map(item => item.path), exact, issue);
+    for (const path of exact) {
+      const missing = new Map(after); missing.delete(path);
+      assert.throws(() => verificationIntegrity(before, missing, granted, Number(issue)), /Required verification input is absent/, `${issue}:${path}`);
+    }
+    const unrelated = new Map(before);
+    unrelated.set('tests/lighthouse-adoption.test.mjs', { mode: '100644', content: Buffer.from('changed unrelated policy test') });
+    assert.throws(() => verificationIntegrity(before, unrelated, granted, Number(issue)), /Verification inputs changed/, issue);
   }
 });
 

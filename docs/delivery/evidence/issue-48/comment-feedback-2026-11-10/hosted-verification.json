@@ -1,0 +1,26 @@
+{
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "pullRequest": 100,
+  "head": "0144c6c64820ab936920fe82061e1507543be617",
+  "testedMergeCheckout": "08bc5029bdb043a434817b2006597ed647991c94",
+  "parents": [
+    "d24953debaab37dfedf7745add1b47dae538a6d7",
+    "0144c6c64820ab936920fe82061e1507543be617"
+  ],
+  "sourceTestsAndDesignIdenticalToHead": true,
+  "repositoryRun": {
+    "id": 42799887456,
+    "conclusion": "success",
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42799887456"
+  },
+  "foundationRun": {
+    "id": 42799887457,
+    "conclusion": "success",
+    "url": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/42799887457"
+  },
+  "artifact": {
+    "id": 13756675332,
+    "name": "sofa-web-evidence"
+  }
+}

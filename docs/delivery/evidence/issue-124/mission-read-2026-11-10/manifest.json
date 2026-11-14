@@ -1,0 +1,49 @@
+{
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "harnessSource": "8c5cc49bd1ef9a5087caa0553d89a497833dd845",
+  "appSource": "0144c6c64820ab936920fe82061e1507543be617",
+  "integratedMain": "877bb1fd6219becdbd07e342d0bbc6eeedec517b",
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "8d031d809e449e158fe2bcd7202bd85836e00086f2da25cf6552e6b64cb372e5"
+    },
+    {
+      "path": "independent-review.json",
+      "sha256": "dbd1188e424b48696b7def9d94b877347f0b191b75d47ec723807a6e95192586"
+    },
+    {
+      "path": "issue-narrow.png",
+      "sha256": "6ddfc1e8ec80ae6a1fe2d366f45d821786787be24d1a3cff116341452637a793"
+    },
+    {
+      "path": "issue.png",
+      "sha256": "677ff5f949bea4498d1c5b6cb8354ea97aad83eebbc87b32aafb41bc6a0fd1ff"
+    },
+    {
+      "path": "local-empty-directory-validation.log.gz",
+      "sha256": "fe5ae924e7cbc99ea22e6725fee9ddab99a4f19efda2da731e8c37cbb27717a0"
+    },
+    {
+      "path": "playwright.log.gz",
+      "sha256": "da3d4cfb11b53a91f2ffc2fd90f7b08836527dd49eee2f4aaf8aff5a24194aca"
+    },
+    {
+      "path": "repository.png",
+      "sha256": "bc1d26dbc744a9f3ca0e7949900166f2274037b16e186fe9d662a98545ea389b"
+    },
+    {
+      "path": "scope.json",
+      "sha256": "21555827f78ea8a8eabf3f1d297331ac5410bf19e9d81527c71af72a9e236896"
+    },
+    {
+      "path": "structured-behaviours.json",
+      "sha256": "808078525fecb45ee3c87ba8e27ad1c69376a43f8975ce36d35299c8bb0c7637"
+    },
+    {
+      "path": "verification-evidence.json",
+      "sha256": "c59729d0ffcad5df8f7053d342cdc9b57e27e1306498d5b6036a5eecfcaf1dc5"
+    }
+  ]
+}

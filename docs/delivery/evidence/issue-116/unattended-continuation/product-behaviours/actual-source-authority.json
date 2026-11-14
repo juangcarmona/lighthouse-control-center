@@ -1,0 +1,77 @@
+{
+  "checkedAt": "2026-11-09T21:03:21.914Z",
+  "tlsValidated": true,
+  "realDevelopmentLogin": true,
+  "sourceWritePerformed": false,
+  "controls": [
+    {
+      "repository": "juangcarmona/lighthouse-control-center",
+      "number": 48,
+      "http": 200,
+      "availability": "available",
+      "reason": null,
+      "missingReadScopes": [
+        "contents",
+        "pull_requests",
+        "variables"
+      ],
+      "submissionAvailable": true,
+      "actions": {
+        "comment": {
+          "eligible": true,
+          "availability": "available"
+        },
+        "refine": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "propose": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "continue": {
+          "eligible": false,
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        }
+      }
+    },
+    {
+      "repository": "juangcarmona/lighthouse",
+      "number": 385,
+      "http": 200,
+      "availability": "available",
+      "reason": null,
+      "missingReadScopes": [
+        "contents",
+        "pull_requests",
+        "variables"
+      ],
+      "submissionAvailable": true,
+      "actions": {
+        "comment": {
+          "eligible": false,
+          "availability": "unsupported",
+          "reason": "installed-contract-unsupported"
+        },
+        "refine": {
+          "eligible": false,
+          "availability": "unsupported",
+          "reason": "stage-contract-unsupported"
+        },
+        "propose": {
+          "eligible": false,
+          "availability": "unsupported",
+          "reason": "stage-contract-unsupported"
+        },
+        "continue": {
+          "eligible": false,
+          "availability": "unsupported",
+          "reason": "installed-contract-unsupported"
+        }
+      }
+    }
+  ]
+}

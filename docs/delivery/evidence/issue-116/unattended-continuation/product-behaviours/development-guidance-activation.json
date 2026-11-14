@@ -1,0 +1,16 @@
+{
+  "applicationRevision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "origin": "https://192.168.0.3:5443",
+  "environment": "development",
+  "tlsVerification": true,
+  "servedAsset": "/issue-actions.js",
+  "sha256": "60f66e3e1f50dd73244c554d63e270e21bb3cbf21d6fe3fb37a2d54f29329822",
+  "sourceMatchesServed": true,
+  "sourceCommentRecoveryId": 6752272812,
+  "sourceWritePerformed": false,
+  "journalBeforeActivation": {
+    "terminal": 3,
+    "nonterminal": 0
+  },
+  "rollback": "Previous binary and a private service override backup retained; no credentials or stores changed."
+}

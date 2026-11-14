@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-11-09T07:22:06.906Z",
+  "candidate": "d7f7cd3b966db9fd8772feab132128f0fa236b58",
+  "environment": "isolated local development preview",
+  "realProvider": true,
+  "clientSecretRotated": true,
+  "retiredSecretStatus": 401,
+  "privateConfigurationAndImportSynchronized": true,
+  "ownerSubjectIssuerCallbacksAndTlsPreserved": true,
+  "tlsValidation": true,
+  "anonymousSessionStatus": 401,
+  "ownerSessionStatus": 200,
+  "otherSessionStatus": 401,
+  "secureOpaqueSessionCookie": true,
+  "gitHubConnectionState": "unlinked",
+  "runtimePageStatus": 200,
+  "fleetPageStatus": 200,
+  "scope": "Local focused verification, outside PR/push CI. No actual connected GitHub user, source write, production deployment or complete long-window E2E acceptance is claimed."
+}
