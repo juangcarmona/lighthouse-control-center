@@ -1,0 +1,113 @@
+{
+  "previousReview": {
+    "head": "65008fe3515c5a4cd553fa610c91493363c30ef5",
+    "verdict": "request-changes",
+    "findings": [
+      {
+        "severity": "high",
+        "file": "/workspace/src/SoFa.Modules.Workspace/Source/RepositoryAccess.cs",
+        "lines": "19-23, 36-60; related authorization requests in GitHubAuthorization.cs:103-158",
+        "defect": "The new per-request read-stop guards do not cover repository-authority or authorization requests. RepositoryAccess captures a connection via CurrentAsync and then sends /repos and installation/repository-page requests without checking that the session record, connection reference, and generation are still current before each request. CurrentAsync likewise can send its refresh exchange or /user verification request after disconnect/replacement races; its post-response checks only prevent retaining the result. Issue context invokes this authority path before its issue reads, and IssueEvidence invokes it again before evidence reads. The four RED/GREEN cases cover report, inventory, ZIP, and related-PR/check interruptions, but not a disconnect during these authority/authorization requests.",
+        "consequence": "After a disconnect or account replacement, the prior connected-user token can still be used for additional GitHub requests during the permission-check phase. This is the same read-stop/account-isolation violation the checkpoint intends to close, occurring before the individually guarded issue/evidence requests.",
+        "fix": "Capture connection and generation for authority checks and verify live session, connection, and generation immediately before every outbound authority request, including each pagination request. Ensure CurrentAsync does not initiate refresh or /user requests for a stale connection, and abort the authority operation on mismatch. Add deterministic disconnect/replacement tests at each authority request boundary and during due authorization verification."
+      },
+      {
+        "severity": "medium",
+        "file": "/workspace/src/web/public/issue.js",
+        "lines": "100-103, 117-121; evidence re-read in /workspace/src/SoFa.Modules.Workspace/Source/IssueEvidence.cs:25-28",
+        "defect": "Every successful page read calls readEvidence, whose handler calls GetIssueContextHandler again for the same page. That refetches both the issue and the conversation page (including the comments endpoint) after the browser has already fetched that page. Across the documented 10-page view this performs up to 20 conversation-page requests, not the proposal's hard maximum of 10; it also doubles the associated issue reads.",
+        "consequence": "The implementation exceeds the accepted per-view source-request and downloaded-data bounds and repeats source reads unnecessarily, weakening the explicit pagination stop and increasing provider load. The browser's retained-comment cap does not limit these duplicate server-side reads.",
+        "fix": "Avoid having evidence projection refetch the issue/conversation page already read for the view. Reuse a validated page/reference set for evidence, or separate evidence discovery from conversation loading while retaining fresh permission checks and the existing snapshot/account binding. Add a test asserting at most one conversation API request per displayed page, including evidence loading."
+      }
+    ],
+    "dimensions": [
+      {
+        "name": "acceptance",
+        "status": "unmet",
+        "note": "Real connected GitHub user acceptance and physical-phone acceptance remain pending under #49/#50; this is an intermediate audit, not Done."
+      },
+      {
+        "name": "completeness",
+        "status": "unmet",
+        "note": "The accepted proposal's real-source observation, device verification, and final integration/completion tasks remain open."
+      },
+      {
+        "name": "tests",
+        "status": "reported-pass",
+        "note": "context.json reports the RED/GREEN race cases and test totals; this read-only audit did not execute repository code. The uncovered authority-read race needs regression coverage."
+      },
+      {
+        "name": "quality-checks",
+        "status": "reported-pass",
+        "note": "context.json reports npm run verify passed before the later identity-navigation prerequisite merge; this audit did not rerun checks. Current-head CI is pending."
+      },
+      {
+        "name": "security",
+        "status": "unmet",
+        "note": "Repository-authority and authorization requests are not guarded against disconnect/account replacement before each outbound request."
+      },
+      {
+        "name": "conformance",
+        "status": "unmet",
+        "note": "Authority requests bypass the intended read-stop boundary, and evidence loading duplicates conversation-page reads beyond the proposal's hard per-view limit."
+      },
+      {
+        "name": "docs",
+        "status": "unmet",
+        "note": "Proposal task 4.2's architecture/reader documentation updates remain unchecked."
+      },
+      {
+        "name": "product/spec-consistency",
+        "status": "pass-at-checkpoint",
+        "note": "The inspected issue-context spec and accepted proposal retain the read-only scope and distinguish issue authority from optional Actions evidence; no product-scope drift was identified."
+      },
+      {
+        "name": "evidence",
+        "status": "unmet",
+        "note": "Connected-user real issue/conversation observation and physical-device evidence remain pending; supplied validator/test evidence is not human acceptance."
+      },
+      {
+        "name": "independent-PR-review",
+        "status": "unmet",
+        "note": "This independent checkpoint audit found actionable code defects; final review and integration gate remain pending."
+      },
+      {
+        "name": "stated-limits",
+        "status": "unmet",
+        "note": "The checkpoint appropriately states pending source/device acceptance, but hosted CI for exact head 65008fe3515c5a4cd553fa610c91493363c30ef5 is running/not claimed passed."
+      }
+    ],
+    "kind": "read-stop-checkpoint",
+    "issue": 50,
+    "requestedModel": "openai/gpt-6-luna",
+    "requestedEffort": "high",
+    "reviewedAt": "2026-11-07T17:48:42.047Z",
+    "sourceReadOnly": true,
+    "requestPath": "/tmp/sofa-review-50-read-stop-checkpoint-65008fe351-7f4bbbf4/context.json"
+  },
+  "corrections": [
+    "Shared authority/authorization read-stop guards are included from prerequisite4733502;8 race regressions failed before the fix and pass afterward.",
+    "Displayed-page evidence consumes one connection-bound server page within30seconds, once. It retains fresh authority checks and does not refetch conversation pages.",
+    "Standalone evidence without a snapshot reads one independent source page; missing or expired supplied snapshots do not trigger fallback reads."
+  ],
+  "red": {
+    "cases": 2,
+    "logSha256": "dbd16d453f4bac6b2fc6e97bb8d70395f9c88834778514fdeac295af6224496c"
+  },
+  "fullVerification": {
+    "command": "npm run verify",
+    "exitCode": 0,
+    "tests": {
+      "node": 38,
+      "web": 108,
+      "legacyDotnet": 38,
+      "browser": 24
+    },
+    "logSha256": "85f19617fba4ebb2d25c76921cbcf5f8098a075ff2f4ca666a41e714e686c9be"
+  },
+  "limits": [
+    "Current-head hosted CI and independent re-audit remain pending.",
+    "Connected-user issue/conversation runtime acceptance is not yet established by these tests.",
+    "Physical-phone rehearsal was deferred by the owner; it is not reported as a device pass."
+  ]
+}

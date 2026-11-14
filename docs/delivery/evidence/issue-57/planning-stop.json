@@ -1,0 +1,10 @@
+{
+  "issue": 57,
+  "status": "awaiting-owner-planning-review",
+  "automaticCorrectionRounds": 3,
+  "lastAutomaticReviewHead": "a10c4c3247975ef0c64689511e830d77b3d5214f",
+  "lastVerdict": "request-changes",
+  "nextAction": "Owner may approve the concrete final proposal in PR105; no further automatic planning review is requested. Implementation has not started.",
+  "correctionForOwnerReview": "Existing alias/path lengths are made explicit with forms/traversal counts in a table; same-handle no-follow directory/file reads and replacement-race tests are now explicit.",
+  "source": "Configured portable correction bound and installed ff skill; does not change policy or forge approvals."
+}

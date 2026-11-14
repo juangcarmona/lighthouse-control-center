@@ -11,12 +11,11 @@ const publicRoot = new URL('../web/public/', import.meta.url);
 export async function shellPreview() {
   const original = await readFile(new URL('index.html', publicRoot), 'utf8');
   return original
-    .replace('<title>SoFa · Software factory</title>', '<title>Lighthouse Control Center · Preview</title>')
+    .replace('<title>Lighthouse Control Center · Fleet overview</title>', '<title>Lighthouse Control Center · Preview</title>')
     .replace('<link rel="stylesheet" href="/app.css">', '<link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/identity.css">')
-    .replace('<span class="mark" aria-hidden="true">S</span>SoFa<span class="brand-note">Software factory</span>', '<img class="identity-mark" src="/assets/lighthouse-icon.svg" alt="" width="40" height="40"><span class="identity-name">Lighthouse<span>Control Center</span></span>')
-    .replace('FACTORY OVERVIEW', 'REPOSITORY OVERVIEW')
-    .replace('Factory operations', 'Repository operations')
-    .replace('<footer>SoFa ', '<footer>Lighthouse Control Center ');
+    .replace(/<a class="brand"[^>]*>[\s\S]*?<\/a>/, '<a class="brand" href="/shell"><img class="identity-mark" src="/assets/lighthouse-icon.svg" alt="" width="40" height="40"><span class="identity-name">Lighthouse<span>Control Center</span></span></a>')
+    .replace('FLEET OVERVIEW', 'REPOSITORY OVERVIEW')
+    .replace('Fleet operations', 'Repository operations');
 }
 
 const fixture = { repositories: [{ repository: 'example/coastal-project', availability: 'available', observedAt: '2026-11-08T18:00:00Z', runs: [{ id: 1, name: 'Verify repository', status: 'in_progress', runAttempt: 1, event: 'workflow_dispatch', sourceRevision: '1234567', updatedAt: '2026-11-08T17:59:00Z', url: 'https://github.com/example/coastal-project/actions/runs/1' }], attention: [{ number: 2, title: 'Review the identity candidate', labels: ['waiting-review'], updatedAt: '2026-11-08T17:00:00Z', url: 'https://github.com/example/coastal-project/issues/2' }] }] };

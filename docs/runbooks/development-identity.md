@@ -6,13 +6,13 @@ The supported application uses one HTTPS workspace and a separate development Ke
 
 On the verified Linux x64 development host, install Node 22+, .NET 10, Docker, OpenSSL and Chromium prerequisites. `npm ci` supplies the exact Linux x64 Aspire CLI paired with the AppHost SDK, including SDK 10.0.100 environments; no global CLI installation is required. Public bundle files stay under ignored `node_modules/.cache/sofa/`; runtime state stays in the user cache outside the checkout. The setup process receives no workspace/provider/source credentials. Create the private setup as a non-root user. The generated `ProviderUser` matches that user UID with the image group 0 so 0600 files remain private and readable on GitHub runners as well as local hosts. Recreate the isolated setup when moving between OS users; do not make its keys world-readable. Keep Docker available to the AppHost host. Choose stable HTTPS application and issuer addresses reachable from the intended browser or phone. Both must use the same registered issuer hostname; an internal container hostname is not a replacement.
 
-For a loopback development example:
+For a loopback development example, use a private location directly under your home directory. The destination must not exist yet. Every existing parent must be a real directory owned by root or the current user and must not be group- or world-writable; the root-owned sticky system temporary directory is allowed. The setup checks these conditions before creating any files. Avoid shared configuration trees such as `~/.config` when their mode permits group writes.
 
 ```sh
 npm ci
 npx playwright install --with-deps chromium
 node scripts/setup-development-identity.mjs \
-  --directory "$HOME/.config/sofa-dev" \
+  --directory "$HOME/.lighthouse-control-center-private" \
   --origin https://127.0.0.1:5443 \
   --issuer https://127.0.0.1:8443/realms/sofa-dev \
   --test-accounts
@@ -33,7 +33,7 @@ Create a separate **development GitHub App** in [GitHub developer settings](http
 https://<application-host>:<port>/connections/github/callback
 ```
 
-Configure repository permissions Metadata/read, Issues/read-write and Actions/read, expiring user access tokens, and no webhook. Install it only on the designated test repositories. Administration, contents-write and workflow-dispatch permissions are not required by this slice. A GitHub App registration alone does not constitute user consent.
+Configure repository permissions Metadata/read, Issues/read-write and Actions/read, expiring user access tokens, and no webhook. Install it only on the designated test repositories. These permissions cover observations and ordinary issue reads. The shared issue-action contract additionally reads Contents, Pull requests and Actions variables, requires the intended numeric App ID, and may require Actions/write for supported dispatch operations: follow [issue controls setup](issue-controls.md) before expecting action eligibility. A successful issue read does not establish those additional grants. Administration and contents-write remain unnecessary for this slice. A GitHub App registration alone does not constitute user consent.
 
 Add its **client ID** and **client secret** to the private configuration, alongside `SoFa.Identity` and `SoFa.Repositories`:
 
@@ -54,9 +54,9 @@ Keep generated client secrets, GitHub grants and TLS keys out of issues, PRs, ch
 
 ## Session and failure behavior
 
-The browser holds an opaque Secure/HttpOnly owner cookie. Provider and source tokens stay server-side. The development session expires after fifteen idle minutes or four hours from the original provider authentication, whichever comes first. Observation/account polling does not extend it. Identity-provider authority is checked online at least every five minutes; a due failure blocks protected access, and recognized revocation destroys local authority.
+The browser holds an opaque Secure/HttpOnly owner cookie. Provider and source tokens stay server-side. The access-continuity development candidate expires after two idle hours or twelve hours from the original provider authentication, whichever comes first. Provider renewal retains that original absolute deadline. The development realm must have matching SSO limits; external-provider constraints remain authoritative. Observation/account polling does not extend it. Identity-provider authority is checked online at least every five minutes; a due failure blocks protected access, and recognized revocation destroys local authority.
 
-Local sign-out and disconnect require CSRF-protected POSTs and remove local credentials even during provider outage. The provider may retain its own browser SSO session; the next SoFa sign-in still requires a fresh password in development; the external profile still requires MFA. GitHub's separate grant can be revoked in [authorized GitHub Apps](https://github.com/settings/apps/authorizations). Restart loses process-local sessions/connections and requires fresh login/linking.
+Local sign-out and disconnect require CSRF-protected POSTs and remain available during provider outage. Sign-out removes the application session. Explicit GitHub disconnect removes the retained source grant and prevents its reuse by active or future sessions. The provider may retain its own browser SSO session; the next Lighthouse Control Center sign-in still requires a fresh password in development; the external profile still requires MFA. GitHub's separate grant can be revoked in [authorized GitHub Apps](https://github.com/settings/apps/authorizations). Restart preserves valid protected sessions and the independently retained source grant. Every restored session requires fresh online provider verification; reused GitHub identity and repository permissions are checked again before source access. A recognized source revocation removes the retained grant.
 
 `npm start` restores/builds the pinned Release AppHost, then executes that exact assembly. Its application dashboard is disabled. Calling `dotnet run` directly can invoke Aspire's CLI setup/run hook and select another configuration; the launcher avoids that path. AppHost starts the workspace and development provider, with no execution database, supervisor or anonymous legacy listener. Aspire's stopped project-rebuilder helper is development tooling.
 
@@ -84,3 +84,13 @@ Phone-width emulation does not prove these device steps. A successful unit suite
 ## Stop and rollback
 
 Stop the launcher/AppHost to stop its workspace and disposable development provider. Process-local sessions and connections are discarded. Rollback never requests workflow cancellation or silently starts an anonymous observer. The historical `npm run observe -- owner/repository` CLI is separate read-only tooling using the operator's explicit `gh` authorization.
+
+For the later #48 explicit-control capability, additional App permissions and separate protected command storage are described in [Development issue controls](issue-controls.md). Its accepted persistent journal does not change authentication/session credential lifetime.
+
+## Access-continuity storage and migration
+
+The development generator provisions two separate private directories, configured as `SoFa:Identity:SessionDirectory` and `SoFa:Identity:SessionKeyDirectory`. Existing private configurations must add those settings before starting the candidate. Create each directory as the application user with mode0700, outside the checkout and published application; keep files and keys private. They are separate from the command journal and its key directory.
+
+The store protects server-held provider session tickets and the owner-bound GitHub grant. It persists no browser observation projection, pending OAuth transaction or action eligibility. Protect and recover the data and key directories together; missing, unsafe or corrupt storage must block access. Never print their contents into troubleshooting output. Loss of the key ring requires fresh authentication and source consent.
+
+The previous binary held credentials only in memory and cannot export them for this migration. The first upgrade therefore needs one fresh owner login and GitHub connection. Subsequent application restarts must preserve a valid session, and session expiry alone must not require another GitHub consent for the same admitted operator. Verify this separately from browser fixtures. The candidate's [Product Change](../product/changes/active/chg-access-continuity-001/change.md) and [Proposed ADR-0011](../architecture/09-architecture-decisions/0011-preserve-verified-access.md) retain the requested behavior and review boundary; production custody remains #58.

@@ -1,0 +1,19 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "playwright-fixture",
+  "run-id": "2026-11-09T22:06:50.980Z",
+  "revision": "9f1e2f81b96449bdaea28b28e533637550c3a67f",
+  "results": [
+    {
+      "test-id": " /  / issue.spec.mjs / existing action explains recovery, keeps the new draft and requires explicit confirmation",
+      "level": "integration",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ]
+    }
+  ]
+}

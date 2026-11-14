@@ -6,7 +6,7 @@ namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal sealed record SourceRequestGuard(object Sync, Func<bool> IsLive, CancellationToken Stopped = default);
 
-internal sealed class GitHubTransport : IDisposable
+internal sealed partial class GitHubTransport : IDisposable
 {
   private readonly HttpClient client;
   internal GitHubTransport() : this(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false }) { }
@@ -26,11 +26,22 @@ internal sealed class GitHubTransport : IDisposable
     return SendAsync(request, guard, cancellationToken);
   }
 
+  internal Task<GitHubResponse> PostControlAsync(string repository, string path, JsonElement body, string? apiVersion,
+      string token, SourceRequestGuard guard, CancellationToken cancellationToken)
+  {
+    var request = new HttpRequestMessage(HttpMethod.Post, "https://api.github.com/repos/" + repository + "/" + path)
+    { Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(body)) };
+    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    request.Headers.Add("X-GitHub-Api-Version", apiVersion ?? "2026-03-10");
+    return SendAsync(request, guard, cancellationToken);
+  }
+
   private async Task<GitHubResponse> SendAsync(HttpRequestMessage request, SourceRequestGuard guard, CancellationToken cancellationToken)
   {
     using (request)
     {
-      request.Headers.UserAgent.ParseAdd("SoFa-Development/1.0");
+      request.Headers.UserAgent.ParseAdd("Lighthouse-Control-Center/1.0");
       request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
       try
       {

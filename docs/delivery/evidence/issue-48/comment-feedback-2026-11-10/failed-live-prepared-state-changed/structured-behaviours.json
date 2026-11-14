@@ -1,0 +1,51 @@
+{
+  "revision": "0144c6c64820ab936920fe82061e1507543be617",
+  "runId": "2026-11-10T10:31:04.426Z",
+  "suiteStatus": "failed",
+  "evidenceKind": "live",
+  "productChange": "CHG-LCC-STRUCTURED-BEHAVIOURS-001",
+  "productAcceptance": "Draft examples; execution does not approve the Product Change.",
+  "runProvenance": "The revision identifies HEAD; uncommitted harness changes, if present, are not attested by this field.",
+  "results": [
+    {
+      "testId": " /  / product-behaviours.spec.mjs / live prepared comment recovery keeps confirmation beside the editor without sending",
+      "outcome": "failed",
+      "durationMs": 17895,
+      "sourceEvidence": [],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        }
+      ],
+      "examples": [
+        {
+          "id": "SB-ORDINARY-ISSUE-COMMENT",
+          "hash": "sha256:1fff54e5dee8a79cc38ea76e617ebda26dd05891a7337a2a25b2488060e47289",
+          "acceptance": "draft-overlay",
+          "given": [
+            "The acting GitHub user has current issue comment authority",
+            "The repository supports ordinary comments distinct from continuation"
+          ],
+          "when": "The operator explicitly confirms an ordinary comment",
+          "then": [
+            "The conversation contains the confirmed GitHub comment identity",
+            "The comment is attributed to the verified GitHub user",
+            "The action does not request continuation"
+          ],
+          "limitations": "Fixture confirmation does not establish a GitHub App-user effect. Existing-action and prepared recovery cases cover original intent and explicit recovery without submitting a comment. The prepared recovery case proves local confirmation visibility only; it does not prove publication. Live publication requires an explicit selected issue and source write opt-in."
+        }
+      ]
+    }
+  ],
+  "uncoveredExamples": [
+    "SB-ANONYMOUS-WORKSPACE-DENIAL",
+    "SB-EXPLICIT-QUESTION-CONTINUATION",
+    "SB-FIND-REPOSITORY-ISSUE",
+    "SB-PARTIAL-REPOSITORY-COLLECTION",
+    "SB-READ-ISSUE-CONTEXT",
+    "SB-UNAVAILABLE-ISSUE-ACTION",
+    "SB-UNCERTAIN-ISSUE-COMMENT",
+    "SB-UNRESOLVED-INTERVENTION"
+  ]
+}

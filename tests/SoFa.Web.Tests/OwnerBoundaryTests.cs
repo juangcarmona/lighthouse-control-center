@@ -30,7 +30,8 @@ public sealed class OwnerBoundaryTests
   {
     await using var app = new OwnerApplication();
     using var client = app.Client();
-    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/unknown" })
+    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory", "/workspace/repositories", "/workspace/repositories/example/repository", "/workspace/issues", "/workspace/attention",
+        "/workspace/runtime", "/api/runtime/host", "/api/runtime/example/repository", "/api/controls/csrf", "/api/issues/example/repository/7/controls", "/unknown" })
       Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
     Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/auth/login", new StringContent(""))).StatusCode);
     Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/auth/logout", new StringContent(""))).StatusCode);
@@ -39,6 +40,23 @@ public sealed class OwnerBoundaryTests
     using var wrongHost = app.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://other.invalid"), AllowAutoRedirect = false });
     Assert.Equal(HttpStatusCode.BadRequest, (await wrongHost.GetAsync("/")).StatusCode);
     Assert.Equal(0, app.TokenExchanges);
+  }
+
+  [Fact]
+  public async Task IssueEffectsRequireOwnerSessionAndCsrfBeforeAnySourceRequest()
+  {
+    await using var app = new OwnerApplication();
+    using var client = app.Client();
+    Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/api/issues/example/repository/7/controls", new StringContent("{}", Encoding.UTF8, "application/json"))).StatusCode);
+    await client.GetAsync(await app.Begin(client));
+    Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/api/issues/example/repository/7/controls", new StringContent("{}", Encoding.UTF8, "application/json"))).StatusCode);
+    Assert.Empty(app.Source.Calls);
+    using var token = JsonDocument.Parse(await client.GetStringAsync("/api/controls/csrf"));
+    using var command = new HttpRequestMessage(HttpMethod.Post, "/api/issues/example/repository/7/controls")
+    { Content = new StringContent("{\"operation\":\"prepare\",\"effect\":{}}", Encoding.UTF8, "application/json") };
+    command.Headers.Add("X-SoFa-Csrf", token.RootElement.GetProperty("token").GetString());
+    Assert.Equal(HttpStatusCode.BadRequest, (await client.SendAsync(command)).StatusCode);
+    Assert.Empty(app.Source.Calls);
   }
 
   [Fact]
@@ -119,7 +137,10 @@ public sealed class OwnerBoundaryTests
     using var client = app.Client();
     var first = await client.GetAsync(await app.Begin(client));
     var oldCookie = OwnerCookie(first);
-    var next = await client.GetAsync(await app.Begin(client));
+    var root = await client.GetAsync("/");
+    Assert.Equal(HttpStatusCode.Redirect, root.StatusCode);
+    Assert.Equal("/workspace/operations", root.Headers.Location?.OriginalString);
+    var next = await client.GetAsync(await app.Begin(client, authenticated: true));
     Assert.NotEqual(oldCookie, OwnerCookie(next));
     Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/session")).StatusCode);
     using var stale = app.Client();
@@ -143,6 +164,7 @@ public sealed class OwnerBoundaryTests
     var sessions = scope.ServiceProvider.GetRequiredService<OwnerSessions>();
     var record = sessions.Get(authenticated.Principal!)!;
     var previousId = record.Id;
+    var stopped = record.Stopped.Token;
     var absolute = record.AbsoluteDeadline;
     var idle = record.IdleDeadline;
     var validated = record.ProviderValidatedAt;
@@ -159,6 +181,8 @@ public sealed class OwnerBoundaryTests
     Assert.Equal(previousId, authenticated.Principal!.FindFirst(OwnerSessions.SessionClaim)!.Value);
     Assert.Null(sessions.Get(previousId));
     Assert.Same(record, sessions.Get(record.Id));
+    Assert.Equal(stopped, record.Stopped.Token);
+    Assert.False(stopped.IsCancellationRequested);
     Assert.Equal(absolute, record.AbsoluteDeadline);
     Assert.Equal(idle, record.IdleDeadline);
     Assert.Equal(validated, record.ProviderValidatedAt);
@@ -304,7 +328,13 @@ public sealed class OwnerBoundaryTests
     var connectedAccount = await client.GetStringAsync("/workspace");
     Assert.Contains("href=\"https://github.com/verified-user\"", connectedAccount, StringComparison.Ordinal);
     var operations = await client.GetStringAsync("/workspace/operations");
-    Assert.Contains("Factory operations", operations, StringComparison.Ordinal);
+    Assert.Contains("Overview", operations, StringComparison.Ordinal);
+    Assert.Contains("factory-main", await client.GetStringAsync("/workspace/repositories"), StringComparison.Ordinal);
+    Assert.Contains("factory-results", await client.GetStringAsync("/workspace/repositories/example/repository"), StringComparison.Ordinal);
+    Assert.Contains("factory-search", await client.GetStringAsync("/workspace/issues"), StringComparison.Ordinal);
+    Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/workspace/repositories/unconfigured/repository")).StatusCode);
+    using var currentSession = JsonDocument.Parse(await client.GetStringAsync("/api/session"));
+    Assert.False(string.IsNullOrWhiteSpace(currentSession.RootElement.GetProperty("displayName").GetString()));
     using var anonymous = app.Client();
     Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/app.js")).StatusCode);
     Assert.Equal(HttpStatusCode.OK, (await anonymous.GetAsync("/tokens.css")).StatusCode);
@@ -347,6 +377,7 @@ public sealed class OwnerBoundaryTests
   private sealed class OwnerApplication : WebApplicationFactory<Program>
   {
     private readonly ECDsa key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+    private readonly string privateRoot = Path.Combine(Path.GetTempPath(), "lcc-owner-web-" + Guid.NewGuid().ToString("N"));
     private string nonce = "";
     internal string? Invalid { get; init; }
     internal int TokenExchanges;
@@ -362,10 +393,17 @@ public sealed class OwnerBoundaryTests
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+      if (!OperatingSystem.IsLinux()) throw new PlatformNotSupportedException("Owner middleware tests require Linux private-directory validation.");
+      const UnixFileMode privateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
+      Directory.CreateDirectory(privateRoot, privateMode);
+      Directory.CreateDirectory(Path.Combine(privateRoot, "sessions"), privateMode);
+      Directory.CreateDirectory(Path.Combine(privateRoot, "keys"), privateMode);
       builder.ConfigureAppConfiguration((_, configuration) => configuration.AddInMemoryCollection(new Dictionary<string, string?>
       {
         ["SoFa:Origin"] = "https://workspace.invalid",
         ["SoFa:Identity:Mode"] = "Development",
+        ["SoFa:Identity:SessionDirectory"] = Path.Combine(privateRoot, "sessions"),
+        ["SoFa:Identity:SessionKeyDirectory"] = Path.Combine(privateRoot, "keys"),
         ["SoFa:Identity:Development:Issuer"] = "https://identity.invalid/realms/dev",
         ["SoFa:Identity:Development:ClientId"] = "sofa-development",
         ["SoFa:Identity:Development:ClientSecret"] = "isolated-test-client-value",
@@ -383,6 +421,16 @@ public sealed class OwnerBoundaryTests
         services.PostConfigure<OpenIdConnectOptions>(IdentitySchemes.Oidc, ConfigureProvider);
         services.PostConfigure<CookieAuthenticationOptions>(IdentitySchemes.Cookie, ConfigureOwnerCookie);
       });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+      base.Dispose(disposing);
+      if (disposing)
+      {
+        key.Dispose();
+        if (Directory.Exists(privateRoot)) Directory.Delete(privateRoot, recursive: true);
+      }
     }
 
     private void ConfigureOwnerCookie(CookieAuthenticationOptions options)
@@ -409,9 +457,9 @@ public sealed class OwnerBoundaryTests
       options.Backchannel = new HttpClient(new Exchange(this));
     }
 
-    internal async Task<string> Begin(HttpClient client)
+    internal async Task<string> Begin(HttpClient client, bool authenticated = false)
     {
-      var token = Token(await client.GetStringAsync("/"));
+      var token = Token(await client.GetStringAsync(authenticated ? "/workspace" : "/"));
       var response = await client.PostAsync("/auth/login", new FormUrlEncodedContent(new Dictionary<string, string> { ["__RequestVerificationToken"] = token }));
       Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
       var query = QueryHelpers.ParseQuery(response.Headers.Location!.Query);
@@ -458,6 +506,5 @@ public sealed class OwnerBoundaryTests
       }
     }
 
-    protected override void Dispose(bool disposing) { base.Dispose(disposing); if (disposing) key.Dispose(); }
   }
 }

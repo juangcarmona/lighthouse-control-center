@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-11-09T23:26:22.983Z",
+  "tlsVerification": true,
+  "tracesCaptured": false,
+  "results": [
+    {
+      "stage": "open",
+      "status": 200
+    },
+    {
+      "stage": "issuer-form",
+      "visible": true
+    },
+    {
+      "stage": "application-session",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "stage": "complete",
+      "passed": true
+    }
+  ]
+}

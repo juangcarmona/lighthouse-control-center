@@ -76,6 +76,8 @@ public sealed class WorkspaceCompositionTests
     {
       ["SoFa:Origin"] = "https://workspace.invalid",
       ["SoFa:Identity:Mode"] = mode,
+      ["SoFa:Identity:SessionDirectory"] = "/private/owner-sessions",
+      ["SoFa:Identity:SessionKeyDirectory"] = "/private/owner-session-keys",
       ["SoFa:Identity:" + mode + ":Issuer"] = "https://identity.invalid/realms/dev",
       ["SoFa:Identity:" + mode + ":ClientId"] = "sofa-development",
       ["SoFa:Identity:" + mode + ":ClientSecret"] = "isolated-client-value",

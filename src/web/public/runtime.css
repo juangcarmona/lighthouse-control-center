@@ -1,0 +1,13 @@
+.runtime-heading { display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.runtime-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.runtime-card { border: 1px solid var(--lh-border); border-radius: var(--lh-radius-control); background: var(--lh-surface); padding: 1rem; overflow-wrap: anywhere; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+#runtime-main summary { cursor: pointer; min-height: 44px; padding: .5rem 0; color: var(--lh-action); }
+.runtime-card h3 { margin-top: 0; }
+.runtime-card dl { display: grid; grid-template-columns: minmax(6rem, 2fr) minmax(0, 3fr); gap: .5rem 1rem; }
+.runtime-card dd { margin: 0; }
+.runtime-card a { display: inline-block; margin-right: 1rem; }
+.runtime-stale { border-style: dashed; }
+#runtime-main section { margin-block: 2rem; }
+@media (max-width: 700px) { .topbar { flex-wrap: wrap; } }
+@media (max-width: 450px) { .runtime-card dl { grid-template-columns: 1fr; } .runtime-card dd { margin-bottom: .5rem; } }

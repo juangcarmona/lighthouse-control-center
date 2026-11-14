@@ -5,17 +5,29 @@ using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 internal enum SourceAvailability { Available, Denied, Unavailable }
+internal sealed record ControlAuthority(long RepositoryId, long AppId, string DataScope, long Generation,
+    bool? ContentsRead, bool? PullRequestsRead, bool? VariablesRead, bool? ActionsRead, bool? CommentWrite, bool? DispatchWrite,
+    bool PublicRepository);
 internal sealed record RepositoryAuthority(string Repository, SourceAvailability Availability, bool IssuesRead,
-    bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt);
+    bool ActionsRead, bool IssuesWrite, DateTimeOffset CheckedAt, bool AdministrationRead = false, string? DataScope = null, long? Generation = null,
+    SourceAvailability AdministrationAvailability = SourceAvailability.Unavailable, ControlAuthority? Controls = null);
 
 internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions sessions, GitHubAuthorization authorization,
     GitHubTransport transport, TimeProvider clock)
 {
-  internal async Task<RepositoryAuthority> CheckAsync(OwnerSession record, string repository, CancellationToken cancellationToken)
+  private static readonly string[] WritePermissions = ["push", "maintain", "admin"];
+  internal Task<RepositoryAuthority> CheckAsync(OwnerSession record, string repository, CancellationToken cancellationToken) =>
+      CheckCoreAsync(record, repository, false, cancellationToken);
+
+  internal Task<RepositoryAuthority> CheckControlsAsync(OwnerSession record, string repository, CancellationToken cancellationToken) =>
+      CheckCoreAsync(record, repository, true, cancellationToken);
+
+  private async Task<RepositoryAuthority> CheckCoreAsync(OwnerSession record, string repository, bool controls, CancellationToken cancellationToken)
   {
     var now = clock.GetUtcNow();
     RepositoryAuthority Unknown(SourceAvailability availability) => new(repository, availability, false, false, false, now);
     if (!settings.Repositories.Contains(repository, StringComparer.OrdinalIgnoreCase)) return Unknown(SourceAvailability.Denied);
+    if (controls && settings.GitHubAppId is null) return Unknown(SourceAvailability.Unavailable);
     var connection = await authorization.CurrentAsync(record, cancellationToken).ConfigureAwait(false);
     if (connection is null) return Unknown(SourceAvailability.Unavailable);
     long generation;
@@ -31,7 +43,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     if (!repo.Successful)
     {
       if (repo.Status == HttpStatusCode.Unauthorized) GitHubAuthorization.Invalidate(record, connection);
-      return Unknown(repo.Status == HttpStatusCode.NotFound ? SourceAvailability.Denied : SourceAvailability.Unavailable);
+      return Unknown(repo.Status is HttpStatusCode.NotFound or HttpStatusCode.Forbidden ? SourceAvailability.Denied : SourceAvailability.Unavailable);
     }
     if (repo.Value.ValueKind != JsonValueKind.Object || !repo.Value.TryGetProperty("permissions", out var userPermissions)
         || userPermissions.ValueKind != JsonValueKind.Object || !userPermissions.TryGetProperty("pull", out var pull)
@@ -52,6 +64,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
       }
       foreach (var installation in rows.EnumerateArray())
       {
+        if (controls && SourceJson.Number(installation, "app_id") != settings.GitHubAppId) continue;
         if (installation.ValueKind != JsonValueKind.Object || !installation.TryGetProperty("account", out var account)
             || !string.Equals(SourceJson.Text(account, "login"), repository.Split('/')[0], StringComparison.OrdinalIgnoreCase)) continue;
         if (SourceJson.Number(installation, "id") is not > 0
@@ -80,8 +93,17 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
               var issues = Permission(grants, "issues");
               var actions = Permission(grants, "actions");
               var write = Granted(userPermissions, "push") || Granted(userPermissions, "maintain") || Granted(userPermissions, "admin");
+              var administration = AdministrationAuthority(metadata, userPermissions, grants, installation, repo.Value, item, settings.GitHubAppId);
+              ControlAuthority? controlAuthority = null;
+              if (controls && SourceJson.Number(repo.Value, "id") is > 0 and <= 9_007_199_254_740_991
+                  && SourceJson.Number(repo.Value, "id") == SourceJson.Number(item, "id")
+                  && string.Equals(SourceJson.Text(repo.Value, "full_name"), repository, StringComparison.OrdinalIgnoreCase))
+                controlAuthority = new(SourceJson.Number(repo.Value, "id")!.Value, settings.GitHubAppId!.Value, connection.DataScope, generation,
+                    ReadGrant(grants, "contents"), ReadGrant(grants, "pull_requests"), ReadGrant(grants, "variables"), ReadGrant(grants, "actions"),
+                    Both(WriteGrant(grants, "issues"), UserWrite(userPermissions)), Both(WriteGrant(grants, "actions"), UserWrite(userPermissions)),
+                    PublicRepository(repo.Value) && PublicRepository(item));
               return new RepositoryAuthority(repository, metadata ? SourceAvailability.Available : SourceAvailability.Denied,
-                  metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now);
+                  metadata && issues, metadata && actions, metadata && write && SourceJson.Text(grants, "issues") == "write", now, administration == SourceAvailability.Available, connection.DataScope, generation, administration, controlAuthority);
             }
           }
           if (Complete(accessible.Value, repositories.GetArrayLength(), repoPage)) return Unknown(SourceAvailability.Denied);
@@ -93,6 +115,21 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     return Unknown(SourceAvailability.Unavailable);
   }
 
+  private static SourceAvailability AdministrationAuthority(bool metadata, JsonElement user, JsonElement grants,
+      JsonElement installation, JsonElement repository, JsonElement listed, long? expectedApp)
+  {
+    if (!metadata) return SourceAvailability.Denied;
+    if (expectedApp is null || !user.TryGetProperty("admin", out var admin) || admin.ValueKind is not (JsonValueKind.True or JsonValueKind.False)
+        || SourceJson.Number(installation, "app_id") is not (> 0 and <= 9_007_199_254_740_991)
+        || SourceJson.Number(repository, "id") is not (> 0 and <= 9_007_199_254_740_991)
+        || SourceJson.Number(listed, "id") is not (> 0 and <= 9_007_199_254_740_991)) return SourceAvailability.Unavailable;
+    if (!admin.GetBoolean() || SourceJson.Number(installation, "app_id") != expectedApp
+        || SourceJson.Number(repository, "id") != SourceJson.Number(listed, "id")) return SourceAvailability.Denied;
+    if (!grants.TryGetProperty("administration", out var grant)) return SourceAvailability.Denied;
+    return grant.ValueKind != JsonValueKind.String || grant.GetString() is not ("read" or "write")
+        ? SourceAvailability.Unavailable : SourceAvailability.Available;
+  }
+
   private static bool Complete(JsonElement root, int length, int page) => length < 100
       && SourceJson.Number(root, "total_count") is { } total && total >= 0 && total <= (page - 1) * 100 + length;
   private static bool Array(JsonElement value, string name, out JsonElement array)
@@ -101,6 +138,25 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
     return value.ValueKind == JsonValueKind.Object && value.TryGetProperty(name, out array) && array.ValueKind == JsonValueKind.Array;
   }
   private static bool Permission(JsonElement value, string name) => SourceJson.Text(value, name) is "read" or "write";
+  private static bool PublicRepository(JsonElement value) => SourceJson.Text(value, "visibility") == "public"
+      && value.TryGetProperty("private", out var isPrivate) && isPrivate.ValueKind == JsonValueKind.False;
   private static bool Granted(JsonElement value, string name) => value.ValueKind == JsonValueKind.Object
       && value.TryGetProperty(name, out var permission) && permission.ValueKind == JsonValueKind.True;
+  private static bool? ReadGrant(JsonElement value, string name) => Grant(value, name, false);
+  private static bool? WriteGrant(JsonElement value, string name) => Grant(value, name, true);
+  private static bool? Grant(JsonElement value, string name, bool write)
+  {
+    if (value.ValueKind != JsonValueKind.Object) return null;
+    if (!value.TryGetProperty(name, out var permission)) return false;
+    return permission.ValueKind == JsonValueKind.String ? permission.GetString() switch
+    { "write" => true, "read" => !write, _ => null } : null;
+  }
+  private static bool? UserWrite(JsonElement permissions)
+  {
+    var values = WritePermissions.Select(name => permissions.TryGetProperty(name, out var value)
+        && value.ValueKind is JsonValueKind.True or JsonValueKind.False ? (bool?)value.GetBoolean() : null).ToArray();
+    return values.Any(value => value == true) ? true : values.All(value => value == false) ? false : null;
+  }
+  private static bool? Both(bool? first, bool? second) => first == false || second == false ? false
+      : first == true && second == true ? true : null;
 }

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "runId": "issue-57-owner-approved-runtime-inventory",
+  "workItem": 57,
+  "branch": "feat/57-runner-inventory",
+  "startedAt": "2026-11-07T23:04:36.806195+00:00",
+  "executorModel": "gpt-6.1-sol",
+  "executorEffort": "high",
+  "reviewerModel": "openai/gpt-6-luna",
+  "reviewerEffort": "high",
+  "modelAttestation": "Configured distinct selection; provider-reported settings and billing unverified",
+  "maxCorrectionRounds": 3,
+  "status": "running",
+  "approvedPlanHead": "c9e77378f1b304e18eeef170f52a33d2a0db1dd8",
+  "approval": "planning-owner-acceptance.json",
+  "stages": [
+    {
+      "name": "implement",
+      "result": "correction-1-full-local-verification-passed",
+      "inputCommit": "dadd1dc99141ad43c2c4bc8bbb28404f0041317d",
+      "evidence": [
+        "selected-host-observation.json"
+      ],
+      "local": {
+        "command": "CI=true taskset -c 2,3 npm run verify",
+        "node": 54,
+        "web": 154,
+        "runtime": 38,
+        "browser": 41,
+        "exitCode": 0,
+        "citations": 158,
+        "citationErrors": 0,
+        "arc42Sections": 12
+      },
+      "verificationFailuresResolved": [
+        "Constructor fixture updated after removing unused parameter",
+        "New boundary tests satisfy compiler analyzer rules",
+        "Issue navigation wraps at390px; existing overflow regression passes",
+        "Helper rejects duplicate trust groups consistently with private .NET configuration"
+      ]
+    },
+    {
+      "name": "development-preview",
+      "inputCommit": "36246f8c6362e16aabaed2a390b5fdd0cd0be373",
+      "result": "active-trusted-HTTPS-anonymous-boundary-verified",
+      "evidence": [
+        "development-preview.json",
+        "preview-boundary-check-correction.json"
+      ],
+      "userAcceptance": "not observed",
+      "production": false
+    }
+  ],
+  "reviews": [
+    {
+      "kind": "code-checkpoint-not-Done",
+      "head": "db8c1607d67887d1c9fb63ca4918ae26262a37fc",
+      "model": "openai/gpt-6-luna",
+      "effort": "high",
+      "decision": "request-changes",
+      "evidence": "implementation-code-review-1.json"
+    },
+    {
+      "kind": "code-checkpoint-not-Done",
+      "head": "36246f8c6362e16aabaed2a390b5fdd0cd0be373",
+      "model": "openai/gpt-6-luna",
+      "effort": "high",
+      "decision": "accept",
+      "findings": [],
+      "evidence": "implementation-code-review-2.json",
+      "scope": "Reversible development preview only; final Done/prerequisites remain open"
+    }
+  ],
+  "corrections": [
+    {
+      "gate": "implementation-code-checkpoint",
+      "round": 1,
+      "finding": "R57-C1 unconfined metadata parent traversal",
+      "fix": "Only canonical absolute .git/worktrees/name target, pinned common/worktrees/selected handles, exact ../.. marker and selected-checkout gitdir backlink; generic component traversal rejects dot/parent",
+      "regression": {
+        "before": "Unrelated .git redirect incorrectly available; test failed as expected",
+        "after": "Full helper suite including linked metadata byte boundaries and pinned parent replacement passes"
+      },
+      "fullVerification": {
+        "exitCode": 0,
+        "node": 54,
+        "web": 154,
+        "runtime": 38,
+        "browser": 41
+      },
+      "review": "accepted at36246f8; implementation-code-review-2.json"
+    }
+  ],
+  "stopReason": null,
+  "pullRequest": "https://github.com/juangcarmona/sofa/pull/105",
+  "links": {
+    "issue": "https://github.com/juangcarmona/sofa/issues/57"
+  },
+  "limitations": [
+    "Stacked #50/#52 acceptance and integration prerequisites remain open",
+    "No acting-user runner administration acceptance or physical-phone test claimed",
+    "No capacity, cost, tokens, storage, process health or production claim",
+    "Final hosted verification, Task1.1 completeness and all-prerequisite Done audit remain open; accepted audit covers code36246f8 and development preview only"
+  ]
+}

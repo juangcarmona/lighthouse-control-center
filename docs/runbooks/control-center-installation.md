@@ -1,6 +1,6 @@
 # Independent source installation: current development baseline
 
-This procedure installs the existing application with a new operator's configuration. The product is evolving into Lighthouse Control Center; compatible SoFa configuration and assembly names remain in use. Production packaging and a clean-operator recovery rehearsal are tracked by [#120](https://github.com/juangcarmona/sofa/issues/120) and [#58](https://github.com/juangcarmona/sofa/issues/58). This document does not attest that those release gates passed.
+This procedure installs Lighthouse Control Center with a new operator's configuration. Existing `SoFa` configuration keys and .NET assembly names remain in use. Production packaging and a clean-operator recovery rehearsal are tracked by [#120](https://github.com/juangcarmona/lighthouse-control-center/issues/120) and [#58](https://github.com/juangcarmona/lighthouse-control-center/issues/58). This document does not attest that those release gates passed.
 
 ## Prerequisites and source
 
