@@ -45,6 +45,54 @@ public sealed class RepositoryConfigurationTests
   }
 
   [Fact]
+  public void CommittedToolingDeclarationsAndResolutionsRetainTheirExactPackageIdentities()
+  {
+    var root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
+    foreach (var (path, kind, contract) in new[]
+    {
+      ("package.json", "declared-package", "npm-package-json"),
+      ("package-lock.json", "lock-resolved-package", "npm-lockfile-v3")
+    })
+    {
+      var bytes = File.ReadAllBytes(Path.Combine(root, path));
+      using var source = JsonDocument.Parse(bytes);
+      Assert.True(RepositoryConfigurationProjector.TryParse(path, bytes, out var facts, out var diagnostics));
+      Assert.Empty(diagnostics);
+      foreach (var name in new[] { "@prodshape/cli", "@arcshape/cli" })
+      {
+        var expected = path == "package.json"
+            ? new[] { (Id: "devDependencies/" + name, Version: source.RootElement.GetProperty("devDependencies").GetProperty(name).GetString()) }
+            : source.RootElement.GetProperty("packages").EnumerateObject()
+                .Where(entry => entry.Name == "node_modules/" + name || entry.Name.EndsWith("/node_modules/" + name, StringComparison.Ordinal))
+                .Select(entry => (Id: "packages/" + entry.Name + "/version", Version: entry.Value.GetProperty("version").GetString())).ToArray();
+        Assert.NotEmpty(expected);
+        Assert.Equal(expected.Length, facts.Count(fact => fact.Component == name));
+        foreach (var entry in expected)
+        {
+          var fact = Assert.Single(facts, fact => fact.Component == name && fact.Id == entry.Id);
+          Assert.Equal(entry.Version, fact.RawValue);
+          Assert.Equal(kind, fact.FactKind);
+          Assert.Equal(contract, fact.ContractIdentity);
+          Assert.Equal(path, fact.SourcePath);
+        }
+      }
+      Assert.DoesNotContain(facts, fact => fact.Component is "@juangcarmona/productshape" or "@juangcarmona/arcshape");
+      Assert.DoesNotContain(facts, fact => fact.FactKind == "applicability");
+    }
+  }
+
+  [Fact]
+  public void CurrentAndLegacyToolingNamesRemainSeparateDeclarations()
+  {
+    const string json = """{"devDependencies":{"@prodshape/cli":"0.23.0","@juangcarmona/productshape":"0.22.0","@arcshape/cli":"0.1.6","@juangcarmona/arcshape":"0.4.0"}}""";
+    Assert.True(RepositoryConfigurationProjector.TryParse("package.json", Encoding.UTF8.GetBytes(json), out var facts, out var diagnostics));
+    Assert.Empty(diagnostics);
+    Assert.Equal(4, facts.Count);
+    Assert.Equal(4, facts.Select(fact => fact.Component).Distinct(StringComparer.Ordinal).Count());
+    Assert.All(facts, fact => Assert.Equal("declared-package", fact.FactKind));
+  }
+
+  [Fact]
   public void DuplicateKeysAndUnsupportedLockVersionsNeverBecomeValidatedFacts()
   {
     Assert.False(RepositoryConfigurationProjector.TryParse("package.json",

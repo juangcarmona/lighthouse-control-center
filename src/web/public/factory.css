@@ -43,6 +43,7 @@ body[data-repository-scoped="true"] .repository-field { display:none; }
 #configuration-inspection select { display:block; box-sizing:border-box; width:min(100%,34rem); margin-top:.25rem; }
 #configuration-inspection button { width:fit-content; max-width:100%; }
 #configuration-facts { min-width:0; }
+#configuration-facts a { text-decoration:underline; }
 #configuration-facts a+a::before { content:' · '; color:var(--lh-text-muted); }
 @media(min-width:701px) {
   .factory-list>.factory-issue { display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:.75rem; }

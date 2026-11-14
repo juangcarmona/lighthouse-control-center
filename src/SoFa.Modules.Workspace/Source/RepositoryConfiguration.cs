@@ -342,7 +342,7 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
 internal static class RepositoryConfigurationProjector
 {
   private static readonly HashSet<string> SupportedPackages = new(StringComparer.Ordinal)
-  { "@juangcarmona/lighthouse", "@juangcarmona/lighthouse-sdlc", "@juangcarmona/lighthouse-ui", "@juangcarmona/productshape", "@juangcarmona/arcshape" };
+  { "@juangcarmona/lighthouse", "@juangcarmona/lighthouse-sdlc", "@juangcarmona/lighthouse-ui", "@juangcarmona/productshape", "@juangcarmona/arcshape", "@prodshape/cli", "@arcshape/cli" };
   private static readonly string[] ManifestRepositoryLayout = ["src", "docs", "infra", "scripts"];
 
   internal static string FactId(string repository, string revision, string path, string field) => Convert.ToHexString(

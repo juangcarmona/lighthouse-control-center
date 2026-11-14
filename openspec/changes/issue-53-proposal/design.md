@@ -30,7 +30,7 @@ Alternatives: a new adapter/service duplicates authority and discovery; extendin
 
 ### 2. Support facts without inventing shared semantics
 
-Initial support is deliberately narrow. Only Lighthouse CLI/SDLC/UI, ProductShape and ArcShape package identities are projected from npm sections. Source contracts are kept distinct:
+Initial support is deliberately narrow. Only Lighthouse CLI/SDLC/UI, ProductShape and ArcShape package identities are projected from npm sections. The current `@prodshape/cli` and `@arcshape/cli` names and the legacy `@juangcarmona/productshape` and `@juangcarmona/arcshape` names remain distinct package identities; observing one does not establish the version of another. Source contracts are kept distinct:
 
 | Source / version | Projection | Supported interpretation / comparison |
 | --- | --- | --- |
@@ -87,7 +87,7 @@ Alternative: upgrade buttons or automatic maintenance issue creation change auth
 
 ## Risks / Trade-offs
 
-- [Prerequisites are assembled in an unmerged candidate] → Maintainer must integrate PR #100 into `main`, obtain the existing #52/#48 acceptance and refresh exact interfaces before implementation; reuse the component work rather than replacing it here.
+- [Related work has separate acceptance boundaries] → PR #100 is integrated and the owner has accepted #52 and released this bounded implementation. Reuse those interfaces without claiming #48/#50 acceptance or adding another startup prerequisite; their separate work remains outside this read-only query.
 - [Limited contract support] → Keep raw evidence available, unsupported status explicit and comparison disabled where semantics are missing. Shared contract expansion is separate work.
 - [Repository size exceeds budgets] → Report bounded partial coverage. Do not raise limits silently or recursively crawl monorepos.
 - [Access loss races with a read] → Permission-before-reuse, generation/epoch checks and clearing tests cover server and browser paths.

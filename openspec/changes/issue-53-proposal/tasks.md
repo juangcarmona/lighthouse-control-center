@@ -18,6 +18,7 @@ The owner authorized the bounded, read-only configuration inspection now impleme
 - [x] 2.2 Implement the bounded source support table and provenance; focused projector tests cover manifest, upgrade, npm declaration/lock dimensions, duplicate keys and unknown schemas (VG-1, VG-7).
 - [x] 2.3 Preserve separate facts and unsupported states; tests cover denied/missing content and bounded applicability without inferring runtime installation or non-adoption (VG-4).
 - [x] 2.4 Document supported paths, versions, unsupported semantics and fixture lineage in [repository-configuration.md](../../../docs/repository-configuration.md) (VG-1, VG-4, VG-7).
+- [x] 2.5 Preserve current ProductShape/ArcShape CLI package names as distinct source identities alongside legacy names; declaration and all root/nested lock-resolution regression assertions in `RepositoryConfigurationTests.cs` pass against committed package files in the supported .NET container check (`dotnet-02` receipt).
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
 <!-- pdac:cite id="FR-PROJECT-DISCOVERY" digest="sha256:fb93a1c32232be6a679aa7aa074e9b6c0efd871cd48592b6b8d56996c36a2382" -->
 
@@ -44,20 +45,21 @@ The owner authorized the bounded, read-only configuration inspection now impleme
 
 ## 5. Prove accessible inspection as it lands
 
-- [ ] 5.1 Add keyboard-operable controls, visible focus, textual state explanations, stable refresh focus and wrapping source details; verify browser tests at desktop and 390px in light/dark themes, including removed focused sources and unrelated control focus (VG-8).
-- [ ] 5.2 Capture browser evidence for matching, exception-unassessed, outdated, stale, conflicting, no applicable package, inaccessible and unsupported fixtures; verify screenshots, accessibility results and read-only request traces identify fixture provenance, viewport and candidate head (VG-8).
-- [ ] 5.3 Update browser-test and user documentation with evidence locations and the physical-device limitation; verify review can reproduce the eight-fixture journey without a live credential or misleading real-fleet demonstration (VG-8).
+- [x] 5.1 Add keyboard-operable controls, visible focus, textual state explanations, stable refresh focus and wrapping source details; supplemental browser checks pass at desktop and 390px in light/dark themes, including removed focused sources and unrelated control focus. Inline configuration links are underlined in both themes (VG-8).
+- [x] 5.2 Capture browser evidence for matching, exception-unassessed, outdated, stale, conflicting, no applicable package, inaccessible and unsupported fixtures; `configuration-browser-04/report.json` records 32 state/layout/theme captures, zero Axe violations, no horizontal overflow, four focus checks and GET-only request traces. Workflow evidence binds these synthetic fixtures to the supplied source revision plus candidate diff, not a future published commit (VG-8).
+- [x] 5.3 Document the supplemental browser reproduction, artifact locations and physical-device limitation in [repository-configuration.md](../../../docs/repository-configuration.md); the retained script reproduces the eight-fixture journey without live credentials (VG-8).
 <!-- pdac:cite id="QR-MOBILE-OPERATIONS" digest="sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35" -->
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 
 ## 6. Verify the integrated candidate
 
-- [ ] 6.1 Refresh citations and check the proposal verification-group-to-scenario/task matrix against the accepted product baseline; verify `npm run spec:validate` and `npm run product:citations` pass with no scope drift.
+- [x] 6.1 Check current citations and the proposal verification-group-to-scenario/task matrix against the accepted product baseline; `npm run spec:validate` and `npm run product:citations` pass with no scope drift (included in `verify-01` before its later test failure).
 - [ ] 6.2 Run `npm run verify` and the configured required CI on the exact implementation head using the supported host lanes; verify linked results include projection, .NET, browser, security and documentation checks without claiming unperformed real-provider or physical-device checks.
 - [ ] 6.3 Obtain independent source-bound review and developer review of every lifecycle DoD dimension; verify the PR links VG-1–VG-8 evidence, known limitations and explicit protected decisions before requesting integration.
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
 
 ## Workflow follow-up
 
+- Tasks 6.2 and 6.3 retain the host/forge and independent-review requirements; this disposable worker cannot satisfy future published-head CI or authorize integration. Its configured local checks and final assessment are retained in the workflow evidence, separately from those later requirements.
 - Owner acceptance, required forge approvals, merge and deployment remain separate from this proposal and its implementation checks.
 - Archive through the existing OpenSpec lifecycle only after review requirements are satisfied; verify the archived capability and citations.
