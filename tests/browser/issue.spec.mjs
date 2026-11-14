@@ -1,6 +1,36 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const origin = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'}`;
+
+for (const width of [1280, 390]) for (const theme of ['light', 'dark']) test(`history visual contract ${width} ${theme}: dated evidence and unknown gaps`, async ({ page }, info) => {
+  await page.setViewportSize({ width, height: 900 });
+  const harness = await fixture(page);
+  harness.evidence({ availability: 'available', observedAt: '2026-11-14T10:00:00Z', repositoryId: 10, issueId: 70, conversationPage: 1,
+    reports: [{ commentId: 90, availability: 'available', stage: 'propose', result: 'blocked', runId: 500, attempt: 2,
+      sourceUrl: 'https://github.com/example/repository/issues/7#issuecomment-90', reportCreatedAt: '2026-11-13T10:00:00Z',
+      runStartedAt: '2026-11-13T09:00:00Z', executionStatus: 'completed', executionConclusion: 'success',
+      question: '<script>unsafe()</script> Owner decision needed', sourceRevision: 'a'.repeat(40) }],
+    pullRequests: [{ number: 3, sourceUrl: 'https://github.com/example/repository/pull/3', state: 'open', reviews: [{ id: 80, actor: 'reviewer', actorType: 'User', state: 'APPROVED' }] }], scope: 'Synthetic bounded history; not live owner acceptance.' });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
+  await page.locator('.issue-evidence-details > summary').click();
+  await page.locator('#issue-history > summary').focus(); await page.keyboard.press('Enter');
+  const history = page.locator('#issue-history');
+  await expect(history).toContainText('propose / blocked');
+  await expect(history).toContainText('Undated evidence');
+  await expect(history).toContainText('Protected human approval unknown');
+  await expect(history).toContainText('Queued, running, human-wait and PR-wait durations unknown');
+  await expect(history.locator('script')).toHaveCount(0);
+  await page.getByLabel('Window start (UTC)').fill('2026-11-13T10:00');
+  await page.getByRole('button', { name: 'Apply history window' }).click();
+  await expect(history).toContainText('Source window: 2026-11-13T10:00:00.000Z');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await history.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: info.outputPath(`history-${width}-${theme}.png`), fullPage: false });
+  harness.fail(403); await page.getByRole('button', { name: 'Refresh source' }).click();
+  await expect(history).toHaveCount(0);
+});
 function source(page = 1) {
   return { repository: 'example/repository', number: 7, availability: 'available', observedAt: '2026-11-07T12:00:00Z', actingUserId: 71, dataScope: 'fixture-71', evidenceReadAllowed: true, snapshot: 'bounded-source-snapshot',
     issue: { id: 70, number: 7, title: 'Read an ordinary issue', body: '# Problem\nUse **source evidence**.\n<script>window.sourceExecuted=true</script>\n[unsafe](javascript:alert(1))\n```html\n<img src=x onerror=alert(1)>\n```', state: 'open', author: 'factory-owner', updatedAt: '2026-11-07T11:00:00Z', labels: ['agent-working', 'needs-info'], sourceUrl: 'https://github.com/example/repository/issues/7' },
