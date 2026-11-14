@@ -52,11 +52,17 @@ Cache and artifact observations SHALL show bytes and separate coverage. Expired 
 
 ### Requirement: Safe stale inspection and drill-down
 
-Usage SHALL expose fixed repository/run source links and retain original observation times when failed refresh leaves stale evidence. Explicit authority loss SHALL clear affected evidence. History SHALL remain unavailable without retained comparable samples and definitions.
+Usage SHALL expose fixed repository/run source links and retain original observation times when failed content refresh leaves stale evidence only with current authority verified. Lost or unverified authority SHALL clear affected evidence. History SHALL remain unavailable without retained comparable samples and definitions.
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 
 #### Scenario: Stale storage sample
 
-- **WHEN** a storage refresh fails temporarily after a valid sample
+- **WHEN** a storage content refresh fails temporarily after a valid sample and current Actions-read authority is still verified
 - **THEN** retained bytes are labelled stale with original observation time, not newly measured
 - **AND** account replacement or permission denial removes the old sample
+
+#### Scenario: Authority verification unavailable
+
+- **WHEN** current Actions-read authority cannot be verified after a valid usage sample
+- **THEN** the previous usage sample is withheld rather than displayed as stale
+- **AND** an authority-check failure is distinguished from a content-read failure

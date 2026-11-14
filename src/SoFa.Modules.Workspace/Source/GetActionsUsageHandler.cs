@@ -35,7 +35,7 @@ internal sealed class GetActionsUsageHandler(OwnerSessions sessions, GitHubAutho
         with
     { Source = "No billing report collected" };
     ActionsUsage Failure(string state, string reason) => new(query.Repository, state, now, null, query.Run, query.Attempt, "unknown", [], null,
-        duration with { Availability = state, Value = null }, cache with { Availability = state }, artifacts with { Availability = state }, null, null, billing, reason);
+        duration with { Availability = state, Value = null, Complete = false }, cache with { Availability = state, Value = null, Complete = false }, artifacts with { Availability = state, Value = null, Complete = false }, null, null, billing, reason);
     if (query.Run is not null && query.Run is not (> 0 and <= Maximum) || query.Attempt is not null && query.Attempt is not (> 0 and <= Maximum)
         || (query.Run is null) != (query.Attempt is null)) return Failure("invalid", "Supply both an exact positive run and attempt, or neither.");
     if (!slots.Wait(0, cancellationToken)) return Failure("busy", "Two Actions reads are in progress. Retry explicitly.");
@@ -48,7 +48,7 @@ internal sealed class GetActionsUsageHandler(OwnerSessions sessions, GitHubAutho
       {
         var authority = await access.CheckAsync(record, query.Repository, budget.Token).ConfigureAwait(false);
         if (authority.Availability != SourceAvailability.Available || !authority.ActionsRead)
-          return Failure(authority.Availability == SourceAvailability.Denied || authority.Availability == SourceAvailability.Available ? "denied" : "unavailable", "Current repository Actions-read authority is required.");
+          return Failure(authority.Availability == SourceAvailability.Denied || authority.Availability == SourceAvailability.Available ? "denied" : "authority-unverified", "Current repository Actions-read authority is required.");
         var connection = await authorization.CurrentAsync(record, budget.Token).ConfigureAwait(false);
         if (connection is null) return Failure("disconnected", "Connect and verify the GitHub account.");
         bool Live()

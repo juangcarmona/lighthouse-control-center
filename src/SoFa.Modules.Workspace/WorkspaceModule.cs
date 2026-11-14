@@ -243,7 +243,7 @@ public static class WorkspaceModule
           : context.Request.Query[name].Count == 1 && long.TryParse(context.Request.Query[name], out var value) ? value : 0;
       var result = await usage.Handle(new(sessions.Get(context.User)!, owner + "/" + repository, Parameter("run"), Parameter("attempt")), context.RequestAborted).ConfigureAwait(false);
       return Results.Json(result, statusCode: result.Availability switch
-      { "invalid" => 400, "denied" => 403, "disconnected" => 409, "busy" => 429, "unavailable" => 503, _ => 200 });
+      { "invalid" => 400, "denied" => 403, "disconnected" or "authority-unverified" => 409, "busy" => 429, "unavailable" => 503, _ => 200 });
     });
     app.MapGet("/workspace/attention", async (HttpContext context, OwnerSessions sessions) =>
     {

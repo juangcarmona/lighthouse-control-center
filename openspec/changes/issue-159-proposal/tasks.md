@@ -11,15 +11,15 @@ The bounded implementation consumes existing product intent; it does not authori
 
 ## 1. Source observations
 
-- [ ] 1.1 Implement guarded bounded Actions reads and document definitions; verify source tests cover completed intervals, self-hosted labels, partial pagination, expiry, denied authority and unsupported billing without billing requests.
+- [x] 1.1 Implement guarded bounded Actions reads and document definitions; verify source tests cover completed intervals, self-hosted labels, partial pagination, expiry, denied and unverified authority, content-read failures and unsupported billing without billing requests.
 
 ## 2. Health presentation
 
-- [ ] 2.1 Add explicit usage inspection to project/run Health with provenance and stale/unknown states; verify browser tests, safe text, authority invalidation, themes and narrow layout, retaining screenshots.
+- [x] 2.1 Add explicit usage inspection to project/run Health with provenance and stale/unknown states; verify browser tests, safe text, authority invalidation (including unavailable verification), stale retention only after verified content failures, themes and narrow layout, retaining screenshots.
 
 ## 3. Candidate verification
 
-- [ ] 3.1 Run configured installation, container verification and strict implementation-plan check; retain completed receipts and review current citation validity.
+- [x] 3.1 Run configured installation, container verification and strict implementation-plan check; retain completed receipts and review current citation validity.
 
 ## Workflow follow-up
 

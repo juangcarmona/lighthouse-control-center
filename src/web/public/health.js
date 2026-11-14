@@ -53,7 +53,7 @@ async function readUsage(attempt) {
     if ([401, 403, 409].includes(response.status)) { usage = undefined; usageAllowed = false; render(); return; }
     if (!response.ok) throw Error();
     const value = await response.json(); if (requestEpoch !== epoch) return;
-    if (!validateWorkspaceSourceIdentity(value, requestScope, undefined, generation) || value.dataScope !== requestScope || value.repository !== selected
+    if (value.availability !== 'available' || !validateWorkspaceSourceIdentity(value, requestScope, undefined, generation) || value.dataScope !== requestScope || value.repository !== selected
       || (runId && (String(value.run) !== runId || value.attempt !== attempt))) { usage = undefined; usageAllowed = false; render(); return; }
     for (const key of ['cache', 'artifacts', 'duration']) {
       if (value[key]?.availability === 'unavailable' && Number.isFinite(usage?.[key]?.value)) {
@@ -64,7 +64,7 @@ async function readUsage(attempt) {
       }
     }
     usage = value;
-  } catch { if (requestEpoch === epoch) usage = usage ? { ...usage, stale: true } : { reason: 'Actions source unavailable; usage remains unknown.' }; }
+  } catch { if (requestEpoch === epoch) usage = undefined; }
   finally { usageBusy = false; render(); }
 }
 function link(text, href) { const value = node('a', text); value.href = href; value.dataset.healthKey = href; return value; }
@@ -303,7 +303,7 @@ async function refresh() {
     const account = await accountResponse.json(); if (requestEpoch !== epoch) return;
     updateWorkspaceAccount(account);
     if (account.state === 'unavailable') {
-      if (usage) usage.stale = true; usageAllowed = false;
+      usage = undefined; usageAllowed = false;
       for (const row of repositories.values()) if (row.availability === 'available' && Array.isArray(row.runs)) row.availability = 'stale';
       render();
       byId('health-status').textContent = repositories.size
@@ -340,6 +340,7 @@ async function refresh() {
     render(); byId('health-status').textContent = 'Configured repositories only · read-only observations · no overall health score.';
   } catch {
     if (requestEpoch !== epoch) return;
+    usage = undefined;
     for (const row of repositories.values()) if (row.runs) row.availability = 'stale';
     render(); byId('health-status').textContent = 'Source check unavailable. Retained evidence is stale with original timestamps; current health is unknown.';
   } finally { busy = false; byId('refresh').disabled = false; render(); }
