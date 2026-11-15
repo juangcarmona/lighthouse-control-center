@@ -46,4 +46,4 @@ No product-definition drift is proposed. `docs/product/README.md` identifies mod
 
 ## Review boundary
 
-This proposal is planned for owner review, not accepted or implemented. The future hold remains. Definition of Done requires AC1-AC5 evidence, relevant tests and documentation, full repository verification and exact-head CI, source/visual qualification and review of all eleven lifecycle dimensions; deployment and merge remain separate decisions.
+The verified owner answers authorize implementation of this first slice in one draft PR, with no additional independent technical review required. The recovery authorization permits only the seven named test paths to change; other frozen inputs remain unchanged. Actual connected-user and visual qualification are not established by fixtures. Cohort analytics, deployment, publication acceptance and merge remain outside this implementation.
