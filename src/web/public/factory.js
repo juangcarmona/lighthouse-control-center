@@ -1,15 +1,18 @@
-import { updateWorkspaceAccount } from './workspace-ui.js';
+import { updateWorkspaceAccount, displayContext, formatDate, relativeDate } from './workspace-ui.js';
 import { inspectAttention } from './attention-controls.js';
 import { reconcileAttention } from './attention.js';
-import { clearProjectionCache, readProjectionCache, writeProjectionCache } from './read-projection-cache.js';
-import { adoptionFacts } from './evidence-projections.js';
+import { clearProjectionCache, readProjectionCache, writeProjectionCache, rememberCollection } from './read-projection-cache.js';
+import { adoptionFacts, workSignal } from './evidence-projections.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text, className) => { const element = document.createElement(tag); if (text !== undefined) element.textContent = text; if (className) element.className = className; return element; };
-const filterIds = ['repository', 'search', 'state', 'stage', 'execution', 'wait', 'view'];
-const filters = () => Object.fromEntries(filterIds.map(key => [key, byId('factory-' + key).value]));
+const filterIds = ['repository', 'search', 'state', 'stage', 'execution', 'wait', 'view', 'group'];
+const filters = () => Object.fromEntries(filterIds.map(key => [key, byId('factory-' + key)?.value ?? '']));
+const workView = location.pathname === '/workspace/operations';
+const groups = [['future', 'Future', 'Explicit future hold'], ['requested', 'Requested', 'Source requests · queue may be unverified'], ['working', 'In progress', 'Associated runs or working labels'], ['waiting', 'Needs attention', 'Source waits · inspect the actual question'], ['unknown', 'Unclassified', 'No supported grouping'], ['closed', 'Closed', 'Historical work']];
 const attentionView = document.body.dataset.view === 'attention';
 const repositoryPath = location.pathname.match(/^\/workspace\/repositories\/([^/]+)\/([^/]+)$/);
 const inventoryView = location.pathname === '/workspace/repositories' && !new URL(location.href).searchParams.has('repository');
+history.scrollRestoration = 'manual';
 history.scrollRestoration = 'manual';
 let restoreScroll = Number.isFinite(history.state?.factoryScroll) ? history.state.factoryScroll : null;
 if (repositoryPath) {
@@ -17,7 +20,7 @@ if (repositoryPath) {
   const option = node('option', name); option.value = name; byId('factory-repository').append(option); byId('factory-repository').value = name;
 }
 if (!attentionView) {
-  const label = inventoryView ? 'Repositories' : repositoryPath ? repositoryPath.slice(1).map(decodeURIComponent).join('/') : 'Issues';
+  const label = workView ? 'Work' : inventoryView ? 'Repositories' : repositoryPath ? repositoryPath.slice(1).map(decodeURIComponent).join('/') : 'Issues';
   byId('collection-title').textContent = label; document.title = label + ' · Lighthouse Control Center';
   document.querySelector('.header-context').textContent = label;
   document.body.dataset.collection = inventoryView ? 'repositories' : 'issues';
@@ -29,18 +32,19 @@ if (!attentionView) {
   }
   for (const link of document.querySelectorAll('.workspace-nav a')) {
     link.removeAttribute('aria-current');
-    if (link.getAttribute('href') === (inventoryView || repositoryPath ? '/workspace/repositories' : '/workspace/issues')) link.setAttribute('aria-current', 'page');
+    if (link.getAttribute('href') === (workView ? '/workspace/operations' : inventoryView || repositoryPath ? '/workspace/repositories' : '/workspace/issues')) link.setAttribute('aria-current', 'page');
   }
   if (inventoryView) { byId('search-label').textContent = 'Filter repositories'; byId('factory-search').placeholder = 'Filter repositories'; }
 }
 let attentionHistory = new Map();
 const repositories = new Map();
 const evidence = new Map();
+let collected = false;
 let dataScope, disclosureScope, busy = false, epoch = 0, lookupNumber = null;
 const disclosures = new Map();
 const identity = (repository, issue) => repository.toLowerCase() + ':' + issue.id;
 const exactNumber = search => /^#?[1-9][0-9]{0,9}$/.test(search.trim()) && Number(search.replace('#', '')) <= 2147483647 ? Number(search.replace('#', '')) : null;
-const time = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';
+const time = formatDate;
 function status(message) { byId('factory-status').textContent = message; }
 function saveProjection() {
   if (!dataScope) return;
@@ -58,11 +62,19 @@ function restoreProjection(scope, readable) {
     repositories.set(repository, { ...collection, stale: true }); restored = true;
   }
   for (const [key, value] of cached.attentionHistory) if (typeof key === 'string' && mayRead(value?.repository)) attentionHistory.set(key, value);
+  collected ||= restored;
   return restored;
+}
+function restoreDisclosures(scope) {
+  if (history.state?.factoryDisclosureScope === scope && Array.isArray(history.state.factoryDisclosures)) {
+    for (const entry of history.state.factoryDisclosures) if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'boolean') disclosures.set(entry[0], entry[1]);
+  }
 }
 function remember() {
   const url = new URL(location.href); for (const [key, value] of Object.entries(filters())) value && !(repositoryPath && key === 'repository') ? url.searchParams.set(key, value) : url.searchParams.delete(key);
   history.replaceState(history.state, '', url);
+  if (dataScope) rememberCollection(dataScope, url.pathname + url.search);
+  saveProjection();
 }
 function projectHref(repository) {
   const url = new URL('/workspace/repositories/' + repository, location.origin);
@@ -121,7 +133,9 @@ function matches(repository, issue, selected) {
 }
 function issueCard(repository, issue, stale) {
   const card = node('article', undefined, 'factory-issue' + (stale ? ' factory-stale' : '')); card.dataset.issueKey = identity(repository, issue);
-  const title = node('h3'), open = node('a', `${filters().repository ? '' : repository + ' '}#${issue.number} · ${issue.title}`);
+  const title = node('h3'), open = node('a', `#${issue.number} · ${issue.title}`);
+  open.setAttribute('aria-label', `${filters().repository ? '' : repository + ' '}#${issue.number} · ${issue.title}`);
+  if (!filters().repository) card.append(node('small', repository, 'issue-project'));
   open.href = `/workspace/issues/${repository}/${issue.number}`; open.dataset.focusKey = identity(repository, issue); title.append(open);
   const source = facts(repository, issue);
   const meta = node('div', undefined, 'issue-row-meta');
@@ -129,8 +143,10 @@ function issueCard(repository, issue, stale) {
   const updated = node('time', age(issue.updatedAt)); updated.title = 'Updated ' + time(issue.updatedAt);
   if (issue.updatedAt && Number.isFinite(Date.parse(issue.updatedAt))) updated.dateTime = issue.updatedAt;
   meta.append(state, updated); card.append(title, meta);
-  for (const label of issue.labels.filter(value => ['needs-info', 'waiting-review'].includes(value))) meta.append(node('span', label, 'badge caution'));
-  if (stale) card.append(node('p', 'Stale collection; current activity and labels are unknown.', 'notice'));
+  const signal = workSignal(issue, source.reports);
+  if (!['closed', 'unknown'].includes(signal.group) || filters().view === 'board') meta.append(node('span', signal.text, 'badge' + (signal.group === 'waiting' ? ' caution' : '')));
+  if (stale) { card.title = 'Saved observation; current source signals are not yet confirmed.'; meta.append(node('span', 'Saved', 'saved-marker')); }
+  if (filters().view === 'board') { const next = node('a', signal.next + ' →', 'issue-next'); next.href = open.href; card.append(next); }
   const provenance = node('details', undefined, 'factory-provenance'); provenance.dataset.disclosureKey = identity(repository, issue) + ':source'; provenance.dataset.disclosureRepository = repository; provenance.append(node('summary', 'Source details'));
   provenance.append(node('p', `Collected labels: ${issue.labels.join(', ') || 'none'}${issue.labelsComplete ? '' : ' · incomplete'}`, 'factory-labels'),
     node('p', `Reported stages: ${source.stages.join(', ') || 'unknown / unread'} · Linked runs: ${source.executions.join(', ') || 'unknown / unread'}`));
@@ -145,12 +161,8 @@ function issueCard(repository, issue, stale) {
   inspect.type = 'button'; inspect.disabled = busy || stale; inspect.addEventListener('click', () => readEvidence(repository, issue));
   actions.append(inspect, sourceLink('GitHub issue', repository, '/issues/' + issue.number)); provenance.append(actions); return card;
 }
-function age(value) {
-  const elapsed = Date.now() - Date.parse(value);
-  if (!Number.isFinite(elapsed) || elapsed < 0) return 'Unknown';
-  const days = Math.floor(elapsed / 86400000), hours = Math.floor(elapsed / 3600000), minutes = Math.floor(elapsed / 60000);
-  return days ? `${days}d` : hours ? `${hours}h` : minutes ? `${minutes}m` : 'now';
-}
+const age = relativeDate;
+
 function render() {
   if (dataScope && disclosureScope === dataScope) for (const details of document.querySelectorAll('[data-disclosure-key]')) {
     const collection = repositories.get(details.dataset.disclosureRepository);
@@ -158,12 +170,13 @@ function render() {
   }
   disclosureScope = dataScope;
   const selected = filters(), focusKey = document.activeElement?.dataset.focusKey;
+  document.body.dataset.boardView = String(selected.view === 'board');
   const projects = document.createDocumentFragment(), all = [];
   for (const [repository, collection] of repositories) {
     for (const issue of collection.issues ?? []) all.push({ repository, issue, stale: collection.stale });
     if (selected.repository && repository !== selected.repository) continue;
     if (inventoryView && selected.search && !repository.toLowerCase().includes(selected.search.toLowerCase())) continue;
-    const project = node('article', undefined, 'factory-project'); project.dataset.repository = repository;
+    const project = node('article', undefined, 'factory-project'); project.dataset.repository = repository; project.dataset.observedAt = collection.observedAt || '';
     const heading = node('h3'), select = node('a', repository); select.href = projectHref(repository); heading.append(select);
     const summary = collection.availability === 'available' || collection.stale
       ? `${collection.issues?.length ?? 0} issues${collection.complete ? '' : ' · Partial'}${collection.stale ? ' · Stale' : ''}`
@@ -185,37 +198,44 @@ function render() {
     project.append(actions); projects.append(project);
   }
   byId('factory-projects').replaceChildren(projects);
+  const strip = byId('factory-project-strip');
+  if (strip) { strip.replaceChildren(); for (const [repository, collection] of repositories) { const link = node('a'); link.href = projectHref(repository); link.append(node('strong', repository.split('/')[1]), node('small', `${collection.issues?.length ?? 0} collected${collection.complete ? '' : ' · partial'}`)); strip.append(link); } }
   const collections = [...repositories].filter(([name]) => !selected.repository || name === selected.repository).map(([, value]) => value);
   const limited = collections.filter(value => value.availability !== 'available' || value.stale || !value.complete).length;
   byId('factory-project-summary').textContent = `Source coverage · ${collections.length} ${collections.length === 1 ? 'repository' : 'repositories'}${limited ? ` · ${limited} partial` : ''}`;
-  if (inventoryView) { byId('factory-count').textContent = `${projects.childElementCount || repositories.size} repositories`; return; }
+  if (inventoryView) { const count = byId('factory-projects').children.length; byId('factory-count').textContent = collected ? `${count} matching repositories` : 'Reading repository access…'; if (!count) byId('factory-projects').append(node('p', collected ? 'No repositories match this filter.' : 'Reading repository access…', 'notice')); return; }
   if (attentionView) { renderAttention(selected, focusKey); return; }
   const sourceFacts = all.map(row => facts(row.repository, row.issue));
   options('factory-stage', sourceFacts.flatMap(source => source.stages)); options('factory-execution', sourceFacts.flatMap(source => source.executions));
   const visible = all.filter(row => matches(row.repository, row.issue, selected));
   const rows = selected.repository ? [...repositories].filter(([name]) => name === selected.repository).map(([, value]) => value) : [...repositories.values()];
   const unknown = rows.some(row => row.availability !== 'available' || row.stale || !row.complete);
-  byId('factory-count').textContent = `${visible.length} issues${unknown ? ' · Partial coverage' : ''}`;
+  byId('factory-count').textContent = !collected && !all.length ? 'Reading issue collection…' : `${visible.length} collected issues${unknown ? ' · Partial coverage' : ''}`;
+  const notice = byId('factory-freshness'); if (notice) { notice.hidden = !rows.some(row => row.stale); notice.textContent = 'Showing saved observations while refreshing. Source signals and authority may have changed.'; }
+  const paging = byId('factory-pagination'); if (paging) { paging.replaceChildren(); for (const [repository, row] of repositories) if ((!selected.repository || selected.repository === repository) && row.nextPage && !exactNumber(selected.search)) { const more = node('button', 'Load more · ' + repository.split('/')[1]); more.type = 'button'; more.disabled = busy; more.addEventListener('click', () => loadMore(repository)); paging.append(more); } }
   byId('factory-scope').textContent = exactNumber(selected.search) ? 'Exact-number lookup across selected configured repositories. Other filters still apply.' : 'Title search and filters cover collected issues only. Open project coverage to load more. Refresh starts a new collection; live pages can change.';
   const results = document.createDocumentFragment();
   if (selected.view === 'board') {
     const board = node('div', undefined, 'factory-board');
-    for (const state of ['open', 'closed', 'unknown']) {
-      const column = node('section', undefined, 'board-column'); column.append(node('h3', state === 'unknown' ? 'Unknown issue state' : state === 'open' ? 'Open issues' : 'Closed issues'));
-      const members = visible.filter(row => (['open', 'closed'].includes(row.issue.state) ? row.issue.state : 'unknown') === state);
+    for (const [key, title, hint] of groups) {
+      const members = visible.filter(row => workSignal(row.issue, facts(row.repository, row.issue).reports).group === key);
+      if (key === 'closed' && !members.length) continue;
+      const column = node('section', undefined, 'board-column'); column.dataset.group = key;
+      const heading = node('h3', title); heading.append(node('span', String(members.length), 'board-count'));
+      column.append(heading, node('p', hint, 'board-hint'));
       for (const row of members) column.append(issueCard(row.repository, row.issue, row.stale));
-      if (!members.length) column.append(node('p', 'No matching collected issues.')); board.append(column);
+      board.append(column);
     }
     results.append(board);
   } else {
     const list = node('div', undefined, 'factory-list'); for (const row of visible) list.append(issueCard(row.repository, row.issue, row.stale)); results.append(list);
   }
-  if (!visible.length) results.append(node('p', unknown ? 'No match in the collected scope. Remaining or unavailable source records may contain work.' : all.length ? 'No collected issues match these filters.' : 'The successfully collected scope contains no ordinary issues.'));
+  if (!visible.length) results.append(node('p', !collected ? 'Reading source records. This collection has not been confirmed empty.' : unknown ? 'No match in the collected scope. Remaining or unavailable source records may contain work.' : all.length ? 'No collected issues match these filters.' : 'The successfully collected scope contains no ordinary issues.'));
   const restoring = restoreScroll !== null && dataScope && repositories.size > 0;
   const scroll = restoring ? restoreScroll : window.scrollY;
   byId('factory-results').replaceChildren(results);
   for (const details of byId('factory-results').querySelectorAll('[data-disclosure-key]')) details.open = disclosures.get(details.dataset.disclosureKey) === true;
-  requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring) restoreScroll = null; });
+  requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring && !busy) restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 
@@ -257,21 +277,22 @@ function renderAttention(selected, focusKey) {
   const projection = reconcileAttention(repositories, attentionHistory); attentionHistory = projection.entries;
   saveProjection();
   const visible = [...attentionHistory.values()].filter(entry => matches(entry.repository, entry.issue, selected));
-  byId('factory-count').textContent = `${visible.length} collected label contexts. Inspect a context to verify its current question and supported actions.`;
+  byId('factory-count').textContent = collected ? `${visible.length} collected wait contexts · inspect a question to verify what needs you.` : 'Reading intervention contexts…';
   byId('factory-scope').textContent = 'Order: source-label observations, then stale or unobserved contexts; oldest issue update first, source identity breaks ties. Age does not establish urgency. Collection coverage is shown per project.';
   const list = node('div', undefined, 'factory-list');
   for (const entry of visible) {
     const card = node('article', undefined, 'factory-issue' + (entry.state === 'source-label' ? '' : ' factory-stale'));
     card.dataset.attentionKey = entry.key;
-    const heading = node('h3'), link = node('a', `${entry.repository}#${entry.issue.number} · ${entry.issue.title}`);
+    const heading = node('h3'), link = node('a', `#${entry.issue.number} · ${entry.issue.title}`);
+    link.setAttribute('aria-label', `${entry.repository}#${entry.issue.number} · ${entry.issue.title}`);
     link.href = `/workspace/issues/${entry.repository}/${entry.issue.number}`; link.dataset.focusKey = entry.key; heading.append(link);
-    card.append(heading, node('p', `${entry.label === 'needs-info' ? 'Needs information' : 'Waiting for review'} · ${entry.issue.state ?? 'unknown'} issue`));
+    card.append(node('small', entry.repository, 'issue-project'), heading, node('p', `${entry.label === 'needs-info' ? 'Needs information' : 'Waiting for review'} · ${entry.issue.state ?? 'unknown'} issue`, 'issue-row-meta'));
     const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source history'),
       node('p', `GitHub label: ${entry.label} · Issue updated: ${time(entry.sourceTime)} (not wait duration)`),
       node('p', `Observed: ${time(entry.observedAt)}`)); card.append(provenance);
     if (entry.state === 'stale') card.append(node('p', 'Stale observation; current source context is unknown.', 'notice'));
     if (entry.state === 'not-observed') card.append(node('p', 'Not observed in this collection; resolution is unknown. Missing pages or a removed label do not establish a resolved question.', 'notice'));
-    card.append(sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number));
+    const actions = node('div', undefined, 'project-actions'); actions.append(sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number)); card.append(actions);
     const inspect = node('button', 'Inspect current question'); inspect.type = 'button';
     const detail = node('section'); detail.setAttribute('aria-label', 'Current source context · ' + entry.repository + '#' + entry.issue.number + ' · ' + entry.label);
     const scope = dataScope, version = epoch;
@@ -281,15 +302,15 @@ function renderAttention(selected, focusKey) {
       await inspectAttention(detail, entry, scope, live, () => clearSource('Source authority changed. Verify your account and refresh.'));
       if (live()) inspect.disabled = false;
     });
-    if (entry.state === 'source-label') card.append(inspect, detail);
+    if (entry.state === 'source-label') { actions.append(inspect); card.append(detail); }
     list.append(card);
   }
-  if (!visible.length) list.append(node('p', 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));
+  if (!visible.length) list.append(node('p', !collected ? 'Reading intervention contexts…' : 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));
   if (projection.limited) list.append(node('p', 'The retained 1 MiB / 1,000-context bound was reached; omitted history is not a resolved intervention.', 'notice'));
   const restoring = restoreScroll !== null && dataScope && repositories.size > 0;
   const scroll = restoring ? restoreScroll : window.scrollY;
   byId('factory-results').replaceChildren(list);
-  requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring) restoreScroll = null; });
+  requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring && !busy) restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
 }
 async function getPage(repository, page, requestEpoch, number) {
@@ -330,9 +351,7 @@ async function refresh() {
     if (dataScope && dataScope !== account.dataScope) { clearProjectionCache(); repositories.clear(); evidence.clear(); attentionHistory.clear(); disclosures.clear(); }
     const restore = !dataScope && repositories.size === 0;
     dataScope = account.dataScope;
-    if (restore && history.state?.factoryDisclosureScope === dataScope && Array.isArray(history.state.factoryDisclosures)) {
-      for (const entry of history.state.factoryDisclosures) if (Array.isArray(entry) && typeof entry[0] === 'string' && typeof entry[1] === 'boolean') disclosures.set(entry[0], entry[1]);
-    }
+    if (restore) restoreDisclosures(dataScope);
     if (restore) restoreProjection(account.dataScope, readable);
     lookupNumber = exactNumber(byId('factory-search').value);
     const picker = byId('factory-repository'), selected = picker.value || new URL(location.href).searchParams.get('repository') || '';
@@ -354,7 +373,7 @@ async function refresh() {
       try { await getPage(row.repository, 1, requestEpoch, exactNumber(byId('factory-search').value)); }
       catch { if (requestEpoch !== epoch) return; const previous = repositories.get(row.repository); repositories.set(row.repository, { ...previous, availability: 'unavailable', stale: !!previous?.issues?.length, complete: false, reason: 'Source refresh failed. Previous same-scope rows retain their original times and may be stale; this is not an empty backlog.' }); }
     }));
-    if (requestEpoch === epoch) { saveProjection(); render(); status(''); }
+    if (requestEpoch === epoch) { collected = [...repositories.values()].some(row => row.availability === 'available'); saveProjection(); render(); status(''); }
   } catch { if (requestEpoch === epoch) { for (const collection of repositories.values()) { collection.stale = true; collection.complete = false; } saveProjection(); render(); status('Source refresh failed. Previously collected rows may be stale; no current authority or empty-backlog conclusion is inferred.'); } }
   finally { setBusy(false); }
 }
@@ -380,9 +399,20 @@ async function readEvidence(repository, issue) {
     const source = await result.json();
     if (requestEpoch !== epoch) return;
     if (!result.ok || source.dataScope !== dataScope || !Array.isArray(source.reports)) throw Error('Source evidence unavailable');
-    evidence.set(key, source); render(); status('Historical source evidence loaded.');
+    evidence.set(key, source); saveProjection(); render(); status('Historical source evidence loaded.');
   } catch { if (requestEpoch === epoch) { evidence.set(key, { availability: 'unavailable', reports: [], reason: 'Associated evidence is unavailable; stage and workflow state remain unknown.' }); render(); status('Source evidence unavailable; readable issue collection is retained.'); } }
   finally { setBusy(false); }
+}
+if (workView) { byId('factory-view').value = 'board'; byId('factory-state').value = 'open'; document.body.dataset.workEntry = 'true'; }
+const display = displayContext();
+if (display) {
+  dataScope = display.dataScope; restoreDisclosures(dataScope);
+  const readable = new Set(display.repositories.filter(row => row.issuesRead).map(row => row.repository));
+  if (restoreProjection(dataScope, readable)) {
+    const picker = byId('factory-repository');
+    for (const repository of readable) if (![...picker.options].some(option => option.value === repository)) { const option = node('option', repository); option.value = repository; picker.append(option); }
+    status('Saved view · refreshing source authority…');
+  }
 }
 for (const [key, value] of new URL(location.href).searchParams) {
   if (repositoryPath && key === 'repository') continue;
@@ -396,6 +426,8 @@ byId('factory-search').addEventListener('input', () => { remember(); render(); }
 for (const key of ['state', 'stage', 'execution', 'wait', 'view']) byId('factory-' + key).addEventListener('change', () => { remember(); render(); });
 byId('factory-repository').addEventListener('change', () => { remember(); refresh(); });
 byId('factory-refresh').addEventListener('click', refresh);
+byId('factory-group')?.addEventListener('change', () => { document.body.dataset.workGroup = byId('factory-group').value; remember(); });
+document.body.dataset.workGroup = byId('factory-group')?.value || 'waiting';
 window.addEventListener('pageshow', event => { if (event.persisted) refresh(); });
 window.addEventListener('pagehide', () => {
   for (const details of document.querySelectorAll('[data-disclosure-key]')) disclosures.set(details.dataset.disclosureKey, details.open);

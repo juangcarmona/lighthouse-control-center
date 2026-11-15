@@ -77,3 +77,12 @@ button, summary { cursor: pointer; }
 #issue-history ul { padding-left:1.25rem; }
 #issue-history li { border-top:1px solid var(--lh-border); padding-block:.5rem; }
 #issue-history li p { margin:.25rem 0; }
+#issue-description-details { margin-bottom:.75rem; }
+#mission-actions { margin-bottom:.75rem; }
+#mission-actions:has(.mission-workflow-actions) { border:0; background:transparent; padding:.375rem 0; }
+#controls-heading { font-size:.8125rem; }
+.collection-return { display:inline-block; font-size:.75rem; margin-bottom:.5rem; }
+
+#issue-state { flex-shrink:0; white-space:nowrap; }
+.header-context { white-space:nowrap; overflow:hidden; }
+.header-context>a { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

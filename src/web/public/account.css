@@ -30,3 +30,8 @@
 /* Server-rendered account content uses the common workspace shell. */
 .page-column .account-panel { width:min(1160px,calc(100% - 3rem)); max-width:1160px; margin:var(--lh-space-6) auto; padding:var(--lh-space-6); border-radius:var(--lh-radius-panel); }
 @media(max-width:900px) { .page-column .account-panel { width:calc(100% - 2rem); margin:var(--lh-space-4) auto; } }
+.page-column .account-panel { width:calc(100% - 2rem); max-width:100%; margin:1rem auto; padding:1rem; border-radius:2px; }
+.account-panel>details { border-top:1px solid var(--lh-border); padding:.625rem 0; margin-top:.5rem; font-size:.8125rem; }
+.account-panel>h1 { position:absolute; width:1px; height:1px; clip-path:inset(50%); overflow:hidden; }
+.account-panel>p { margin:.5rem 0; }
+.account-panel[hidden],.account-panel form[hidden] { display:none; }

@@ -1,7 +1,8 @@
-import { updateWorkspaceAccount } from './workspace-ui.js';
+import { readProjectionCache, writeProjectionCache, clearProjectionCache } from './read-projection-cache.js';
+import { updateWorkspaceAccount, displayContext, formatDate } from './workspace-ui.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text) => { const value = document.createElement(tag); if (text !== undefined) value.textContent = text; return value; };
-const time = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';
+const time = formatDate;
 const validRepository = value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/.test(value);
 let host, scope, hostEpoch = 0, githubEpoch = 0, ownerDeadline, ownerCheck;
 const sources = new Map();
@@ -10,10 +11,12 @@ function link(text, repository, suffix) {
 }
 function card(title) { const value = node('article'); value.className = 'runtime-card'; value.append(node('h3', title)); return value; }
 function facts(value, rows) {
-  const list = node('dl'); for (const [name, text] of rows) list.append(node('dt', name), node('dd', text ?? 'Unknown')); value.append(list);
+  const detail = node('details'); detail.append(node('summary', 'Source details'));
+  const list = node('dl'); for (const [name, text] of rows) list.append(node('dt', name), node('dd', text ?? 'Unknown')); detail.append(list); value.append(detail);
 }
 function clearGitHub(message) { githubEpoch++; scope = undefined; sources.clear(); byId('runners-status').textContent = message; render(); }
 function clearAll() {
+  clearProjectionCache(scope);
   updateWorkspaceAccount({ state: 'expired' });
   clearTimeout(ownerDeadline);
   hostEpoch++; host = undefined; clearGitHub('Owner session ended. Sign in again.');
@@ -38,7 +41,7 @@ function render() {
   const previous = document.activeElement, key = previous?.dataset?.runtimeFocus;
   byId('host-registrations').replaceChildren(); byId('runtime-adoptions').replaceChildren(); byId('github-runners').replaceChildren();
   for (const registration of host?.observation?.registrations ?? []) {
-    const value = card(registration.alias); value.dataset.registration = registration.alias;
+    const value = card(registration.alias); value.dataset.registration = registration.alias; value.dataset.observedAt = registration.collectedAt || '';
     if (registration.availability !== 'available') value.append(node('p', registration.reason ?? 'Registration unavailable; process health is unknown.'));
     else {
       facts(value, [['Repository', registration.repository], ['Registered runner ID', String(registration.id)], ['Registration name', registration.name], ['File modified', time(registration.modifiedAt)], ['Collected', time(registration.collectedAt)]]);
@@ -63,7 +66,7 @@ function render() {
     byId('runtime-adoptions').append(value);
   }
   for (const [repository, source] of sources) {
-    const value = card(repository); value.dataset.repository = repository;
+    const value = card(repository); value.dataset.repository = repository; value.dataset.observedAt = source.observedAt || '';
     if (source.availability !== 'available') value.append(node('p', source.reason ?? 'GitHub inventory unavailable.'));
     else {
       value.append(node('p', `Collected ${source.runners.length} / ${source.sourceTotal ?? 'unknown'} source runners · ${source.complete ? 'complete source page' : 'partial coverage'}. Collected: ${time(source.observedAt)}.`));
@@ -80,6 +83,7 @@ function render() {
     value.append(link('Runner settings', repository, '/settings/actions/runners'), link('Workflow activity', repository, '/actions'));
     byId('github-runners').append(value);
   }
+  if (scope) writeProjectionCache(scope, { host }, 'runtime');
   if (key && !previous.isConnected) {
     const next = [...document.querySelectorAll('[data-runtime-focus]')].find(element => element.dataset.runtimeFocus === key)
       ?? document.querySelector('header a[href="/workspace"]');
@@ -161,4 +165,10 @@ async function refreshGitHub() {
 byId('host-refresh').addEventListener('click', refreshHost);
 byId('runners-refresh').addEventListener('click', refreshGitHub);
 byId('runtime-status').textContent = 'Each source is read independently. Use its refresh button for a new observation.';
+const display = displayContext();
+if (display) {
+  const saved = readProjectionCache(display.dataScope, 'runtime');
+  if (saved) { scope = display.dataScope; host = saved.host ? { ...saved.host, stale: true } : undefined; render();
+    byId('runtime-status').textContent = 'Saved runtime observations · refreshing. Registration does not prove capacity.'; }
+}
 Promise.allSettled([refreshHost(), refreshGitHub()]);

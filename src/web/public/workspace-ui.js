@@ -1,3 +1,4 @@
+import { clearProjectionCache } from './read-projection-cache.js';
 const namespace = 'http://www.w3.org/2000/svg';
 const paths = {
   light: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5',
@@ -42,6 +43,9 @@ function renderIdentity() {
   }
 }
 export function updateWorkspaceAccount(account) {
+  if (['expired', 'unlinked', 'unconfigured'].includes(account.state)
+      || account.state === 'linked' && accountState?.state === 'linked'
+        && (account.dataScope !== accountState.dataScope || account.userId !== accountState.userId)) clearProjectionCache();
   if (account.state === 'expired') { ownerEpoch++; ownerName = ''; }
   if (['linked', 'unlinked', 'unconfigured', 'unavailable', 'expired'].includes(account.state)) sourceIdentityGeneration++;
   accountState = account; renderIdentity();
@@ -61,7 +65,7 @@ export function validateWorkspaceSourceIdentity(data, expectedScope, expectedAct
   const actorConflict = reportedIds.some(value => value !== reportedIds[0])
     || validActorId(actorId) && reportedIds.some(value => value !== actorId);
   if (data.availability === 'disconnected' || scopeChanged || actorConflict) {
-    sourceIdentityGeneration++;
+    sourceIdentityGeneration++; clearProjectionCache();
     accountState = { state: 'unavailable' }; renderIdentity();
     return false;
   }
@@ -78,9 +82,15 @@ function identityLink(className) {
 }
 function enhance() {
   document.querySelectorAll('.workspace-nav').forEach(navigation => {
-    if (!navigation.querySelector('a[href="/workspace/health"]') && navigation.childElementCount) {
-      const link = document.createElement('a'); link.href = '/workspace/health'; link.textContent = 'Health';
-      navigation.insertBefore(link, navigation.querySelector('a[href="/workspace/runtime"]'));
+    const routes = [['operations', 'Work'], ['repositories', 'Repositories'], ['issues', 'Issues'], ['attention', 'Attention'], ['health', 'Health'], ['runtime', 'Runtime'], ['', 'Account']];
+    for (let i = 0; i < routes.length; i++) {
+      const [route, label] = routes[i], href = '/workspace' + (route ? '/' + route : '');
+      let link = [...navigation.children].find(item => item.getAttribute('href') === href);
+      if (!link) { link = document.createElement('a'); link.href = href; link.textContent = label; }
+      const copy = link.querySelector('.nav-label') || link;
+      if (copy.textContent !== label) { copy.textContent = label; if (copy === link) link.querySelector('svg')?.remove(); }
+      link.setAttribute('aria-label', label); link.title = label;
+      if (navigation.children[i] !== link) navigation.insertBefore(link, navigation.children[i] || null);
     }
   });
   let changedNavigation = false;
@@ -114,6 +124,19 @@ function enhance() {
     header.querySelector('.appearance')?.remove(); actions.append(group);
   });
   document.querySelectorAll('.site-sidebar').forEach(sidebar => {
+    if (!sidebar.querySelector('.mobile-navigation-toggle')) {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'mobile-navigation-toggle';
+      button.textContent = 'Navigation'; button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-label', 'Open navigation');
+      const navigation = sidebar.querySelector('.workspace-nav');
+      if (navigation) { navigation.id ||= 'workspace-menu'; button.setAttribute('aria-controls', navigation.id); }
+      button.addEventListener('click', () => {
+        const open = document.documentElement.dataset.menuOpen !== 'true'; document.documentElement.dataset.menuOpen = String(open);
+        button.setAttribute('aria-expanded', String(open)); button.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+        if (open) navigation?.querySelector('a')?.focus();
+      });
+      sidebar.prepend(button);
+    }
+
     if (!sidebar.querySelector('.sidebar-toggle')) {
       const toggle = document.createElement('button'); toggle.type = 'button'; toggle.className = 'sidebar-toggle'; toggle.append(icon('collapse'));
       const state = () => { toggle.setAttribute('aria-expanded', String(!collapsed)); toggle.setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation'); };
@@ -132,7 +155,42 @@ new MutationObserver(enhance).observe(document.body, { childList: true, subtree:
 window.addEventListener('storage', event => { if (event.key === preferenceKey) applyTheme(['light', 'dark', 'system'].includes(event.newValue) ? event.newValue : 'system'); });
 const sessionEpoch = ownerEpoch;
 fetch('/api/session', { cache: 'no-store', signal: AbortSignal.timeout(10000) }).then(async response => {
+  if ([401, 403].includes(response.status)) { updateWorkspaceAccount({ state: 'expired' }); return; }
   if (!response.ok) return;
   const session = await response.json();
+  if (session.authenticated === false) { updateWorkspaceAccount({ state: 'expired' }); return; }
   if (sessionEpoch === ownerEpoch && session.authenticated === true && typeof session.displayName === 'string') { ownerName = session.displayName; renderIdentity(); }
 }).catch(() => {});
+
+export function displayContext() {
+  try {
+    const value = JSON.parse(document.querySelector('meta[name="lcc-display-context"]')?.content || 'null');
+    if (!value || typeof value.dataScope !== 'string' || !value.dataScope || value.dataScope.length > 256
+        || !Number.isSafeInteger(value.actingUserId) || value.actingUserId <= 0 || !Array.isArray(value.repositories)
+        || !Number.isFinite(Date.parse(value.expiresAt)) || Date.parse(value.expiresAt) <= Date.now()
+        || Date.parse(value.expiresAt) > Date.now() + 5 * 60 * 1000) return null;
+    return value;
+  } catch { return null; }
+}
+export function formatDate(value) {
+  const date = new Date(value);
+  return value && Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }).format(date) : 'Unknown';
+}
+export function relativeDate(value) {
+  const elapsed = Date.now() - Date.parse(value);
+  if (!Number.isFinite(elapsed) || elapsed < 0) return 'Unknown';
+  const minutes = Math.floor(elapsed / 60000), hours = Math.floor(minutes / 60), days = Math.floor(hours / 24);
+  return days > 6 ? new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', ...(new Date(value).getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) }).format(new Date(value)) : days ? days === 1 ? 'Yesterday' : days + ' days ago' : hours ? hours + 'h ago' : minutes ? minutes + 'm ago' : 'Just now';
+}
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.documentElement.dataset.menuOpen === 'true') {
+    document.documentElement.dataset.menuOpen = 'false';
+    const button = document.querySelector('.mobile-navigation-toggle'); button?.setAttribute('aria-expanded', 'false');
+    button?.setAttribute('aria-label', 'Open navigation'); button?.focus();
+  }
+});
+
+document.addEventListener('submit', event => {
+  const path = event.target instanceof HTMLFormElement ? new URL(event.target.action, location.origin).pathname : '';
+  if (['/auth/logout', '/connections/github/disconnect', '/connections/github/confirm'].includes(path)) clearProjectionCache();
+});

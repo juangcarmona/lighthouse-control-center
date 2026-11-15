@@ -32,7 +32,7 @@ test('health fleet to project to exact contributing source is read-only and hone
   await expect(page.getByRole('heading', { name: 'Needs investigation (1)' })).toBeVisible();
   await expect(page.locator('[data-repository="example/denied"]')).toContainText('Access denied');
   await expect(page.locator('[data-repository="example/unavailable"]')).toContainText('Evidence unavailable');
-  await expect(page.locator('[data-repository="' + repository + '"]')).toContainText('PRE / PRO / production not verified');
+  await expect(page.locator('[data-repository="' + repository + '"]')).toContainText('deployment environment are not reported');
   await page.getByRole('button', { name: 'Needs investigation 1' }).click();
   await expect(page.locator('.health-row:visible')).toHaveCount(1);
   await page.getByRole('button', { name: 'Evidence unknown 2' }).click();
@@ -56,12 +56,12 @@ test('temporary account and source failure retain stale visible evidence but den
   await expect(page.locator('.health-detail')).toContainText('failure');
   state.accountUnavailable = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
   await expect(page.locator('.health-detail')).toContainText('Stale');
-  await expect(page.locator('.health-detail')).toContainText('2026-11-11T00:00:00.000Z');
+  await expect(page.locator('.health-detail')).toHaveAttribute('data-observed-at', observedAt);
   await expect(page.locator('#health-status')).toContainText('Previously shown observations may be stale');
   state.accountUnavailable = false;
   state.unavailable = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
   await expect(page.locator('.health-detail')).toContainText('Stale');
-  await expect(page.locator('.health-detail')).toContainText('2026-11-11T00:00:00.000Z');
+  await expect(page.locator('.health-detail')).toHaveAttribute('data-observed-at', observedAt);
   state.denied = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
   await expect(page.locator('.health-detail')).toHaveCount(0);
   await expect(page.locator('#health-results')).toContainText('Access denied');

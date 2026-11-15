@@ -89,3 +89,19 @@
   #health-results dd {margin-bottom:.55rem}
   .health-detail {padding:1rem}
 }
+.health-intro { display:none; }
+.health-metrics { display:flex; flex-wrap:wrap; gap:1.25rem; margin:.5rem 0 .75rem; padding:0 0 .75rem; border-bottom:1px solid var(--lh-border); }
+.health-metric { display:flex; align-items:baseline; gap:.5rem; padding:0; border:0; background:transparent; }
+.health-metric strong { font-size:1.25rem; order:-1; }
+.health-metric small { display:none; }
+.health-attention { padding:.75rem; margin:.5rem 0 .75rem; }
+.health-attention-item { padding:.5rem .75rem; }
+.health-list-head,.health-row { grid-template-columns:minmax(0,1.3fr) minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr); }
+.health-row { padding:.75rem; gap:1rem; }
+.health-row>details { grid-column:auto; }
+.health-row .health-provenance { margin:0; }
+@media(max-width:900px) { .health-row { display:block; } .health-row>div,.health-row>details { margin:.375rem 0; } .health-metrics { gap:.75rem; } }
+@media(max-width:900px) {
+  .health-evidence-cell:nth-child(2)::before { content:'Actions evidence'; }
+  .health-evidence-cell:nth-child(3)::before { content:'Source coverage'; }
+}

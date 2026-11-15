@@ -12,14 +12,16 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`ac
   await page.route('**/workspace', route => route.fulfill({ contentType: 'text/html', body: html }));
   await page.route('**/api/connections/github', route => route.fulfill({ json: { state: 'unlinked' } }));
   await page.goto(origin + '/workspace');
+  if (width < 1000) await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
   await expect(page.getByRole('link', { name: 'Account', exact: true })).toHaveAttribute('aria-current', 'page');
   await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
   await expect(page.getByRole('link', { name: 'Lighthouse Control Center', exact: true })).toBeVisible();
-  await expect(page.locator('.workspace-nav a')).toHaveText(['Overview', 'Repositories', 'Inbox', 'Issues', 'Health', 'Runtime', 'Account']);
+  await expect(page.locator('.workspace-nav a')).toHaveText(['Work', 'Repositories', 'Issues', 'Attention', 'Health', 'Runtime', 'Account']);
   await expect(page.locator('#account a[href="/workspace/operations"]')).toHaveText('Open fleet overview');
   const current = await page.locator('.workspace-nav [aria-current="page"]').boundingBox();
   expect(current.x).toBeGreaterThanOrEqual(0);
   expect(current.x + current.width).toBeLessThanOrEqual(width);
+  if (width < 1000) await page.keyboard.press('Escape');
   const rail = await page.locator('.site-sidebar').boundingBox();
   const header = await page.locator('.topbar').boundingBox();
   const panel = await page.locator('#account').boundingBox();
@@ -32,4 +34,8 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`ac
   expect(await page.locator('body').evaluate(body => getComputedStyle(body).fontSize)).toBe('15px');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({ path: `test-results/account/visual-contract-${theme}-${width}.png` });
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.evaluate(() => document.documentElement.style.fontSize = '200%');
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).fontSize)).toBe('32px');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

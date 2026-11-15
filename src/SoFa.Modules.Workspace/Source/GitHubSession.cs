@@ -10,6 +10,7 @@ internal sealed class GitHubSession
   internal GitHubConnection? Replacement { get; set; }
   internal DateTimeOffset ReplacementDeadline { get; set; }
   internal SemaphoreSlim RefreshLock { get; } = new(1, 1);
+  internal Dictionary<string, RepositoryAuthority> DisplayAuthorities { get; } = new(StringComparer.OrdinalIgnoreCase);
   internal Dictionary<string, CachedObservation> Observations { get; } = new(StringComparer.OrdinalIgnoreCase);
 
   internal void Clear(bool cancelConnection = true)
@@ -23,6 +24,7 @@ internal sealed class GitHubSession
     Current = null;
     Replacement = null;
     Observations.Clear();
+    DisplayAuthorities.Clear();
   }
 }
 

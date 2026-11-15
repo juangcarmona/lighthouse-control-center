@@ -177,11 +177,12 @@ internal static class OwnerIdentity
     context.Response.StatusCode = status;
     context.Response.Headers.CacheControl = "no-store";
     if (context.Request.Path.StartsWithSegments("/api")) return Task.CompletedTask;
+    var signIn = "/?returnUrl=" + Uri.EscapeDataString(context.Request.Path.ToString() + context.Request.QueryString.ToString());
     var title = status == 401 ? "Sign in required" : status == 403 ? "Access denied" : "Verification unavailable";
     context.Response.ContentType = "text/html; charset=utf-8";
     return context.Response.WriteAsync("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Lighthouse Control Center · "
       + title + "</title><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\"></head><body><main class=\"account-panel\"><h1>"
-      + title + "</h1><p>Protected workspace data requires a current owner session and successful identity verification.</p><a href=\"/\">Open sign-in and local session controls</a></main></body></html>");
+      + title + "</h1><p>Protected workspace data requires a current owner session and successful identity verification.</p><a href=\"" + System.Text.Encodings.Web.HtmlEncoder.Default.Encode(signIn) + "\">Open sign-in and local session controls</a></main></body></html>");
   }
 
   private sealed class IssuanceCookieManager : ICookieManager

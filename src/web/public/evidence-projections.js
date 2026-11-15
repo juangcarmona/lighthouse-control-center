@@ -65,3 +65,19 @@ export function adoptionFacts(receipt) {
   installed: 'unknown — no installation receipt', policy: 'unknown — no current-policy receipt',
   baseline: 'No compatible baseline available; no drift verdict', observedRun: 'unknown — inspect an exactly associated issue run' };
 }
+
+// Source labels are display hints, never queue admission, a live lease or command eligibility.
+export function workSignal(issue, reports = []) {
+  if (issue.state === 'closed') return { group: 'closed', text: 'Closed', next: 'Read issue history' };
+  const labels = issue.labels ?? [];
+  if (labels.some(label => ['needs-info', 'waiting-review', 'owner-review', 'review'].includes(label)))
+    return { group: 'waiting', text: 'Wait label · inspect question', next: 'Read question and context' };
+  const execution = reports.find(report => report.availability === 'available' && ['in_progress', 'queued', 'waiting', 'pending'].includes(report.executionStatus));
+  if (execution) return { group: execution.executionStatus === 'in_progress' ? 'working' : 'requested', text: 'Associated run: ' + execution.executionStatus, next: 'Inspect associated execution' };
+  if (labels.includes('future')) return { group: 'future', text: 'Future hold', next: 'Read the scope' };
+  if (labels.some(label => ['bot-working', 'agent-working', 'human-working'].includes(label)))
+    return { group: 'working', text: 'Working label · execution unverified', next: 'Inspect activity and context' };
+  if (labels.some(label => ['triage', 'refine', 'propose', 'implement', 'continue'].includes(label)))
+    return { group: 'requested', text: 'Request label · queue unverified', next: 'Inspect the source request' };
+  return { group: 'unknown', text: 'Grouping unknown', next: 'Read issue context' };
+}

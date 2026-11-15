@@ -1,0 +1,496 @@
+{
+  "schemaVersion": 1,
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "issue": 227,
+  "branch": "feat/227-workspace-usability",
+  "baseRevision": "2d489aee154d84c7ad269e8f952241e358cd1b8d",
+  "recordedAt": "2026-11-15T00:25:07.285524+00:00",
+  "provenance": "The containing Git revision binds these source-file and capture hashes. All image source data is explicit synthetic browser-fixture data.",
+  "checks": [
+    {
+      "command": "npm run verify",
+      "result": "passed",
+      "nodeTests": 120,
+      "nativeWorkspaceTests": 276,
+      "nativeRuntimeTests": 38,
+      "browserTests": 136,
+      "releaseBuildWarnings": 0,
+      "releaseBuildErrors": 0
+    },
+    {
+      "command": "npm run test:visual",
+      "result": "passed",
+      "tests": 22
+    }
+  ],
+  "environment": {
+    "node": "22.22.1",
+    "dotnetSdk": "10.0.115",
+    "dotnetProcessorCount": 4,
+    "tempDirectory": "Private writable directory outside the group-writable ambient temporary ancestor",
+    "browser": "System Chromium; headless Playwright"
+  },
+  "coveredStates": [
+    "Protected same-scope restoration before held reads complete on Work, Health, Issue and Runtime",
+    "Denied repository and ended owner clear protected projections",
+    "Actor/connection replacement removes dependent drafts",
+    "Draft return, reload, permission-unavailable editing and literal text",
+    "Collection filters, disclosures, scroll return, partial coverage and visible paging",
+    "Sign-in opens Work and accepts only local workspace return paths",
+    "Existing prepare, confirm, uncertain-recovery and source-result fixtures",
+    "Light/dark, desktop/narrow, Axe, image loading and overflow",
+    "320px with computed 32px root text on nine main views and Account"
+  ],
+  "limits": [
+    "Synthetic screenshots do not establish connected-user operation success",
+    "No live comment, workflow dispatch or continuation was sent",
+    "Physical-device, screen-reader and owner-led live qualification remain open",
+    "No merge, deployment or shared-preview restart",
+    "The initial unbounded solution test hit an internal CLR error; the final complete run passed with four logical processors"
+  ],
+  "sourceFiles": [
+    {
+      "file": "src/SoFa.Modules.Workspace/Identity/OwnerIdentity.cs",
+      "sha256": "71d098fe8adc49653e2abfa11812bc25e33daa65f21c6aa9eea75df1974efb57"
+    },
+    {
+      "file": "src/SoFa.Modules.Workspace/Source/GitHubSession.cs",
+      "sha256": "b595ed21589389e835b598d12fba0ff1dc91f314c6f2bbdecb1e3ffe6a2bbcac"
+    },
+    {
+      "file": "src/SoFa.Modules.Workspace/Source/RepositoryAccess.cs",
+      "sha256": "fe941dcca90098bdc439c7e549f08d2e37597fdce80fdb086b0a0a676be05ed9"
+    },
+    {
+      "file": "src/SoFa.Modules.Workspace/Source/WorkspaceDisplayContext.cs",
+      "sha256": "5c4ce8bda026f87c98ae15365e3cfacef543f9c458b07a1da72d203f5ec5f3b9"
+    },
+    {
+      "file": "src/SoFa.Modules.Workspace/WorkspaceModule.cs",
+      "sha256": "3237781502f975798161d983067dfafd2da562ea063b24740e7f99fdb36dbf3a"
+    },
+    {
+      "file": "src/web/public/account.css",
+      "sha256": "9893af0e6869b295237a545006fefea0b3ff7a666882339bcc61712acccb42bc"
+    },
+    {
+      "file": "src/web/public/account.js",
+      "sha256": "160f154e13a265ccac8f735c497ffe85812a90b55571390de72438e60c43b17c"
+    },
+    {
+      "file": "src/web/public/app.css",
+      "sha256": "191a06746575e28c9ace1469fb0996f12d8dcbf4c7bebd1bcb4f760675e4d001"
+    },
+    {
+      "file": "src/web/public/attention.html",
+      "sha256": "a82eb5badbf83c7d3d8300763945df7563b68564375dbde21af27745f388090f"
+    },
+    {
+      "file": "src/web/public/evidence-projections.js",
+      "sha256": "94fca05a63ca55246f93b516d621e0bfbab244e31f388eb373cfc8bbf820f714"
+    },
+    {
+      "file": "src/web/public/factory.css",
+      "sha256": "e2d96e8e14ab17bc0d8bf868dba29e4ae07e62043ee1b08c20894bd336a31345"
+    },
+    {
+      "file": "src/web/public/factory.html",
+      "sha256": "796ea53a13fae254a4289af80fd325cb7cfa2cac6b114372eaf5e31c4355113b"
+    },
+    {
+      "file": "src/web/public/factory.js",
+      "sha256": "a33e2890d7b5a44e47da523ab35a5b65982ee16b2b60ea6eb9c88f5864af1056"
+    },
+    {
+      "file": "src/web/public/health.css",
+      "sha256": "55b85796ab3315441c9e6ad034db76bfc680e5c11e4519e093b192fa96cd93d6"
+    },
+    {
+      "file": "src/web/public/health.html",
+      "sha256": "5399930ba4c885a13cfb9a275325a466cf20e8ae25173191cb9b10d85d12bc3b"
+    },
+    {
+      "file": "src/web/public/health.js",
+      "sha256": "a38281337a2f8a716e6330635fb1f614ec882ecf58464b26426a6ac86e746ecf"
+    },
+    {
+      "file": "src/web/public/issue-actions.js",
+      "sha256": "e36e8780c5e894ddec2ecc33f3cde0b940607cb9f3d52b6b3a0db3ca91fd06c0"
+    },
+    {
+      "file": "src/web/public/issue.css",
+      "sha256": "a217c152cc5a701a088633e6bea6d8fb8b7543c1d23faaab8a372ff3b0244f20"
+    },
+    {
+      "file": "src/web/public/issue.html",
+      "sha256": "875abe9fab4469a880fba0cdd149c4ab538cd4a9625f96ec5fb8647616a078f0"
+    },
+    {
+      "file": "src/web/public/issue.js",
+      "sha256": "51aa0a7da0ea69e0e51b44e1b6cb1b3186bebf453e3afaee0ff9df7146bf5359"
+    },
+    {
+      "file": "src/web/public/read-projection-cache.js",
+      "sha256": "1262c779713513eb24342bd5ee93824f929aa0492c7fc837ee9b30e897eb96a3"
+    },
+    {
+      "file": "src/web/public/runtime.css",
+      "sha256": "3f60854e37e1c39b9baf921eb40eefcd7183d8a5dde84361c844cda3519a172c"
+    },
+    {
+      "file": "src/web/public/runtime.html",
+      "sha256": "1a4a61695d649a8437a3141b7bb5d0641509e96beffc3b105099085fabe588d8"
+    },
+    {
+      "file": "src/web/public/runtime.js",
+      "sha256": "62a283d143e690542eb04afbf45268ac77b895f8f553627c73190825983f3c86"
+    },
+    {
+      "file": "src/web/public/workspace-ui.js",
+      "sha256": "546cb81fc6b7e99beaaf6c150934528245da31cc11611b70f0fc11c239599522"
+    },
+    {
+      "file": "tests/SoFa.Web.Tests/FactoryDiscoveryTests.cs",
+      "sha256": "02fe5a5e83d4decd459b3cd5fbdc7c519882eadd8eaf1f82bb586d72d6f583b6"
+    },
+    {
+      "file": "tests/SoFa.Web.Tests/OwnerBoundaryTests.cs",
+      "sha256": "2e9474e611c5a7541e07e52af87367c161fc4e08a9c4aa328091d9169fdb99e7"
+    },
+    {
+      "file": "tests/SoFa.Web.Tests/WorkspaceDisplayContextTests.cs",
+      "sha256": "0e77a621adf9079ad488fd6eca97cf1e7de1c6c3e2160d1d40ae83167ef298f6"
+    },
+    {
+      "file": "tests/browser/account.spec.mjs",
+      "sha256": "193ea46f02982a9cc1dd5da760373ab6500d93cb1e80d516cd690ffd977cb84c"
+    },
+    {
+      "file": "tests/browser/attention.spec.mjs",
+      "sha256": "0f67536f53925ed7bdf5410b3aedb8085948c53275bd276f73563c65a8512978"
+    },
+    {
+      "file": "tests/browser/factory.spec.mjs",
+      "sha256": "d3fda6c9c1d79a90e7d108d204cc5998306af7d3eec487efa002a736eb946317"
+    },
+    {
+      "file": "tests/browser/health.spec.mjs",
+      "sha256": "11631a22b24b1fd07d9d6adf67cd098506cef4d1e8746b1779b91b85d52b831a"
+    },
+    {
+      "file": "tests/browser/issue-fixture-server.mjs",
+      "sha256": "786d8197d28962041a63fdffd441f1393015dd5096fd0dc1cc50189f56b3c9a5"
+    },
+    {
+      "file": "tests/browser/issue.spec.mjs",
+      "sha256": "d6f6e693c7e16f6bea882b02c510f88254405fdbafe3e7f28fd54a74eb79706f"
+    },
+    {
+      "file": "tests/browser/observation.spec.mjs",
+      "sha256": "1e694edab43b493a7cb36cf0f37912413ade9acef695483216276f0de240a01b"
+    },
+    {
+      "file": "tests/browser/runtime.spec.mjs",
+      "sha256": "075bf54483f9f3dd908f56f07300e5eb18eb1c92a4714ed1dccd2665777124b4"
+    },
+    {
+      "file": "tests/browser/usability.spec.mjs",
+      "sha256": "b01fc5d807590939c76473a0857a90b7bff672763e521a48b08f85929d0aa413"
+    },
+    {
+      "file": "tests/browser/workspace-ui.spec.mjs",
+      "sha256": "65200c654a21549107bb2c6a89ca0e691d7095a2a6c935f2a6b9e4835def0971"
+    },
+    {
+      "file": "tests/frontend-architecture.test.mjs",
+      "sha256": "cc4133b1bd3b70ef4d91d19a259fed7b49fa16d82938c106602a7626ea210b27"
+    },
+    {
+      "file": "tests/workspace-continuity.test.mjs",
+      "sha256": "fd3ad7322d4cee05f872f286cdc4c7b52c7d2d28f59bf560eb53bd246414af8b"
+    }
+  ],
+  "captures": [
+    {
+      "file": "images/account-dark-1280.png",
+      "width": 1280,
+      "height": 900,
+      "bytes": 46473,
+      "sha256": "b9576461acbadd2d018ce74a281bb1dc20531aa6f9f47d7e077b5d2911b7d8b6"
+    },
+    {
+      "file": "images/account-dark-390.png",
+      "width": 390,
+      "height": 900,
+      "bytes": 31074,
+      "sha256": "fc2fceb52db649100dcffb3fada24d0f25e45da11bb3aa26d96352f0f48db6bf"
+    },
+    {
+      "file": "images/account-light-1280.png",
+      "width": 1280,
+      "height": 900,
+      "bytes": 45820,
+      "sha256": "ba34a326282688d1aa19f6990e702978e983ede720b3c717640e7807d47c2c19"
+    },
+    {
+      "file": "images/account-light-390.png",
+      "width": 390,
+      "height": 900,
+      "bytes": 30288,
+      "sha256": "a355aa2f34d7bfc8085d8dfae787b13fde828d075751e2a9693a9dd5878051cd"
+    },
+    {
+      "file": "images/implemented-attention-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 71573,
+      "sha256": "8b51c45ce344ed62c31a0ba93ccc9f64d66eb2977616ef5317f3a59e43df7fc4"
+    },
+    {
+      "file": "images/implemented-attention-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 70796,
+      "sha256": "6aa27929bb353802a01f9b9f417315a47850398d56e6543311dfe326806a9e6f"
+    },
+    {
+      "file": "images/implemented-attention-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 51901,
+      "sha256": "bb48c3e2ca376f99a247ad600b51763d92036cfffc01e2d965cbb41143bb4106"
+    },
+    {
+      "file": "images/implemented-attention-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 51019,
+      "sha256": "ca111f997285ac164901ad3499a97b05d519a6d27dd7e225401d4211bdbb4b77"
+    },
+    {
+      "file": "images/implemented-health-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 98778,
+      "sha256": "34ed5a4cdcbc543547c1b91d3d2584cdffcef98f9dc3294c37148d437e63f1d7"
+    },
+    {
+      "file": "images/implemented-health-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 98214,
+      "sha256": "4667892deda3c4dc55673a02d56c4128ed70b99b26770b27eab618aeaa67d113"
+    },
+    {
+      "file": "images/implemented-health-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 57700,
+      "sha256": "95404fbbe35c995c6e8f241a39c3c039831653240062204a330e7e9c3a8d95e5"
+    },
+    {
+      "file": "images/implemented-health-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 56661,
+      "sha256": "eac294c02316d9424fb4ee2264b619c9c88bb3b13c47a9cfbee2b25ffbaa9139"
+    },
+    {
+      "file": "images/implemented-health-project-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 133750,
+      "sha256": "6ba55832093334a0731cd87b9ba1261eea2f56276aa5382983d2363de6ab0de0"
+    },
+    {
+      "file": "images/implemented-health-project-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 132484,
+      "sha256": "de1913740342c71bf0b927a237f932a7cedd684d95594631107f5f94d36b5cbc"
+    },
+    {
+      "file": "images/implemented-health-project-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 62058,
+      "sha256": "2c96bcf1c3b7940049283ea6e78ead503097b91e277b9ca455e2238a289fe45e"
+    },
+    {
+      "file": "images/implemented-health-project-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 61014,
+      "sha256": "a70aac993828c1f27eb7c9610bb1000c84ad4ef73ba475d7a6e73205398ce082"
+    },
+    {
+      "file": "images/implemented-issue-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 107440,
+      "sha256": "aee558288e317d7bbdb14de4a94ee71a47d44ea0c35350c2cf9cab8feaa0d1df"
+    },
+    {
+      "file": "images/implemented-issue-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 106088,
+      "sha256": "fa2e2ea4465ef8ee8f806ffd386d55d5598289c7da61fe8526504b67af5d2577"
+    },
+    {
+      "file": "images/implemented-issue-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 63431,
+      "sha256": "4b4dcec652c7f116935755cb6474a2475c0e6a11c4484216a0ac6e317ac66fab"
+    },
+    {
+      "file": "images/implemented-issue-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 62614,
+      "sha256": "c9314f5a23556371b186420936e4515923e3a4155d49820da5bb7e009a41bf9f"
+    },
+    {
+      "file": "images/implemented-issues-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 129663,
+      "sha256": "40a148e9078d43e7d068e29b3de24d5943c1dd762acc1dfbd6d50db1b3128797"
+    },
+    {
+      "file": "images/implemented-issues-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 127764,
+      "sha256": "ea7ed6b492d1afb3b25361b1bdeaa26d78c56552e03aaf88173ac67d4949b06d"
+    },
+    {
+      "file": "images/implemented-issues-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 77272,
+      "sha256": "9a6d7cc42313e324810926ef15261bdb114c9f88fce9124349abb1932cd77fec"
+    },
+    {
+      "file": "images/implemented-issues-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 75975,
+      "sha256": "b43a086057a54be544108ad18971f488e4c6fb3e111a90c842ebbf2fdf619f7d"
+    },
+    {
+      "file": "images/implemented-project-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 80679,
+      "sha256": "297079e956f8934e1259b8b56fc8e66054043682d3cee10748309201c8966e79"
+    },
+    {
+      "file": "images/implemented-project-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 79276,
+      "sha256": "ed2edc037fedf5cd08b89d1b769153a2642e9446c77d4b74bb7e2d42b918d23f"
+    },
+    {
+      "file": "images/implemented-project-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 58783,
+      "sha256": "7f67747b8cd99eaf3f9650d31a66367a7f8a305774662c4792d4f3dbba925f6d"
+    },
+    {
+      "file": "images/implemented-project-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 57824,
+      "sha256": "9a671fabe6b2ada715a455a2c76c8ccfdeb85dfe3b2b1a21c0351bba3e2998f7"
+    },
+    {
+      "file": "images/implemented-repositories-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 44864,
+      "sha256": "595f028749420a4d18ae2d80e17bc9c304b897833181537d682e556dc694da20"
+    },
+    {
+      "file": "images/implemented-repositories-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 44680,
+      "sha256": "c785da0e254b4b1add30abd607f72179f357822d8249c99deb5c7c0460c0b54f"
+    },
+    {
+      "file": "images/implemented-repositories-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 25376,
+      "sha256": "db9a204b0254d54867309c889b3b768d64708ff262387625a4129d9b84e8e989"
+    },
+    {
+      "file": "images/implemented-repositories-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 25301,
+      "sha256": "d9ff8f9b13c9fb7886a0edf7889a91c7f742e46c1cf98fc9eddc9dea43c7838b"
+    },
+    {
+      "file": "images/implemented-runtime-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 137203,
+      "sha256": "615c70fa81a10445aad9ac2e81cd3a2cc4116b3327627ce2893f3e301628f282"
+    },
+    {
+      "file": "images/implemented-runtime-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 135305,
+      "sha256": "06ff7b0f67f08ec34460203dd7f46dceecf90339ffd19b4f0290c10f1877659a"
+    },
+    {
+      "file": "images/implemented-runtime-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 69579,
+      "sha256": "68afdc6a167fd01df5c08f5b9ccd14005c737550d70e4388218cbc3a77108c76"
+    },
+    {
+      "file": "images/implemented-runtime-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 69229,
+      "sha256": "a4e843f7fe4fc57554c0b190cfbf3a54443fda2a21a2e86c4a71415241000be6"
+    },
+    {
+      "file": "images/implemented-work-1440-dark.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 158954,
+      "sha256": "dba04392a3d41999e7829b2245543a558399c600bf7866b935e603677f24e0cb"
+    },
+    {
+      "file": "images/implemented-work-1440-light.png",
+      "width": 1440,
+      "height": 1000,
+      "bytes": 157080,
+      "sha256": "1420377d47b0f42a424dad7251c30df5db8f50ca5c54590fff35f25c6ad20c52"
+    },
+    {
+      "file": "images/implemented-work-390-dark.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 56316,
+      "sha256": "ed448391f3507cce0cdbbef82d3977027ee9bbee2bf3103b934d52abe00f0da4"
+    },
+    {
+      "file": "images/implemented-work-390-light.png",
+      "width": 390,
+      "height": 844,
+      "bytes": 55540,
+      "sha256": "6eabf7bc8c1907d9befa65ab0c4889e37a899f8bb6f1222ba537c3e6f0eb9367"
+    }
+  ]
+}

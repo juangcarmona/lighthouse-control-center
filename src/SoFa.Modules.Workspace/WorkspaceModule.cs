@@ -85,11 +85,11 @@ public static class WorkspaceModule
     {
       if (context.User.Identity?.IsAuthenticated == true && sessions.Get(context.User) is { } current
           && await provider.EnsureCurrentAsync(current, context.RequestAborted).ConfigureAwait(false) == ProviderAuthority.Current)
-      { context.Response.Redirect("/workspace/operations"); return Results.Empty; }
+      { context.Response.Redirect(ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin)); return Results.Empty; }
       var token = antiforgery.GetAndStoreTokens(context).RequestToken!;
       return Html("Lighthouse Control Center", "<p>Sign in with your configured identity provider to open the private workspace.</p>"
               + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required sign-in.</p>" : "")
-              + Form("/auth/login", token, "Sign in"));
+              + Form("/auth/login", token, "Sign in", ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin)));
     }).AllowAnonymous();
     app.MapGet("/health/live", () => Results.Text("live")).AllowAnonymous();
     foreach (var asset in new[] { (Path: "/workspace-ui.js", File: "workspace-ui.js", Type: "text/javascript"),
@@ -100,7 +100,10 @@ public static class WorkspaceModule
     app.MapPost("/auth/login", async (HttpContext context, IAntiforgery antiforgery) =>
     {
       if (!await Csrf(context, antiforgery).ConfigureAwait(false)) return;
-      await context.ChallengeAsync(IdentitySchemes.Oidc, new AuthenticationProperties { RedirectUri = "/workspace" }).ConfigureAwait(false);
+      var form = await context.Request.ReadFormAsync(context.RequestAborted).ConfigureAwait(false);
+      if (form["returnUrl"].Count > 1) { context.Response.StatusCode = 400; return; }
+      await context.ChallengeAsync(IdentitySchemes.Oidc, new AuthenticationProperties
+      { RedirectUri = ReturnPath(form["returnUrl"].ToString(), settings.Origin) }).ConfigureAwait(false);
     }).AllowAnonymous();
     app.MapPost("/auth/logout", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions) =>
     {
@@ -238,7 +241,7 @@ public static class WorkspaceModule
     app.MapGet("/workspace/attention", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "attention.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      return await WorkspacePage(context, sessions.Get(context.User)!, "attention.html").ConfigureAwait(false);
     });
     foreach (var route in new[] { "/workspace/factory", "/workspace/repositories", "/workspace/repositories/{owner}/{repository}" })
     {
@@ -247,7 +250,7 @@ public static class WorkspaceModule
         sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
         if (context.Request.RouteValues["owner"] is string owner && context.Request.RouteValues["repository"] is string repository
             && !settings.Repositories.Contains(owner + "/" + repository, StringComparer.OrdinalIgnoreCase)) return (IResult)Results.NotFound();
-        return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "factory.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+        return await WorkspacePage(context, sessions.Get(context.User)!, "factory.html").ConfigureAwait(false);
       });
     }
     app.MapGet("/api/issues/{owner}/{repository}/{number:int}", async (string owner, string repository, int number,
@@ -321,17 +324,17 @@ public static class WorkspaceModule
     app.MapGet("/workspace/issues", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "factory.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      return await WorkspacePage(context, sessions.Get(context.User)!, "factory.html").ConfigureAwait(false);
     });
     app.MapGet("/workspace/issues/{owner}/{repository}/{number:int}", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "issue.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      return await WorkspacePage(context, sessions.Get(context.User)!, "issue.html").ConfigureAwait(false);
     });
     app.MapGet("/workspace/operations", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "index.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      return await WorkspacePage(context, sessions.Get(context.User)!, "factory.html").ConfigureAwait(false);
     });
     foreach (var route in new[] { "/workspace/health", "/workspace/health/{owner}/{repository}", "/workspace/health/{owner}/{repository}/runs/{run:long}" })
     {
@@ -340,13 +343,13 @@ public static class WorkspaceModule
         sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
         if (context.Request.RouteValues["owner"] is string owner && context.Request.RouteValues["repository"] is string repository
             && !settings.Repositories.Contains(owner + "/" + repository, StringComparer.OrdinalIgnoreCase)) return (IResult)Results.NotFound();
-        return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "health.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+        return await WorkspacePage(context, sessions.Get(context.User)!, "health.html").ConfigureAwait(false);
       });
     }
     app.MapGet("/workspace/runtime", async (HttpContext context, OwnerSessions sessions) =>
     {
       sessions.TouchUserActivity(sessions.Get(context.User)!.Id);
-      return Results.Content(await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", "runtime.html"), context.RequestAborted).ConfigureAwait(false), "text/html");
+      return await WorkspacePage(context, sessions.Get(context.User)!, "runtime.html").ConfigureAwait(false);
     });
     app.MapGet("/api/repositories/{owner}/{repository}/adoption", async (string owner, string repository,
         HttpContext context, OwnerSessions sessions, RepositoryAccess access, GetHostInventoryHandler host) =>
@@ -399,15 +402,35 @@ public static class WorkspaceModule
     return app;
   }
 
+  private static async Task<IResult> WorkspacePage(HttpContext context, OwnerSession record, string file)
+  {
+    var html = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", file), context.RequestAborted).ConfigureAwait(false);
+    var display = WorkspaceDisplayContext.Create(record, context.RequestServices.GetRequiredService<WorkspaceOptions>().Repositories,
+        context.RequestServices.GetRequiredService<TimeProvider>().GetUtcNow());
+    var value = System.Text.Json.JsonSerializer.Serialize(display, System.Text.Json.JsonSerializerOptions.Web);
+    return Results.Content(html.Replace("</head>", "<meta name=\"lcc-display-context\" content=\"" + Encode(value) + "\"></head>", StringComparison.Ordinal), "text/html");
+  }
+
   private static IResult Html(string title, string body, bool account = false) => Results.Content(
       "<!doctype html><html lang=\"en\" data-lh-theme=\"dark\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Lighthouse Control Center · "
       + title + "</title><link rel=\"icon\" href=\"/lighthouse.svg\" type=\"image/svg+xml\"><link rel=\"stylesheet\" href=\"/tokens.css\"><link rel=\"stylesheet\" href=\"/app.css\"><link rel=\"stylesheet\" href=\"/account.css\">"
       + "<script type=\"module\" src=\"/workspace-ui.js\"></script>" + (account ? "<script type=\"module\" src=\"/account.js\"></script>" : "")
       + "</head><body><a class=\"skip\" href=\"#account\">Skip to account</a><header class=\"topbar\"><a class=\"brand\" href=\"/\">Lighthouse Control Center</a><nav aria-label=\"Workspace navigation\"><a href=\"/workspace/attention\">Attention</a> <a href=\"/workspace\">Account</a> <a href=\"/workspace/operations\">Operations</a> <a href=\"/workspace/repositories\">Repositories</a> <a href=\"/workspace/issues\">Issues</a> <a href=\"/workspace/runtime\">Runtime</a></nav></header><main id=\"account\" class=\"account-panel\" tabindex=\"-1\"><h1>" + title + "</h1>" + body + "</main></body></html>", "text/html");
 
-  private static string Form(string action, string token, string label) => "<form method=\"post\" action=\"" + action
-      + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token)
-      + "\"><button type=\"submit\">" + label + "</button></form>";
+  private static string Form(string action, string token, string label, string? returnUrl = null) => "<form method=\"post\" action=\"" + action
+      + "\"><input type=\"hidden\" name=\"__RequestVerificationToken\" value=\"" + HtmlEncoder.Default.Encode(token) + "\">"
+      + (returnUrl is null ? "" : "<input type=\"hidden\" name=\"returnUrl\" value=\"" + Encode(returnUrl) + "\">")
+      + "<button type=\"submit\">" + label + "</button></form>";
+
+  internal static string ReturnPath(string? value, Uri origin)
+  {
+    if (string.IsNullOrEmpty(value) || value.Length > 2048 || value.Any(char.IsControl) || value.Contains('\\')
+        || !value.StartsWith("/workspace", StringComparison.Ordinal) || !Uri.TryCreate(origin, value, out var target)
+        || target.Scheme != origin.Scheme || target.Authority != origin.Authority || target.UserInfo.Length != 0
+        || !(target.AbsolutePath == "/workspace" || target.AbsolutePath.StartsWith("/workspace/", StringComparison.Ordinal)))
+      return "/workspace/operations";
+    return target.PathAndQuery + target.Fragment;
+  }
 
   private static string Encode(string value) => HtmlEncoder.Default.Encode(value);
 
