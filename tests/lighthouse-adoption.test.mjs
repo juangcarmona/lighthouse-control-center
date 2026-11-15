@@ -219,8 +219,8 @@ test('installed workers preserve execution limits while allowing host admission 
     assert.match(source, /if: always\(\) && github.run_attempt == 1 && needs.prepare.result/);
     assert.doesNotMatch(lock, /report_failed_jobs\.cjs|GH_AW_REPORT_FAILED_JOBS: "true"/);
     const agent = lock.split('\n  agent:\n')[1].split('\n  conclusion:\n')[0];
-    assert.match(agent, /timeout-minutes: 180/);
+    assert.match(agent, new RegExp('timeout-minutes: ' + (['implement', 'apply-review'].includes(stage) ? 360 : 180)));
     const execution = agent.split('- name: OpenCode progress and result')[1];
-    assert.equal(Number(execution.match(/timeout-minutes: (\d+)/)[1]), ['implement', 'apply-review'].includes(stage) ? 55 : 15);
+    assert.equal(Number(execution.match(/timeout-minutes: (\d+)/)[1]), ['implement', 'apply-review'].includes(stage) ? 150 : 15);
   }
 });
