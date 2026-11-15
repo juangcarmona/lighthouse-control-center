@@ -6,4 +6,6 @@ test('health page routes reuse the authenticated module and configured repositor
   for (const route of ['/workspace/health', '/workspace/health/{owner}/{repository}', '/workspace/health/{owner}/{repository}/runs/{run:long}']) assert.ok(source.includes('"' + route + '"'));
   const health = source.slice(source.indexOf('foreach (var route in new[] { "/workspace/health"'), source.indexOf('app.MapGet("/workspace/runtime"'));
   assert.match(health, /settings.Repositories.Contains/); assert.match(health, /sessions.Get\(context.User\)/); assert.match(health, /health.html/);
+  assert.match(source, /\/api\/health\/{owner\}\/\{repository\}\/runs\/{run:long\}\/output-tokens\/{attempt:long\}/);
+  assert.match(source, /GetRunOutputTokensHandler/);
 });

@@ -184,6 +184,7 @@ public sealed class IssueContextTests
     internal OwnerSessions Sessions { get; }
     internal GetIssueContextHandler Query { get; }
     internal GetIssueEvidenceHandler Evidence { get; }
+    internal GetRunOutputTokensHandler OutputTokens { get; }
     private readonly GitHubTransport transport;
     internal Fixture()
     {
@@ -200,6 +201,7 @@ public sealed class IssueContextTests
       var access = new RepositoryAccess(settings, Sessions, authorization, transport, Clock);
       Query = new(Sessions, authorization, access, transport, Clock);
       Evidence = new(Sessions, Query, authorization, access, transport, Clock);
+      OutputTokens = new(settings, Sessions, authorization, access, transport, Clock);
     }
     internal async Task<OwnerSession> Session()
     {

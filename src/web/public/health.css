@@ -58,6 +58,10 @@
 .health-detail-view>a {display:inline-block;margin:.3rem 0 1rem}
 .health-detail {padding:1.2rem}
 .health-detail h2 {font-size:clamp(1.15rem,2.2vw,1.5rem)}
+.health-output-tokens {min-width:0;margin-top:1rem;padding:1rem;border:1px solid var(--lh-border);background:var(--lh-surface)}
+.health-output-tokens h3 {font-size:.9rem;margin:0}
+.health-output-tokens>p {font-size:.78rem;color:var(--lh-text-muted)}
+.health-output-tokens dl {margin:.8rem 0}
 .health-kicker {margin:0 0 1rem;color:var(--lh-text-muted);font-size:.85rem}
 .health-source {display:inline-block;margin:.9rem 0 .2rem;font-weight:650}
 #health-results dl {display:grid;grid-template-columns:minmax(120px,170px) minmax(0,1fr);gap:.55rem 1rem;font-size:.85rem}

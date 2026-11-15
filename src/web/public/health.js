@@ -7,6 +7,7 @@ const path = location.pathname.match(/^\/workspace\/health\/([^/]+)\/([^/]+)(?:\
 const selected = path ? path.slice(1, 3).map(decodeURIComponent).join('/') : null;
 const runId = path?.[3];
 let repositories = new Map(), scope, busy = false, epoch = 0, deadline, fleetFilter = 'all', fleetQuery = '';
+let tokenReadKey, tokenReadController, tokenReadResult;
 function link(text, href) { const value = node('a', text); value.href = href; value.dataset.healthKey = href; return value; }
 function healthHref(repository) { return '/workspace/health/' + repository.split('/').map(encodeURIComponent).join('/'); }
 function age(value) {
@@ -150,7 +151,48 @@ function detail(repository, row, run) {
     ['Source start', time(run.startedAt)], ['Source update', time(run.updatedAt)],
     ['Limitations', 'A green run is not a deployment, accepted delivery, quality score or evidence of available capacity. Missing fields remain unknown.']
   ])); section.append(provenance);
+  section.append(outputTokenSignal(repository, run));
   return section;
+}
+function outputTokenKey(repository, run) {
+  return Number.isSafeInteger(run.runAttempt) && run.runAttempt > 0
+    ? `${scope}|${repository}|${run.id}|${run.runAttempt}` : null;
+}
+function outputTokenSignal(repository, run) {
+  const section = node('section', undefined, 'health-output-tokens');
+  section.append(node('h3', 'OpenCode output tokens'), node('p', 'Tokens reported by the native telemetry source for this exact run and attempt. This is not a cost or billing measure.'));
+  const key = outputTokenKey(repository, run), result = key && tokenReadKey === key ? tokenReadResult : null;
+  if (!key) section.append(facts([['Output tokens', 'Unknown'], ['Reason', 'This run does not report an exact attempt number.']]));
+  else if (!result || result.availability === 'loading') section.append(node('p', 'Checking the exact attempt artifact…', 'health-empty-signal'));
+  else if (result.availability === 'available' && Number.isSafeInteger(result.outputTokens) && result.outputTokens >= 0) {
+    section.append(facts([['Output tokens', result.outputTokens.toLocaleString()], ['Source run / attempt', `${result.runId} / ${result.attempt}`],
+      ['Observed', time(result.observedAt)], ['Source updated', time(result.sourceUpdatedAt)], ['Definition', 'opencode-native · schema 1 · observed coverage'],
+      ['Revision', result.revision || 'Unknown']]));
+    if (typeof result.sourceUrl === 'string') { const source = link('Open this exact run attempt', result.sourceUrl); source.rel = 'noreferrer noopener'; section.append(source); }
+    section.append(node('p', 'Only this retained run attempt is shown. No history, provider cost or billed amount is inferred.', 'health-empty-signal'));
+  } else section.append(facts([['Output tokens', 'Unknown'], ['Reason', result.reason || 'Matching telemetry evidence is unavailable.']]));
+  return section;
+}
+function resetOutputTokens() {
+  tokenReadController?.abort(); tokenReadController = undefined; tokenReadKey = undefined; tokenReadResult = undefined;
+}
+async function loadOutputTokens(repository, run) {
+  const key = outputTokenKey(repository, run);
+  if (!key || !scope || key === tokenReadKey) return;
+  tokenReadController?.abort(); tokenReadKey = key; tokenReadResult = { availability: 'loading' };
+  const controller = new AbortController(); tokenReadController = controller;
+  try {
+    const response = await fetch('/api/health/' + repository.split('/').map(encodeURIComponent).join('/')
+      + '/runs/' + run.id + '/output-tokens/' + run.runAttempt, { cache: 'no-store', signal: controller.signal });
+    const result = await response.json();
+    if (tokenReadKey !== key || controller.signal.aborted) return;
+    tokenReadResult = response.ok && result.availability === 'available' ? result
+      : { availability: 'unavailable', reason: result.reason || 'The current source authority or matching evidence is unavailable.' };
+  } catch {
+    if (tokenReadKey !== key || controller.signal.aborted) return;
+    tokenReadResult = { availability: 'unavailable', reason: 'The exact source read failed; no token value is inferred.' };
+  }
+  if (selected === repository && runId === String(run.id)) render();
 }
 function projectView(repository, row) {
   const fragment = document.createDocumentFragment();
@@ -187,7 +229,7 @@ function projectView(repository, row) {
   engineering.id = 'engineering'; engineering.append(node('p', 'No engineering score, level or passing gate is inferred from workflow conclusions.', 'health-empty-signal'));
   const adoption = family('Lighthouse adoption/autonomy', 'Agentic and code measurements are unavailable. Committed version inventory is separate from installed adoption.');
   adoption.id = 'adoption'; adoption.append(node('p', 'No agent success, autonomy, AI usage or code quality value is inferred from this Actions collection.', 'health-empty-signal'));
-  const resources = family('Resources', 'Provider cost, tokens, CPU, memory and storage measurements are unavailable. Runner registration does not establish free capacity.');
+  const resources = family('Resources', 'One exact run detail may show matching OpenCode output tokens. Cost, billing, CPU, memory, storage and comparable history are unavailable.');
   resources.id = 'resources'; resources.append(node('p', 'Environment deployment is unknown: no verified PRE, PRO or production target result is in this collection.', 'health-empty-signal'));
   fragment.append(engineering, adoption, resources, link('Inspect runtime and version inventory', '/workspace/runtime'));
   return fragment;
@@ -215,12 +257,16 @@ function render() {
     }
   }
   root.replaceChildren(fragment);
+  if (selected && runId) {
+    const row = repositories.get(selected), run = row?.runs?.find(value => String(value.id) === runId);
+    if (run) loadOutputTokens(selected, run);
+  }
   if (!selected) applyFleetFilter();
   if (searchFocused) byId('health-project-search')?.focus();
   if (key && !active.isConnected) ([...root.querySelectorAll('[data-health-key]')].find(value => value.dataset.healthKey === key) || byId('health-title')).focus();
 }
 function clear(message, expired = false) {
-  epoch++; scope = undefined; repositories.clear(); clearTimeout(deadline); updateWorkspaceAccount({ state: expired ? 'expired' : 'unavailable' });
+  epoch++; scope = undefined; repositories.clear(); resetOutputTokens(); clearTimeout(deadline); updateWorkspaceAccount({ state: expired ? 'expired' : 'unavailable' });
   render(); byId('health-status').textContent = message;
 }
 async function refresh() {
@@ -242,6 +288,7 @@ async function refresh() {
     const account = await accountResponse.json(); if (requestEpoch !== epoch) return;
     updateWorkspaceAccount(account);
     if (account.state === 'unavailable') {
+      resetOutputTokens();
       for (const row of repositories.values()) if (row.availability === 'available' && Array.isArray(row.runs)) row.availability = 'stale';
       render();
       byId('health-status').textContent = repositories.size
@@ -250,7 +297,8 @@ async function refresh() {
       return;
     }
     if (account.state !== 'linked' || typeof account.dataScope !== 'string' || !Array.isArray(account.repositories)) { clear('Connect and verify GitHub in Account to read Health.'); return; }
-    if (scope !== account.dataScope) repositories.clear(); scope = account.dataScope;
+    if (scope !== account.dataScope) repositories.clear();
+    resetOutputTokens(); scope = account.dataScope;
     const catalog = account.repositories.filter(row => validRepository(row.repository));
     const previous = repositories; repositories = new Map();
     for (const row of catalog) {

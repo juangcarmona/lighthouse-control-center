@@ -7,7 +7,7 @@ const repository = 'example/a-very-long-repository-name-for-engineering-health-e
 const observedAt = '2026-11-11T00:00:00Z';
 const screenshotDir = process.env.LIGHTHOUSE_EVIDENCE_DIR || 'test-results/evidence/screenshots';
 async function fixture(page) {
-  const state = { denied: false, unavailable: false, accountUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [], paths: [] };
+  const state = { denied: false, unavailable: false, accountUnavailable: false, tokenUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [], paths: [] };
   await page.route('**/health.js', route => readFile(new URL('../../src/web/public/health.js', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/javascript' })));
   await page.route('**/health.css', route => readFile(new URL('../../src/web/public/health.css', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/css' })));
   await page.route('**/workspace/health**', async route => {
@@ -20,6 +20,11 @@ async function fixture(page) {
     if (path === '/api/connections/github') return route.fulfill({ json: state.accountUnavailable ? { state: 'unavailable' } : { state: 'linked', login: 'demo', dataScope: state.scope, userId: 1, repositories: [
       { repository, availability: state.denied ? 'denied' : 'available', actionsRead: true, issuesRead: true },
       { repository: 'example/denied', availability: 'denied' }, { repository: 'example/unavailable', availability: 'unavailable' }] } });
+    if (path.includes('/output-tokens/')) return route.fulfill(state.accountUnavailable || state.tokenUnavailable
+      ? { status: 503, json: { availability: 'unavailable', reason: 'Matching telemetry evidence is unavailable.' } }
+      : { json: { availability: 'available', repository, runId: 42, attempt: 2, outputTokens: 11760,
+        sourceUrl: 'https://github.com/' + repository + '/actions/runs/42/attempts/2', revision: 'a'.repeat(40),
+        sessionId: 'ses_fixture', observedAt, sourceUpdatedAt: observedAt } });
     if (state.unavailable) return route.fulfill({ status: 503, json: {} });
     return route.fulfill({ json: { dataScope: state.sourceScope, repositories: [{ repository, availability: 'available', observedAt,
       scope: 'Latest 20 workflow runs; not a complete delivery audit', runs: [{ id: 42, name: state.runName, status: 'completed', conclusion: 'failure', runAttempt: 2,
@@ -45,11 +50,22 @@ test('health fleet to project to exact contributing source is read-only and hone
   for (const title of ['Delivery', 'Engineering quality', 'Lighthouse adoption/autonomy', 'Resources']) await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
   await page.getByRole('link', { name: '<img src=x> Verify', exact: true }).click();
   await expect(page.getByRole('link', { name: 'Open exact contributing GitHub run' })).toHaveAttribute('href', 'https://github.com/' + repository + '/actions/runs/42');
+  await expect(page.locator('.health-output-tokens')).toContainText('11,760');
+  await expect(page.getByRole('link', { name: 'Open this exact run attempt' })).toHaveAttribute('href', 'https://github.com/' + repository + '/actions/runs/42/attempts/2');
   await expect(page.locator('.health-detail')).toContainText('Not supplied by this source observation');
   await expect(page.locator('.health-detail')).toContainText('numeric unit not applicable');
   await expect(page.locator('.health-detail img')).toHaveCount(0);
   await expect(page.locator('#health-results')).toContainText('Trends unavailable');
   expect(state.methods.every(method => method === 'GET')).toBe(true);
+  expect(state.paths).toContain('/api/health/' + repository + '/runs/42/output-tokens/2');
+});
+test('missing output-token evidence stays unknown and never appears as zero', async ({ page }) => {
+  const state = await fixture(page); state.tokenUnavailable = true;
+  await page.goto(origin + '/workspace/health/' + repository + '/runs/42');
+  await expect(page.locator('.health-output-tokens')).toContainText('Output tokens');
+  await expect(page.locator('.health-output-tokens')).toContainText('Unknown');
+  await expect(page.locator('.health-output-tokens')).toContainText('Matching telemetry evidence is unavailable.');
+  await expect(page.locator('.health-output-tokens')).not.toContainText('0 tokens');
 });
 test('temporary account and source failure retain stale visible evidence but denied authority removes records', async ({ page }) => {
   const state = await fixture(page); await page.goto(origin + '/workspace/health/' + repository + '/runs/42');
@@ -58,6 +74,7 @@ test('temporary account and source failure retain stale visible evidence but den
   await expect(page.locator('.health-detail')).toContainText('Stale');
   await expect(page.locator('.health-detail')).toContainText('2026-11-11T00:00:00.000Z');
   await expect(page.locator('#health-status')).toContainText('Previously shown observations may be stale');
+  await expect(page.locator('.health-output-tokens')).toContainText('Unknown');
   state.accountUnavailable = false;
   state.unavailable = true; await page.getByRole('button', { name: 'Refresh health evidence' }).click();
   await expect(page.locator('.health-detail')).toContainText('Stale');
