@@ -65,6 +65,9 @@
 #health-results dd {margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .health-summary {border:1px solid var(--lh-border);border-radius:2px;background:var(--lh-surface-muted);padding:1rem;margin:0}
 .health-provenance dl {margin:1rem 0 .25rem}
+#actions-usage {grid-column:1/-1;margin-top:1rem}
+#actions-usage h3 {font-size:.85rem;margin:.8rem 0 .25rem}
+#actions-usage section {border-top:1px solid var(--lh-border);margin-top:.75rem;font-size:.8rem}
 @media(max-width:900px) {
   .health-metrics {grid-template-columns:repeat(2,minmax(0,1fr))}
   .health-list-head {display:none}

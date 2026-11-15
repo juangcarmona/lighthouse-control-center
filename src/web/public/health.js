@@ -7,6 +7,66 @@ const path = location.pathname.match(/^\/workspace\/health\/([^/]+)\/([^/]+)(?:\
 const selected = path ? path.slice(1, 3).map(decodeURIComponent).join('/') : null;
 const runId = path?.[3];
 let repositories = new Map(), scope, busy = false, epoch = 0, deadline, fleetFilter = 'all', fleetQuery = '';
+let usage, usageBusy = false, usageAllowed = false;
+function usageView() {
+  const section = family('Actions usage', 'Read-only source observations, not a billing report. Host, CPU and model-provider costs remain unknown.');
+  section.id = 'actions-usage';
+  const run = repositories.get(selected)?.runs?.find(value => String(value.id) === runId);
+  const attempt = Number.isSafeInteger(run?.runAttempt) && run.runAttempt > 0 ? run.runAttempt : null;
+  const button = node('button', usageBusy ? 'Reading Actions usage…' : 'Read Actions usage'); button.type = 'button';
+  button.dataset.healthKey = 'usage'; button.disabled = usageBusy || busy || !usageAllowed || !!runId && !attempt;
+  button.addEventListener('click', () => readUsage(attempt)); section.append(button);
+  if (runId && !attempt) section.append(node('p', 'Exact source attempt unknown; job intervals cannot be collected.'));
+  if (!usageAllowed) section.append(node('p', 'Current repository Actions-read authority is required.'));
+  if (!usage) { section.append(node('p', 'Usage unknown. Inspect this repository explicitly; collection is bounded.')); return section; }
+  section.append(node('p', usage.stale ? 'Stale usage sample · original observation times retained; current values unknown.' : 'Source snapshot · ' + time(usage.observedAt), 'notice'));
+  if (usage.reason) section.append(node('p', usage.reason));
+  section.append(node('p', 'Repository visibility: ' + (usage.visibility || 'unknown') + '. Public, private and self-hosted billing rules differ; no rate is inferred.'));
+  for (const [label, measure] of runId ? [['Attempt elapsed span', usage.duration], ['Billed Actions minutes', usage.billing]]
+    : [['Current cache', usage.cache], ['Active listed artifacts', usage.artifacts], ['Billed Actions minutes', usage.billing]]) {
+    if (!measure) continue;
+    const item = node('section'); item.append(node('h3', label));
+    item.append(node('p', (Number.isFinite(measure.value) ? measure.value + ' ' + measure.unit : 'Unknown') + ' · ' + measure.availability + (measure.stale ? ' · stale sample' : '')));
+    const provenance = node('details'); provenance.append(node('summary', label + ' source and coverage'), facts([
+      ['Source', measure.source], ['Observed', time(measure.observedAt)], ['Unit', measure.unit], ['Definition', measure.definition],
+      ['Scope', measure.scope], ['Coverage', measure.complete ? 'Complete selected snapshot' : 'Incomplete / unsupported; omitted values unknown'], ['Limitations', measure.reason]
+    ])); item.append(provenance); section.append(item);
+  }
+  if (!runId) section.append(node('p', `Expired listed artifacts: ${usage.expiredArtifacts ?? 'unknown'} · source artifact count: ${usage.sourceArtifacts ?? 'unknown'}. Listed bytes are not a repository billing total.`));
+  else {
+    section.append(node('p', `Collected ${usage.jobs?.length ?? 0} / ${usage.sourceJobs ?? 'unknown'} jobs for run ${runId}, attempt ${usage.attempt ?? 'unknown'}.`));
+    for (const job of usage.jobs ?? []) {
+      const item = node('details'); item.append(node('summary', (job.name || 'Job ' + job.id) + ' · ' + (Number.isFinite(job.seconds) ? job.seconds + ' seconds' : 'Unknown duration')),
+        facts([['Source job ID', String(job.id)], ['Runner kind', job.runnerKind], ['Source start', time(job.startedAt)], ['Source completion', time(job.completedAt)]])); section.append(item);
+    }
+  }
+  const source = link('Open Actions source', 'https://github.com/' + selected + (runId ? '/actions/runs/' + runId + '/attempts/' + usage.attempt : '/actions'));
+  source.rel = 'noreferrer noopener'; section.append(source);
+  return section;
+}
+async function readUsage(attempt) {
+  if (usageBusy || !usageAllowed || busy) return;
+  usageBusy = true; const requestEpoch = epoch, requestScope = scope, generation = workspaceSourceIdentityGeneration(); render();
+  try {
+    const response = await fetch('/api/actions/' + selected.split('/').map(encodeURIComponent).join('/') + (runId ? '?run=' + runId + '&attempt=' + attempt : ''), { cache: 'no-store', signal: AbortSignal.timeout(35000) });
+    if (requestEpoch !== epoch) return;
+    if ([401, 403, 409].includes(response.status)) { usage = undefined; usageAllowed = false; render(); return; }
+    if (!response.ok) throw Error();
+    const value = await response.json(); if (requestEpoch !== epoch) return;
+    if (value.availability !== 'available' || !validateWorkspaceSourceIdentity(value, requestScope, undefined, generation) || value.dataScope !== requestScope || value.repository !== selected
+      || (runId && (String(value.run) !== runId || value.attempt !== attempt))) { usage = undefined; usageAllowed = false; render(); return; }
+    for (const key of ['cache', 'artifacts', 'duration']) {
+      if (value[key]?.availability === 'unavailable' && Number.isFinite(usage?.[key]?.value)) {
+        value[key] = { ...usage[key], stale: true, reason: 'Refresh unavailable; retained original sample. ' + (usage[key].reason || '') };
+        value.stale = true;
+        if (key === 'artifacts') { value.expiredArtifacts = usage.expiredArtifacts; value.sourceArtifacts = usage.sourceArtifacts; }
+        if (key === 'duration') { value.jobs = usage.jobs; value.sourceJobs = usage.sourceJobs; }
+      }
+    }
+    usage = value;
+  } catch { if (requestEpoch === epoch) usage = undefined; }
+  finally { usageBusy = false; render(); }
+}
 function link(text, href) { const value = node('a', text); value.href = href; value.dataset.healthKey = href; return value; }
 function healthHref(repository) { return '/workspace/health/' + repository.split('/').map(encodeURIComponent).join('/'); }
 function age(value) {
@@ -187,7 +247,7 @@ function projectView(repository, row) {
   engineering.id = 'engineering'; engineering.append(node('p', 'No engineering score, level or passing gate is inferred from workflow conclusions.', 'health-empty-signal'));
   const adoption = family('Lighthouse adoption/autonomy', 'Agentic and code measurements are unavailable. Committed version inventory is separate from installed adoption.');
   adoption.id = 'adoption'; adoption.append(node('p', 'No agent success, autonomy, AI usage or code quality value is inferred from this Actions collection.', 'health-empty-signal'));
-  const resources = family('Resources', 'Provider cost, tokens, CPU, memory and storage measurements are unavailable. Runner registration does not establish free capacity.');
+  const resources = family('Resources', 'Inspect Actions storage below. Provider cost, tokens, CPU and memory remain unknown. Runner registration does not establish free capacity.');
   resources.id = 'resources'; resources.append(node('p', 'Environment deployment is unknown: no verified PRE, PRO or production target result is in this collection.', 'health-empty-signal'));
   fragment.append(engineering, adoption, resources, link('Inspect runtime and version inventory', '/workspace/runtime'));
   return fragment;
@@ -211,6 +271,7 @@ function render() {
         fragment.append(link('Back to project health', healthHref(selected)));
         fragment.append(run ? detail(selected, row, run) : node('p', 'This run is unavailable in the current bounded collection. No result is inferred.'));
       } else fragment.append(projectView(selected, row));
+      fragment.append(usageView());
       fragment.append(node('p', 'Trends unavailable: no comparable historical samples or definition-change boundaries are supplied yet. No missing interval is treated as zero.', 'notice'));
     }
   }
@@ -220,7 +281,7 @@ function render() {
   if (key && !active.isConnected) ([...root.querySelectorAll('[data-health-key]')].find(value => value.dataset.healthKey === key) || byId('health-title')).focus();
 }
 function clear(message, expired = false) {
-  epoch++; scope = undefined; repositories.clear(); clearTimeout(deadline); updateWorkspaceAccount({ state: expired ? 'expired' : 'unavailable' });
+  epoch++; scope = undefined; usage = undefined; usageAllowed = false; repositories.clear(); clearTimeout(deadline); updateWorkspaceAccount({ state: expired ? 'expired' : 'unavailable' });
   render(); byId('health-status').textContent = message;
 }
 async function refresh() {
@@ -242,6 +303,7 @@ async function refresh() {
     const account = await accountResponse.json(); if (requestEpoch !== epoch) return;
     updateWorkspaceAccount(account);
     if (account.state === 'unavailable') {
+      usage = undefined; usageAllowed = false;
       for (const row of repositories.values()) if (row.availability === 'available' && Array.isArray(row.runs)) row.availability = 'stale';
       render();
       byId('health-status').textContent = repositories.size
@@ -250,8 +312,11 @@ async function refresh() {
       return;
     }
     if (account.state !== 'linked' || typeof account.dataScope !== 'string' || !Array.isArray(account.repositories)) { clear('Connect and verify GitHub in Account to read Health.'); return; }
-    if (scope !== account.dataScope) repositories.clear(); scope = account.dataScope;
+    if (scope !== account.dataScope) { repositories.clear(); usage = undefined; } scope = account.dataScope;
     const catalog = account.repositories.filter(row => validRepository(row.repository));
+    const usagePermission = catalog.find(row => row.repository === selected);
+    usageAllowed = usagePermission?.availability === 'available' && usagePermission.actionsRead === true;
+    if (!usageAllowed) usage = undefined; else if (usage) usage.stale = true;
     const previous = repositories; repositories = new Map();
     for (const row of catalog) {
       const allowed = row.availability === 'available' && row.actionsRead === true && row.issuesRead === true;
@@ -275,9 +340,10 @@ async function refresh() {
     render(); byId('health-status').textContent = 'Configured repositories only · read-only observations · no overall health score.';
   } catch {
     if (requestEpoch !== epoch) return;
+    usage = undefined;
     for (const row of repositories.values()) if (row.runs) row.availability = 'stale';
     render(); byId('health-status').textContent = 'Source check unavailable. Retained evidence is stale with original timestamps; current health is unknown.';
-  } finally { busy = false; byId('refresh').disabled = false; }
+  } finally { busy = false; byId('refresh').disabled = false; render(); }
 }
 byId('refresh').addEventListener('click', refresh);
 refresh();
