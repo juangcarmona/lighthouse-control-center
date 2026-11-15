@@ -8,13 +8,13 @@
     "visual-theme"
   ],
   "integrations": {
-    "productShape": "0.23.0",
+    "productShape": "0.26.1",
     "arcShape": "0.4.0"
   },
   "packages": {
     "sdlc": {
       "name": "@juangcarmona/lighthouse-sdlc",
-      "version": "0.22.7"
+      "version": "0.24.0"
     },
     "ui": {
       "name": "@juangcarmona/lighthouse-ui",

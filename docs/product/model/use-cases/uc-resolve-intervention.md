@@ -4,10 +4,18 @@ type: use-case
 title: Resolve a source-backed request for human intervention
 status: draft
 primary-actor: ACT-OPERATOR
-supporting-actors: [ACT-GITHUB-BACKLOG]
+supporting-actors:
+  - ACT-GITHUB-BACKLOG
 bounded-context: BC-BACKLOG-TRIAGE
-governed-by: [BR-GITHUB-SOURCE, BR-HUMAN-DECISION-BOUNDARIES, BR-EXPLICIT-WORK-COMMANDS]
-uses-terms: [TERM-PROJECT, TERM-WORK-UNIT, TERM-DELIVERY-EVIDENCE]
+governed-by:
+  - BR-GITHUB-SOURCE
+  - BR-HUMAN-DECISION-BOUNDARIES
+  - BR-EXPLICIT-WORK-COMMANDS
+  - BR-EXPLAINABLE-SIGNALS
+uses-terms:
+  - TERM-PROJECT
+  - TERM-WORK-UNIT
+  - TERM-DELIVERY-EVIDENCE
 ---
 
 ## Goal

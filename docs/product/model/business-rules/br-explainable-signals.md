@@ -3,8 +3,11 @@ id: BR-EXPLAINABLE-SIGNALS
 type: business-rule
 title: Signals must support decisions with inspectable evidence
 status: draft
-applies-to: [UC-INSPECT-PROJECT-SIGNAL, UC-EXPLORE-FACTORY, UC-RESOLVE-INTERVENTION, BC-RUNTIME-OPERATIONS]
-uses-terms: [TERM-PROJECT, TERM-DELIVERY-EVIDENCE]
+applies-to:
+  - BC-RUNTIME-OPERATIONS
+uses-terms:
+  - TERM-PROJECT
+  - TERM-DELIVERY-EVIDENCE
 ---
 
 ## Rule

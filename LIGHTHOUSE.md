@@ -5,9 +5,10 @@
 - Baseline: `0.1.0`
 - Product: `sofa`
 - Profiles: `dotnet-backend`, `visual-theme`
-- SDLC package: `@juangcarmona/lighthouse-sdlc@0.22.7`
+- SDLC package: `@juangcarmona/lighthouse-sdlc@0.24.0`
 - UI package: `@juangcarmona/lighthouse-ui@0.2.1`
-- ProductShape: 0.23.0
+- ProductShape: 0.26.1
+- Required PDaC serialization: `v1alpha2`
 - ArcShape: 0.4.0
 - Public site: `enabled`
 - Repository roots: `src/`, `docs/`, `infra/`, `scripts/`
@@ -15,7 +16,7 @@
 
 ## Delivery contract
 
-ProductShape is the adopted authority for product intent and Product Changes. ArcShape is the adopted authority for architecture documentation and decisions. Lighthouse installs the repository baseline and verifies the selected integrations.
+ProductShape is the adopted authority for product intent and Product Changes; PDaC v1alpha2 is required. ArcShape is the adopted authority for architecture documentation and decisions. Lighthouse installs the repository baseline and verifies the selected integrations.
 
 The repository keeps source code in `src/`, documentation in `docs/`, infrastructure in `infra/` and repository automation in `scripts/`. A project may record a narrow, owned exception, but an initializer never overwrites an existing project file.
 
