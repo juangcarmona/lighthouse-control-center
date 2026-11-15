@@ -48,13 +48,14 @@ jobs:
       pull-requests: read
     env:
       LIGHTHOUSE_REPORT_INDEX_ISSUE: ${{ vars.LIGHTHOUSE_REPORT_INDEX_ISSUE }}
+      LIGHTHOUSE_HOUSEKEEPING_REPOSITORY: ${{ vars.LIGHTHOUSE_HOUSEKEEPING_REPOSITORY }}
     steps:
       - name: Select Node for the published harness
         uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Install the published Lighthouse harness
-        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.0
+        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.2
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -85,7 +86,7 @@ jobs:
         with:
           node-version: 24
       - name: Install the published Lighthouse harness
-        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.0
+        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.2
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -142,7 +143,7 @@ jobs:
         with:
           node-version: 24
       - name: Install the published Lighthouse harness
-        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.0
+        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.2
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -203,7 +204,7 @@ jobs:
         with:
           node-version: 24
       - name: Install the published Lighthouse harness
-        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.0
+        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.2
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -289,7 +290,7 @@ jobs:
         with:
           node-version: 24
       - name: Install the published Lighthouse harness
-        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.0
+        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.2
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -340,7 +341,7 @@ jobs:
         with:
           node-version: 24
       - name: Install the published Lighthouse harness
-        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.0
+        run: npm install --prefix .lighthouse-harness --ignore-scripts --no-audit --no-fund --package-lock=true --save-exact @juangcarmona/lighthouse-sdlc@0.24.2
       - uses: actions/setup-node@v5
         with:
           node-version: 24
