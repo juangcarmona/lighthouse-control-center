@@ -74,3 +74,7 @@ Set `LIGHTHOUSE_AUTOMATION_ENABLED=false` to pause new work. Inspect the active 
 Manual `integrate` and `review` dispatches remain available for recovery. Ordinary operation uses PR feedback, approval and CI events.
 
 The [web view](../../README.md#open-the-factory-view) is still read-only. Closing it does not affect running workflows.
+
+## OpenCode execution budget and diagnostics
+
+The workflow harness is pinned to `c8637b4cfea576ba457db8c8ca3ce8c6333a09ca`. Implementation has at most 60 minutes to return its result; an enclosing delivery deadline can shorten it. The implementation and correction steps allow 150 minutes for execution, independent checks and cleanup, within a 360-minute job that also covers bounded host admission and slot waits. Public progress includes managed command starts and bounded redacted log excerpts. Inspect the retained runtime budget, command receipts and candidate artifacts when a run fails. This source installation does not change npm dependencies or establish native worker acceptance.
