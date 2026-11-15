@@ -3,8 +3,15 @@ id: BR-EXPLICIT-WORK-COMMANDS
 type: business-rule
 title: Commands express intent without implying completion or approval
 status: draft
-applies-to: [UC-OPERATE-ISSUE, BC-BACKLOG-TRIAGE, BC-EXECUTION, BC-DELIVERY]
-uses-terms: [TERM-WORK-COMMAND, TERM-WORK-UNIT, TERM-EXECUTION-RUN, TERM-DELIVERY-EVIDENCE]
+applies-to:
+  - BC-BACKLOG-TRIAGE
+  - BC-EXECUTION
+  - BC-DELIVERY
+uses-terms:
+  - TERM-WORK-COMMAND
+  - TERM-WORK-UNIT
+  - TERM-EXECUTION-RUN
+  - TERM-DELIVERY-EVIDENCE
 ---
 
 ## Rule

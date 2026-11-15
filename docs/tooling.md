@@ -2,7 +2,7 @@
 
 ## Lighthouse
 
-The exact installed CLI version is pinned in `package.json` and `package-lock.json`; `lighthouse.json` selects the SDLC package. Preview updates with `npx lighthouse upgrade --scope all`, then apply reviewed changes and run `npx lighthouse verify --format json`. `.lighthouse/upgrade.json` tracks managed-file ownership. The current adoption uses CLI 0.12.61 and SDLC 0.22.0.
+The exact installed CLI version is pinned in `package.json` and `package-lock.json`; `lighthouse.json` selects the SDLC package. Preview updates with `npx lighthouse upgrade --scope all`, then apply reviewed changes and run `npx lighthouse verify --format json`. `.lighthouse/upgrade.json` tracks managed-file ownership. The current adoption uses CLI 0.13.11 and SDLC 0.24.0.
 
 The Lighthouse `dotnet-backend` profile supplies the implemented workspace and its analyzer/CQRS checks. `npm run verify:dotnet` performs locked restore, Release build, profile checks, real analyzer rejection and the applicable .NET tests; host CI also verifies the isolated development identity provider.
 
@@ -12,9 +12,9 @@ The installed workflow harness and public tuple select release commit `d7ce30a91
 
 ## ProductShape
 
-`@prodshape/cli@0.23.0` is pinned exactly in `package.json` and `package-lock.json`. Lighthouse records ProductShape `0.23.0` as the adopted authority in `lighthouse.json`; the ProductShape installation remains provider-owned. Refresh managed integrations with `npx prodshape integration update`; check them with `npm run product:integrity` and `npm run product:doctor`.
+`@prodshape/cli@0.26.1` is pinned exactly in `package.json` and `package-lock.json`. Lighthouse records ProductShape `0.26.1` as the adopted authority in `lighthouse.json`; the ProductShape installation remains provider-owned. Refresh managed integrations with `npx prodshape integration update`; check them with `npm run product:integrity` and `npm run product:doctor`.
 
-The accepted ProductShape model contains the Software Factory definition. Product intent changes go through Product Changes; do not edit the accepted model directly.
+The PDaC v1alpha2 representation preserves all 87 model artifacts, their body text, identities and statuses. Seven rule-to-use-case selectors are represented through use-case governance; existing governance and journey/context selectors are preserved. Active Product Changes remain drafts, and stale historical citations remain visible. The accepted ProductShape model contains the Software Factory definition. Product intent changes go through Product Changes; do not edit the accepted model directly.
 
 ## ArcShape
 

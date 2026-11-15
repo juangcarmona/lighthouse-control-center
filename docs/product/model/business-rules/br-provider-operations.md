@@ -4,11 +4,10 @@ type: business-rule
 title: Authorize and verify each infrastructure change
 status: draft
 applies-to:
-- BC-RUNTIME-OPERATIONS
-- UC-MAINTAIN-RUNTIME
+  - BC-RUNTIME-OPERATIONS
 uses-terms:
-- TERM-RUNTIME-OPERATION
-- TERM-RUNTIME-PROVIDER
+  - TERM-RUNTIME-OPERATION
+  - TERM-RUNTIME-PROVIDER
 ---
 
 ## Rule
