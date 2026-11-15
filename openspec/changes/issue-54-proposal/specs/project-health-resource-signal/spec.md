@@ -18,7 +18,7 @@ The system SHALL display `tokens.outputTokens` only from the supported OpenCode-
 
 #### Scenario: Matching observed telemetry
 
-- **WHEN** the exact run attempt has one current, unexpired `lighthouse-<runId>-<attempt>` artifact with the supported schema and complete matching correlation records
+- **WHEN** the exact workflow run has one current, unexpired `lighthouse-telemetry-agent-<attempt>` artifact with the supported schema and complete correlation records matching that run and attempt
 - **THEN** the detail shows the reported output-token count, repository/run/attempt, revision, source link, source update time and local observation time
 - **THEN** it states that the value is not cost, billing, health or delivery acceptance
 

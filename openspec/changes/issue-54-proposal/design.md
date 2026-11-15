@@ -20,7 +20,7 @@ The existing Health page already has a source-backed detail for one GitHub Actio
 
 ## Source contract
 
-The approved artifact is named `lighthouse-<workflowRunId>-<attempt>` and contains:
+The existing producer names the GitHub artifact `lighthouse-telemetry-agent-<attempt>`, scoped to the exact workflow run's inventory. Its local upload directory is `lighthouse-<workflowRunId>-<attempt>`, not its artifact name. The bounded reader accepts these exact archive members:
 
 - `evidence/host/telemetry-usage.json`: schema 1, source `opencode-native`, coverage `observed`, and a non-negative integer at `tokens.outputTokens`.
 - `evidence/host/telemetry.jsonl`: records whose correlation fields all agree on repository, positive issue number, revision, workflow run ID, workflow attempt and one non-empty session ID.

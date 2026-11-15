@@ -12,7 +12,7 @@ An operator needs to understand a project's evidence before deciding what to inv
 ## What Changes
 
 - Show reported OpenCode output tokens for one exact GitHub Actions run and attempt when its retained telemetry artifact matches the run and repository.
-- Read the existing `lighthouse-<workflowRunId>-<attempt>` artifact on demand; validate its usage summary and adjacent telemetry correlation records before displaying a value.
+- Read the existing `lighthouse-telemetry-agent-<attempt>` artifact on demand from the exact workflow run; validate its usage summary and adjacent telemetry correlation records before displaying a value.
 - Keep other resource families, delivery/adoption/quality signals and historical comparisons pending under #54; this slice does not close the parent issue.
 - Keep missing or incompatible evidence unknown; do not infer cost, billing, provider usage, health or success.
 <!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:00496ba5f763ca6f4062a45e000bda8fb429cfd674b0e638cd59fb3858449130" -->
@@ -41,7 +41,7 @@ Each measurement exposes purpose, unit, definition/version, execution window, so
 
 ### Source and prerequisite evidence
 
-- Owner decision: one read-only output-token measure for one exact workflow run and attempt, using `evidence/host/telemetry-usage.json` plus adjacent `evidence/host/telemetry.jsonl` from `lighthouse-<workflowRunId>-<attempt>`.
+- Owner decision: one read-only output-token measure for one exact workflow run and attempt, using `evidence/host/telemetry-usage.json` plus adjacent `evidence/host/telemetry.jsonl`. The producer uploads these from the `lighthouse-<workflowRunId>-<attempt>` directory into the GitHub artifact named `lighthouse-telemetry-agent-<attempt>`; the directory is not the artifact name.
 - Accepted summary fields: `schemaVersion: 1`, `source: opencode-native`, `coverage: observed`, and numeric `tokens.outputTokens`. Every telemetry record must bind the same repository, issue, revision, workflow run, attempt and non-empty session ID.
 - The existing artifact producer retains the artifact for 14 days. Reads are on demand, bounded, authenticated and read-only. No artifact or telemetry is persisted by Control Center.
 - The prior #52/#57 holds are resolved only for this exact member and projection by the owner decision above; they do not authorize general artifact access or other signal families.
