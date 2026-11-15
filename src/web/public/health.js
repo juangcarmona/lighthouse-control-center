@@ -1,18 +1,19 @@
-import { updateWorkspaceAccount, workspaceSourceIdentityGeneration, validateWorkspaceSourceIdentity } from './workspace-ui.js';
+import { readProjectionCache, writeProjectionCache, clearProjectionCache } from './read-projection-cache.js';
+import { displayContext, formatDate, relativeDate, updateWorkspaceAccount, workspaceSourceIdentityGeneration, validateWorkspaceSourceIdentity } from './workspace-ui.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text, className) => { const value = document.createElement(tag); if (text !== undefined) value.textContent = text; if (className) value.className = className; return value; };
 const validRepository = name => typeof name === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/.test(name);
-const time = value => typeof value === 'string' && Number.isFinite(Date.parse(value)) ? new Date(value).toISOString() : 'Unknown';
+const time = formatDate;
 const path = location.pathname.match(/^\/workspace\/health\/([^/]+)\/([^/]+)(?:\/runs\/([1-9][0-9]*))?$/);
 const selected = path ? path.slice(1, 3).map(decodeURIComponent).join('/') : null;
 const runId = path?.[3];
-let repositories = new Map(), scope, busy = false, epoch = 0, deadline, fleetFilter = 'all', fleetQuery = '';
+let repositories = new Map(), scope, busy = false, epoch = 0, deadline;
+let fleetFilter = new URL(location.href).searchParams.get('filter') || 'all', fleetQuery = new URL(location.href).searchParams.get('q') || '';
+function rememberFilter() { const url = new URL(location.href); fleetFilter === 'all' ? url.searchParams.delete('filter') : url.searchParams.set('filter', fleetFilter); fleetQuery ? url.searchParams.set('q', fleetQuery) : url.searchParams.delete('q'); history.replaceState(history.state, '', url); }
 function link(text, href) { const value = node('a', text); value.href = href; value.dataset.healthKey = href; return value; }
 function healthHref(repository) { return '/workspace/health/' + repository.split('/').map(encodeURIComponent).join('/'); }
-function age(value) {
-  const elapsed = Date.now() - Date.parse(value);
-  return Number.isFinite(elapsed) && elapsed >= 0 ? Math.floor(elapsed / 60000) + ' min ago' : 'Unknown age';
-}
+const age = relativeDate;
+
 function facts(rows) {
   const value = node('dl'); for (const [key, text] of rows) value.append(node('dt', key), node('dd', text ?? 'Unknown')); return value;
 }
@@ -50,6 +51,7 @@ function runStrip(row, repository) {
   return strip;
 }
 function applyFleetFilter() {
+  rememberFilter();
   const rows = [...byId('health-results').querySelectorAll('.health-row')];
   for (const row of rows) row.hidden = (fleetFilter === 'attention' && row.dataset.attention !== 'true')
     || (fleetFilter === 'unknown' && row.dataset.unknown !== 'true')
@@ -102,7 +104,7 @@ function fleetView() {
   search.addEventListener('input', () => { fleetQuery = search.value; applyFleetFilter(); });
   toolbar.append(tabs, search); fragment.append(toolbar, node('p', '', 'health-filter-result'));
   const heading = node('div', undefined, 'health-list-head');
-  heading.append(node('span', 'Project'), node('span', 'Engineering'), node('span', 'Actions evidence'), node('span', 'Environment'));
+  heading.append(node('span', 'Project'), node('span', 'Actions evidence'), node('span', 'Source coverage'), node('span', 'Details'));
   const list = node('section', undefined, 'health-list'); list.setAttribute('aria-label', 'Configured projects'); list.append(heading);
   for (const [repository, row] of rows) {
     const item = node('article', undefined, 'health-row'); item.dataset.repository = repository;
@@ -111,20 +113,21 @@ function fleetView() {
     const title = node('h3'); title.append(link(repository, healthHref(repository)));
     project.append(title, node('small', state(row) + ' · ' + age(row.observedAt)));
     const engineering = node('div', undefined, 'health-evidence-cell');
-    engineering.append(node('strong', 'Unavailable'), node('small', 'No comparable engineering assessment'));
+    engineering.append(node('strong', observed(row) ? 'Partial collection' : 'Unavailable'), node('small', observed(row) ? 'Bounded source window' : 'Inspect repository access'));
     const actions = node('div', undefined, 'health-evidence-cell');
     if (observed(row)) {
       actions.append(node('strong', `${failedRuns(row)} failed / ${row.runs.length} collected`), runStrip(row, repository));
     } else actions.append(node('strong', state(row)), node('small', 'Workflow results unknown'));
     const environment = node('div', undefined, 'health-evidence-cell');
     environment.append(node('strong', 'Unknown'), node('small', 'PRE / PRO / production not verified'));
-    item.append(project, engineering, actions, environment, provenance(row)); list.append(item);
+    const details = provenance(row); details.append(node('p', 'Engineering assessment and deployment environment are not reported by these Actions observations.'));
+    item.append(project, actions, engineering, details); list.append(item);
   }
   fragment.append(list);
   return fragment;
 }
 function detail(repository, row, run) {
-  const section = node('section', undefined, 'health-detail'); section.append(node('h2', run.name || 'Workflow run ' + run.id));
+  const section = node('section', undefined, 'health-detail'); section.dataset.observedAt = row.observedAt || ''; section.append(node('h2', run.name || 'Workflow run ' + run.id));
   section.append(node('p', 'GitHub Actions · exact contributing run', 'health-kicker'));
   const summary = facts([
     ['Source result', (run.status || 'Unknown status') + ' · ' + (run.conclusion || 'Conclusion unknown')],
@@ -220,12 +223,13 @@ function render() {
   if (key && !active.isConnected) ([...root.querySelectorAll('[data-health-key]')].find(value => value.dataset.healthKey === key) || byId('health-title')).focus();
 }
 function clear(message, expired = false) {
+  clearProjectionCache(scope);
   epoch++; scope = undefined; repositories.clear(); clearTimeout(deadline); updateWorkspaceAccount({ state: expired ? 'expired' : 'unavailable' });
   render(); byId('health-status').textContent = message;
 }
 async function refresh() {
   if (busy) return; busy = true; const requestEpoch = ++epoch;
-  byId('refresh').disabled = true; byId('health-status').textContent = 'Verifying current source authority…';
+  byId('refresh').disabled = true; byId('health-status').textContent = repositories.size ? 'Showing saved observations while verifying current source authority…' : 'Verifying current source authority…';
   try {
     const sessionResponse = await fetch('/api/session', { cache: 'no-store', signal: AbortSignal.timeout(35000) });
     if ([401, 403].includes(sessionResponse.status)) { clear('Sign in again to read Health.', true); return; }
@@ -272,6 +276,7 @@ async function refresh() {
       repositories.set(row.repository, ['available', 'stale'].includes(row.availability) && Array.isArray(row.runs) ? row
         : { ...row, runs: undefined, availability: 'unavailable' });
     }
+    writeProjectionCache(scope, { repositories: [...repositories] }, 'health');
     render(); byId('health-status').textContent = 'Configured repositories only · read-only observations · no overall health score.';
   } catch {
     if (requestEpoch !== epoch) return;
@@ -280,4 +285,13 @@ async function refresh() {
   } finally { busy = false; byId('refresh').disabled = false; }
 }
 byId('refresh').addEventListener('click', refresh);
+const display = displayContext();
+if (display) {
+  const saved = readProjectionCache(display.dataScope, 'health');
+  if (Array.isArray(saved?.repositories)) {
+    const readable = new Set(display.repositories.filter(row => row.issuesRead && row.actionsRead).map(row => row.repository.toLowerCase()));
+    repositories = new Map(saved.repositories.filter(([repository]) => readable.has(repository.toLowerCase())).map(([repository, row]) => [repository, { ...row, availability: row.runs ? 'stale' : row.availability }]));
+    scope = display.dataScope; render(); byId('health-status').textContent = 'Saved project evidence · refreshing source authority…';
+  }
+}
 refresh();

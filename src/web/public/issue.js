@@ -1,4 +1,5 @@
-import { projectWorkspaceSourceIdentity, updateWorkspaceAccount, validateWorkspaceSourceIdentity, workspaceSourceIdentityGeneration } from './workspace-ui.js';
+import { readProjectionCache, writeProjectionCache, clearProjectionCache, readDraft, writeDraft, readCollection } from './read-projection-cache.js';
+import { displayContext, formatDate, relativeDate, projectWorkspaceSourceIdentity, updateWorkspaceAccount, validateWorkspaceSourceIdentity, workspaceSourceIdentityGeneration } from './workspace-ui.js';
 import { renderActions, renderUnavailableActions } from './issue-actions.js';
 import { markdown, sourceLink } from './markdown.js';
 import { issueHistory } from './evidence-projections.js';
@@ -17,7 +18,9 @@ else {
 function status(text, error = false) { byId('issue-status').textContent = text; byId('issue-status').dataset.state = error ? 'error' : 'ready'; }
 function controlsStatus(text) {
   byId('controls-status').textContent = text;
-  renderUnavailableActions(byId('control-actions'), text);
+  const target = selection();
+  const draft = current && target ? readDraft(current.dataScope, current.actingUserId, target.repository, target.number) : '';
+  renderUnavailableActions(byId('control-actions'), text, draft);
 }
 function controlReason(data) {
   const reason = typeof data?.reason === 'string' ? data.reason : 'Shared source facts are unavailable.';
@@ -30,6 +33,7 @@ function controlReason(data) {
     + (missing.length ? 'Missing or unverified GitHub App access: ' + missing.join(', ') + '. Verify installation permissions and reconnect GitHub after authorization changes.'
       : diagnostic[2] === 'http-429' ? 'GitHub is rate limiting these checks. Refresh after the source limit resets.' : 'Refresh the source. If this persists, check the GitHub connection and source availability.');
 }
+function clearPrivate() { clearProjectionCache(current?.dataScope); clear(); byId('issue-description-details').open = false; }
 function clear() {
   historyEvents = [];
   renderingBudget = { remaining: 5000 };
@@ -40,7 +44,7 @@ function clear() {
   byId('source-eligibility').open = false;
   byId('source-provenance').open = false;
   byId('issue-facts-details').open = false;
-  byId('issue-description-details').open = false;
+  byId('issue-description-details').open = true;
   byId('conversation-history').open = false;
   byId('conversation-provenance').open = false;
   byId('conversation-summary').textContent = 'Conversation history';
@@ -54,6 +58,9 @@ function selection() {
 }
 function paragraph(text, className) { const p = document.createElement('p'); p.textContent = text; if (className) p.className = className; return p; }
 function show(data, append) {
+  const previous = readCollection(data.dataScope);
+  if (previous && !document.querySelector('.collection-return')) { const back = document.createElement('a'); back.href = previous; back.textContent = '← Back to collection'; back.className = 'collection-return'; byId('issue-main').prepend(back); }
+
   if (!append) {
     byId('issue-title').textContent = data.issue.title;
     document.title = '#' + data.number + ' · ' + data.issue.title + ' · Lighthouse Control Center';
@@ -64,7 +71,7 @@ function show(data, append) {
     byId('issue-facts-details').open = false;
     byId('issue-facts').replaceChildren(paragraph('Issue state: ' + data.issue.state + ' · Author: ' + (data.issue.author ?? 'unknown')),
       paragraph('Source labels: ' + (data.issue.labels.join(', ') || 'none observed')),
-      paragraph('Source updated: ' + (data.issue.updatedAt ?? 'unknown')),
+      paragraph('Source updated: ' + formatDate(data.issue.updatedAt)),
       sourceLink('Inspect source issue', data.issue.sourceUrl));
     if (Array.isArray(data.issue.labelFacts)) {
       const requested = data.issue.labelFacts.filter(label => label.role === 'command');
@@ -78,9 +85,9 @@ function show(data, append) {
   }
   for (const comment of data.conversation.items) {
     const li = document.createElement('li'); li.id = 'source-comment-' + comment.id;
-    const heading = document.createElement('h3'); heading.textContent = comment.author ?? 'Unknown source author';
+    const heading = document.createElement('h3'); heading.textContent = (comment.author ?? 'Unknown source author') + ' · ' + relativeDate(comment.updatedAt);
     const details = document.createElement('details'), summary = document.createElement('summary'); summary.textContent = 'Source details';
-    details.append(summary, paragraph('Comment ID: ' + comment.id + ' · Updated: ' + (comment.updatedAt ?? 'unknown'), 'source-byline'),
+    details.append(summary, paragraph('Comment ID: ' + comment.id + ' · Updated: ' + formatDate(comment.updatedAt), 'source-byline'),
       sourceLink('Inspect source comment', comment.sourceUrl));
     li.append(heading, details, markdown(comment.body, renderingBudget));
     byId('issue-comments').append(li);
@@ -92,14 +99,16 @@ function show(data, append) {
   byId('conversation-coverage').textContent = `${comments.length} comments read · Source count: ${data.conversation.sourceCount ?? 'unknown'} · ${data.conversation.complete ? 'End observed' : 'Partial coverage'}. `
     + (capped ? 'The read budget was reached; later records require source inspection. ' : '') + (data.conversation.reason ?? '');
   byId('conversation-summary').textContent = `Conversation history · ${comments.length} read / ${data.conversation.sourceCount ?? 'unknown'} source comments · ${data.conversation.complete ? 'End observed' : 'Partial coverage'}`;
-  byId('issue-age').textContent = 'Observed: ' + data.observedAt + ' · Acting GitHub user ID: ' + data.actingUserId;
+  byId('issue-age').dataset.observedAt = data.observedAt;
+  byId('issue-age').title = data.observedAt;
+  byId('issue-age').textContent = 'Observed: ' + formatDate(data.observedAt) + ' · Acting GitHub user ID: ' + data.actingUserId;
   status(data.conversation.availability === 'unavailable' ? 'Issue read; conversation unavailable. Previous pages may be stale.' : 'Issue context loaded from GitHub.');
 }
 async function read(append = false) {
   const target = selection(); if (!target) { status('Choose owner/repository and a positive issue number.', true); return; }
   if (pending || append && (nextPage === null || bytes >= maximumTextBytes || comments.length >= 1000)) return;
   if (!append && current?.key !== target.key) clear();
-  const draft = append ? byId('comment-composer-slot').querySelector('textarea')?.value ?? '' : '';
+  const draft = byId('comment-composer-slot').querySelector('textarea')?.value ?? (current ? readDraft(current.dataScope, current.actingUserId, target.repository, target.number) : '');
   controlsStatus('Refreshing source context; previous shared observations may be stale.');
   pending = true; const operation = ++revision; controller?.abort(); controller = new AbortController();
   byId('issue-refresh').disabled = true; byId('issue-more').disabled = true;
@@ -113,14 +122,14 @@ async function read(append = false) {
     const data = await response.json().catch(() => null);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      else if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
-      clear();
+      else if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clearPrivate(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
+      clearPrivate();
       const reason = typeof data?.reason === 'string' ? data.reason : 'Source authority changed. Verify the account and refresh.';
       status(reason, true); controlsStatus('Actions unavailable. ' + reason); return;
     }
-    if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
+    if (!validateWorkspaceSourceIdentity(data, current?.dataScope, current?.actingUserId, identityGeneration)) { clearPrivate(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
     if (current && data.dataScope && data.dataScope !== current.dataScope) {
-      clear();
+      clearPrivate();
       if (append) { status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
     }
     if (!response.ok) throw Error('Source temporarily unavailable');
@@ -148,13 +157,14 @@ async function read(append = false) {
     }
     if (!append) {
       const disclosures = current?.key === target.key && current.dataScope === data.dataScope && current.actingUserId === data.actingUserId
-        ? ['issue-description-details', 'conversation-history'].filter(id => byId(id).open) : [];
+        ? ['issue-description-details', 'conversation-history'].map(id => [id, byId(id).open]) : [];
       clear();
-      for (const id of disclosures) byId(id).open = true;
+      for (const [id, open] of disclosures) byId(id).open = open;
       bytes = size; comments = data.conversation.items;
     }
     else { bytes += size; comments.push(...data.conversation.items); }
     current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope, actingUserId: data.actingUserId }; show(data, append);
+    writeProjectionCache(data.dataScope, { issueContext: { ...data, conversation: { ...data.conversation, items: comments } } }, 'issue');
     void readEvidence(target, page, data.snapshot, operation);
     void readControls(target, operation, draft);
   } catch (error) {
@@ -172,6 +182,24 @@ byId('issue-picker').addEventListener('submit', event => {
 byId('issue-refresh').addEventListener('click', () => read());
 byId('issue-more').addEventListener('click', () => read(true));
 controlsStatus('Open a mission to check whether commenting and Lighthouse actions are available.');
+const display = displayContext(), target = selection();
+if (display && target && display.repositories.some(row => row.issuesRead && row.repository.toLowerCase() === target.repository.toLowerCase())) {
+  const data = readProjectionCache(display.dataScope, 'issue')?.issueContext;
+  if (data?.dataScope === display.dataScope && data.actingUserId === display.actingUserId && data.repository?.toLowerCase() === target.repository.toLowerCase()
+      && data.number === target.number && data.issue && Array.isArray(data.conversation?.items)) {
+    current = { ...target, snapshot: data.snapshot, dataScope: data.dataScope, actingUserId: data.actingUserId };
+    comments = data.conversation.items; bytes = comments.reduce((n, item) => n + encoder.encode(item.body).length, 0);
+    show(data, false); status('Saved issue context · refreshing source checks…', true);
+    controlsStatus('Refreshing source authority. Your draft remains editable; no action is enabled from saved data.');
+  }
+}
+byId('comment-composer-slot').addEventListener('input', event => {
+  if (event.target.tagName !== 'TEXTAREA' || !current) return;
+  const saved = writeDraft(current.dataScope, current.actingUserId, current.repository, current.number, event.target.value);
+  let hint = byId('draft-persistence'); if (!hint) { hint = paragraph('', 'lh-hint'); hint.id = 'draft-persistence'; event.target.closest('.lh-field')?.append(hint); }
+  hint.textContent = saved ? 'Draft saved in this tab for this issue.' : 'Draft storage unavailable. Keep this page open to retain your text.';
+});
+
 if (initial) await read(); else status('Choose a configured repository and ordinary issue number.');
 
 async function readEvidence(target, page, snapshot, operation) {
@@ -184,10 +212,10 @@ async function readEvidence(target, page, snapshot, operation) {
     const data = await response.json().catch(() => null);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
-      clear(); status('Source authority changed; previous context was removed.', true); return;
+      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clearPrivate(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
+      clearPrivate(); status('Source authority changed; previous context was removed.', true); return;
     }
-    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
+    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clearPrivate(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
     if (!response.ok) throw Error('Unavailable evidence');
     if (!data.dataScope || data.dataScope !== current.dataScope) {
       clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return;
@@ -283,12 +311,12 @@ async function readControls(target, operation, initialBody = '') {
     const reason = controlReason(data);
     if ([401, 403, 409].includes(response.status)) {
       if (response.status === 401) updateWorkspaceAccount({ state: 'expired' });
-      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); controlsStatus('Actions unavailable. ' + reason); return; }
-      clear(); status('Source authority changed; previous context was removed. ' + reason, true);
+      else if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clearPrivate(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); controlsStatus('Actions unavailable. ' + reason); return; }
+      clearPrivate(); status('Source authority changed; previous context was removed. ' + reason, true);
       controlsStatus('Actions unavailable. ' + reason);
       return;
     }
-    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clear(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
+    if (!validateWorkspaceSourceIdentity(data, current.dataScope, current.actingUserId, identityGeneration)) { clearPrivate(); status('The connected account changed or is no longer available. Refresh to read a new source snapshot.', true); return; }
     if (!response.ok) {
       controlsStatus('Action checks are unavailable. Previous observations may be stale. ' + reason);
       if (typeof data?.reason === 'string') {
@@ -298,7 +326,7 @@ async function readControls(target, operation, initialBody = '') {
       return;
     }
     if (!data) throw Error('Shared source facts unavailable');
-    if (!data.dataScope || data.dataScope !== current.dataScope) { clear(); status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
+    if (!data.dataScope || data.dataScope !== current.dataScope) { clearPrivate(); status('The connected account changed. Refresh to read a new source snapshot.', true); return; }
     byId('issue-controls').replaceChildren();
     if (data.availability !== 'available') {
       controlsStatus('Shared source observation: ' + (data.availability ?? 'unavailable') + '. ' + (data.reason ?? 'No current question or eligibility is inferred.'));
@@ -337,10 +365,10 @@ async function readControls(target, operation, initialBody = '') {
     renderActions(byId('control-actions'), facts, target, data.dataScope,
       () => operation === revision && current?.key === target.key && current?.dataScope === data.dataScope,
       reason => {
-        clear();
+        clearPrivate();
         status('The action is unavailable. Previous source context was cleared. ' + (reason || 'Verify your account and refresh.'), true);
         controlsStatus('Actions unavailable. ' + (reason || 'Verify your account and refresh.'));
-      }, '', { submissionAvailable: data.submissionAvailable === true, initialBody,
+      }, '', { submissionAvailable: data.submissionAvailable === true, initialBody: initialBody || readDraft(data.dataScope, data.actingUserId, target.repository, target.number),
         reason: !data.submissionAvailable ? 'Protected command storage is not ready. Sending and recovery are disabled.' : '' });
     if (data.missingReadScopes?.length) area.append(paragraph('Missing or unknown App read scopes: ' + data.missingReadScopes.join(', ')));
   } catch (error) {

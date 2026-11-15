@@ -82,11 +82,11 @@ test('transient host/source/authority failures preserve old collection time with
   source.hostStatus = 503;
   await page.getByRole('button', { name: 'Refresh host evidence' }).click();
   await expect(page.locator('[data-registration="host-A"]')).toContainText('Stale host observation');
-  await expect(page.locator('[data-registration="host-A"]')).toContainText('2026-11-07T12:00:00.000Z');
+  await expect(page.locator('[data-registration="host-A"]')).toHaveAttribute('data-observed-at', '2026-11-07T12:00:00Z');
   source.runnerStatus['example/repository'] = 429;
   await page.getByRole('button', { name: 'Refresh GitHub evidence' }).click();
   await expect(page.locator('[data-repository="example/repository"]')).toContainText('Runner read is busy. Retry explicitly.');
-  await expect(page.locator('[data-repository="example/repository"]')).toContainText('2026-11-07T12:00:00.000Z');
+  await expect(page.locator('[data-repository="example/repository"]')).toHaveAttribute('data-observed-at', '2026-11-07T12:00:00Z');
   source.authority['example/repository'] = 'unavailable';
   await page.getByRole('button', { name: 'Refresh GitHub evidence' }).click();
   await expect(page.locator('[data-repository="example/repository"]')).toContainText('Stale GitHub evidence');

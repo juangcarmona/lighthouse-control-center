@@ -92,6 +92,23 @@ public sealed class FactoryDiscoveryTests
   private static HttpResponseMessage Response(object value, HttpStatusCode status = HttpStatusCode.OK) => new(status)
   { Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json") };
 
+  [Fact]
+  public async Task DisplayRestorationReceiptsFollowActualReadPermissionAndDenial()
+  {
+    using var fixture = new Fixture(); var session = await fixture.Session();
+    await fixture.Query.Handle(new(session, "example/repository"), CancellationToken.None);
+    var display = WorkspaceDisplayContext.Create(session, ["example/repository"], fixture.Clock.GetUtcNow());
+    Assert.True(Assert.Single(display!.Repositories).IssuesRead);
+    Assert.False(Assert.Single(display.Repositories).IssuesWrite);
+    fixture.IssueGrant = "none";
+    await fixture.Query.Handle(new(session, "example/repository"), CancellationToken.None);
+    display = WorkspaceDisplayContext.Create(session, ["example/repository"], fixture.Clock.GetUtcNow());
+    Assert.False(Assert.Single(display!.Repositories).IssuesRead);
+    fixture.Source.Responses["/repos/example/repository"] = _ => Response(new { }, HttpStatusCode.Forbidden);
+    await fixture.Query.Handle(new(session, "example/repository"), CancellationToken.None);
+    Assert.Null(WorkspaceDisplayContext.Create(session, ["example/repository"], fixture.Clock.GetUtcNow()));
+  }
+
   private sealed class Fixture : IDisposable
   {
     internal IssueContextTests.Handler Source { get; } = new();

@@ -15,14 +15,14 @@ const expectedImports = new Map(Object.entries({
   'attention-controls.js': ['issue-actions.js'],
   'attention.js': [],
   'factory.js': ['attention-controls.js', 'attention.js', 'evidence-projections.js', 'read-projection-cache.js', 'workspace-ui.js'],
-  'health.js': ['workspace-ui.js'],
+  'health.js': ['read-projection-cache.js', 'workspace-ui.js'],
   'issue-actions.js': ['workspace-ui.js'],
-  'issue.js': ['evidence-projections.js', 'issue-actions.js', 'markdown.js', 'workspace-ui.js'],
+  'issue.js': ['evidence-projections.js', 'issue-actions.js', 'markdown.js', 'read-projection-cache.js', 'workspace-ui.js'],
   'evidence-projections.js': [],
   'markdown.js': [],
   'read-projection-cache.js': [],
-  'runtime.js': ['workspace-ui.js'],
-  'workspace-ui.js': [],
+  'runtime.js': ['read-projection-cache.js', 'workspace-ui.js'],
+  'workspace-ui.js': ['read-projection-cache.js'],
 }));
 
 function parseModule(filename, source) {

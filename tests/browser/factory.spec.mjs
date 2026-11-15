@@ -76,7 +76,7 @@ for (const width of [1280, 390]) test(`factory ${width}: list board filters evid
   expect(listLinks).toEqual(['/workspace/issues/example/repository/7']);
   await page.selectOption('#factory-view', 'board');
   expect(await page.locator('.factory-issue h3 a').evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual(listLinks);
-  await expect(page.getByRole('heading', { name: 'Open issues', exact: true })).toBeVisible();
+  await expect(page.locator('.board-column[data-group="waiting"] > h3')).toContainText('Needs attention');
   await page.screenshot({ path: info.outputPath(`fixture-factory-${width}.png`), fullPage: true });
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
@@ -116,7 +116,7 @@ test('canonical repository inventory opens a compact scoped issue list with sema
   expect(geometry).not.toBeNull();
   expect(geometry.y).toBeLessThan(230);
   await expect(first.locator('.issue-row-meta .badge.positive')).toHaveText('Open');
-  await expect(first.locator('.issue-row-meta .badge.caution')).toHaveCount(2);
+  await expect(first.locator('.issue-row-meta .badge.caution')).toHaveCount(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({ path: info.outputPath('repository-scope-desktop-dark.png'), fullPage: true });
@@ -137,7 +137,7 @@ test('transient failure retains stale times while denied and replacement scopes 
   await expect(page.locator('.factory-issue')).toHaveCount(3);
   source.fail(503); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('.factory-stale')).toHaveCount(2);
-  await expect(page.locator('#factory-projects')).toContainText('2026-11-07T12:00:00.000Z');
+  await expect(page.locator('.factory-project').first()).toHaveAttribute('data-observed-at', '2026-11-07T12:00:00Z');
   source.fail(403); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('.factory-issue')).toHaveCount(1); await expect(page.locator('#factory-results')).not.toContainText('Ordinary work');
   source.fail(0); source.replace(); await page.getByRole('button', { name: 'Refresh collection' }).click();
@@ -201,7 +201,14 @@ test('temporary account failure keeps the last authorized collection visibly sta
 });
 
 test('project and issue navigation retain filters and restore the list position on return', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 400 }); await fixture(page);
+  await page.setViewportSize({ width: 390, height: 400 }); const source = await fixture(page);
+  const display = { dataScope: 'factory-71', actingUserId: 71, expiresAt: new Date(Date.now() + 120000).toISOString(),
+    repositories: ['example/repository', 'example/other'].map(repository => ({ repository, issuesRead: true, actionsRead: true })) };
+  await page.route('**/workspace/**', async route => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace('</head>', '<meta name="lcc-display-context" content="' + JSON.stringify(display).replaceAll('"', '&quot;') + '"></head>');
+    await route.fulfill({ response, body });
+  });
   await page.goto(origin + '/workspace/issues?state=open&view=board&wait=both');
   await expect(page.locator('.factory-issue')).toHaveCount(1);
   await page.locator('#factory-project-summary').click();
@@ -218,12 +225,15 @@ test('project and issue navigation retain filters and restore the list position 
   const before = await page.evaluate(() => window.scrollY);
   await page.locator('.factory-issue h3 a').evaluate(link => link.click());
   await page.waitForURL('**/workspace/issues/example/repository/7');
-  await page.goBack({ waitUntil: 'domcontentloaded' });
+  const release = source.pausePages();
+  try { await page.goBack({ waitUntil: 'domcontentloaded' }); await expect(page.locator('.factory-issue')).toHaveCount(1); }
+  finally { release(); }
+  await expect(page.locator('#factory-refresh')).toBeEnabled();
   await expect(page.locator('.factory-issue')).toHaveCount(1);
   await expect(page.locator('#factory-state')).toHaveValue('open');
   await expect(page.locator('#factory-view')).toHaveValue('board');
   await expect(page.locator('.factory-issue details')).toHaveAttribute('open', '');
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThanOrEqual(Math.max(0, before - 2));
+  await expect.poll(() => page.evaluate(before => window.scrollY - Math.min(before, Math.max(0, document.documentElement.scrollHeight - innerHeight)), before)).toBeGreaterThanOrEqual(-2);
 });
 
 test('returning restores same-scope read rows as stale, then refreshes them in the background', async ({ page }) => {
@@ -243,7 +253,8 @@ test('returning restores same-scope read rows as stale, then refreshes them in t
   try {
     await page.reload();
     const restored = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
-    await expect(restored).toContainText('Stale collection; current activity and labels are unknown.');
+    await expect(restored).toContainText('Saved');
+    await expect(page.locator('#factory-freshness')).toBeVisible();
     await restored.locator('details summary').click();
     await expect(restored.getByRole('button', { name: /issue evidence/ })).toBeDisabled();
     await expect(restored).toContainText('unknown / unread');
@@ -269,7 +280,8 @@ test('permission downgrade restores issue rows but never reuses cached private e
   try {
     await page.reload();
     const restored = page.locator('.factory-issue').filter({ hasText: 'Ordinary work' });
-    await expect(restored).toContainText('Stale collection; current activity and labels are unknown.');
+    await expect(restored).toContainText('Saved');
+    await expect(page.locator('#factory-freshness')).toBeVisible();
     await restored.locator('details summary').click();
     await expect(restored).toContainText('unknown / unread');
     await expect(restored).not.toContainText('propose · Result blocked');
@@ -345,4 +357,54 @@ test('local filtering and refresh retain disclosures, while a replacement source
   await expect(page.locator('.factory-issue').filter({ hasText: 'Replacement account work' })).toBeVisible();
   await expect(coverage).not.toHaveAttribute('open', '');
   await expect(page.locator('.factory-issue').filter({ hasText: 'Replacement account work' }).locator('details')).not.toHaveAttribute('open', '');
+});
+
+test('Work entry groups source signals and keeps every project immediately accessible', async ({ page }, info) => {
+  const source = await fixture(page);
+  await page.goto(origin + '/workspace/operations');
+  await expect(page.locator('#factory-view')).toHaveValue('board');
+  await expect(page.locator('#factory-project-strip a')).toHaveCount(2);
+  await expect(page.locator('.board-column[data-group="waiting"]')).toContainText('Ordinary work');
+  await expect(page.locator('.board-column[data-group="waiting"]')).toContainText('Wait label · inspect question');
+  await expect(page.locator('.factory-issue')).toHaveCount(2);
+  expect(source.methods.every(method => method === 'GET')).toBe(true);
+  for (const theme of ['Light', 'Dark']) for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.getByRole('button', { name: theme + ' appearance' }).click();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: info.outputPath(`work-${width}-${theme.toLowerCase()}.png`), fullPage: false });
+  }
+  await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
+  await expect(page.locator('.workspace-nav a:visible')).toHaveCount(7);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Open navigation', exact: true })).toBeFocused();
+});
+
+test('server-verified display context restores rows before a delayed account check, then denial removes them', async ({ page }) => {
+  const source = await fixture(page);
+  await page.goto(origin + '/workspace/issues');
+  await expect(page.locator('.factory-issue')).toHaveCount(3);
+  const context = { dataScope: 'factory-71', actingUserId: 71, expiresAt: new Date(Date.now() + 120000).toISOString(),
+    repositories: ['example/repository', 'example/other'].map(repository => ({ repository, issuesRead: true, actionsRead: true })) };
+  await page.route(/\/workspace\/issues(?:\?|$)/, async route => {
+    const response = await route.fetch(); const body = (await response.text()).replace('</head>', '<meta name="lcc-display-context" content="' + JSON.stringify(context).replaceAll('"', '&quot;') + '"></head>');
+    await route.fulfill({ response, body });
+  });
+  let release; const paused = new Promise(resolve => { release = resolve; });
+  await page.route('**/api/connections/github', async route => { await paused; return route.fallback(); });
+  try {
+    await page.reload();
+    await expect(page.locator('.factory-issue')).toHaveCount(3, { timeout: 1000 });
+    await expect(page.locator('#factory-results')).not.toContainText('successfully collected scope contains no');
+    source.expireAccount();
+  } finally { release(); }
+  await expect(page.locator('.factory-issue')).toHaveCount(0);
+  expect(await page.evaluate(() => Object.keys(sessionStorage).filter(key => key.startsWith('lcc:read-projection:') || key.startsWith('lcc:draft:')))).toEqual([]);
+});
+
+test('loading never claims a successful empty collection', async ({ page }) => {
+  const source = await fixture(page); const release = source.pausePages();
+  try { await page.goto(origin + '/workspace/issues'); await expect(page.locator('#factory-results')).not.toContainText('successfully collected scope contains no'); }
+  finally { release(); }
 });

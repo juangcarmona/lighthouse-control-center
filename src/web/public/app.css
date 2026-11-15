@@ -629,3 +629,17 @@ h2 { font-size:1rem; }
   .page-column { padding-top:56px; }
   .topbar { top:56px; }
 }
+/* A named mobile menu exposes every destination instead of clipping the route list. */
+.mobile-navigation-toggle { display:none; }
+@media(max-width:900px) {
+  .site-sidebar { display:flex; align-items:center; justify-content:space-between; overflow:visible; height:48px; }
+  .site-sidebar .brand { width:auto; }
+  .mobile-navigation-toggle { display:block; order:1; margin:.25rem .5rem; min-height:40px; }
+  .workspace-nav { display:none; position:absolute; top:100%; left:0; right:0; height:auto; max-height:calc(100dvh - 56px); overflow:auto; flex-direction:column; background:var(--lh-surface); border-bottom:1px solid var(--lh-border-strong); padding:.5rem; box-shadow:var(--lh-shadow-overlay); }
+  html[data-menu-open="true"] .workspace-nav { display:flex; }
+  .workspace-nav a { width:100%; min-height:44px; padding:.5rem; }
+  .header-context { overflow:visible; white-space:normal; }
+  .topbar { flex-wrap:wrap; }
+  .header-identity { margin-left:auto; }
+}
+@media(max-width:380px) { .header-actions { width:100%; justify-content:flex-end; } }
