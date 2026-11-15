@@ -1,5 +1,7 @@
 # Issue 227: implemented workspace usability
 
+Implementation: [PR #234](https://github.com/juangcarmona/lighthouse-control-center/pull/234).
+
 Manual work for [#227](https://github.com/juangcarmona/lighthouse-control-center/issues/227), built in the dedicated `feat/227-workspace-usability` worktree from `2d489ae`. This evidence describes the implementation in the containing Git revision. The original dirty checkout and the shared preview were preserved.
 
 ## Changes to review

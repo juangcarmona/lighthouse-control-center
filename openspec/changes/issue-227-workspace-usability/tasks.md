@@ -5,7 +5,9 @@
 - [x] 3. Implement context-first issue reading and scoped draft continuity without changing source actions.
 - [x] 4. Simplify Health, attention, runtime and account presentation using existing data.
 - [x] 5. Run source/browser/visual/full checks, inspect screenshots and record evidence/limits.
-- [ ] 6. Publish the dedicated branch and a reviewable PR; retain manual issue ownership.
+- [x] 6. Publish the dedicated branch and a reviewable PR; retain manual issue ownership.
+
+Manual delivery: [PR #234](https://github.com/juangcarmona/lighthouse-control-center/pull/234). Issue #227 remains open for connected-source and owner acceptance.
 
 <!-- pdac-scope: cited -->
 
