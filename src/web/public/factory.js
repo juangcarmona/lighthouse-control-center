@@ -2,6 +2,7 @@ import { updateWorkspaceAccount } from './workspace-ui.js';
 import { inspectAttention } from './attention-controls.js';
 import { reconcileAttention } from './attention.js';
 import { clearProjectionCache, readProjectionCache, writeProjectionCache } from './read-projection-cache.js';
+import { adoptionFacts } from './evidence-projections.js';
 const byId = id => document.getElementById(id);
 const node = (tag, text, className) => { const element = document.createElement(tag); if (text !== undefined) element.textContent = text; if (className) element.className = className; return element; };
 const filterIds = ['repository', 'search', 'state', 'stage', 'execution', 'wait', 'view'];
@@ -176,6 +177,7 @@ function render() {
       node('p', 'Health and harness/version signals are not collected here; unavailable values do not mean healthy.'));
     if (collection.configuredBranch && collection.observedBranch && collection.configuredBranch !== collection.observedBranch) coverage.append(node('p', 'Configured and observed default branches conflict.', 'notice'));
     project.append(coverage);
+    if (collection.availability === 'available' && !attentionView) project.append(adoptionDisclosure(repository));
     const actions = node('div', undefined, 'project-actions'); actions.append(sourceLink('Source project', repository, ''), sourceLink('Workflow evidence', repository, '/actions'));
     if (collection.nextPage && !exactNumber(selected.search)) {
       const more = node('button', 'Load next issue page'); more.type = 'button'; more.disabled = busy; more.addEventListener('click', () => loadMore(repository)); actions.append(more);
@@ -215,6 +217,41 @@ function render() {
   for (const details of byId('factory-results').querySelectorAll('[data-disclosure-key]')) details.open = disclosures.get(details.dataset.disclosureKey) === true;
   requestAnimationFrame(() => { window.scrollTo(0, scroll); if (restoring) restoreScroll = null; });
   if (focusKey) ([...byId('factory-results').querySelectorAll('a')].find(link => link.dataset.focusKey === focusKey) || byId('factory-repository')).focus();
+}
+
+function adoptionDisclosure(repository) {
+  const disclosure = node('details', undefined, 'factory-provenance lighthouse-adoption');
+  const button = node('button', 'Read adoption evidence'); button.type = 'button';
+  const content = node('div');
+  disclosure.append(node('summary', 'Lighthouse adoption'), button, content);
+  const render = receipt => {
+    const projection = adoptionFacts(receipt);
+    content.replaceChildren(node('p', projection.baseline), node('p', 'Installed: ' + projection.installed),
+      node('p', 'Current policy: ' + projection.policy), node('p', 'Observed-run: ' + projection.observedRun));
+    for (const fact of projection.facts) content.append(node('p', `${fact.component} · ${fact.category}: ${fact.value} · ${fact.path} · Revision ${fact.revision ?? 'unknown'} · Collected ${fact.observedAt ?? 'unknown'}`));
+    if (receipt?.revision && /^[a-f0-9]{40}$/.test(receipt.revision)) content.append(sourceLink('Inspect committed revision', repository, '/tree/' + receipt.revision));
+    content.append(node('p', 'Fixed committed files only; no installed capability, current policy or adoption is inferred from bot names or PR titles.'));
+  };
+  render(null);
+  button.addEventListener('click', async () => {
+    const operation = epoch, scope = dataScope;
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/repositories/' + repository + '/adoption', { credentials: 'same-origin', cache: 'no-store' });
+      if (operation !== epoch || scope !== dataScope || !disclosure.isConnected) return;
+      const data = await response.json().catch(() => null);
+      if (response.status === 401) { clearSource('Owner session expired.', true); return; }
+      if (response.status === 403) { denyRepository(repository); return; }
+      if (!data || data.dataScope !== scope) { clearSource('Source identity changed; refresh the account.'); return; }
+      if (!response.ok || data.availability !== 'available') throw Error('Unavailable');
+      const receipts = data.observation?.adoptions;
+      const receipt = Array.isArray(receipts) ? receipts.find(row => row.repository?.toLowerCase() === repository.toLowerCase()) : null;
+      render(receipt);
+      content.append(node('p', `Observed ${data.observedAt ?? 'unknown'} · ${data.complete ? 'Selected producer complete' : 'Partial / unknown coverage'}`));
+    } catch { content.append(node('p', 'Adoption refresh unavailable. Existing collection times are unchanged; issue reading remains available.')); }
+    finally { button.disabled = false; }
+  });
+  return disclosure;
 }
 function renderAttention(selected, focusKey) {
   const projection = reconcileAttention(repositories, attentionHistory); attentionHistory = projection.entries;
