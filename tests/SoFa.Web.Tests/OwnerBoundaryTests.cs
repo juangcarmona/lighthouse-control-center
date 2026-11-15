@@ -30,7 +30,7 @@ public sealed class OwnerBoundaryTests
   {
     await using var app = new OwnerApplication();
     using var client = app.Client();
-    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/factory/example/repository", "/workspace/factory", "/workspace/repositories", "/workspace/repositories/example/repository", "/workspace/issues", "/workspace/attention",
+    foreach (var path in new[] { "/workspace", "/api/session", "/api/observations", "/api/health/coverage/example/repository", "/api/factory/example/repository", "/workspace/factory", "/workspace/repositories", "/workspace/repositories/example/repository", "/workspace/issues", "/workspace/attention",
         "/workspace/runtime", "/api/runtime/host", "/api/runtime/example/repository", "/api/controls/csrf", "/api/issues/example/repository/7/controls", "/unknown" })
       Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
     Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/auth/login", new StringContent(""))).StatusCode);

@@ -21,6 +21,7 @@ public static class WorkspaceModule
     services.AddSingleton<GitHubAuthorization>();
     services.AddSingleton<RepositoryAccess>();
     services.AddSingleton<GetObservationsHandler>();
+    services.AddSingleton<GetCoverageEvidenceHandler>();
     services.AddSingleton<GetAccountStatusHandler>();
     services.AddSingleton<GetIssueContextHandler>();
     services.AddSingleton<GetIssueEvidenceHandler>();
@@ -219,6 +220,14 @@ public static class WorkspaceModule
           state = string.IsNullOrEmpty(settings.GitHubClientId) ? "unconfigured"
             : record.GitHub.Current is null ? "unlinked" : "unavailable"
         }, statusCode: 409);
+    });
+    app.MapGet("/api/health/coverage/{owner}/{repository}", async (string owner, string repository,
+        HttpContext context, OwnerSessions sessions, GetCoverageEvidenceHandler coverage) =>
+    {
+      var record = sessions.Get(context.User)!;
+      var result = await coverage.Handle(new(record, owner + "/" + repository), context.RequestAborted).ConfigureAwait(false);
+      if (!ReferenceEquals(sessions.Get(record.Id), record)) return Results.StatusCode(401);
+      return Results.Json(result, statusCode: result.Availability switch { "denied" => 403, "disconnected" => 409, _ => 200 });
     });
     app.MapGet("/api/connections/github", async (HttpContext context, OwnerSessions sessions, GetAccountStatusHandler status) =>
         Results.Json(await status.Handle(new GetAccountStatus(sessions.Get(context.User)!), context.RequestAborted).ConfigureAwait(false)));
