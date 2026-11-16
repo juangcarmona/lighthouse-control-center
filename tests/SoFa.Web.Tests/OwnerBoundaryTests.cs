@@ -264,6 +264,10 @@ public sealed class OwnerBoundaryTests
     var token = Token(page);
     app.Clock.Advance(TimeSpan.FromMinutes(5));
     Assert.Equal(HttpStatusCode.ServiceUnavailable, (await client.GetAsync("/api/session")).StatusCode);
+    var localControls = await client.GetStringAsync("/");
+    Assert.Contains("Sign out locally", localControls, StringComparison.Ordinal);
+    Assert.DoesNotContain("verified-user", localControls, StringComparison.Ordinal);
+    token = Token(localControls);
     // This is a server invalidation, not a request to end the provider's browser SSO.
     var response = await client.PostAsync("/auth/logout", new FormUrlEncodedContent(new Dictionary<string, string> { ["__RequestVerificationToken"] = token }));
     Assert.Equal("/", response.Headers.Location?.OriginalString);

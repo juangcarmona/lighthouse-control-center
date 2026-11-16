@@ -99,8 +99,9 @@ async function signIn(page, account, { wrongPassword = false, denied = false } =
   }
   await page.locator('#password').fill(account.password);
   await page.locator('#kc-login').click();
-  await page.waitForURL(url => url.origin === origin && url.pathname === (denied ? '/' : '/workspace'));
+  await page.waitForURL(url => url.origin === origin && url.pathname === (denied ? '/' : '/workspace/operations'));
   assert.equal((await page.request.get(origin + '/api/session')).status(), denied ? 401 : 200);
+  if (!denied) await page.goto(origin + '/workspace');
   proofs.developmentPasswordWithoutOtp = true;
 }
 
@@ -139,6 +140,7 @@ try {
   assert.equal((await page.request.post(origin + '/auth/logout')).status(), 400);
   assert.equal((await page.request.get(origin + '/api/session')).status(), 200);
   proofs.csrfRejected = true;
+  await page.getByText('Session, disconnection and sign-out', { exact: true }).click();
   await page.getByRole('button', { name: 'Sign out', exact: true }).click();
   assert.equal((await page.request.get(origin + '/api/session')).status(), 401);
   proofs.localLogout = true;
