@@ -16,13 +16,14 @@ internal sealed partial class GitHubTransport : IDisposable
       SendAsync(new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token")
       { Content = new FormUrlEncodedContent(fields) }, guard, cancellationToken);
 
-  internal Task<GitHubResponse> GetAsync(string path, string token, SourceRequestGuard guard, CancellationToken cancellationToken)
+  internal Task<GitHubResponse> GetAsync(string path, string token, SourceRequestGuard guard, CancellationToken cancellationToken,
+      string apiVersion = "2026-03-10")
   {
     if (!path.StartsWith('/') || path.StartsWith("//", StringComparison.Ordinal) || path.Contains('\\') || path.Contains('#'))
       throw new ArgumentException("Expected a fixed GitHub API path.", nameof(path));
     var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com" + path);
     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-    request.Headers.Add("X-GitHub-Api-Version", "2026-03-10");
+    request.Headers.Add("X-GitHub-Api-Version", apiVersion);
     return SendAsync(request, guard, cancellationToken);
   }
 
