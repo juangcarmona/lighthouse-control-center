@@ -4,13 +4,14 @@ using System.Text.RegularExpressions;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
-internal sealed record SourceCheck(string Name, string? Status, string? Conclusion, string? StartedAt, string? CompletedAt, long? Id = null, string? SourceUrl = null);
+internal sealed record SourceCheck(string Name, string? Status, string? Conclusion, string? StartedAt, string? CompletedAt, long? Id = null, string? SourceUrl = null,
+    string? HeadRevision = null, string RevisionBinding = "unknown");
 internal sealed record SourceReview(long? Id, string? Actor, string? ActorType, string? State, string? SubmittedAt, string? CommitId, string? SourceUrl);
 internal sealed record RelatedPullRequest(int Number, string Availability, string SourceUrl, IReadOnlyList<string> ReferencedBy,
     string? Title = null, string? State = null, bool? Draft = null, string? HeadRevision = null, string? UpdatedAt = null,
     string? ChecksAvailability = null, IReadOnlyList<SourceCheck>? Checks = null, string? Reason = null,
     string? CreatedAt = null, string? MergedAt = null, string? MergeRevision = null,
-    string ReviewsAvailability = "unavailable", IReadOnlyList<SourceReview>? Reviews = null);
+    string ReviewsAvailability = "unavailable", IReadOnlyList<SourceReview>? Reviews = null, IntegrationObservation? Integration = null);
 
 internal sealed partial class GetIssueEvidenceHandler
 {
@@ -62,10 +63,7 @@ internal sealed partial class GetIssueEvidenceHandler
         { related.Add(new(number, "disconnected", source, sources)); break; }
         var available = checks.Successful && checks.Value.ValueKind == JsonValueKind.Object
             && checks.Value.TryGetProperty("check_runs", out var checkRows) && checkRows.ValueKind == JsonValueKind.Array && checkRows.GetArrayLength() <= 100;
-        var mapped = available ? checks.Value.GetProperty("check_runs").EnumerateArray().Select(row => new SourceCheck(
-            SourceJson.Text(row, "name") ?? "Unnamed source check", SourceJson.Text(row, "status"), SourceJson.Text(row, "conclusion"),
-            SourceJson.Text(row, "started_at"), SourceJson.Text(row, "completed_at"),
-            SourceJson.Number(row, "id"), CheckUrl(SourceJson.Text(row, "html_url"), repository))).ToArray() : [];
+        var mapped = available ? MapChecks(checks.Value, repository, revision) : [];
         var complete = available && SourceJson.Number(checks.Value, "total_count") == mapped.Length;
         var reviewsAvailability = "unavailable";
         SourceReview[] reviews = [];
@@ -87,11 +85,14 @@ internal sealed partial class GetIssueEvidenceHandler
                 CheckUrl(SourceJson.Text(row, "html_url"), repository))).ToArray();
           }
         }
+        var integration = await ReadIntegration(repository, pull.Value, connection, guard, cancellationToken).ConfigureAwait(false);
+        if (integration.Availability == "disconnected")
+        { related.Add(new(number, "disconnected", source, sources)); break; }
         related.Add(new(number, "available", source, sources, title, state, draft, revision, SourceJson.Text(pull.Value, "updated_at"),
             available ? complete ? "available" : "partial" : "unavailable", mapped,
             "PR referenced explicitly by this issue/conversation. Check observations bind to the displayed head revision; missing permissions or incomplete inventory do not imply passing checks. Reviews cover only the first 20; protected approval and accepted delivery remain unknown.",
             SourceJson.Text(pull.Value, "created_at"), SourceJson.Text(pull.Value, "merged_at"), SourceJson.Text(pull.Value, "merge_commit_sha"),
-            reviewsAvailability, reviews));
+            reviewsAvailability, reviews, integration));
       }
       catch (OperationCanceledException) { related.Add(new(number, "unavailable", source, sources, Reason: "The evidence read budget was reached.")); break; }
       catch (InvalidOperationException) { related.Add(new(number, "unavailable", source, sources, Reason: "Source PR/check metadata is malformed.")); }
