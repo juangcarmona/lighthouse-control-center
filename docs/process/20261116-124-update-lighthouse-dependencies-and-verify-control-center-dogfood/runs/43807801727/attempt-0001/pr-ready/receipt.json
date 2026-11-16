@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "state": "blocked",
+  "sha": null,
+  "acceptedHead": "208bfe8e64657c6c9a152a61a982acd2150efddc",
+  "authorization": {
+    "issue": 124,
+    "pr": 246,
+    "head": "208bfe8e64657c6c9a152a61a982acd2150efddc",
+    "merge": false
+  },
+  "binding": {
+    "repository": "juangcarmona/lighthouse-control-center",
+    "issue": 124,
+    "pr": 246,
+    "head": "208bfe8e64657c6c9a152a61a982acd2150efddc",
+    "base": "251120e3e18f76d88165aa1b039f6c9ac6d1f254",
+    "branch": "main",
+    "intent": "8cc833f0cfcdde25a05d1eba67daa9a90057b4f2ce16447d0d072fa5714245e1",
+    "policy": "0f6cf6c748d45876d647691a6b6d88da4c07b030c2ccf0cf5f6e387cad634f30",
+    "reviews": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "prIntent": "d0332dcbd2e323ea869d42b4e6a7ed64e60efae8ee027082af1911a3c0253b9d",
+    "files": "fca65d04be3bbc93068ad4c9a3ad537b8c1e535d5f4b9802ce1c62176c79f30b"
+  }
+}

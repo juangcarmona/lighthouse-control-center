@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "runId": "42a1c0858fa7c88f81f704dd618b8a52f158b78ec523d889efcc43d52766539e",
+  "stage": "integrate",
+  "gate": "done",
+  "status": "blocked",
+  "evidence": [
+    {
+      "id": "github-check:133047528178",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43790480266/job/133047528178"
+    },
+    {
+      "id": "github-check:133047527854",
+      "status": "passed",
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43790480246/job/133047527854"
+    },
+    {
+      "id": "implementation-evidence:PR-246",
+      "status": "unavailable",
+      "source": "host completion implementationEvidence",
+      "reason": "Host reports this is not an open repository-owned implementation PR and supplies no matching command receipts. The PR description reports local checks, but does not replace host-verified implementation evidence."
+    },
+    {
+      "id": "independent-review:PR-246",
+      "status": "pending-review",
+      "source": "PR #246 description",
+      "reason": "The PR states independent source-bound review remains pending; no review evidence is supplied."
+    },
+    {
+      "id": "runbook-scope:docs/runbooks/lighthouse-dogfooding.md",
+      "status": "passed",
+      "source": "accepted candidate runbook, sections 52–63 and 122–149",
+      "reason": "The guide explicitly distinguishes prior lifecycle receipts from the still-pending authenticated mission demonstration and names its dependent work."
+    }
+  ],
+  "missingEvidence": [
+    "Host-verified implementation command receipts bound to PR #246's accepted head and candidate tree."
+  ],
+  "unavailableChecks": [],
+  "pendingReview": [
+    "Independent source-bound review of PR #246 is explicitly pending in its description and has no supplied review receipt."
+  ],
+  "nextAction": "The PR owner must provide matching host-verified implementation evidence and obtain the independent source-bound review; then request a fresh integration assessment. If merge is desired, the owner must separately dispatch with merge: true for the accepted full head. No merge is authorized by this dispatch.",
+  "output": {
+    "integration": {
+      "repository": "juangcarmona/lighthouse-control-center",
+      "issue": 124,
+      "pullRequest": 246,
+      "acceptedHead": "208bfe8e64657c6c9a152a61a982acd2150efddc",
+      "base": "251120e3e18f76d88165aa1b039f6c9ac6d1f254",
+      "requiredCheck": {
+        "context": "verify",
+        "status": "passed",
+        "evidenceId": "github-check:133047528178",
+        "url": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/43790480266/job/133047528178"
+      },
+      "policy": "The supplied rules require verify and zero approvals. The supplied verify check passed on the accepted head. Skipped client-control, epic-triage, dispatch and route jobs are not configured required checks.",
+      "implementationEvidence": "unavailable: host says PR #246 is not an open repository-owned implementation PR; no matching command receipts are supplied",
+      "independentReview": "pending: PR description says independent source-bound review remains pending",
+      "changedPaths": [
+        "docs/runbooks/lighthouse-dogfooding.md",
+        "openspec/changes/issue-121-proposal/.openspec.yaml (removed)",
+        "openspec/changes/issue-123-proposal/.openspec.yaml (removed)"
+      ],
+      "guidanceAssessment": "The changed runbook retains clear distinctions between historical receipts, current source observations, unsupported operations and the later mission procedure. Its explicit correction for replaying an archived #124 plan is consistent with the archived-plan state described in the PR. No conflicting instruction was found in the repository guidance inspected.",
+      "workItemSync": "Issue #124 remains open with observed labels enhancement, implement and execution-failed. PR #246 is open with no labels. Host finalization specifies no label changes or issue closure for either outcome; preserve PR labels.",
+      "remainingAcceptance": "The runbook and issue record state that the authenticated own-repository mission demonstration remains incomplete and depends on #50/#48 and relevant #52/#53 work. This documentation increment does not establish mission acceptance, deployment or production qualification.",
+      "mergeAuthorization": false,
+      "mergeOutcome": "No merge requested or performed; this assessment is blocked and the dispatch authorizes preparation only."
+    },
+    "audienceReview": "Applied lighthouse-audience-guidance Plain English and Humanizer manual fallbacks to the maintainer summary, then compared it with the host evidence and runbook. No external helper was invoked."
+  }
+}
