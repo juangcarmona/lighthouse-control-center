@@ -229,6 +229,26 @@ public sealed class RepositoryConfigurationTests
   }
 
   [Fact]
+  public async Task UnverifiableAuthorityClearsCachedFactsBeforeSameGenerationRecovery()
+  {
+    using var fixture = new Fixture(contentsGrant: "read");
+    var session = await fixture.Session();
+    var original = await fixture.Query.Handle(new(session, "example/repository"), CancellationToken.None);
+    Assert.NotEmpty(original.Facts);
+    var reads = fixture.Handler.Paths.Count(path => path.Contains("/contents/", StringComparison.Ordinal));
+    var generation = session.GitHub.Generation;
+    fixture.Handler.AuthorityUnavailable = true;
+    var unavailable = await fixture.Query.Handle(new(session, "example/repository"), CancellationToken.None);
+    Assert.Equal("unavailable", unavailable.Availability);
+    Assert.Empty(unavailable.Facts);
+    fixture.Handler.AuthorityUnavailable = false;
+    var recovered = await fixture.Query.Handle(new(session, "example/repository"), CancellationToken.None);
+    Assert.Equal("available", recovered.Availability);
+    Assert.Equal(generation, session.GitHub.Generation);
+    Assert.Equal(reads * 2, fixture.Handler.Paths.Count(path => path.Contains("/contents/", StringComparison.Ordinal)));
+  }
+
+  [Fact]
   public async Task ContentsPermissionLossMidReadDiscardsAlreadyCollectedFacts()
   {
     using var fixture = new Fixture(contentsGrant: "read");
@@ -394,6 +414,7 @@ public sealed class RepositoryConfigurationTests
   {
     internal string? ContentsGrant { get; set; }
     internal bool FailContentReads { get; set; }
+    internal bool AuthorityUnavailable { get; set; }
     internal int? DenyContentReadAt { get; set; }
     internal HashSet<string> SymlinkPaths { get; } = new(StringComparer.Ordinal);
     internal Dictionary<string, string> ContentOverrides { get; } = new(StringComparer.Ordinal);
@@ -408,6 +429,9 @@ public sealed class RepositoryConfigurationTests
       Assert.Equal("api.github.com", request.RequestUri!.Host);
       Assert.Equal("isolated-source-access", request.Headers.Authorization?.Parameter);
       var path = request.RequestUri.AbsolutePath; Paths.Add(path);
+      if (AuthorityUnavailable && path == "/repos/example/repository")
+        return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+        { Content = new StringContent("{}", Encoding.UTF8, "application/json") };
       if (path.Contains("/contents/", StringComparison.Ordinal)) contentReadCount++;
       if (PauseFirstContentRead && contentReadCount == 1)
       {

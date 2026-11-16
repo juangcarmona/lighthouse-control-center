@@ -65,7 +65,6 @@ for (const width of [1280, 390]) test(`issue context ${width}: paginated, inert 
   await page.setViewportSize({ width, height: 900 });
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
-  await page.locator('#issue-description-details > summary').click();
   await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#issue-title')).toContainText('Read an ordinary issue');
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
@@ -92,7 +91,7 @@ test('temporary failure retains stale context; source authority loss removes eve
   await expect(page.locator('#issue-status')).toContainText('stale');
   await expect(page.locator('#controls-status')).toContainText('Previous shared observations are stale');
   await expect(page.locator('#issue-comments > li')).toHaveCount(100);
-  await expect(page.locator('#issue-age')).toContainText('2026-11-07T12:00:00Z');
+  await expect(page.locator('#issue-age')).toHaveAttribute('data-observed-at', '2026-11-07T12:00:00Z');
   harness.fail(403); await page.getByRole('button', { name: 'Refresh source' }).click();
   await expect(page.locator('#issue-comments > li')).toHaveCount(0);
   await expect(page.locator('#issue-body')).toBeEmpty();
@@ -104,7 +103,6 @@ test('same-scope refresh preserves open description and history; replacement sco
   const harness = await fixture(page);
   await page.goto(origin + '/workspace/issues/example/repository/7');
   const description = page.locator('#issue-description-details'), history = page.locator('#conversation-history');
-  await description.locator(':scope > summary').click();
   await history.locator(':scope > summary').click();
   await page.getByRole('button', { name: 'Refresh source' }).click();
   await expect(description).toHaveAttribute('open', '');
@@ -154,10 +152,12 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`vi
   if (width >= 1000) { expect(visual.header).toBe(48); expect(visual.sidebar).toBe(184); }
   else {
     const navigation = page.getByRole('navigation', { name: 'Workspace navigation' });
+    await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
     const last = navigation.getByRole('link').last(); await last.scrollIntoViewIfNeeded();
     const rail = await navigation.boundingBox(), link = await last.boundingBox();
     expect(link.y).toBeGreaterThanOrEqual(rail.y);
     expect(link.y + link.height).toBeLessThanOrEqual(rail.y + rail.height + 1);
+    await page.keyboard.press('Escape');
   }
   await page.getByRole('link', { name: 'Add a comment', exact: true }).focus();
   expect(await page.getByRole('link', { name: 'Add a comment', exact: true }).evaluate(link => getComputedStyle(link).outlineStyle)).not.toBe('none');
@@ -166,9 +166,8 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`vi
   await page.screenshot({ path: `test-results/issue/visual-contract-${theme}-${width}.png` });
 });
 
-test('mission actions stay before a long issue description on a narrow screen', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await fixture(page);
+test('long issue context opens before controls and can collapse to keep actions close', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 }); await fixture(page);
   await page.route('**/api/issues/**', async route => {
     const url = new URL(route.request().url());
     if (url.pathname.endsWith('/controls') || url.pathname.endsWith('/evidence')) return route.fallback();
@@ -176,15 +175,12 @@ test('mission actions stay before a long issue description on a narrow screen', 
     return route.fulfill({ json: data });
   });
   await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#issue-description-details')).toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Boolean(document.querySelector('#issue-description-details').compareDocumentPosition(document.querySelector('#mission-actions')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   await page.locator('#issue-description-details > summary').click();
-  const actions = page.locator('#mission-actions'), description = page.locator('#issue-body');
-  await expect(actions).toBeVisible();
-  const missionBeforeDescription = await page.evaluate(() => {
-    const mission = document.querySelector('#mission-actions'), body = document.querySelector('#issue-body');
-    return (mission.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
-  });
-  expect(missionBeforeDescription).toBe(true);
-  expect((await actions.boundingBox()).y).toBeLessThan((await description.boundingBox()).y);
+  await expect(page.locator('#issue-body')).toBeHidden();
+  await page.locator('#mission-actions').scrollIntoViewIfNeeded();
+  await expect(page.getByRole('link', { name: 'Add a comment', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -208,7 +204,6 @@ test('very long source text keeps a bounded DOM and preserves the full remaining
     return route.fulfill({ json: data });
   });
   await page.goto(origin + '/workspace/issues/example/repository/7');
-  await page.locator('#issue-description-details > summary').click();
   await expect(page.locator('#issue-status')).toContainText('loaded from GitHub');
   expect(await page.locator('#issue-body *').count()).toBeLessThan(12000);
   await expect(page.locator('#issue-body .source-markdown > pre')).toContainText('end-of-source-body');
@@ -331,7 +326,7 @@ for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`co
   await expect(page.locator('#comment-composer')).toBeFocused();
   expect(await page.evaluate(() => {
     const probe = document.createElement('div'); probe.style.backgroundColor = 'var(--lh-surface)'; document.body.append(probe);
-    const matches = getComputedStyle(document.querySelector('#mission-actions')).backgroundColor === getComputedStyle(probe).backgroundColor;
+    const matches = getComputedStyle(document.querySelector('#conversation-panel')).backgroundColor === getComputedStyle(probe).backgroundColor;
     probe.remove(); return matches;
   })).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -404,7 +399,7 @@ test('timestamps and source identifiers stay inside collapsed provenance details
   await expect(page.locator('#source-provenance')).not.toHaveAttribute('open', '');
   await expect(page.locator('#issue-facts-details')).not.toHaveAttribute('open', '');
   await expect(page.locator('#conversation-panel > details')).not.toHaveAttribute('open', '');
-  await expect(page.locator('#issue-description-details')).not.toHaveAttribute('open', '');
+  await expect(page.locator('#issue-description-details')).toHaveAttribute('open', '');
   await expect(page.locator('#comment-composer')).toBeVisible();
   await page.locator('#conversation-history > summary').click();
   await expect(page.locator('#source-comment-1 > details')).not.toHaveAttribute('open', '');
@@ -776,7 +771,7 @@ test('same-scope source denial and journal conflict preserve identity and naviga
   await page.getByRole('button', { name: 'Refresh source' }).click();
   await expect(page.locator('.sidebar-identity')).toContainText('verified-source-login');
   expect(postRequests).toEqual([]);
-  await page.getByRole('link', { name: 'Overview' }).click();
+  await page.getByRole('link', { name: 'Work' }).click();
   expect(postRequests).toEqual([]);
 });
 
@@ -809,4 +804,22 @@ test('HTTP 200 disconnected command response retires identity without resending'
   await expect(page.locator('.sidebar-identity')).toContainText('Session owner');
   await expect(page.locator('.sidebar-identity')).not.toContainText('verified-source-login');
   expect(operations).toEqual(['prepare', 'submit']);
+});
+
+test('description precedes controls and an unsent draft survives return and reload within its source scope', async ({ page }) => {
+  const harness = await fixture(page);
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#issue-title')).toHaveText('Read an ordinary issue');
+  await expect(page.locator('#issue-description-details')).toHaveAttribute('open', '');
+  expect(await page.evaluate(() => Boolean(document.querySelector('#issue-description-details').compareDocumentPosition(document.querySelector('#mission-actions')) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  const draft = 'Keep <script>literal</script> draft text';
+  await page.locator('#comment-composer-slot textarea').fill(draft);
+  await page.goto(origin + '/factory.html');
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await expect(page.locator('#comment-composer-slot textarea')).toHaveValue(draft);
+  await page.reload();
+  await expect(page.locator('#comment-composer-slot textarea')).toHaveValue(draft);
+  harness.replaceAccount(); await page.getByRole('button', { name: 'Refresh source' }).click();
+  await expect(page.locator('#comment-composer-slot textarea')).toHaveValue('');
+  expect(await page.evaluate(() => Object.keys(sessionStorage).filter(key => key.startsWith('lcc:draft:')))).toEqual([]);
 });

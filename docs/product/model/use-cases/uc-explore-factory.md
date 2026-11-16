@@ -4,10 +4,17 @@ type: use-case
 title: Find work across repositories and project views
 status: draft
 primary-actor: ACT-OPERATOR
-supporting-actors: [ACT-GITHUB-BACKLOG]
+supporting-actors:
+  - ACT-GITHUB-BACKLOG
 bounded-context: BC-PORTFOLIO-PROJECT-CONFIGURATION
-governed-by: [BR-GITHUB-SOURCE, BR-PRIORITY-DEFAULTS]
-uses-terms: [TERM-PROJECT, TERM-WORK-UNIT, TERM-DELIVERY-EVIDENCE]
+governed-by:
+  - BR-GITHUB-SOURCE
+  - BR-PRIORITY-DEFAULTS
+  - BR-EXPLAINABLE-SIGNALS
+uses-terms:
+  - TERM-PROJECT
+  - TERM-WORK-UNIT
+  - TERM-DELIVERY-EVIDENCE
 ---
 
 ## Goal

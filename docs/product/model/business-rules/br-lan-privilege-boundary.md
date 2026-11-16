@@ -3,8 +3,13 @@ id: BR-LAN-PRIVILEGE-BOUNDARY
 type: business-rule
 title: Sign-in and reachability do not grant action authority
 status: draft
-applies-to: [UC-ACCESS-FACTORY, UC-OPERATE-ISSUE, BC-EXECUTION, BC-DELIVERY, BC-RUNTIME-OPERATIONS]
-uses-terms: [TERM-WORK-COMMAND, TERM-EXECUTION-RUN]
+applies-to:
+  - BC-EXECUTION
+  - BC-DELIVERY
+  - BC-RUNTIME-OPERATIONS
+uses-terms:
+  - TERM-WORK-COMMAND
+  - TERM-EXECUTION-RUN
 ---
 
 ## Rule

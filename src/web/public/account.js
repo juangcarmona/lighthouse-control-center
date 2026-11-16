@@ -1,4 +1,4 @@
-import { updateWorkspaceAccount } from './workspace-ui.js';
+import { updateWorkspaceAccount, formatDate } from './workspace-ui.js';
 // Use the same source-owned Lighthouse mark as the other workspace pages.
 document.body.classList.add('lh-root');
 {
@@ -39,6 +39,19 @@ const status = document.getElementById('account-status');
 const identity = document.getElementById('github-account');
 const repositories = document.getElementById('repository-authority');
 const disconnect = document.getElementById('github-disconnect');
+const connect = document.querySelector('form[action="/connections/github/start"]');
+const main = document.getElementById('account');
+if (main) {
+  const permissions = document.createElement('details'), summary = document.createElement('summary'); summary.textContent = 'Repository permissions';
+  permissions.append(summary); repositories.before(permissions); permissions.append(repositories);
+  const sessionDetails = document.createElement('details'), sessionSummary = document.createElement('summary'); sessionSummary.textContent = 'Session, disconnection and sign-out'; sessionDetails.append(sessionSummary);
+  for (const paragraph of [...main.querySelectorAll(':scope > p')]) if (/^(Disconnect removes|Owner sessions expire|Sign out ends)/.test(paragraph.textContent)) sessionDetails.append(paragraph);
+  if (disconnect) sessionDetails.append(disconnect);
+  const logout = main.querySelector('form[action="/auth/logout"]'); if (logout) sessionDetails.append(logout);
+  main.append(sessionDetails); main.querySelector('h1').textContent = 'Account';
+  const repeated = main.querySelector(':scope > p'); if (repeated?.textContent === 'Owner identity verified. GitHub account connection is separate.') repeated.remove();
+}
+
 let busy = false;
 async function refresh() {
   if (busy || document.hidden) return;
@@ -56,6 +69,7 @@ async function refresh() {
     }
     if (!response.ok) throw Error();
     const account = await response.json(); updateWorkspaceAccount(account);
+    if (connect) connect.hidden = account.state === 'linked';
     if (disconnect && ['linked', 'unlinked', 'unconfigured'].includes(account.state)) disconnect.hidden = account.state !== 'linked';
     if (account.state !== 'linked') {
       document.getElementById('account-verification-details')?.remove();
@@ -72,14 +86,14 @@ async function refresh() {
     const fragment = document.createDocumentFragment();
     for (const repository of account.repositories) {
       const item = document.createElement('li');
-      const checked = Number.isFinite(Date.parse(repository.checkedAt)) ? new Date(repository.checkedAt).toISOString() : 'unavailable';
+      const checked = formatDate(repository.checkedAt);
       item.textContent = `${repository.repository}: ${repository.availability === 'available'
         ? `issues read ${repository.issuesRead === true ? 'allowed' : 'denied'}; Actions read ${repository.actionsRead === true ? 'allowed' : 'denied'}; issue write permission ${repository.issuesWrite === true ? 'confirmed' : 'not confirmed'}`
         : 'authority ' + (repository.availability === 'denied' ? 'denied' : 'unavailable')}. Checked: ${checked}.`;
       fragment.append(item);
     }
     repositories.replaceChildren(fragment);
-    const verified = Number.isFinite(Date.parse(account.verifiedAt)) ? new Date(account.verifiedAt).toISOString() : 'unavailable';
+    const verified = formatDate(account.verifiedAt);
     status.textContent = 'GitHub connection verified. Repository permissions refresh automatically.';
     let diagnostics = document.getElementById('account-verification-details');
     if (!diagnostics) {

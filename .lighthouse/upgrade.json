@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "package": {
     "name": "@juangcarmona/lighthouse",
-    "version": "0.12.68"
+    "version": "0.13.17"
   },
   "baseline": "0.1.0",
   "capabilities": {
@@ -35,10 +35,10 @@
     "harness": "1",
     "sdlc": "1"
   },
-  "lastAppliedMigration": "upgrade-0.12.68",
+  "lastAppliedMigration": "upgrade-0.13.17",
   "files": {
     "LIGHTHOUSE.md": {
-      "hash": "688278b561cb866ef2e5f173ce22ea91e04be0e68160809571842bd3938f5139",
+      "hash": "2d3eb2fc86a463f28aa9f26d49c65fe1a3b959f2f4a8b3ad84579ab3b537ea6b",
       "scope": "harness"
     },
     "scripts/lighthouse-guard.mjs": {
@@ -74,7 +74,7 @@
       "scope": "harness"
     },
     "docs/profiles/dotnet/adoption.md": {
-      "hash": "712222b6cfcd0fba940c82c41cb25101e3635e1809794c6fa79805bb34a0eaac",
+      "hash": "f939e9d8226e02c42cf59a420506cec381426eb9c418f941d7dedb0d47064e33",
       "scope": "harness"
     },
     "docs/profiles/dotnet/architecture.md": {
@@ -102,11 +102,19 @@
       "scope": "harness"
     },
     ".lighthouse/sdlc.json": {
-      "hash": "e9582d91c97cf73e785d8acefaafd40e9a71ff54acb2ff40f71c5b5bbd792f56",
+      "hash": "7622a21964856a54b5ad6b41cd2d971166166e1369e43370814565fa2b344ba9",
+      "scope": "sdlc"
+    },
+    ".github/workflows/lighthouse-worker-maintenance.yml": {
+      "hash": "fdd2a4fffd8514ebfb6bf3437babb2b7c13a8274a4d50465b673f9f002b35e25",
+      "scope": "sdlc"
+    },
+    ".lighthouse/housekeeping.json": {
+      "hash": "ed16ddfc9a8388ac63af340ed1690a477f05039ad6f9201d011a3c3fa6f8a761",
       "scope": "sdlc"
     },
     ".lighthouse/commands.json": {
-      "hash": "a8d278ce934d7bdc5d15811dd653b80770cc8809751f6c0c1f9bb7bb6a5423e8",
+      "hash": "5e347ee594f145703de945f7e8bd6021b9969920f6b8abe1ac2ee53eac61556f",
       "scope": "sdlc"
     }
   }

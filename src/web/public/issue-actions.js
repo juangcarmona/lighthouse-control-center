@@ -1,8 +1,8 @@
 import { updateWorkspaceAccount, validateWorkspaceSourceIdentity, workspaceSourceIdentityGeneration } from './workspace-ui.js';
 let composerId = 0;
 
-export function renderUnavailableActions(area, reason) {
-  renderActions(area, {}, {}, null, () => false, () => {}, '', { submissionAvailable: false, reason });
+export function renderUnavailableActions(area, reason, initialBody = '') {
+  renderActions(area, {}, {}, null, () => false, () => {}, '', { submissionAvailable: false, reason, initialBody });
 }
 
 export function renderActions(area, facts, target, scope, live, clear, contextLabel = '', { submissionAvailable = true, reason = '', initialBody = '' } = {}) {
@@ -111,6 +111,7 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
             : data.receipt?.state === 'rejected' ? 'The source declined this request. Inspect the receipt below.'
               : data.receipt?.state === 'conflict' ? 'The source reports a conflict. Inspect the existing receipt below.'
           : 'The source result is not yet confirmed. Review the existing receipt before sending anything else.';
+    if (action === 'comment' && data.receipt?.state === 'comment-published' && body.value === data.intent?.body) { body.value = ''; body.dispatchEvent(new Event('input', { bubbles: true })); }
     reveal(confirm ?? message);
   }
   function reveal(element) {

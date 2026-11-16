@@ -61,7 +61,10 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
       return Failure("denied", "The configured repository is not currently readable.");
     }
     if (authority.Availability != SourceAvailability.Available || authority.Controls is not { } controls)
+    {
+      ClearRepository(record.Id, query.Repository);
       return Failure("unavailable", "The connected GitHub App installation and repository identity could not be verified.");
+    }
     if (controls.ContentsRead != true)
     {
       ClearRepository(record.Id, query.Repository);
@@ -356,7 +359,10 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
       if (!Live()) return Failure("disconnected", "The source account or session changed.", connection.DataScope);
       var final = await access.CheckControlsAsync(record, query.Repository, budget.Token).ConfigureAwait(false);
       if (!Live() || final.Availability != SourceAvailability.Available || final.Controls != controls)
+      {
+        ClearRepository(record.Id, query.Repository);
         return Failure("disconnected", "The source authority changed during configuration inspection; collected facts were cleared.", connection.DataScope);
+      }
       var coverage = sources.Count == paths.Count && sources.All(source => source.Availability == "available") && reasons.Count == 0 ? "complete" : "partial";
       if (coverage == "partial") reasons.Add("Some supported files were unavailable or unsupported; missing configuration is not inferred.");
       var linkedSources = sources.Select(source => source with

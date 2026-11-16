@@ -25,8 +25,8 @@ test('stale sources, duplicate identities and missing discovered cases are rejec
   const businessRule = structuredClone(ledger);
   businessRule.bindings[0].requirement = {
     id: 'BR-LAN-PRIVILEGE-BOUNDARY', path: 'docs/product/model/business-rules/br-lan-privilege-boundary.md',
-    digest: 'sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac',
-    hash: 'sha256:097bc0b8e03247590799169e30b51a946c463f327c240a9ba9d1e41d98ea63ac',
+    digest: 'sha256:9b0dcb3bc2da4b114ebba570c8c4b0d744f6258428ace6c8d9ffa84280950d3c',
+    hash: 'sha256:9b0dcb3bc2da4b114ebba570c8c4b0d744f6258428ace6c8d9ffa84280950d3c',
   };
   assert.throws(() => validateBindings(businessRule), /Invalid requirement citation/);
 });

@@ -25,6 +25,20 @@ namespace SoFa.Web.Tests;
 
 public sealed class OwnerBoundaryTests
 {
+  [Theory]
+  [InlineData("/workspace/issues/example/repository/7?view=board", "/workspace/issues/example/repository/7?view=board")]
+  [InlineData("https://other.invalid/workspace", "/workspace/operations")]
+  [InlineData("/workspace/../auth/logout", "/workspace/operations")]
+  [InlineData("//other.invalid/workspace", "/workspace/operations")]
+  public async Task SignInRetainsOnlyALocalWorkspaceReturnPath(string requested, string expected)
+  {
+    await using var app = new OwnerApplication(); using var client = app.Client();
+    var signIn = await client.GetStringAsync("/?returnUrl=" + Uri.EscapeDataString(requested));
+    Assert.Contains("name=\"returnUrl\"", signIn, StringComparison.Ordinal);
+    var response = await client.GetAsync(await app.Begin(client, returnPath: requested));
+    Assert.Equal(expected, response.Headers.Location?.OriginalString);
+  }
+
   [Fact]
   public async Task AnonymousRoutesAndCsrfFailuresCannotExposeOperationalDataOrStartLogin()
   {
@@ -83,7 +97,7 @@ public sealed class OwnerBoundaryTests
     var callback = await app.Begin(client);
     var response = await client.GetAsync(callback);
     Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-    Assert.Equal("/workspace", response.Headers.Location?.OriginalString);
+    Assert.Equal("/workspace/operations", response.Headers.Location?.OriginalString);
     var cookie = Assert.Single(response.Headers.GetValues("Set-Cookie"), c => c.StartsWith("__Host-SoFa.Owner=", StringComparison.Ordinal));
     Assert.Contains("secure", cookie, StringComparison.OrdinalIgnoreCase);
     Assert.Contains("httponly", cookie, StringComparison.OrdinalIgnoreCase);
@@ -328,7 +342,7 @@ public sealed class OwnerBoundaryTests
     var connectedAccount = await client.GetStringAsync("/workspace");
     Assert.Contains("href=\"https://github.com/verified-user\"", connectedAccount, StringComparison.Ordinal);
     var operations = await client.GetStringAsync("/workspace/operations");
-    Assert.Contains("Overview", operations, StringComparison.Ordinal);
+    Assert.Contains("factory-main", operations, StringComparison.Ordinal);
     Assert.Contains("factory-main", await client.GetStringAsync("/workspace/repositories"), StringComparison.Ordinal);
     Assert.Contains("factory-results", await client.GetStringAsync("/workspace/repositories/example/repository"), StringComparison.Ordinal);
     Assert.Contains("factory-search", await client.GetStringAsync("/workspace/issues"), StringComparison.Ordinal);
@@ -348,6 +362,14 @@ public sealed class OwnerBoundaryTests
     Assert.Equal("linked", authority.RootElement.GetProperty("state").GetString());
     Assert.Equal(71, authority.RootElement.GetProperty("userId").GetInt64());
     Assert.True(Assert.Single(authority.RootElement.GetProperty("repositories").EnumerateArray()).GetProperty("issuesWrite").GetBoolean());
+    foreach (var route in new[] { "/workspace/operations", "/workspace/repositories", "/workspace/issues",
+        "/workspace/attention", "/workspace/health", "/workspace/runtime", "/workspace/issues/example/repository/1" })
+    {
+      using var display = JsonDocument.Parse(DisplayContext(await client.GetStringAsync(route)));
+      Assert.Equal(authority.RootElement.GetProperty("dataScope").GetString(), display.RootElement.GetProperty("dataScope").GetString());
+      Assert.Equal(71, display.RootElement.GetProperty("actingUserId").GetInt64());
+      Assert.False(Assert.Single(display.RootElement.GetProperty("repositories").EnumerateArray()).GetProperty("issuesWrite").GetBoolean());
+    }
     using var data = JsonDocument.Parse(await client.GetStringAsync("/api/observations"));
     var repository = Assert.Single(data.RootElement.GetProperty("repositories").EnumerateArray());
     Assert.Equal("available", repository.GetProperty("availability").GetString());
@@ -358,6 +380,7 @@ public sealed class OwnerBoundaryTests
     var unavailable = Assert.Single(denied.RootElement.GetProperty("repositories").EnumerateArray());
     Assert.Equal("unavailable", unavailable.GetProperty("availability").GetString());
     Assert.Equal(JsonValueKind.Null, unavailable.GetProperty("runs").ValueKind);
+    Assert.Equal("null", DisplayContext(await client.GetStringAsync("/workspace/operations")));
     var account = await client.GetStringAsync("/workspace");
     await client.PostAsync("/connections/github/disconnect", Form(Token(account)));
     var calls = app.Source.Calls.Count;
@@ -367,6 +390,9 @@ public sealed class OwnerBoundaryTests
     Assert.Equal("unlinked", disconnected.RootElement.GetProperty("state").GetString());
     Assert.Equal(JsonValueKind.Null, disconnected.RootElement.GetProperty("login").ValueKind);
   }
+
+  private static string DisplayContext(string html) => WebUtility.HtmlDecode(Regex.Match(html,
+      "name=\"lcc-display-context\" content=\"([^\"]+)\"", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1)).Groups[1].Value);
 
   private static string Token(string html) => WebUtility.HtmlDecode(Regex.Match(html,
       "name=\"__RequestVerificationToken\" value=\"([^\"]+)\"", RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1)).Groups[1].Value);
@@ -457,10 +483,12 @@ public sealed class OwnerBoundaryTests
       options.Backchannel = new HttpClient(new Exchange(this));
     }
 
-    internal async Task<string> Begin(HttpClient client, bool authenticated = false)
+    internal async Task<string> Begin(HttpClient client, bool authenticated = false, string? returnPath = null)
     {
       var token = Token(await client.GetStringAsync(authenticated ? "/workspace" : "/"));
-      var response = await client.PostAsync("/auth/login", new FormUrlEncodedContent(new Dictionary<string, string> { ["__RequestVerificationToken"] = token }));
+      var form = new Dictionary<string, string> { ["__RequestVerificationToken"] = token };
+      if (returnPath is not null) form["returnUrl"] = returnPath;
+      var response = await client.PostAsync("/auth/login", new FormUrlEncodedContent(form));
       Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
       var query = QueryHelpers.ParseQuery(response.Headers.Location!.Query);
       Assert.Equal("S256", query["code_challenge_method"]);

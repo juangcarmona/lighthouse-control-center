@@ -18,10 +18,22 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
 {
   private static readonly string[] WritePermissions = ["push", "maintain", "admin"];
   internal Task<RepositoryAuthority> CheckAsync(OwnerSession record, string repository, CancellationToken cancellationToken) =>
-      CheckCoreAsync(record, repository, false, cancellationToken);
+      CheckAndRememberAsync(record, repository, false, cancellationToken);
+
+  private async Task<RepositoryAuthority> CheckAndRememberAsync(OwnerSession record, string repository, bool controls, CancellationToken cancellationToken)
+  {
+    var authority = await CheckCoreAsync(record, repository, controls, cancellationToken).ConfigureAwait(false);
+    lock (record.Sync)
+    {
+      if (authority.Availability == SourceAvailability.Denied) record.GitHub.DisplayAuthorities.Remove(repository);
+      else if (authority.Availability == SourceAvailability.Available && record.GitHub.Current?.DataScope == authority.DataScope
+          && record.GitHub.Generation == authority.Generation) record.GitHub.DisplayAuthorities[repository] = authority;
+    }
+    return authority;
+  }
 
   internal Task<RepositoryAuthority> CheckControlsAsync(OwnerSession record, string repository, CancellationToken cancellationToken) =>
-      CheckCoreAsync(record, repository, true, cancellationToken);
+      CheckAndRememberAsync(record, repository, true, cancellationToken);
 
   private async Task<RepositoryAuthority> CheckCoreAsync(OwnerSession record, string repository, bool controls, CancellationToken cancellationToken)
   {

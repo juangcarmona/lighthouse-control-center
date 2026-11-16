@@ -141,9 +141,9 @@ test('operations navigation opens source-backed mission context and repository-s
   await page.goto('/workspace/operations');
 
   const navigation = page.getByRole('navigation', { name: 'Workspace navigation' });
-  await expect(navigation.getByRole('link', { name: 'Overview' })).toHaveAttribute('href', '/workspace/operations');
+  await expect(navigation.getByRole('link', { name: 'Work' })).toHaveAttribute('href', '/workspace/operations');
   await expect(navigation.getByRole('link', { name: 'Issues' })).toHaveAttribute('href', '/workspace/issues');
-  await expect(navigation.getByRole('link', { name: 'Inbox' })).toHaveAttribute('href', '/workspace/attention');
+  await expect(navigation.getByRole('link', { name: 'Attention' })).toHaveAttribute('href', '/workspace/attention');
 
   const mission = page.getByRole('link', { name: 'Open issue' }).first();
   await expect(mission).toHaveAttribute('href', '/workspace/issues/owner/lighthouse/1');
