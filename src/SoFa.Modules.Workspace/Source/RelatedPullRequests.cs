@@ -46,7 +46,10 @@ internal sealed partial class GetIssueEvidenceHandler
       try
       {
         if (!guard.IsLive()) { related.Add(new(number, "disconnected", source, sources)); break; }
-        using var pull = await transport.GetAsync("/repos/" + repository + "/pulls/" + number.ToString(CultureInfo.InvariantCulture), connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
+        // This supported response contract retains merge_commit_sha, removed in 2026-03-10.
+        // Migrate this read before GitHub retires 2022-11-28 on 2028-03-10.
+        using var pull = await transport.GetAsync("/repos/" + repository + "/pulls/" + number.ToString(CultureInfo.InvariantCulture),
+            connection.Tokens.Access, guard, cancellationToken, apiVersion: "2022-11-28").ConfigureAwait(false);
         if (pull.Status == System.Net.HttpStatusCode.Unauthorized)
         { related.Add(new(number, "disconnected", source, sources)); break; }
         if (!pull.Successful || SourceJson.Number(pull.Value, "number") != number

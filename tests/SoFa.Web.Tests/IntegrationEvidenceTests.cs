@@ -43,6 +43,33 @@ public sealed class IntegrationEvidenceTests
     Assert.Contains("not delivery acceptance", integration.Reason, StringComparison.Ordinal);
   }
 
+  [Fact]
+  public async Task VersionedPullResponseRetainsTheConfirmedMergeRevision()
+  {
+    using var fixture = Ready();
+    // GitHub 2026-03-10 removes merge_commit_sha; the supported 2022 response retains it.
+    fixture.Handler.Responses["/repos/example/repository/pulls/13"] = request =>
+        Pull(includeMergeRevision: request.Headers.GetValues("X-GitHub-Api-Version").Single() == "2022-11-28");
+    var pull = await Read(fixture);
+    Assert.Equal(Merged, pull.MergeRevision);
+    Assert.Equal("available", pull.Integration!.Availability);
+    Assert.Equal(Merged, pull.Integration.Revision);
+    Assert.Equal(Merged, Assert.Single(pull.Integration.Runs!).Revision);
+  }
+
+  [Fact]
+  public async Task MissingMergeRevisionCannotFallBackToHeadEvenWhenMergedIsTrue()
+  {
+    using var fixture = Ready();
+    fixture.Handler.Responses["/repos/example/repository/pulls/13"] = _ => Pull(includeMergeRevision: false);
+    var pull = await Read(fixture);
+    Assert.NotNull(pull.MergedAt);
+    Assert.Null(pull.MergeRevision);
+    Assert.Equal("unconfirmed", pull.Integration!.Availability);
+    Assert.DoesNotContain(fixture.Handler.Paths, path => path.Contains("/commits/" + Merged, StringComparison.Ordinal));
+    Assert.DoesNotContain(fixture.Handler.Paths, path => path == "/repos/example/repository/actions/runs");
+  }
+
   [Theory]
   [InlineData(Head, "stale")]
   [InlineData(null, "unknown")]
@@ -196,8 +223,19 @@ public sealed class IntegrationEvidenceTests
   }
 
   private static HttpResponseMessage Pull(bool merged = true, string revision = Merged, string? mergedAt = "2026-11-16T00:00:00Z",
-      string branch = "main", string? defaultBranch = "main") => Json(new
-      { number = 13, merged, merged_at = mergedAt, merge_commit_sha = revision, @base = new { @ref = branch, repo = new { full_name = "example/repository", default_branch = defaultBranch } }, head = new { sha = Head } });
+      string branch = "main", string? defaultBranch = "main", bool includeMergeRevision = true)
+  {
+    var value = new Dictionary<string, object?>
+    {
+      ["number"] = 13,
+      ["merged"] = merged,
+      ["merged_at"] = mergedAt,
+      ["base"] = new { @ref = branch, repo = new { full_name = "example/repository", default_branch = defaultBranch } },
+      ["head"] = new { sha = Head }
+    };
+    if (includeMergeRevision) value["merge_commit_sha"] = revision;
+    return Json(value);
+  }
   private static HttpResponseMessage Checks(string? revision, string conclusion = "success") => Json(new
   { total_count = 1, check_runs = new[] { new { id = 800, name = "verify", head_sha = revision, status = "completed", conclusion } } });
   private static object Run(int id, string revision, string branch = "main", string sourceEvent = "push", string repository = "example/repository") => new
