@@ -227,7 +227,9 @@ public sealed class IntegrationEvidenceTests
   {
     var value = new Dictionary<string, object?>
     {
-      ["number"] = 13, ["merged"] = merged, ["merged_at"] = mergedAt,
+      ["number"] = 13,
+      ["merged"] = merged,
+      ["merged_at"] = mergedAt,
       ["base"] = new { @ref = branch, repo = new { full_name = "example/repository", default_branch = defaultBranch } },
       ["head"] = new { sha = Head }
     };
