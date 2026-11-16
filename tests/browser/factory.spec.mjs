@@ -185,6 +185,23 @@ test('resolved package comparisons name their baseline and disclose source prove
   await expect(source).toBeVisible();
 });
 
+for (const primed of [false, true]) test(`configuration denial ends pending state and clears facts after prior observation ${primed}`, async ({ page }) => {
+  await fixture(page);
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  const inspect = page.getByRole('button', { name: 'Inspect configuration', exact: true });
+  if (primed) {
+    await inspect.click();
+    await expect(page.locator('#configuration-facts article')).toHaveCount(1);
+    await page.selectOption('#configuration-baseline', await page.locator('#configuration-baseline option').nth(1).getAttribute('value'));
+  }
+  await page.route('**/api/repositories/**/configuration', route => route.fulfill({ status: 403, json: { availability: 'denied' } }));
+  await inspect.click();
+  await expect(page.locator('#configuration-status')).toContainText('contents-read authority is denied');
+  await expect(inspect).not.toHaveAttribute('aria-busy', 'true');
+  await expect(page.locator('#configuration-facts article')).toHaveCount(0);
+  await expect(page.locator('#configuration-baseline')).toHaveValue('');
+});
+
 test('repository denial removes inspected configuration and its comparison baseline', async ({ page }) => {
   const source = await fixture(page);
   await page.goto(origin + '/workspace/repositories/example/repository');

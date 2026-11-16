@@ -194,7 +194,7 @@ function renderConfiguration() {
       sourceDetails.append(row);
     }
     list.append(sourceDetails);
-  }
+  } else byId('configuration-status').textContent = configurationNotice || (configurationLoading ? 'Checking current repository authority…' : 'Not inspected.');
   if (restoreFocus) requestAnimationFrame(() => {
     const target = focusKey && [...list.querySelectorAll('[data-configuration-focus]')].find(element => element.dataset.configurationFocus === focusKey);
     (target || byId('configuration-refresh')).focus();
@@ -554,6 +554,7 @@ async function inspectConfiguration(selectedRepository = null) {
   try {
     const path = repository.split('/').map(encodeURIComponent).join('/');
     const response = await fetch(`/api/repositories/${path}/configuration`, { signal: AbortSignal.timeout(35000) });
+    if (requestEpoch !== epoch) return;
     if ([401, 409].includes(response.status)) { clearSource('The source connection changed during configuration inspection.', response.status === 401); return; }
     if (response.status === 403) { configurationProjections.delete(repository.toLowerCase()); configurationBaseline = ''; configurationNotice = `${repository}: current contents-read authority is denied.`; renderConfiguration(); return; }
     const projection = await response.json();
@@ -568,12 +569,11 @@ async function inspectConfiguration(selectedRepository = null) {
     if (requestEpoch === epoch) {
       configurationProjections.delete(repository.toLowerCase()); configurationBaseline = '';
       if (repository.toLowerCase() === currentRepositoryKey()) {
-        configurationNotice = '';
-        byId('configuration-status').textContent = 'Configuration could not be read. Missing source files and latest, installed or policy-required values remain unknown.';
+        configurationNotice = 'Configuration could not be read. Missing source files and latest, installed or policy-required values remain unknown.';
       } else configurationNotice = `${repository}: configuration could not be read.`;
       renderConfiguration();
     }
-  } finally { configurationLoading = false; byId('configuration-refresh').removeAttribute('aria-busy'); }
+  } finally { configurationLoading = false; renderConfiguration(); byId('configuration-refresh').removeAttribute('aria-busy'); }
 }
 if (workView) { byId('factory-view').value = 'board'; byId('factory-state').value = 'open'; document.body.dataset.workEntry = 'true'; }
 const display = displayContext();
