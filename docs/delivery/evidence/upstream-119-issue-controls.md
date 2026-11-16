@@ -6,7 +6,7 @@ The consumer displays those observations in an optional disclosure. Missing and 
 
 The source collector, caller transport, immutable intent, claim, authenticated source admission and result reconciliation retain their existing boundaries. No credential, consent, journal reset, automatic resend, scheduler or delivery policy change is introduced. Historical source and connected-user receipts remain valid only for their recorded revisions.
 
-## Required delivery evidence
+## Delivery evidence
 
 - Source package publication and actual registry archive installation.
 - Current package/projection and exact consumer commit.
@@ -25,3 +25,11 @@ Local verification passed with 121 Node, 38 runtime and 324 workspace tests, plu
 - [Narrow light](upstream-119/prerequisites-390-light.png), [narrow dark](upstream-119/prerequisites-390-dark.png).
 
 The [connected baseline preflight](upstream-119/connected-preflight-before.json) records the running revision and SDK separately from this candidate. It verifies the actual actor and repository and permits ordinary comments, while Refine/Propose remain denied for missing Actions/write. Contents, Pull requests and Variables reads are also absent. The owner must update the intended App and accept the installation grants before dependent connected qualification. These missing grants are not replaced by operator credentials, public-read fallbacks or a fixture result.
+
+## Published package adoption
+
+[Publication 43966091297](https://github.com/juangcarmona/lighthouse/actions/runs/43966091297) passed for release `0283ff1a5f01650dda4a44e9c7d1732c3af52c0a`. CLI 0.13.18 and SDLC 0.25.1 were downloaded from the default public npm registry and installed, with their lockfile SHA-512 values checked against registry metadata. Both package gitHead values and annotated tags match that release. The [registry/adoption receipt](upstream-119/registry-adoption.json) retains the exact identities.
+
+The owning CLI previewed an upgrade without conflicts, applied only its declared managed projection updates and passed `lighthouse verify`. Existing source-mode stage-worker pins retain their separate reviewed selection; the additive SDK observations change no worker intent or authority. Public-package consumer/bridge checks pass (13 tests), including the new prerequisite observations. Full verification of this final package selection remains required in local and hosted CI.
+
+The original registry queries returned 404 after successful publication. Actual archive installation above was checked separately after availability; a tag or green release workflow was not counted as installation.
