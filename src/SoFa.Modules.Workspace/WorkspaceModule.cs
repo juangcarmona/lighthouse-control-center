@@ -25,6 +25,7 @@ public static class WorkspaceModule
     services.AddSingleton<GetIssueContextHandler>();
     services.AddSingleton<GetIssueEvidenceHandler>();
     services.AddSingleton<GetFactoryPageHandler>();
+    services.AddSingleton<GetRepositoryConfigurationHandler>();
     services.AddSingleton<RuntimeReadSlots>();
     services.AddSingleton<GetHostInventoryHandler>();
     services.AddSingleton<GetRepositoryRunnersHandler>();
@@ -87,9 +88,12 @@ public static class WorkspaceModule
           && await provider.EnsureCurrentAsync(current, context.RequestAborted).ConfigureAwait(false) == ProviderAuthority.Current)
       { context.Response.Redirect(ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin)); return Results.Empty; }
       var token = antiforgery.GetAndStoreTokens(context).RequestToken!;
+      var localSignOut = sessions.GetAuthenticatedRequest(context) is not null
+          ? Form("/auth/logout", token, "Sign out locally") : "";
       return Html("Lighthouse Control Center", "<p>Sign in with your configured identity provider to open the private workspace.</p>"
               + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required sign-in.</p>" : "")
-              + Form("/auth/login", token, "Sign in", ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin)));
+              + Form("/auth/login", token, "Sign in", ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin))
+              + localSignOut);
     }).AllowAnonymous();
     app.MapGet("/health/live", () => Results.Text("live")).AllowAnonymous();
     foreach (var asset in new[] { (Path: "/workspace-ui.js", File: "workspace-ui.js", Type: "text/javascript"),
@@ -235,6 +239,23 @@ public static class WorkspaceModule
       var result = await factory.Handle(new(sessions.Get(context.User)!, owner + "/" + repository, page, number), context.RequestAborted).ConfigureAwait(false);
       if (System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result).Length > 2 * 1024 * 1024)
         result = result with { Availability = "unavailable", Issues = [], Complete = false, NextPage = null, Reason = "The projected page exceeded the2MiB response bound; coverage is unknown." };
+      return Results.Json(result, statusCode: result.Availability switch
+      { "invalid" => 400, "denied" => 403, "disconnected" => 409, "unavailable" => 503, _ => 200 });
+    });
+    app.MapGet("/api/repositories/{owner}/{repository}/configuration", async (string owner, string repository,
+        HttpContext context, OwnerSessions sessions, GetRepositoryConfigurationHandler configuration) =>
+    {
+      var result = await configuration.Handle(new(sessions.Get(context.User)!, owner + "/" + repository), context.RequestAborted).ConfigureAwait(false);
+      var payload = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result);
+      if (payload.Length > 2 * 1024 * 1024)
+        return Results.Json(result with
+        {
+          Availability = "unavailable",
+          Coverage = "unknown",
+          Sources = [],
+          Facts = [],
+          Reasons = ["The projected configuration exceeded the 2 MiB response limit; no partial facts were returned."]
+        }, statusCode: 503);
       return Results.Json(result, statusCode: result.Availability switch
       { "invalid" => 400, "denied" => 403, "disconnected" => 409, "unavailable" => 503, _ => 200 });
     });

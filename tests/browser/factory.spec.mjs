@@ -34,6 +34,13 @@ async function fixture(page) {
     if (url.pathname === '/api/session') return route.fulfill({ json: { authenticated: true, displayName: 'Fixture owner' } });
     if (url.pathname === '/api/connections/github' && accountStatus) return route.fulfill({ status: accountStatus, body: 'Session ended' });
     if (url.pathname === '/api/connections/github') return route.fulfill({ json: { state: accountState, login: 'verified-user', userId: 71, dataScope: scope, repositories: configured.map(repository => ({ repository, availability: 'available', issuesRead: true, actionsRead })) } });
+    if (url.pathname.startsWith('/api/repositories/') && url.pathname.endsWith('/configuration')) {
+      const repository = url.pathname.slice('/api/repositories/'.length, -'/configuration'.length).split('/').map(decodeURIComponent).join('/');
+      const revision = repository === 'example/other' ? 'b'.repeat(40) : 'a'.repeat(40);
+      const observedAt = '2099-01-01T00:00:00.000Z';
+      const fact = { id: `${repository}-package`, component: '@example/package', factKind: 'declared-package', rawValue: '1.2.3', sourcePath: 'package.json', revision, observedAt, contractIdentity: 'npm-package-json', interpretation: 'supported', sourceUrl: `https://github.com/${repository}/blob/${revision}/package.json` };
+      return route.fulfill({ json: { repository, configuredBranch: 'main', observedRevision: revision, dataScope: scope, observedAt, availability: 'available', coverage: 'complete', freshness: 'fresh', limits: { maximumContentReads: 8, reads: 1, decodedBytes: 100 }, sources: [], facts: [fact], reasons: [] } });
+    }
     if (url.pathname.startsWith('/api/issues/')) return route.fulfill({ json: url.pathname.endsWith('/evidence')
       ? { availability: 'available', dataScope: scope, observedAt: '2026-11-07T12:00:00Z', reports: [{ availability: 'available', stage: 'propose', result: 'blocked', executionStatus: 'completed', executionConclusion: 'success', runId: 500, attempt: 2 }], scope: 'Synthetic one-page report fixture; live lease unknown.' }
       : { availability: 'available', dataScope: scope, snapshot: 'bounded-snapshot', issue: { id: 1007 } } });
@@ -131,6 +138,103 @@ test('canonical repository inventory opens a compact scoped issue list with sema
   const issueLinks = await page.locator('.factory-issue h3 a').evaluateAll(links => links.map(link => link.getAttribute('href')));
   expect(issueLinks.length).toBeGreaterThan(0);
   expect(issueLinks.every(href => href.startsWith('/workspace/issues/example/repository/'))).toBe(true);
+});
+for (const width of [1280, 390]) for (const theme of ['light', 'dark']) test(`configuration visual contract ${width} ${theme}: scoped comparison and authority loss`, async ({ page }, info) => {
+  await page.setViewportSize({ width, height: 900 });
+  const source = await fixture(page);
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  await page.getByRole('button', { name: theme === 'light' ? 'Light appearance' : 'Dark appearance' }).click();
+  const inspect = page.getByRole('button', { name: 'Inspect configuration', exact: true });
+  await inspect.focus(); await page.keyboard.press('Enter');
+  await expect(page.locator('#configuration-facts')).toContainText('Observed value: 1.2.3');
+  await expect(page.locator('#configuration-facts a').first()).toHaveAttribute('href', 'https://github.com/example/repository/blob/' + 'a'.repeat(40) + '/package.json');
+  await page.selectOption('#configuration-repository', 'example/other');
+  await page.getByRole('button', { name: 'Inspect selected repository' }).click();
+  const baseline = await page.locator('#configuration-baseline option').nth(1).getAttribute('value');
+  await page.selectOption('#configuration-baseline', baseline);
+  await expect(page.locator('#configuration-facts')).toContainText('Compared with selected declared-package baseline 1.2.3');
+  expect(await page.locator('.topbar').evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(width === 390 ? 110 : 64);
+  await page.locator('#configuration-inspection').scrollIntoViewIfNeeded();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath(`configuration-${width}-${theme}.png`), fullPage: true });
+  source.replace(); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('#configuration-facts article')).toHaveCount(0);
+  await expect(page.locator('#configuration-baseline')).toHaveValue('');
+  expect(source.methods.every(method => method === 'GET')).toBe(true);
+});
+test('resolved package comparisons name their baseline and disclose source provenance', async ({ page }) => {
+  await fixture(page);
+  await page.route('**/api/repositories/**/configuration', route => {
+    const repository = new URL(route.request().url()).pathname.includes('/other/') ? 'example/other' : 'example/repository';
+    const revision = 'a'.repeat(40), observedAt = '2099-01-01T00:00:00Z';
+    return route.fulfill({ json: { repository, observedRevision: revision, dataScope: 'factory-71', observedAt,
+      availability: 'available', coverage: 'complete', freshness: 'fresh', sources: [], reasons: [],
+      facts: [{ id: repository, component: '@example/package', factKind: 'lock-resolved-package', rawValue: '1.2.3',
+        sourcePath: 'package-lock.json', revision, observedAt, contractIdentity: 'npm-lockfile-v3', interpretation: 'supported' }] } });
+  });
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  await page.getByRole('button', { name: 'Inspect configuration', exact: true }).click();
+  await page.selectOption('#configuration-repository', 'example/other');
+  await page.getByRole('button', { name: 'Inspect selected repository', exact: true }).click();
+  await page.selectOption('#configuration-baseline', await page.locator('#configuration-baseline option').nth(1).getAttribute('value'));
+  await expect(page.locator('#configuration-facts')).toContainText('Compared with selected lock-resolved-package baseline 1.2.3');
+  const source = page.locator('#configuration-facts article').first().getByText('Source: package-lock.json', { exact: false });
+  await expect(source).not.toBeVisible();
+  await page.locator('#configuration-facts article').first().getByText('Source details', { exact: true }).click();
+  await expect(source).toBeVisible();
+});
+
+for (const primed of [false, true]) test(`configuration denial ends pending state and clears facts after prior observation ${primed}`, async ({ page }) => {
+  await fixture(page);
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  const inspect = page.getByRole('button', { name: 'Inspect configuration', exact: true });
+  if (primed) {
+    await inspect.click();
+    await expect(page.locator('#configuration-facts article')).toHaveCount(1);
+    await page.selectOption('#configuration-baseline', await page.locator('#configuration-baseline option').nth(1).getAttribute('value'));
+  }
+  await page.route('**/api/repositories/**/configuration', route => route.fulfill({ status: 403, json: { availability: 'denied' } }));
+  await inspect.click();
+  await expect(page.locator('#configuration-status')).toContainText('contents-read authority is denied');
+  await expect(inspect).not.toHaveAttribute('aria-busy', 'true');
+  await expect(page.locator('#configuration-facts article')).toHaveCount(0);
+  await expect(page.locator('#configuration-baseline')).toHaveValue('');
+});
+
+test('repository denial removes inspected configuration and its comparison baseline', async ({ page }) => {
+  const source = await fixture(page);
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  await page.getByRole('button', { name: 'Inspect configuration', exact: true }).click();
+  await expect(page.locator('#configuration-facts article')).toHaveCount(1);
+  await page.selectOption('#configuration-baseline', await page.locator('#configuration-baseline option').nth(1).getAttribute('value'));
+  source.fail(403); await page.getByRole('button', { name: 'Refresh collection' }).click();
+  await expect(page.locator('#configuration-facts article')).toHaveCount(0);
+  await expect(page.locator('#configuration-baseline')).toHaveValue('');
+  expect(source.methods.every(method => method === 'GET')).toBe(true);
+});
+test('configuration comparisons expire for both repositories and cannot use stale facts', async ({ page }) => {
+  const source = await fixture(page);
+  await page.goto(origin + '/workspace/repositories/example/repository');
+  await page.getByRole('button', { name: 'Inspect configuration' }).click();
+  await expect(page.locator('#configuration-facts')).toContainText('Observed value: 1.2.3');
+  await page.selectOption('#configuration-repository', 'example/other');
+  await page.getByRole('button', { name: 'Inspect selected repository' }).click();
+  await expect(page.locator('#configuration-facts')).toContainText('example/other · @example/package');
+  const baseline = page.locator('#configuration-baseline option').nth(1);
+  const baselineValue = await baseline.getAttribute('value');
+  await page.selectOption('#configuration-baseline', baselineValue);
+  await expect(page.locator('#configuration-facts')).toContainText('Compared with selected declared-package baseline 1.2.3');
+  const refresh = page.waitForResponse(response => response.url().endsWith('/configuration'));
+  await page.evaluate(() => { Date.now = () => Date.parse('2099-01-01T01:00:00.000Z'); });
+  await page.getByRole('button', { name: 'Inspect configuration' }).click();
+  await refresh;
+  await expect(page.locator('#configuration-status')).toContainText('stale');
+  await expect(page.locator('#configuration-facts')).toContainText('stale; do not use as a current comparison');
+  await expect(page.locator('#configuration-facts')).toContainText('Unassessed: one or both observations are stale.');
+  await expect(page.locator('#configuration-baseline option:disabled')).toHaveCount(2);
+  await expect(page.locator('#configuration-baseline')).toHaveValue(baselineValue);
+  expect(source.methods.every(method => method === 'GET')).toBeTruthy();
 });
 test('transient failure retains stale times while denied and replacement scopes remove old rows', async ({ page }) => {
   const source = await fixture(page); await page.goto(origin + '/workspace/factory');
