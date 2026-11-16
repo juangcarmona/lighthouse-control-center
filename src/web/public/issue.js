@@ -231,16 +231,43 @@ async function readEvidence(target, page, snapshot, operation) {
       if (byId('related-pr-' + pull.number)) continue;
       const item = document.createElement('article'); item.id = 'related-pr-' + pull.number;
       const heading = document.createElement('h3'); heading.append(sourceLink('PR #' + pull.number + (pull.title ? ' · ' + pull.title : ''), pull.sourceUrl));
-      item.append(paragraph('Evidence observed: ' + (data.observedAt ?? 'unknown')));
       item.append(heading, paragraph(`Source: ${pull.availability} · State ${pull.state ?? 'unknown'} · Draft ${pull.draft ?? 'unknown'}`));
-      if (pull.headRevision) item.append(paragraph('Head revision: ' + pull.headRevision));
-      item.append(paragraph('Checks: ' + (pull.checksAvailability ?? 'unavailable')));
-      for (const check of pull.checks ?? []) {
-        const row = paragraph(`${check.name}: ${check.status ?? 'unknown'} / ${check.conclusion ?? 'unknown'} · Check ID ${check.id ?? 'unknown'}`);
-        if (check.sourceUrl) row.append(sourceLink(' Inspect check', check.sourceUrl)); item.append(row);
+      const head = disclosure('PR head, checks and reviews');
+      head.append(paragraph('Head revision: ' + (pull.headRevision ?? 'unknown')),
+        paragraph('Checks: ' + (pull.checksAvailability ?? 'unavailable') + '. Inventory does not establish required-check policy or approval.'));
+      appendChecks(head, pull.checks);
+      head.append(paragraph('Reviews: ' + (pull.reviewsAvailability ?? 'unavailable') + ' · Protected human approval and integration authorization are not established.'));
+      for (const review of pull.reviews ?? []) {
+        const binding = review.commitId && pull.headRevision ? review.commitId === pull.headRevision ? 'exact' : 'stale' : 'unknown';
+        const row = paragraph(`${review.actor ?? 'Unknown actor'} · ${review.state ?? 'unknown'} · Review ID ${review.id ?? 'unknown'} · Revision ${review.commitId ?? 'unknown'} · Binding ${binding} · Source submitted ${formatDate(review.submittedAt)}`);
+        if (review.sourceUrl) row.append(sourceLink(' Inspect review', review.sourceUrl)); head.append(row);
       }
-      for (const source of pull.referencedBy ?? []) item.append(sourceLink('Referenced by source', source));
-      item.append(paragraph(pull.reason ?? 'Source PR evidence is unavailable.')); byId('issue-evidence').append(item);
+      const integrated = disclosure('Integration and exact-commit observations');
+      const integration = pull.integration;
+      integrated.append(paragraph('Integration: ' + (integration?.availability ?? 'unavailable')));
+      if (integration?.revision) integrated.append(paragraph('Integrated revision: ' + integration.revision),
+        sourceLink('Inspect integrated commit', `https://github.com/${target.repository}/commit/${integration.revision}`));
+      integrated.append(paragraph(`Target branch: ${integration?.targetBranch ?? 'unknown'} · Source default branch: ${integration?.defaultBranch ?? 'unknown'} · Source merged: ${formatDate(integration?.mergedAt)}`),
+        paragraph('Exact-commit checks: ' + (integration?.checksAvailability ?? 'unavailable')));
+      appendChecks(integrated, integration?.checks);
+      integrated.append(paragraph('Exact default-branch push runs: ' + (integration?.runsAvailability ?? 'unavailable')));
+      for (const run of integration?.runs ?? []) {
+        const detail = disclosure(`Workflow ${run.id} · Attempt ${run.attempt ?? 'unknown'} · ${run.status ?? 'unknown'} / ${run.conclusion ?? 'unknown'}`);
+        detail.append(sourceLink('Inspect post-integration execution', run.sourceUrl),
+          paragraph(`Revision: ${run.revision} · Branch: ${run.branch} · Event: ${run.event}`),
+          paragraph(`Source started: ${formatDate(run.startedAt)} · Source updated: ${formatDate(run.updatedAt)}`),
+          paragraph(`Artifact inventory: ${run.artifactsAvailability} · Metadata only; contents and provenance are not verified.`));
+        if (!run.artifacts?.length) detail.append(paragraph('No artifact records collected; required artifacts remain unknown.'));
+        for (const artifact of run.artifacts ?? []) detail.append(paragraph(`Artifact ${artifact.name} · ID ${artifact.id ?? 'unknown'} · ${artifact.availability} · ${artifact.compressedBytes ?? 'unknown'} compressed bytes`));
+        integrated.append(detail);
+      }
+      integrated.append(paragraph(integration?.reason ?? 'Integration evidence is unavailable. No verified delivery is claimed.'),
+        paragraph('Human decisions, required verification and artifact provenance remain separate. Deployment evidence is unavailable; this view does not establish production delivery.'));
+      const provenance = disclosure('PR source details');
+      provenance.append(paragraph('Evidence observed: ' + (data.observedAt ?? 'unknown')),
+        paragraph('Source updated: ' + formatDate(pull.updatedAt)), paragraph(pull.reason ?? 'Source PR evidence is unavailable.'));
+      for (const source of pull.referencedBy ?? []) provenance.append(sourceLink('Referenced by source', source));
+      item.append(head, integrated, provenance); byId('issue-evidence').append(item);
     }
     for (const report of data.reports) {
       if (byId('evidence-' + report.commentId)) continue;
@@ -261,6 +288,22 @@ async function readEvidence(target, page, snapshot, operation) {
   } catch (error) {
     if (error.name !== 'AbortError' && operation === revision && current?.key === target.key)
       byId('evidence-status').textContent = 'Lifecycle artifacts are unavailable. Issue text and source reports remain readable; no result, lease or command authority is inferred.';
+  }
+}
+
+function disclosure(title) {
+  const detail = document.createElement('details'), summary = document.createElement('summary');
+  summary.textContent = title; detail.append(summary); return detail;
+}
+
+function appendChecks(area, checks) {
+  if (!checks?.length) area.append(paragraph('No check records collected; verification remains unknown.'));
+  for (const check of checks ?? []) {
+    const detail = disclosure(`${check.name}: ${check.status ?? 'unknown'} / ${check.conclusion ?? 'unknown'} · Binding ${check.revisionBinding ?? 'unknown'}`);
+    detail.append(paragraph(`Check ID: ${check.id ?? 'unknown'} · Revision: ${check.headRevision ?? 'unknown'}`),
+      paragraph(`Source started: ${formatDate(check.startedAt)} · Source completed: ${formatDate(check.completedAt)}`));
+    if (check.revisionBinding !== 'exact') detail.append(paragraph('This check does not establish verification for the displayed revision.'));
+    if (check.sourceUrl) detail.append(sourceLink('Inspect check', check.sourceUrl)); area.append(detail);
   }
 }
 

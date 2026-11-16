@@ -86,3 +86,10 @@ button, summary { cursor: pointer; }
 #issue-state { flex-shrink:0; white-space:nowrap; }
 .header-context { white-space:nowrap; overflow:hidden; }
 .header-context>a { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#issue-evidence > article { border-top:1px solid var(--lh-border); padding-block:.5rem; overflow-wrap:anywhere; }
+#issue-evidence > article h3 { margin-block:.25rem .5rem; font-size:var(--lh-text-base); }
+#issue-evidence > article details { margin-block:.25rem; }
+#issue-evidence > article details details { margin-left:.5rem; padding-left:.5rem; border-left:1px solid var(--lh-border); }
+#issue-evidence > article p { margin-block:.375rem; }
+#later-stage-capabilities { font-size:var(--lh-text-small); margin-block:.5rem; }
+#later-stage-capabilities > summary { min-height:32px; }
