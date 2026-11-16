@@ -823,3 +823,60 @@ test('description precedes controls and an unsent draft survives return and relo
   await expect(page.locator('#comment-composer-slot textarea')).toHaveValue('');
   expect(await page.evaluate(() => Object.keys(sessionStorage).filter(key => key.startsWith('lcc:draft:')))).toEqual([]);
 });
+
+for (const width of [1280, 390]) for (const theme of ['light', 'dark']) test(`prerequisite visual contract ${width} ${theme}: source evidence remains explicit`, async ({ page }, info) => {
+  await page.setViewportSize({ width, height: 900 });
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 },
+    actions: { comment: { eligible: true }, refine: { eligible: false, reason: 'policy-unavailable', prerequisites: {
+      installedContract: { availability: 'available' }, writeAuthority: { availability: 'available' },
+      repositoryPolicy: { availability: 'unavailable', reason: 'policy-unavailable' },
+      sourceReservations: { availability: 'unavailable', reason: 'reservation-evidence-unavailable' },
+      stageEvidence: { availability: 'unavailable', reason: 'earlier-prerequisite-not-met' }
+    } } }
+  } });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.evaluate(theme => document.documentElement.dataset.lhTheme = theme, theme);
+  const summary = page.getByText('Source checks for Lighthouse actions', { exact: true });
+  await summary.focus(); await page.keyboard.press('Enter');
+  const checks = summary.locator('..');
+  await expect(checks).toContainText('Installed contract: available');
+  await expect(checks).toContainText('Stage evidence: unavailable');
+  await expect(page.getByRole('button', { name: 'Review Refine' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Review comment' })).toBeEnabled();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await checks.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: info.outputPath(`prerequisites-${width}-${theme}.png`), fullPage: false });
+});
+
+for (const status of ['running', 'completed']) test(`source execution ${status}: worker attempt and stage outcome stay distinct`, async ({ page }) => {
+  const harness = await fixture(page);
+  harness.controls({ availability: 'available', submissionAvailable: true, facts: {
+    repository: { name: 'example/repository' }, issue: { number: 7 }, actor: { id: 71 }, actions: { comment: { eligible: true } }
+  } });
+  await page.route('**/api/controls/csrf', route => route.fulfill({ json: { token: 'browser-test-csrf' } }));
+  const operations = [];
+  await page.route('**/api/issues/**/controls', route => {
+    if (route.request().method() === 'GET') return route.fallback();
+    operations.push(route.request().postDataJSON().operation);
+    return route.fulfill({ json: { availability: 'available', dataScope: 'fixture-71', actingUserId: 71,
+      id: 'a'.repeat(32), journalState: 'claimed', intent: { action: 'refine' }, receipt: {
+        state: 'source-admitted', sourceAcknowledged: true, source: 'https://github.com/example/repository/actions/runs/40',
+        execution: { availability: 'available', status, workerRunId: 50, workerAttempt: 2,
+          source: 'https://github.com/example/repository/actions/runs/50/attempts/2',
+          ...(status === 'completed' ? { result: 'blocked', resultSource: 'https://github.com/example/repository/issues/7#issuecomment-91' } : {}) }
+      }
+    } });
+  });
+  await page.goto(origin + '/workspace/issues/example/repository/7');
+  await page.getByRole('button', { name: 'Recover previous action' }).click();
+  const confirmation = page.getByRole('region', { name: 'Action confirmation' });
+  await expect(confirmation).toContainText('Execution: ' + status);
+  await expect(confirmation).toContainText('Attempt: 2');
+  await expect(confirmation).toContainText('Stage result: ' + (status === 'completed' ? 'blocked' : 'unconfirmed'));
+  await expect(confirmation.getByRole('link', { name: 'Inspect worker execution' })).toHaveAttribute('href', 'https://github.com/example/repository/actions/runs/50/attempts/2');
+  if (status === 'completed') await expect(confirmation.getByRole('link', { name: 'Read stage result' })).toHaveAttribute('href', 'https://github.com/example/repository/issues/7#issuecomment-91');
+  expect(operations).toEqual(['receipt']);
+});

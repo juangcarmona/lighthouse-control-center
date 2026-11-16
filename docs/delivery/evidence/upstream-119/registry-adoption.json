@@ -1,0 +1,30 @@
+{
+  "sourceRepository": "juangcarmona/lighthouse",
+  "sourceRepositoryId": 1427668548,
+  "releaseCommit": "0283ff1a5f01650dda4a44e9c7d1732c3af52c0a",
+  "sourcePullRequest": 724,
+  "versionPullRequest": 725,
+  "publicationRun": 43966091297,
+  "protectedDeployment": 7837625446,
+  "registry": "https://registry.npmjs.org",
+  "packages": {
+    "@juangcarmona/lighthouse-sdlc": {
+      "version": "0.25.1",
+      "gitHead": "0283ff1a5f01650dda4a44e9c7d1732c3af52c0a",
+      "integrity": "sha512-juW3pP64OIlwtAS2XB7fGBY2cIDFU+X1L/PCn1rMTUnCjBmLBJis2L+NY/ztYHwgFFnyo2EwfKCg0TxXc+XsjA==",
+      "installedFrom": "https://registry.npmjs.org/@juangcarmona/lighthouse-sdlc/-/lighthouse-sdlc-0.25.1.tgz"
+    },
+    "@juangcarmona/lighthouse": {
+      "version": "0.13.18",
+      "gitHead": "0283ff1a5f01650dda4a44e9c7d1732c3af52c0a",
+      "integrity": "sha512-gfWen4ApBiMLYmIXEm8k3PMtELlpGwdAy9+8InJzwheIt5mvuHqGtOXAMyPXZJJHHgFePe0NcyPvU7Rz/odqgg==",
+      "installedFrom": "https://registry.npmjs.org/@juangcarmona/lighthouse/-/lighthouse-0.13.18.tgz"
+    }
+  },
+  "adoption": {
+    "command": "lighthouse upgrade --scope all --apply",
+    "projectionVerification": "passed",
+    "providerWrites": "none",
+    "workerSourcePins": "Existing reviewed source-mode worker pins are retained; this additive SDK observation does not require a worker-template change."
+  }
+}

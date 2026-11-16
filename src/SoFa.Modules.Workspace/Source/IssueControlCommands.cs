@@ -37,6 +37,8 @@ internal sealed class IssueControlCommands(WorkspaceOptions settings, SourceCont
     JournalResult entry;
     if (command.Operation == "prepare")
     {
+      var sdkVersion = SourceControlBridge.InstalledSdkVersion();
+      if (sdkVersion is null) return Failure("unavailable", "The bundled source-control package version could not be verified.");
       var result = await bridge.Execute(new
       {
         version = 1,
@@ -52,7 +54,7 @@ internal sealed class IssueControlCommands(WorkspaceOptions settings, SourceCont
           || !Bound(prepared, identity, query)) return Failure("unavailable", "The action is no longer eligible or preparation could not be verified. Refresh current controls.");
       var current = await lease.Validate(budget.Token).ConfigureAwait(false);
       if (current.Availability != "available") return Failure(current.Availability, current.Reason);
-      entry = journal.Prepare(identity, key, digest, command.Action!, "0.22.0", prepared);
+      entry = journal.Prepare(identity, key, digest, command.Action!, sdkVersion, prepared);
     }
     else entry = command.Operation == "receipt" ? journal.Latest(identity) : journal.Read(identity, command.Id!);
     if (entry.State is "unavailable" or "denied" or "conflict") return Failure(entry.State, "The protected action journal is unavailable or the confirmation belongs to another source scope.");

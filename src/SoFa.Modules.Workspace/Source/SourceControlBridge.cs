@@ -10,6 +10,19 @@ internal sealed record ControlReadResult(string Availability, JsonElement? Facts
 
 internal sealed class SourceControlBridge : IDisposable
 {
+  internal static string? InstalledSdkVersion()
+  {
+    try
+    {
+      using var stream = File.OpenRead(Path.Combine(AppContext.BaseDirectory, "workspace-tools", "node_modules", "@juangcarmona", "lighthouse-sdlc", "package.json"));
+      if (stream.Length > 65536) return null;
+      using var package = JsonDocument.Parse(stream);
+      var version = SourceJson.Text(package.RootElement, "version");
+      return version is { Length: > 0 and <= 64 } && Version.TryParse(version, out _) ? version : null;
+    }
+    catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException) { return null; }
+  }
+
   private readonly SemaphoreSlim slots = new(2, 2);
   public void Dispose() => slots.Dispose();
   internal async Task<ControlReadResult> Observe(string repository, int number,

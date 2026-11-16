@@ -22,6 +22,10 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     'pending-question-inputs-changed': 'The issue or source question changed. Refresh before continuing.',
     'source-wait-not-current': 'The source no longer shows this question as the current wait.',
     'reservation-evidence-unavailable': 'Current source activity could not be verified. Refresh later; no new action can be prepared safely.',
+    'earlier-prerequisite-not-met': 'This evidence was not checked because an earlier requirement was not met.',
+    'owner-direct-entry': 'The repository owner can request this stage directly; no triage result is claimed.',
+    'validated-triage': 'The source verified the required triage evidence.',
+    'validated-refinement': 'The source verified current passing refinement evidence.',
   };
   const commentWriteReasons = {
     'write-authority-denied': 'The connected GitHub user or GitHub App installation lacks issue-write permission. Check the connected account and repository access, then refresh.',
@@ -94,11 +98,16 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
       details.append(text('Source receipt: ' + data.receipt.state), text(data.receipt.reason ?? ''));
       if (action !== 'comment') confirmation.append(text('Source admission: ' + (data.receipt.sourceAcknowledged === true ? 'confirmed' : 'unconfirmed')));
       if (action === 'continue') confirmation.append(text('Question resolved: ' + (data.receipt.questionResolved === true ? 'yes' : 'unconfirmed')));
-      if (data.receipt.execution) confirmation.append(text('Execution: ' + (data.receipt.execution.availability ?? 'unknown')
-        + ' · Worker: ' + (data.receipt.execution.workerRunId ?? 'unconfirmed') + ' · Stage result: ' + (data.receipt.execution.result ?? 'unconfirmed')
+      if (data.receipt.execution) confirmation.append(text('Execution: ' + (data.receipt.execution.status ?? 'unknown')
+        + ' · Evidence: ' + (data.receipt.execution.availability ?? 'unknown')
+        + ' · Worker: ' + (data.receipt.execution.workerRunId ?? 'unconfirmed')
+        + ' · Attempt: ' + (data.receipt.execution.workerAttempt ?? 'unknown') + ' · Stage result: ' + (data.receipt.execution.result ?? 'unconfirmed')
         + ' · ' + (data.receipt.execution.reason ?? '')));
-      if (typeof data.receipt.source === 'string' && data.receipt.source.startsWith('https://github.com/' + target.repository + '/')) {
-        const link = document.createElement('a'); link.href = data.receipt.source; link.textContent = 'Inspect source receipt'; link.rel = 'noreferrer noopener'; confirmation.append(link);
+      for (const [name, source] of [['Inspect source receipt', data.receipt.source],
+        ['Inspect worker execution', data.receipt.execution?.source], ['Read stage result', data.receipt.execution?.resultSource]]) {
+        if (typeof source !== 'string' || !source.startsWith('https://github.com/' + target.repository + '/')) continue;
+        const paragraph = document.createElement('p'), link = document.createElement('a');
+        link.href = source; link.textContent = name; link.rel = 'noreferrer noopener'; paragraph.append(link); confirmation.append(paragraph);
       }
     }
     confirmation.append(details);
@@ -170,6 +179,21 @@ export function renderActions(area, facts, target, scope, live, clear, contextLa
     const help = text(names.join(', ') + ' unavailable: ' + explain(code));
     help.className = 'lh-hint'; controls.append(help);
   }
+  const prerequisiteNames = { installedContract: 'Installed contract', writeAuthority: 'Write permission',
+    repositoryPolicy: 'Repository policy', sourceReservations: 'Source activity', stageEvidence: 'Stage evidence' };
+  const checks = document.createElement('details'), checksTitle = document.createElement('summary');
+  checksTitle.textContent = 'Source checks for Lighthouse actions'; checks.append(checksTitle);
+  for (const action of ['refine', 'propose']) {
+    const prerequisites = facts.actions?.[action]?.prerequisites;
+    if (!prerequisites) continue;
+    const title = document.createElement('h4'); title.textContent = actionLabels[action]; checks.append(title);
+    for (const [key, name] of Object.entries(prerequisiteNames)) {
+      const observation = prerequisites[key];
+      checks.append(text(name + ': ' + (observation?.availability ?? 'unavailable')
+        + (observation?.reason ? ' · ' + explain(observation.reason) : '')));
+    }
+  }
+  if (checks.children.length > 1) controls.append(checks);
   button('Recover previous action', () => command({ operation: 'receipt' }), recovery, !submissionAvailable, true);
   layout.append(controls);
   composer.append(feedback);

@@ -42,6 +42,9 @@ test('the released public SDK verifies the officially installed issue-control pr
   const facts = await sdk.observe({ number: 7 });
   assert.equal(facts.availability, 'available'); assert.equal(facts.capability.availability, 'available');
   assert.equal(facts.actions.comment.eligible, true); assert.equal(facts.actions.refine.eligible, true);
+  assert.equal(facts.actions.refine.prerequisites.stageEvidence.reason, 'owner-direct-entry');
+  assert.equal(facts.actions.propose.prerequisites.stageEvidence.reason, 'ready-required');
+  assert.equal(facts.actions.refine.prerequisites.installedContract.availability, 'available');
   const prepared = await sdk.prepare({ number: 7, action: 'refine', id: randomUUID() });
   assert.equal(prepared.version, 1); assert.equal(prepared.intent.scope, 'stage-only');
   assert.equal(prepared.effect.path, 'actions/workflows/lighthouse-sdlc-router.yml/dispatches');
