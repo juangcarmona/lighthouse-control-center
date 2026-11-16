@@ -1,0 +1,167 @@
+{
+  "observedAt": "2026-11-16T22:24:59.887Z",
+  "sourceWrites": 0,
+  "issues": [
+    {
+      "number": 47,
+      "http": 200,
+      "availability": "available",
+      "reason": null,
+      "submissionAvailable": true,
+      "missingReadScopes": [
+        "contents",
+        "pull_requests",
+        "variables"
+      ],
+      "actorId": 2834629,
+      "repositoryId": 1425429121,
+      "actions": {
+        "comment": {
+          "eligible": true,
+          "availability": "available"
+        },
+        "refine": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied",
+          "prerequisites": {
+            "installedContract": {
+              "availability": "available"
+            },
+            "writeAuthority": {
+              "availability": "denied",
+              "reason": "write-authority-denied"
+            },
+            "repositoryPolicy": {
+              "availability": "unavailable",
+              "reason": "policy-unavailable"
+            },
+            "sourceReservations": {
+              "availability": "unavailable",
+              "reason": "reservation-evidence-unavailable"
+            },
+            "stageEvidence": {
+              "availability": "unavailable",
+              "reason": "earlier-prerequisite-not-met"
+            }
+          }
+        },
+        "propose": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied",
+          "prerequisites": {
+            "installedContract": {
+              "availability": "available"
+            },
+            "writeAuthority": {
+              "availability": "denied",
+              "reason": "write-authority-denied"
+            },
+            "repositoryPolicy": {
+              "availability": "unavailable",
+              "reason": "policy-unavailable"
+            },
+            "sourceReservations": {
+              "availability": "unavailable",
+              "reason": "reservation-evidence-unavailable"
+            },
+            "stageEvidence": {
+              "availability": "unavailable",
+              "reason": "earlier-prerequisite-not-met"
+            }
+          }
+        },
+        "continue": {
+          "eligible": false,
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        }
+      },
+      "question": {
+        "availability": "none"
+      }
+    },
+    {
+      "number": 48,
+      "http": 200,
+      "availability": "available",
+      "reason": null,
+      "submissionAvailable": true,
+      "missingReadScopes": [
+        "contents",
+        "pull_requests",
+        "variables"
+      ],
+      "actorId": 2834629,
+      "repositoryId": 1425429121,
+      "actions": {
+        "comment": {
+          "eligible": true,
+          "availability": "available"
+        },
+        "refine": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied",
+          "prerequisites": {
+            "installedContract": {
+              "availability": "available"
+            },
+            "writeAuthority": {
+              "availability": "denied",
+              "reason": "write-authority-denied"
+            },
+            "repositoryPolicy": {
+              "availability": "unavailable",
+              "reason": "policy-unavailable"
+            },
+            "sourceReservations": {
+              "availability": "available"
+            },
+            "stageEvidence": {
+              "availability": "unavailable",
+              "reason": "earlier-prerequisite-not-met"
+            }
+          }
+        },
+        "propose": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied",
+          "prerequisites": {
+            "installedContract": {
+              "availability": "available"
+            },
+            "writeAuthority": {
+              "availability": "denied",
+              "reason": "write-authority-denied"
+            },
+            "repositoryPolicy": {
+              "availability": "unavailable",
+              "reason": "policy-unavailable"
+            },
+            "sourceReservations": {
+              "availability": "available"
+            },
+            "stageEvidence": {
+              "availability": "unavailable",
+              "reason": "earlier-prerequisite-not-met"
+            }
+          }
+        },
+        "continue": {
+          "eligible": false,
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        }
+      },
+      "question": {
+        "availability": "none"
+      }
+    }
+  ],
+  "runningConsumerRevision": "432163f0131dc968fdd21a5dd47bfeec14a78d4e",
+  "runningSdkVersion": "0.25.1",
+  "scope": "Read-only actual App-user preflight after deployment and connected comment/restart qualification."
+}
