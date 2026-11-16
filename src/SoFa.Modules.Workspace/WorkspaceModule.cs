@@ -88,9 +88,12 @@ public static class WorkspaceModule
           && await provider.EnsureCurrentAsync(current, context.RequestAborted).ConfigureAwait(false) == ProviderAuthority.Current)
       { context.Response.Redirect(ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin)); return Results.Empty; }
       var token = antiforgery.GetAndStoreTokens(context).RequestToken!;
+      var localSignOut = sessions.GetAuthenticatedRequest(context) is not null
+          ? Form("/auth/logout", token, "Sign out locally") : "";
       return Html("Lighthouse Control Center", "<p>Sign in with your configured identity provider to open the private workspace.</p>"
               + (context.Request.Query["access"] == "denied" ? "<p role=\"alert\">Sign-in was not accepted. Use the configured owner account and complete the required sign-in.</p>" : "")
-              + Form("/auth/login", token, "Sign in", ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin)));
+              + Form("/auth/login", token, "Sign in", ReturnPath(context.Request.Query["returnUrl"].ToString(), settings.Origin))
+              + localSignOut);
     }).AllowAnonymous();
     app.MapGet("/health/live", () => Results.Text("live")).AllowAnonymous();
     foreach (var asset in new[] { (Path: "/workspace-ui.js", File: "workspace-ui.js", Type: "text/javascript"),
