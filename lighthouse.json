@@ -14,7 +14,7 @@
   "packages": {
     "sdlc": {
       "name": "@juangcarmona/lighthouse-sdlc",
-      "version": "0.24.2"
+      "version": "0.25.0"
     },
     "ui": {
       "name": "@juangcarmona/lighthouse-ui",
