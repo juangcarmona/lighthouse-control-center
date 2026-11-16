@@ -1,0 +1,85 @@
+{
+  "observedAt": "2026-11-16T21:57:05.991Z",
+  "sourceWrites": 0,
+  "issues": [
+    {
+      "number": 47,
+      "http": 200,
+      "availability": "available",
+      "reason": null,
+      "submissionAvailable": true,
+      "missingReadScopes": [
+        "contents",
+        "pull_requests",
+        "variables"
+      ],
+      "actorId": 2834629,
+      "repositoryId": 1425429121,
+      "actions": {
+        "comment": {
+          "eligible": true,
+          "availability": "available"
+        },
+        "refine": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "propose": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "continue": {
+          "eligible": false,
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        }
+      },
+      "question": {
+        "availability": "none"
+      }
+    },
+    {
+      "number": 48,
+      "http": 200,
+      "availability": "available",
+      "reason": null,
+      "submissionAvailable": true,
+      "missingReadScopes": [
+        "contents",
+        "pull_requests",
+        "variables"
+      ],
+      "actorId": 2834629,
+      "repositoryId": 1425429121,
+      "actions": {
+        "comment": {
+          "eligible": true,
+          "availability": "available"
+        },
+        "refine": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "propose": {
+          "eligible": false,
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "continue": {
+          "eligible": false,
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        }
+      },
+      "question": {
+        "availability": "none"
+      }
+    }
+  ],
+  "runningConsumerRevision": "73b75bc0c72dd5f33ee624b3371a395607f4f80b",
+  "runningSdkVersion": "0.25.0",
+  "scope": "Pre-change connected App-user preflight; no source write. This is not qualification of the pending consumer candidate."
+}

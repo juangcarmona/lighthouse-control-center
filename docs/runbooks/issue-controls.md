@@ -2,7 +2,7 @@
 
 ## Contract and permissions
 
-The #48 candidate selects public CLI 0.12.61 / SDLC 0.22.0 and officially installs the issue-control projection from release commit `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`. The source repository must adopt that contract before dispatch controls become eligible. Source policy and runtime own admission and execution; Lighthouse Control Center remains optional.
+The #48 candidate selects exact public CLI and SDLC versions in `package.json`; `.lighthouse/sdlc.json` and the installed router record their adopted contract and immutable source pin. The original issue-control adoption used CLI 0.12.61 / SDLC 0.22.0 at `d7ce30a91a9d6c195cc9b6a34e7a42a36737099d`; later adoption receipts belong in `docs/delivery/evidence/`. The source repository must adopt that contract before dispatch controls become eligible. Source policy and runtime own admission and execution; Lighthouse Control Center remains optional.
 
 Keep the existing development App, numeric `SoFa:GitHub:AppId`, owner identity and selected repository installation. Source controls require effective connected-user write permission together with App Issues/write and Actions/write; shared fact/provenance reads additionally need Contents/read, Pull requests/read and Variables/read. Metadata/read is retained. Administration/read is a separate runner-view concern. Never substitute the operator CLI, a PAT or an installation token for the acting user. Registration/install permission changes and GitHub user consent remain separate owner actions. A missing contract or grant remains visible and unavailable.
 
@@ -32,6 +32,8 @@ The logical SQLite database cap is 50 MiB and 10,000 retained intentions, includ
 3. Confirm the protected local ID. The SDK receives one committed claim and can request one exact POST; repository admission still rechecks authority and inputs. Submission alone does not prove source acknowledgement, a worker or a passed stage.
 4. If the response is lost, use **Recover previous action**, then **Reconcile source result**. The same identity and immutable intent are retained; no automatic resend occurs. A new unresolved preparation cannot replace the previous one for that source scope. A terminal source receipt keeps its tombstone and permits a deliberately new action.
 5. After process restart, verify the restored owner and GitHub connection before recovery; the first migration from a process-local binary needs fresh login/linking. A restored preparation is reconciliation-only. If its effect was never observed, it can remain uncertain and block a replacement; this checkpoint provides no operator reset/delete bypass.
+
+The **Source checks for Lighthouse actions** disclosure shows the SDK's observed contract, permission, policy, activity and stage-evidence prerequisites. A check skipped after an earlier unmet requirement remains unavailable. The protected journal records the SDK version actually bundled with the application. Worker status, attempt and validated stage result have separate source links.
 
 The panel explains unavailable actions using the source response and the current question/eligibility details. If protected command storage is unavailable, submission and recovery are disabled while issue reading remains available. Opening a mission or preparing an effect does not send it; **Confirm and send** is the explicit write. A confirmed comment is distinguished from an unconfirmed request or completed delivery.
 

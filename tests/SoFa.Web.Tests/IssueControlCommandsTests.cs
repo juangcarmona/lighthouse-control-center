@@ -8,6 +8,7 @@ using JuanGCarmona.SoFa.Modules.Workspace;
 using JuanGCarmona.SoFa.Modules.Workspace.Identity;
 using JuanGCarmona.SoFa.Modules.Workspace.Source;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.Data.Sqlite;
 
 namespace SoFa.Web.Tests;
 
@@ -25,6 +26,7 @@ public sealed class IssueControlCommandsTests
     var prepared = await fixture.Commands.Handle(query, new("prepare", "comment", "Private ordinary reply"), CancellationToken.None);
     Assert.Equal("available", prepared.Availability);
     Assert.Equal("prepared", prepared.JournalState);
+    Assert.Equal(SourceControlBridge.InstalledSdkVersion(), fixture.JournalSdkVersion());
     Assert.Empty(fixture.Handler.Writes);
     fixture.Handler.LoseResponse = loseResponse;
     var sent = await fixture.Commands.Handle(query, new("submit", Id: prepared.Id), CancellationToken.None);
@@ -138,6 +140,13 @@ public sealed class IssueControlCommandsTests
       journal = new(root + "/state", root + "/keys"); Commands = new(settings, source, bridge, journal, transport, clock);
     }
     internal void Restart() { journal.Dispose(); journal = new(root + "/state", root + "/keys"); Commands = new(settings, source, bridge, journal, transport, clock); }
+    internal string JournalSdkVersion()
+    {
+      using var connection = new SqliteConnection("Data Source=" + root + "/state/intents.sqlite;Mode=ReadOnly");
+      connection.Open();
+      using var command = connection.CreateCommand(); command.CommandText = "SELECT sdk FROM intents LIMIT 1";
+      return (string)command.ExecuteScalar()!;
+    }
     internal async Task<OwnerSession> Session()
     {
       var principal = OwnerAdmissionTests.Principal(authenticationTime: clock.GetUtcNow().ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture));
