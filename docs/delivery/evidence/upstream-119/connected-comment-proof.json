@@ -1,0 +1,81 @@
+{
+  "revision": "432163f0131dc968fdd21a5dd47bfeec14a78d4e",
+  "sdkVersion": "0.25.1",
+  "observedAt": "2026-11-16T22:23:28.283Z",
+  "repository": "juangcarmona/lighthouse-control-center",
+  "repositoryId": 1425429121,
+  "actorId": 2834629,
+  "issue": 48,
+  "localId": "8b19b54ce40c49aabe8f1f614b5c1a7f",
+  "commentId": 6931172227,
+  "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/48#issuecomment-6931172227",
+  "sourceWrites": 1,
+  "submitRequests": 1,
+  "prepareRequests": 1,
+  "controlledLostBrowserResponse": true,
+  "serviceRestarted": true,
+  "sameSessionRestored": true,
+  "recoveredWithoutResend": true,
+  "questionResolved": false,
+  "sourceActionsBefore": {
+    "comment": {
+      "eligible": true,
+      "availability": "available"
+    },
+    "refine": {
+      "eligible": false,
+      "availability": "denied",
+      "reason": "write-authority-denied",
+      "prerequisites": {
+        "installedContract": {
+          "availability": "available"
+        },
+        "writeAuthority": {
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "repositoryPolicy": {
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        },
+        "sourceReservations": {
+          "availability": "available"
+        },
+        "stageEvidence": {
+          "availability": "unavailable",
+          "reason": "earlier-prerequisite-not-met"
+        }
+      }
+    },
+    "propose": {
+      "eligible": false,
+      "availability": "denied",
+      "reason": "write-authority-denied",
+      "prerequisites": {
+        "installedContract": {
+          "availability": "available"
+        },
+        "writeAuthority": {
+          "availability": "denied",
+          "reason": "write-authority-denied"
+        },
+        "repositoryPolicy": {
+          "availability": "unavailable",
+          "reason": "policy-unavailable"
+        },
+        "sourceReservations": {
+          "availability": "available"
+        },
+        "stageEvidence": {
+          "availability": "unavailable",
+          "reason": "earlier-prerequisite-not-met"
+        }
+      }
+    },
+    "continue": {
+      "eligible": false,
+      "availability": "unavailable",
+      "reason": "policy-unavailable"
+    }
+  }
+}

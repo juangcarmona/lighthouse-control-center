@@ -1,0 +1,133 @@
+{
+  "revision": "432163f0131dc968fdd21a5dd47bfeec14a78d4e",
+  "sdkVersion": "0.25.1",
+  "assets": [
+    {
+      "asset": "attention.js",
+      "http": 200,
+      "sha256": "6651b918babd318b37e76d146bc2c59030f526bd2c1296a1fee0659a30b6977d",
+      "matches": true
+    },
+    {
+      "asset": "health.js",
+      "http": 200,
+      "sha256": "a38281337a2f8a716e6330635fb1f614ec882ecf58464b26426a6ac86e746ecf",
+      "matches": true
+    },
+    {
+      "asset": "lighthouse.svg",
+      "http": 200,
+      "sha256": "775e7674efa07f17ac02d10d321bbd591813bc4ba0ddc0c9f26f2eb4a1d42903",
+      "matches": true
+    },
+    {
+      "asset": "factory.css",
+      "http": 200,
+      "sha256": "4ab89e2d9aad2f04c23f79079d6bd9900c35c9d61cdfb33d70afb86f70e9f230",
+      "matches": true
+    },
+    {
+      "asset": "attention-controls.js",
+      "http": 200,
+      "sha256": "48cf197f7121d129a2cf88c074ef0fd67058ec88ca20f6a5514db8fe3dcafcb2",
+      "matches": true
+    },
+    {
+      "asset": "account.js",
+      "http": 200,
+      "sha256": "160f154e13a265ccac8f735c497ffe85812a90b55571390de72438e60c43b17c",
+      "matches": true
+    },
+    {
+      "asset": "runtime.js",
+      "http": 200,
+      "sha256": "62a283d143e690542eb04afbf45268ac77b895f8f553627c73190825983f3c86",
+      "matches": true
+    },
+    {
+      "asset": "workspace-ui.js",
+      "http": 200,
+      "sha256": "546cb81fc6b7e99beaaf6c150934528245da31cc11611b70f0fc11c239599522",
+      "matches": true
+    },
+    {
+      "asset": "account.css",
+      "http": 200,
+      "sha256": "9893af0e6869b295237a545006fefea0b3ff7a666882339bcc61712acccb42bc",
+      "matches": true
+    },
+    {
+      "asset": "evidence-projections.js",
+      "http": 200,
+      "sha256": "94fca05a63ca55246f93b516d621e0bfbab244e31f388eb373cfc8bbf820f714",
+      "matches": true
+    },
+    {
+      "asset": "factory.js",
+      "http": 200,
+      "sha256": "54415acc201989fcaae9e0ab15345588c631e9d0d9bf8f786259498b8228d677",
+      "matches": true
+    },
+    {
+      "asset": "issue.css",
+      "http": 200,
+      "sha256": "4a4e7409b13168d75341c46bd8b80f79fb3456627b81f4e8ec34462fef69100f",
+      "matches": true
+    },
+    {
+      "asset": "tokens.css",
+      "http": 200,
+      "sha256": "031bd3ff360b2953443cb22ad003d1cfedc1abf410aa676a45694fb400d44804",
+      "matches": true
+    },
+    {
+      "asset": "app.css",
+      "http": 200,
+      "sha256": "191a06746575e28c9ace1469fb0996f12d8dcbf4c7bebd1bcb4f760675e4d001",
+      "matches": true
+    },
+    {
+      "asset": "runtime.css",
+      "http": 200,
+      "sha256": "3f60854e37e1c39b9baf921eb40eefcd7183d8a5dde84361c844cda3519a172c",
+      "matches": true
+    },
+    {
+      "asset": "read-projection-cache.js",
+      "http": 200,
+      "sha256": "1262c779713513eb24342bd5ee93824f929aa0492c7fc837ee9b30e897eb96a3",
+      "matches": true
+    },
+    {
+      "asset": "issue.js",
+      "http": 200,
+      "sha256": "eff4937facd08a64107c05ba121a9f24e58dc878accf2bd407e57bb764ed1e35",
+      "matches": true
+    },
+    {
+      "asset": "health.css",
+      "http": 200,
+      "sha256": "55b85796ab3315441c9e6ad034db76bfc680e5c11e4519e093b192fa96cd93d6",
+      "matches": true
+    },
+    {
+      "asset": "app.js",
+      "http": 200,
+      "sha256": "6b4fd72b66c008a3247e1e98ab223baca65cf92835eb600ee5e1acfb6fe0c649",
+      "matches": true
+    },
+    {
+      "asset": "markdown.js",
+      "http": 200,
+      "sha256": "51ab11daf59edb32d4b69e8aa768a26cf53cce754eb726264ea1fb34e6b63c2a",
+      "matches": true
+    },
+    {
+      "asset": "issue-actions.js",
+      "http": 200,
+      "sha256": "1e523ee4c9f76549d77d60fc08e60d714d95a4f027f131075c72d3cfc3e17bb8",
+      "matches": true
+    }
+  ],
+  "scope": "All 21 published JS/CSS/SVG assets match their exact merged source publication; HTML templates are rendered separately."
+}
