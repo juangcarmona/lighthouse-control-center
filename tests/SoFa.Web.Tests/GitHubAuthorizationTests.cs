@@ -194,6 +194,29 @@ public sealed class GitHubAuthorizationTests
   }
 
   [Fact]
+  public async Task WaitingRefreshCannotRenewAReplacementAccountOrReleaseItsLock()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var original = record.GitHub.Current!;
+    await original.RefreshLock.WaitAsync();
+    var refresh = fixture.Authorization.RefreshAsync(record, CancellationToken.None);
+    fixture.Handler.UserId = 72;
+    Assert.Equal(ConnectionOutcome.ConfirmationRequired, await fixture.Connect(record));
+    Assert.True(fixture.Authorization.Confirm(record));
+    var replacement = record.GitHub.Current!;
+    var calls = fixture.Handler.Calls.Count;
+    original.RefreshLock.Release();
+
+    Assert.Null(await refresh);
+    Assert.Equal(calls, fixture.Handler.Calls.Count);
+    Assert.Same(replacement, record.GitHub.Current);
+    Assert.Equal(1, original.RefreshLock.CurrentCount);
+    Assert.Equal(1, replacement.RefreshLock.CurrentCount);
+  }
+
+  [Fact]
   public async Task FailedExplicitRefreshDoesNotReportSuccessOrReplaceTheExistingAccount()
   {
     using var fixture = new SourceFixture();

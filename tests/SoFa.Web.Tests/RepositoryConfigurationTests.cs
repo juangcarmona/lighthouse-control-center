@@ -458,7 +458,7 @@ public sealed class RepositoryConfigurationTests
         {
           total_count = 1,
           installations = new[] { new { id = 9, app_id = 9001,
-          account = new { login = "example" }, permissions = new { metadata = "read", issues = "read", actions = "read", variables = "read", contents = ContentsGrant, pull_requests = "read" } } }
+          account = new { login = "example" }, permissions = new { metadata = "read", issues = "read", actions = "read", actions_variables = "read", contents = ContentsGrant, pull_requests = "read" } } }
         },
         "/user/installations/9/repositories" => new { total_count = 1, repositories = new[] { new { id = 22, full_name = "example/repository", visibility = "private", @private = true } } },
         "/repos/example/repository/commits/main" => new { sha = new string('a', 40), commit = new { tree = new { sha = RootTree } } },

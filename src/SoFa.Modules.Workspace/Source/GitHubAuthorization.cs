@@ -124,8 +124,7 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
       long generation;
       lock (record.Sync)
       {
-        if (!Live(record) || record.GitHub.Current is not { } current) return null;
-        connection = current;
+        if (!Live(record) || !ReferenceEquals(record.GitHub.Current, connection)) return null;
         generation = record.GitHub.Generation;
       }
       var guard = new SourceRequestGuard(record.Sync, () => Current(record, connection, generation), connection.Stopped.Token);
