@@ -49,6 +49,21 @@ public sealed class IssueControlCommandsTests
   }
 
   [Fact]
+  public async Task ReadOnlyReconciliationCanFinishBeyondTwentySecondsWithoutAnotherEffect()
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    var query = new GetIssueControls(session, "example/repository", 7);
+    var prepared = await fixture.Commands.Handle(query, new("prepare", "comment", "One effect"), CancellationToken.None);
+    await fixture.Commands.Handle(query, new("submit", Id: prepared.Id), CancellationToken.None);
+    fixture.Handler.SlowReconciliation = true;
+    var result = await fixture.Commands.Handle(query, new("reconcile", Id: prepared.Id), CancellationToken.None);
+    Assert.Equal("available", result.Availability);
+    Assert.Equal("comment-published", SourceJson.Text(result.Receipt!.Value, "state"));
+    Assert.Single(fixture.Handler.Writes);
+  }
+
+  [Fact]
   public async Task RestoredPreparationIsReadOnlyAndRevokedOrReplacedAccountCannotSendOrReadIt()
   {
     using var fixture = new Fixture();
@@ -160,6 +175,9 @@ public sealed class IssueControlCommandsTests
   {
     internal bool CanWrite { get; set; } = true;
     internal bool LoseResponse { get; set; }
+    internal bool SlowReconciliation { get; set; }
+    private bool slowReadStarted;
+    private readonly HashSet<string> delayedReads = [];
     internal List<string> Writes { get; } = [];
     private JsonElement? comment;
     private readonly object sync = new();
@@ -190,6 +208,12 @@ public sealed class IssueControlCommandsTests
         return Reply(comment, HttpStatusCode.Created);
       }
       Assert.Equal(HttpMethod.Get, request.Method);
+      if (SlowReconciliation && (path == "/user" || slowReadStarted))
+      {
+        slowReadStarted = true;
+        if ((path is "/user" or "/repos/example/repository" or "/repos/example/repository/issues/7" or "/repos/example/repository/issues/7/comments") && delayedReads.Add(path))
+          await Task.Delay(TimeSpan.FromSeconds(6), cancellationToken);
+      }
       if (path.Contains("/contents/", StringComparison.Ordinal))
       {
         var root = new DirectoryInfo(AppContext.BaseDirectory);

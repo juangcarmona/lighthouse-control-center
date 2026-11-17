@@ -60,7 +60,7 @@ internal sealed class SourceControlBridge : IDisposable
     if (path is not null) start.Environment["PATH"] = path;
     start.Environment["NODE_NO_WARNINGS"] = "1";
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-    budget.CancelAfter(TimeSpan.FromSeconds(20));
+    budget.CancelAfter(TimeSpan.FromSeconds(observation ? 20 : 30));
     using var process = new Process { StartInfo = start };
     Task<bool>? stderr = null;
     try
