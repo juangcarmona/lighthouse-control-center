@@ -1,0 +1,712 @@
+{
+  "scope": "Development-only connected App-user qualification; fixture retains future; physical-phone rehearsal waived.",
+  "repository": {
+    "name": "juangcarmona/lighthouse-control-center",
+    "id": 1425429121
+  },
+  "actorId": 2834629,
+  "appId": 5658460,
+  "sdkVersion": "0.25.1",
+  "sourceRevision": "81a3104da7abfc26e19626d3051ed64072b4159e",
+  "qualifiedConsumerRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+  "refine": {
+    "observedAt": "2026-11-17T09:11:45.160Z",
+    "localId": "f4f155824b7c47a0b3403d4972068ed3",
+    "requestId": "0ba3168b-a8fc-4d69-9dbb-01b0f48a803b",
+    "action": "refine",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44048980639,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6943118559,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943117122",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44048980639/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943117122"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "waiting",
+        "dispatchCommentId": 6943118559,
+        "workerRunId": 44049064265,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44049064265/attempts/1",
+        "questionConsumed": false,
+        "questionResolved": false,
+        "result": "blocked",
+        "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943264685"
+      },
+      "questionResolved": false,
+      "retry": false
+    }
+  },
+  "comment": {
+    "observedAt": "2026-11-17T09:21:07.799Z",
+    "localId": "6a3b2e4846f84a7b8cdd500800a7ae95",
+    "requestId": "965c3619-0ac3-4642-8a5a-e591bd2b6c6a",
+    "action": "comment",
+    "receipt": {
+      "state": "comment-published",
+      "commentId": 6943924711,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943924711",
+      "questionResolved": false
+    }
+  },
+  "ordinaryCommentAfterObservation": {
+    "observedAt": "2026-11-17T09:22:09.4853771+00:00",
+    "question": {
+      "availability": "available",
+      "stage": "refine",
+      "text": "For issue #258, which existing environment should be used for this qualification: the development preview or a separately qualified production environment (please identify it if choosing production)?",
+      "commentId": 6943264685,
+      "requestId": "1f379c66721884c7132f39960e9fc1a36a2b8cd76a2eed30518b0b6526c2f468",
+      "sourceCreatedAt": "2026-11-17T08:49:38Z",
+      "sourceUpdatedAt": "2026-11-17T08:49:38Z",
+      "questionDigest": "7572e5eb9b84b62d5030a7a513714b8c9ed920ba4c31d40203c5214a859c84c2",
+      "grantDigest": "82de1c64556be9a7c783653683bf354aae567e49904aff3477ed6b374d60c8f2",
+      "inputFreshness": "available",
+      "waitCurrent": true,
+      "current": true,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943264685"
+    },
+    "continue": {
+      "eligible": true,
+      "availability": "available"
+    }
+  },
+  "continue": {
+    "observedAt": "2026-11-17T09:35:03.284Z",
+    "localId": "ef04aa2ede0c40f882806f13a904552c",
+    "requestId": "e25dd4cb-378e-4049-8d62-730beb8abae1",
+    "action": "continue",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44055498414,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6944046187,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944043084",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44055498414/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944043084"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "completed",
+        "dispatchCommentId": 6944046187,
+        "workerRunId": 44055572222,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44055572222/attempts/1",
+        "questionConsumed": true,
+        "questionResolved": true,
+        "result": "passed",
+        "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944207614"
+      },
+      "questionResolved": true,
+      "retry": false,
+      "commentId": 6944035493,
+      "commentSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944035493"
+    }
+  },
+  "activeReservation": {
+    "observedAt": "2026-11-17T09:29:11.3624882+00:00",
+    "reservation": {
+      "availability": "available",
+      "active": [
+        {
+          "requestId": "966303ab5451272d7201791d722ad44c61ab2fa695aae1264fc8beb388d7cf31",
+          "commentId": 6944046187,
+          "workerRunId": 44055572222,
+          "stage": "refine",
+          "worker": "refine",
+          "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44055572222"
+        }
+      ],
+      "coverage": "source dispatch receipts and installed background workflows; labels remain separate source policy"
+    },
+    "actions": {
+      "comment": {
+        "eligible": true,
+        "availability": "available"
+      },
+      "refine": {
+        "eligible": false,
+        "availability": "denied",
+        "reason": "Issue reserved",
+        "prerequisites": {
+          "installedContract": {
+            "availability": "available"
+          },
+          "writeAuthority": {
+            "availability": "available"
+          },
+          "repositoryPolicy": {
+            "availability": "available"
+          },
+          "sourceReservations": {
+            "availability": "denied",
+            "reason": "authenticated-source-reservation"
+          },
+          "stageEvidence": {
+            "availability": "unavailable",
+            "reason": "earlier-prerequisite-not-met"
+          }
+        }
+      },
+      "propose": {
+        "eligible": false,
+        "availability": "denied",
+        "reason": "Issue reserved",
+        "prerequisites": {
+          "installedContract": {
+            "availability": "available"
+          },
+          "writeAuthority": {
+            "availability": "available"
+          },
+          "repositoryPolicy": {
+            "availability": "available"
+          },
+          "sourceReservations": {
+            "availability": "denied",
+            "reason": "authenticated-source-reservation"
+          },
+          "stageEvidence": {
+            "availability": "unavailable",
+            "reason": "earlier-prerequisite-not-met"
+          }
+        }
+      },
+      "continue": {
+        "eligible": false,
+        "availability": "denied",
+        "reason": "source-wait-not-current"
+      }
+    }
+  },
+  "duplicateAndMalformedCommand": {
+    "observedAt": "2026-11-17T09:28:04.986Z",
+    "runtimeRevision": "e06c58928a65c728cdd598915cd2567ba575b15d",
+    "actorId": 2834629,
+    "repositoryId": 1425429121,
+    "duplicate": {
+      "http": 200,
+      "availability": "available",
+      "localId": "f4f155824b7c47a0b3403d4972068ed3",
+      "requestId": "0ba3168b-a8fc-4d69-9dbb-01b0f48a803b",
+      "receipt": {
+        "state": "source-admitted",
+        "routerRunId": 44048980639,
+        "routerAttempt": 1,
+        "dispatchCommentId": 6943118559,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943117122",
+        "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44048980639/attempts/1",
+        "reason": null,
+        "sourceAcknowledged": true,
+        "sourceResult": {
+          "status": "admitted",
+          "reason": null,
+          "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943117122"
+        },
+        "execution": {
+          "availability": "available",
+          "status": "waiting",
+          "dispatchCommentId": 6943118559,
+          "workerRunId": 44049064265,
+          "workerAttempt": 1,
+          "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44049064265/attempts/1",
+          "questionConsumed": false,
+          "questionResolved": false,
+          "result": "blocked",
+          "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943264685"
+        },
+        "questionResolved": false,
+        "retry": false
+      }
+    },
+    "changedCommand": {
+      "http": 400,
+      "bodyFieldRejected": true
+    },
+    "preparations": 0
+  },
+  "recovery": {
+    "refineRestart": {
+      "requestId": "0ba3168b-a8fc-4d69-9dbb-01b0f48a803b",
+      "sourceRevision": "81a3104da7abfc26e19626d3051ed64072b4159e",
+      "newPreparations": 0,
+      "newSourceSends": 0
+    },
+    "comment": {
+      "requestId": "965c3619-0ac3-4642-8a5a-e591bd2b6c6a",
+      "lostPreparationResponseRecovered": true,
+      "lostSubmissionResponseReconciled": true,
+      "preparations": 1,
+      "sourceSends": 1
+    }
+  },
+  "historicalConsumerRevisions": {
+    "initialRefineAndRestart": "81a3104da7abfc26e19626d3051ed64072b4159e",
+    "artifactCorrectionAndOrdinaryComment": "e79451b29b2ba670917a03667c941a6007a32c35",
+    "continueAndInitialPropose": "e06c58928a65c728cdd598915cd2567ba575b15d",
+    "verifiedFailureRecoveryAndFreshStages": "90ee3346060e76fb46ee5bdfc30791ef78a8b995"
+  },
+  "failedProposal": {
+    "observedAt": "2026-11-17T09:58:12.861Z",
+    "localId": "236d13a76ca84aa4a1c83f8947e45e96",
+    "requestId": "7ac1d237-c3c9-4cfd-b887-89e80f8b7767",
+    "action": "propose",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44058017536,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6944401507,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944398474",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44058017536/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944398474"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "failed",
+        "dispatchCommentId": 6944401507,
+        "workerRunId": 44058084284,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44058084284/attempts/1",
+        "questionConsumed": false,
+        "questionResolved": false
+      },
+      "questionResolved": false,
+      "retry": false
+    }
+  },
+  "repairComment": {
+    "observedAt": "2026-11-17T10:03:55.745Z",
+    "localId": "9a954016d1a84ef5a2f4d03bbce87e5c",
+    "requestId": "2e363976-37be-49c2-b6be-4a9e84032b72",
+    "action": "comment",
+    "receipt": {
+      "state": "comment-published",
+      "commentId": 6944866940,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944866940",
+      "questionResolved": false
+    }
+  },
+  "freshRefinement": {
+    "observedAt": "2026-11-17T10:15:25.782Z",
+    "localId": "ad04abccc4cb480fa27d730adbbc7d9d",
+    "requestId": "cb7185bf-f73c-494e-aec6-3e7f05af8a67",
+    "action": "refine",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44061595300,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6944922477,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944918251",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44061595300/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944918251"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "completed",
+        "dispatchCommentId": 6944922477,
+        "workerRunId": 44061708654,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44061708654/attempts/1",
+        "questionConsumed": false,
+        "questionResolved": false,
+        "result": "passed",
+        "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945100807"
+      },
+      "questionResolved": false,
+      "retry": false
+    }
+  },
+  "propose": {
+    "observedAt": "2026-11-17T10:28:24.391Z",
+    "localId": "f5ca5e8c329443a3bd16be129694f456",
+    "requestId": "48f4fd5a-f08d-4e4c-bf40-379505ad1baa",
+    "action": "propose",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44063470951,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6945183464,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063470951/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "completed",
+        "dispatchCommentId": 6945183464,
+        "workerRunId": 44063549200,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063549200/attempts/1",
+        "questionConsumed": false,
+        "questionResolved": false,
+        "result": "passed",
+        "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945378315"
+      },
+      "questionResolved": false,
+      "retry": false
+    }
+  },
+  "freshProposalAuthority": {
+    "oldRequestId": "7ac1d237-c3c9-4cfd-b887-89e80f8b7767",
+    "newRequestId": "48f4fd5a-f08d-4e4c-bf40-379505ad1baa",
+    "oldInputDigest": "09ec3fffa6f0bb1fc48ef78181014d920ebb1301fa248f98e85e9fc081d47956",
+    "newInputDigest": "31eb06f845bf99c894a018aecca60339dd9f8f4e301f3311b8f2f9bca102c2cf",
+    "sourceRevision": "81a3104da7abfc26e19626d3051ed64072b4159e",
+    "staleInputDenial": {
+      "observedAt": "2026-11-17T10:04:41.8959404+00:00",
+      "propose": {
+        "eligible": false,
+        "availability": "unavailable",
+        "reason": "proposal-prerequisites-not-verified",
+        "prerequisites": {
+          "installedContract": {
+            "availability": "available"
+          },
+          "writeAuthority": {
+            "availability": "available"
+          },
+          "repositoryPolicy": {
+            "availability": "available"
+          },
+          "sourceReservations": {
+            "availability": "available"
+          },
+          "stageEvidence": {
+            "availability": "unavailable",
+            "reason": "proposal-prerequisites-not-verified"
+          }
+        }
+      }
+    },
+    "afterFreshRefinement": {
+      "observedAt": "2026-11-17T10:16:32.5097297+00:00",
+      "propose": {
+        "eligible": true,
+        "availability": "available",
+        "prerequisites": {
+          "installedContract": {
+            "availability": "available"
+          },
+          "writeAuthority": {
+            "availability": "available"
+          },
+          "repositoryPolicy": {
+            "availability": "available"
+          },
+          "sourceReservations": {
+            "availability": "available"
+          },
+          "stageEvidence": {
+            "availability": "available",
+            "reason": "validated-refinement"
+          }
+        }
+      }
+    },
+    "failedRequestReplayed": false
+  },
+  "retentionRecovery": [
+    {
+      "observedAt": "2026-11-17T09:50:58Z",
+      "beforeBundles": 32,
+      "afterBundles": 30,
+      "capacityCheck": "passed",
+      "scope": "Only this qualification's two completed Refine attempts; no foreign resources or retention-policy changes",
+      "records": [
+        {
+          "workflowRunId": 44049064265,
+          "attempt": 1,
+          "owner": "551167dc4e0c7aab657b3c71746966870bcdfd47323f2a533a6e4463b8b71ff2",
+          "retentionDigest": "4ee88e3fad9b737f64856e2320bd9f60d7d3e05c712a6434e866470e8591425c",
+          "journalSha256": "a6f3d09936be502eabad40b676c61531ded300d0eb4a6407b4257ad94f5094e6",
+          "originalProcessStopped": true,
+          "runtimeAndWorkspaceAbsent": true,
+          "publishedWorkflow": "success",
+          "delivery": [
+            {
+              "name": "lighthouse-44049064265-1",
+              "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            }
+          ],
+          "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+        },
+        {
+          "workflowRunId": 44055572222,
+          "attempt": 1,
+          "owner": "dac788f689eaedcb961bcc4d34b1754e5618563415ed7a6062d2da45e914d221",
+          "retentionDigest": "35c61276d5bb030415ba3ec7eaa0b4113624a74e0a39b968203ebec1d7fab3c4",
+          "journalSha256": "4381e2a4d383ad0365207ec255fe3aa326c2c579c6dfcb575aa6e447a1b424dc",
+          "originalProcessStopped": true,
+          "runtimeAndWorkspaceAbsent": true,
+          "publishedWorkflow": "success",
+          "delivery": [
+            {
+              "name": "lighthouse-44055572222-1",
+              "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            }
+          ],
+          "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+        }
+      ]
+    },
+    {
+      "observedAt": "2026-11-17T10:15:36Z",
+      "beforeBundles": 31,
+      "afterBundles": 30,
+      "capacityCheck": "passed",
+      "scope": "Only this qualification's fresh completed Refine attempt; no foreign resources or retention-policy changes",
+      "records": [
+        {
+          "workflowRunId": 44061708654,
+          "attempt": 1,
+          "owner": "0aae7299a3f5fd5ea43c4158e26c19ac60ea64280ec4e5ad3e4d0333b4d27803",
+          "retentionDigest": "5fbb734151a16d20d640e2ed0bee54913578a3c7456b7c9cee5367b41636d5f1",
+          "journalSha256": "11fe3bdefeea9e3c5f241029a680606f075e6bbb584881f4e43e16133be07beb",
+          "originalProcessStopped": true,
+          "runtimeAndWorkspaceAbsent": true,
+          "publishedWorkflow": "success",
+          "delivery": [
+            {
+              "name": "lighthouse-44061708654-1",
+              "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            }
+          ],
+          "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+        }
+      ]
+    },
+    {
+      "observedAt": "2026-11-17T10:35:11Z",
+      "beforeBundles": 31,
+      "afterBundles": 30,
+      "capacityCheck": "passed",
+      "scope": "Only this qualification's completed Propose attempt; no foreign resources or retention-policy changes",
+      "records": [
+        {
+          "workflowRunId": 44063549200,
+          "attempt": 1,
+          "owner": "8372c79eec8931761a57534251a0f8a81908b580f24cc37b4dd8952c9f9a9bb2",
+          "retentionDigest": "c6f41213ab5d98a833731cc4f7b31d3458bef661f6d9ed5490304f4bb43aa2eb",
+          "journalSha256": "8c88f5c773cdfba1045133dab4fa6cf10ccc5396e2043a52260cb0f1cd3b20c1",
+          "originalProcessStopped": true,
+          "runtimeAndWorkspaceAbsent": true,
+          "publishedWorkflow": "success",
+          "delivery": [
+            {
+              "name": "lighthouse-44063549200-1",
+              "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            }
+          ],
+          "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "observedAt": "2026-11-17T10:31:14.606Z",
+    "sourceWrites": 0,
+    "operations": [
+      "receipt"
+    ],
+    "runtimeRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+    "sourceRevision": "81a3104da7abfc26e19626d3051ed64072b4159e",
+    "requestId": "48f4fd5a-f08d-4e4c-bf40-379505ad1baa",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44063470951,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6945183464,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063470951/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "completed",
+        "dispatchCommentId": 6945183464,
+        "workerRunId": 44063549200,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063549200/attempts/1",
+        "questionConsumed": false,
+        "questionResolved": false,
+        "result": "passed",
+        "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945378315"
+      },
+      "questionResolved": false,
+      "retry": false
+    },
+    "captureProcedureCorrection": "An initial helper probe used programmatic focus after a pointer click; final assertions use actual Shift+Tab and Tab traversal.",
+    "physicalPhoneRehearsal": "waived; browser widths are not physical-device acceptance",
+    "images": [
+      {
+        "file": "connected-stage-1280-light.png",
+        "width": 1280,
+        "theme": "light",
+        "keyboardFocusVisible": true,
+        "horizontalOverflow": false,
+        "accessibilityViolations": 0,
+        "sha256": "687a34761e8a33a05723c1ebce62529aae34c1243cc47ba901bb0a7658aeef52"
+      },
+      {
+        "file": "connected-stage-1280-dark.png",
+        "width": 1280,
+        "theme": "dark",
+        "keyboardFocusVisible": true,
+        "horizontalOverflow": false,
+        "accessibilityViolations": 0,
+        "sha256": "14066b4c507fb640376523878690d4f84e833da6673f4cd1acac535f5688a214"
+      },
+      {
+        "file": "connected-stage-390-light.png",
+        "width": 390,
+        "theme": "light",
+        "keyboardFocusVisible": true,
+        "horizontalOverflow": false,
+        "accessibilityViolations": 0,
+        "sha256": "a8babf9353fceb66ac2074698da932c320c00156073df71cd500c653c3ce35f4"
+      },
+      {
+        "file": "connected-stage-390-dark.png",
+        "width": 390,
+        "theme": "dark",
+        "keyboardFocusVisible": true,
+        "horizontalOverflow": false,
+        "accessibilityViolations": 0,
+        "sha256": "7c7ee217612095bb45a2fb984b6f4626c93d58c5e47fe72e067d3bb7bc8f2586"
+      }
+    ]
+  },
+  "proposalPublication": {
+    "observedAt": "2026-11-17T10:29:20.703182+00:00",
+    "repository": "juangcarmona/lighthouse-control-center",
+    "repositoryId": 1425429121,
+    "number": 262,
+    "title": "Proposal for #258: Qualify connected source actions and explicit continuation",
+    "state": "open",
+    "merged": false,
+    "source": "https://github.com/juangcarmona/lighthouse-control-center/pull/262",
+    "base": "81a3104da7abfc26e19626d3051ed64072b4159e",
+    "head": "d77063c4e87835306b0bddcaed85610af82e2558",
+    "scope": "Controlled acceptance/evidence plan only; no implementation/integration authorization",
+    "strictOpenSpec": "1.15.0 passed in the source workflow",
+    "sourceRunId": 44063549200
+  },
+  "independentCommentObservation": {
+    "observedAt": "2026-11-17T10:38:01.720892+00:00",
+    "completeConversationComments": 19,
+    "typedOwnerComments": [
+      {
+        "requestId": "965c3619-0ac3-4642-8a5a-e591bd2b6c6a",
+        "intent": "comment",
+        "commentId": 6943924711,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6943924711"
+      },
+      {
+        "requestId": "e25dd4cb-378e-4049-8d62-730beb8abae1",
+        "intent": "continue",
+        "commentId": 6944035493,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944035493"
+      },
+      {
+        "requestId": "2e363976-37be-49c2-b6be-4a9e84032b72",
+        "intent": "comment",
+        "commentId": 6944866940,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6944866940"
+      }
+    ]
+  },
+  "originalStableKeyObservation": {
+    "total_count": 1,
+    "routerRunId": 44048980639,
+    "artifactId": 14313160759
+  },
+  "sourceEffectInventory": {
+    "clientWorkflowDispatches": 4,
+    "typedOwnerComments": 3,
+    "confirmedEffects": 7,
+    "nativeWorkerRuns": 5,
+    "eachWorkflowRunAttempt": 1,
+    "meaning": "Distinct explicit requests; original failed request and transmission claims retained. This is not a global exactly-once execution claim."
+  },
+  "verification": {
+    "testedConsumerRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+    "testedSourceTree": "97b2bc416e0f4930922ec07361cfea8f658eccd6",
+    "localCommand": "npm run verify",
+    "exitCode": 0,
+    "nodeTests": 127,
+    "runtimeTests": 38,
+    "workspaceTests": 358,
+    "browserTests": 159,
+    "hostedRepositoryRun": 44060201780,
+    "hostedFoundationRun": 44060201807
+  },
+  "currentConsumerRestart": {
+    "observedAt": "2026-11-17T10:36:08.980Z",
+    "localId": "f5ca5e8c329443a3bd16be129694f456",
+    "requestId": "48f4fd5a-f08d-4e4c-bf40-379505ad1baa",
+    "action": "propose",
+    "receipt": {
+      "state": "source-admitted",
+      "routerRunId": 44063470951,
+      "routerAttempt": 1,
+      "dispatchCommentId": 6945183464,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496",
+      "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063470951/attempts/1",
+      "reason": null,
+      "sourceAcknowledged": true,
+      "sourceResult": {
+        "status": "admitted",
+        "reason": null,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496"
+      },
+      "execution": {
+        "availability": "available",
+        "status": "completed",
+        "dispatchCommentId": 6945183464,
+        "workerRunId": 44063549200,
+        "workerAttempt": 1,
+        "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063549200/attempts/1",
+        "questionConsumed": false,
+        "questionResolved": false,
+        "result": "passed",
+        "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945378315"
+      },
+      "questionResolved": false,
+      "retry": false
+    }
+  },
+  "observedAt": "2026-11-17T10:38:05.076377+00:00",
+  "receiptProjection": "Source-ledger key digests omitted; immutable request identities, runs/attempts, source URLs and observed results retained."
+}

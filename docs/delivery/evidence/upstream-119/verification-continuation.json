@@ -1,0 +1,60 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "lighthouse-control-center-connected-qualification",
+  "run-id": "upstream-119-20261117-verification-continuation",
+  "revision": "e06c58928a65c728cdd598915cd2567ba575b15d",
+  "results": [
+    {
+      "test-id": "explicit-owner-question-grant-binding-resumes-exact-worker-and-resolves-question",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-AUTHORIZED-ENTRY",
+          "digest": "sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85"
+        }
+      ]
+    },
+    {
+      "test-id": "source-authenticated-active-reservation-denies-new-stages",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-AUTHORIZED-ENTRY",
+          "digest": "sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463"
+        }
+      ]
+    },
+    {
+      "test-id": "duplicate-client-submit-recovers-original-worker-and-changed-command-is-refused",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "QR-EXECUTION-RECOVERY",
+          "digest": "sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6"
+        },
+        {
+          "id": "QR-EXECUTION-SECURITY",
+          "digest": "sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790"
+        }
+      ]
+    },
+    {
+      "test-id": "initial-native-propose-publication-stopped-in-runtime-preflight",
+      "level": "end-to-end",
+      "outcome": "failed",
+      "citations": [
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "documents": [
+    {
+      "file": "docs/delivery/evidence/upstream-119/verification-ordinary-comment.json",
+      "modelRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+      "evidenceResults": [
+        {
+          "testId": "ordinary-comment-confirmed-once-and-current-question-retained",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current",
+            "current"
+          ]
+        },
+        {
+          "testId": "lost-preparation-and-submission-response-recovery-preserves-comment-identity",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463",
+          "source": "docs/delivery/evidence/upstream-119/verification-ordinary-comment.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85",
+          "source": "docs/delivery/evidence/upstream-119/verification-ordinary-comment.json",
+          "line": 2,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[2].id"
+        },
+        {
+          "id": "QR-EXECUTION-RECOVERY",
+          "digest": "sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6",
+          "source": "docs/delivery/evidence/upstream-119/verification-ordinary-comment.json",
+          "line": 3,
+          "form": "verification-evidence",
+          "evidenceField": "results[2].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "e79451b29b2ba670917a03667c941a6007a32c35"
+    },
+    {
+      "file": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+      "modelRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+      "evidenceResults": [
+        {
+          "testId": "explicit-owner-question-grant-binding-resumes-exact-worker-and-resolves-question",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current",
+            "current"
+          ]
+        },
+        {
+          "testId": "source-authenticated-active-reservation-denies-new-stages",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        },
+        {
+          "testId": "duplicate-client-submit-recovers-original-worker-and-changed-command-is-refused",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current",
+            "current"
+          ]
+        },
+        {
+          "testId": "initial-native-propose-publication-stopped-in-runtime-preflight",
+          "level": "end-to-end",
+          "outcome": "failed",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-AUTHORIZED-ENTRY",
+          "digest": "sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463",
+          "source": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85",
+          "source": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+          "line": 2,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[2].id"
+        },
+        {
+          "id": "FR-AUTHORIZED-ENTRY",
+          "digest": "sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463",
+          "source": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+          "line": 3,
+          "form": "verification-evidence",
+          "evidenceField": "results[2].citations[1].id"
+        },
+        {
+          "id": "QR-EXECUTION-RECOVERY",
+          "digest": "sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6",
+          "source": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+          "line": 4,
+          "form": "verification-evidence",
+          "evidenceField": "results[3].citations[1].id"
+        },
+        {
+          "id": "QR-EXECUTION-SECURITY",
+          "digest": "sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790",
+          "source": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+          "line": 5,
+          "form": "verification-evidence",
+          "evidenceField": "results[3].citations[2].id"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85",
+          "source": "docs/delivery/evidence/upstream-119/verification-continuation.json",
+          "line": 6,
+          "form": "verification-evidence",
+          "evidenceField": "results[4].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "e06c58928a65c728cdd598915cd2567ba575b15d"
+    },
+    {
+      "file": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+      "modelRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+      "evidenceResults": [
+        {
+          "testId": "fresh-input-refine-propose-and-exact-published-plan",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current",
+            "current"
+          ]
+        },
+        {
+          "testId": "VerifiedTerminationAllowsFreshPreparationWithoutReclaimingTheOriginalEffect-nine-isolated-cases",
+          "level": "integration",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current",
+            "current"
+          ]
+        },
+        {
+          "testId": "current-consumer-restart-recovers-exact-propose-with-zero-new-source-effects",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current",
+            "current"
+          ]
+        },
+        {
+          "testId": "desktop-narrow-browser-keyboard-focus-no-overflow-zero-axe-violations",
+          "level": "end-to-end",
+          "outcome": "passed",
+          "citationStatuses": [
+            "current"
+          ]
+        },
+        {
+          "testId": "physical-phone-rehearsal-owner-waived-not-performed",
+          "level": "manual",
+          "outcome": "inconclusive",
+          "citationStatuses": [
+            "current"
+          ]
+        }
+      ],
+      "citations": [
+        {
+          "id": "FR-AUTHORIZED-ENTRY",
+          "digest": "sha256:9d9205257c47d81d2f01866ea9d643bc5f169f4295cf37a600086a405eab8463",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 1,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[1].id"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 2,
+          "form": "verification-evidence",
+          "evidenceField": "results[1].citations[2].id"
+        },
+        {
+          "id": "QR-EXECUTION-RECOVERY",
+          "digest": "sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 3,
+          "form": "verification-evidence",
+          "evidenceField": "results[2].citations[1].id"
+        },
+        {
+          "id": "QR-EXECUTION-SECURITY",
+          "digest": "sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 4,
+          "form": "verification-evidence",
+          "evidenceField": "results[2].citations[2].id"
+        },
+        {
+          "id": "QR-EXECUTION-RECOVERY",
+          "digest": "sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 5,
+          "form": "verification-evidence",
+          "evidenceField": "results[3].citations[1].id"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 6,
+          "form": "verification-evidence",
+          "evidenceField": "results[3].citations[2].id"
+        },
+        {
+          "id": "QR-MOBILE-OPERATIONS",
+          "digest": "sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 7,
+          "form": "verification-evidence",
+          "evidenceField": "results[4].citations[1].id"
+        },
+        {
+          "id": "QR-MOBILE-OPERATIONS",
+          "digest": "sha256:2485b5877f0872af3dbdaa0a7ac00ac7651b28173adf6e3cf8d9ed643029bb35",
+          "source": "docs/delivery/evidence/upstream-119/verification-current-consumer.json",
+          "line": 8,
+          "form": "verification-evidence",
+          "evidenceField": "results[5].citations[1].id"
+        }
+      ],
+      "diagnostics": [],
+      "runRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995"
+    }
+  ],
+  "diagnostics": []
+}

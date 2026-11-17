@@ -1,0 +1,80 @@
+{
+  "observedAt": "2026-11-17T10:31:14.606Z",
+  "sourceWrites": 0,
+  "operations": [
+    "receipt"
+  ],
+  "runtimeRevision": "90ee3346060e76fb46ee5bdfc30791ef78a8b995",
+  "sourceRevision": "81a3104da7abfc26e19626d3051ed64072b4159e",
+  "requestId": "48f4fd5a-f08d-4e4c-bf40-379505ad1baa",
+  "receipt": {
+    "state": "source-admitted",
+    "routerRunId": 44063470951,
+    "routerAttempt": 1,
+    "dispatchCommentId": 6945183464,
+    "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496",
+    "outcomeSource": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063470951/attempts/1",
+    "reason": null,
+    "sourceAcknowledged": true,
+    "sourceResult": {
+      "status": "admitted",
+      "reason": null,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945179496"
+    },
+    "execution": {
+      "availability": "available",
+      "status": "completed",
+      "dispatchCommentId": 6945183464,
+      "workerRunId": 44063549200,
+      "workerAttempt": 1,
+      "source": "https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44063549200/attempts/1",
+      "questionConsumed": false,
+      "questionResolved": false,
+      "result": "passed",
+      "resultSource": "https://github.com/juangcarmona/lighthouse-control-center/issues/258#issuecomment-6945378315"
+    },
+    "questionResolved": false,
+    "retry": false
+  },
+  "captureProcedureCorrection": "An initial helper probe used programmatic focus after a pointer click; final assertions use actual Shift+Tab and Tab traversal.",
+  "physicalPhoneRehearsal": "waived; browser widths are not physical-device acceptance",
+  "images": [
+    {
+      "file": "connected-stage-1280-light.png",
+      "width": 1280,
+      "theme": "light",
+      "keyboardFocusVisible": true,
+      "horizontalOverflow": false,
+      "accessibilityViolations": 0,
+      "sha256": "687a34761e8a33a05723c1ebce62529aae34c1243cc47ba901bb0a7658aeef52"
+    },
+    {
+      "file": "connected-stage-1280-dark.png",
+      "width": 1280,
+      "theme": "dark",
+      "keyboardFocusVisible": true,
+      "horizontalOverflow": false,
+      "accessibilityViolations": 0,
+      "sha256": "14066b4c507fb640376523878690d4f84e833da6673f4cd1acac535f5688a214"
+    },
+    {
+      "file": "connected-stage-390-light.png",
+      "width": 390,
+      "theme": "light",
+      "keyboardFocusVisible": true,
+      "horizontalOverflow": false,
+      "accessibilityViolations": 0,
+      "sha256": "a8babf9353fceb66ac2074698da932c320c00156073df71cd500c653c3ce35f4"
+    },
+    {
+      "file": "connected-stage-390-dark.png",
+      "width": 390,
+      "theme": "dark",
+      "keyboardFocusVisible": true,
+      "horizontalOverflow": false,
+      "accessibilityViolations": 0,
+      "sha256": "7c7ee217612095bb45a2fb984b6f4626c93d58c5e47fe72e067d3bb7bc8f2586"
+    }
+  ],
+  "receiptProjection": "Source-ledger key digests omitted; immutable request identities, runs/attempts, source URLs and observed results retained."
+}

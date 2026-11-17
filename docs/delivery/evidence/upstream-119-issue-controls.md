@@ -6,6 +6,30 @@ The consumer displays those observations in an optional disclosure. Missing and 
 
 The source collector, caller transport, immutable intent, claim, authenticated source admission and result reconciliation retain their existing boundaries. No credential, consent, journal reset, automatic resend, scheduler or delivery policy change is introduced. Historical source and connected-user receipts remain valid only for their recorded revisions.
 
+## Completed connected qualification, 2026-11-17
+
+The [native journey receipt](upstream-119/connected-native-journey.json) records actual App-user 2834629, intended App 5658460 and repository 1425429121. Refine published a verified question; the ordinary comment left it current; explicit Continue consumed that question under its original grant and produced passed refinement. Propose reached a verified runtime-preflight failure, which remains preserved. After verified operator recovery, an ordinary evidence update required fresh refinement; the distinct new Propose passed and published [qualification plan #262](https://github.com/juangcarmona/lighthouse-control-center/pull/262). This plan grants no implementation or integration.
+
+| Check | Recorded result |
+| --- | --- |
+| Exact source association | Seven distinct explicit source effects; five native worker runs, each at workflow attempt 1; source acknowledgements and validated stage results recorded separately |
+| Ordinary comment and Continue | Source comment 6943924711 retained the same pending question; answer 6944035493 resumed exact worker 44055572222/1, with question consumption and resolution verified |
+| Recovery and changed inputs | Lost preparation/submission responses and application restarts recovered existing identities; duplicate client submit recovered the original worker; changed command and stale proposal inputs were refused |
+| Active reservation | The connected observer authenticated worker 44055572222 and denied additional stages while it ran |
+| Failed execution | Worker 44058084284 stopped before agent execution; its failure and original transmission claim remain retained, with no replay |
+| Fresh proposal | Request 48f4fd5a-f08d-4e4c-bf40-379505ad1baa → router 44063470951/1 → worker 44063549200/1 → passed result and PR #262 |
+| Current consumer restart | Candidate 90ee334 recovered that same passed Propose identity after restart with zero new source effects; the existing owner session and GitHub connection survived |
+
+The tested candidate is `90ee3346060e76fb46ee5bdfc30791ef78a8b995`, using SDK 0.25.1. Earlier consumer revisions and immutable repository source `81a3104da7abfc26e19626d3051ed64072b4159e` are recorded per observation. Full local verification exited 0: 127 Node, 38 runtime, 358 workspace and 159 browser cases. Exact candidate [repository verification 44060201780](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44060201780) and [foundation 44060201807](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44060201807) passed. Merge, default-branch CI and the resulting development deployment are retained separately in [#261](https://github.com/juangcarmona/lighthouse-control-center/pull/261) and the parent completion tracker.
+
+[Actual browser observations](upstream-119/connected-stage-browser-proof.json) recover the existing passed Propose with one receipt read, no preparation and no submission. All four views pass real keyboard traversal/visible focus, no horizontal overflow and zero Axe violations: [desktop light](upstream-119/connected-stage-1280-light.png), [desktop dark](upstream-119/connected-stage-1280-dark.png), [narrow light](upstream-119/connected-stage-390-light.png), [narrow dark](upstream-119/connected-stage-390-dark.png). The first capture helper used programmatic focus after a pointer click; final assertions use actual Shift+Tab/Tab traversal. Physical-phone rehearsal remains owner-waived; production is outside this qualification.
+
+Revision-specific external evidence preserves [ordinary-comment recovery](upstream-119/verification-ordinary-comment.json), [continuation and the historical failed proposal](upstream-119/verification-continuation.json), and [current-consumer checks plus the unperformed phone rehearsal](upstream-119/verification-current-consumer.json). The [ProductShape report](upstream-119/product-verification-report.json) has zero diagnostics and current FR/QR citations. This checks recorded claims and citation integrity; it does not execute tests, approve product intent or establish full lifecycle/Structured Behaviour coverage. The historical failed attempt and waived/inconclusive physical-device check remain visible.
+
+Four completed bundles belonging to this qualification were archived only after matching seals/journals, successful source publication, stopped processes and absent runtime/workspace resources were verified. Originals and verified copies remain private, with no deletion. Capacity returned to 30 bundles: [initial recovery](upstream-119/retention-capacity-proof.json), [fresh Refine](upstream-119/retention-capacity-after-fresh-refine.json), [published Propose](upstream-119/retention-capacity-after-propose.json). The retention policy and unrelated resources were preserved.
+
+Public receipt projections omit source-ledger key digests and retain immutable request IDs, exact runs/attempts, outcomes and source URLs. The following checkpoints describe their recorded times and precede the completed qualification above.
+
 ## Delivery evidence
 
 - Source package publication and actual registry archive installation.
