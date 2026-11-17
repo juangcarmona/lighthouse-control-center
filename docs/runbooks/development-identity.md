@@ -54,6 +54,8 @@ Keep generated client secrets, GitHub grants and TLS keys out of issues, PRs, ch
 
 After accepting changed App installation permissions in GitHub, open **Account → Session, disconnection and sign-out → Refresh GitHub permissions**. This explicitly renews the connected user's credentials before their normal expiry and verifies the same numeric GitHub identity. It preserves the account association, protected action receipts and session's absolute deadline. Repository permissions are read again from GitHub; a successful refresh does not itself prove a new grant or action eligibility. A failed refresh is shown explicitly; revoked credentials require reconnection.
 
+A read started before rotation may be rejected after GitHub invalidates the previous token. That observation remains unavailable; its old credential cannot revoke the newer grant. A rejection of the current credential still disconnects the account. If the retained grant has already been removed, choose **Connect GitHub account** and authorize the same App again; refreshing cannot recreate a removed connection.
+
 ## Session and failure behavior
 
 The browser holds an opaque Secure/HttpOnly owner cookie. Provider and source tokens stay server-side. The access-continuity development candidate expires after two idle hours or twelve hours from the original provider authentication, whichever comes first. Provider renewal retains that original absolute deadline. The development realm must have matching SSO limits; external-provider constraints remain authoritative. Observation/account polling does not extend it. Identity-provider authority is checked online at least every five minutes; a due failure blocks protected access, and recognized revocation destroys local authority.

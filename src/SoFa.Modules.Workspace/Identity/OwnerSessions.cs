@@ -248,7 +248,9 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
     }
   }
 
-  internal void RevokeGitHubGrant(GitHubConnection? connection)
+  internal void RevokeGitHubGrant(GitHubConnection? connection) => RevokeGitHubGrant(connection, null);
+
+  internal bool RevokeGitHubGrant(GitHubConnection? connection, string? rejectedCredential)
   {
     lock (admissionLock)
     {
@@ -256,19 +258,23 @@ internal sealed class OwnerSessions(IdentityProfile profile, TimeProvider clock)
       // replacement won the owner-level transition first, its grant must survive.
       if (connection is not null && (durableGitHub is not null
           ? !ReferenceEquals(connection, durableGitHub)
-          : !sessions.Values.Any(record => ReferenceEquals(record.GitHub.Current, connection)))) return;
+          : !sessions.Values.Any(record => ReferenceEquals(record.GitHub.Current, connection)))) return false;
       connection ??= durableGitHub ?? sessions.Values.Select(record => record.GitHub.Current).FirstOrDefault(value => value is not null);
-      if (connection is null) { vault?.DeleteGrant(); durableGitHub = null; return; }
+      if (connection is null) { vault?.DeleteGrant(); durableGitHub = null; return true; }
       var matching = sessions.Values.Where(record => ReferenceEquals(record.GitHub.Current, connection))
           .OrderBy(record => record.Id, StringComparer.Ordinal).ToArray();
       foreach (var record in matching) Monitor.Enter(record.Sync);
       try
       {
+        // Refresh invalidates the old token before its outstanding reads finish.
+        if (rejectedCredential is not null && (connection.RefreshLock.CurrentCount == 0
+            || !string.Equals(rejectedCredential, connection.Tokens.Access, StringComparison.Ordinal))) return false;
         vault?.DeleteGrant();
         connection.Stopped.Cancel();
         foreach (var record in matching)
           if (ReferenceEquals(record.GitHub.Current, connection)) record.GitHub.Clear();
         durableGitHub = null;
+        return true;
       }
       finally { foreach (var record in matching.Reverse()) Monitor.Exit(record.Sync); }
     }

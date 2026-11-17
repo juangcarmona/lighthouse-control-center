@@ -67,7 +67,7 @@ internal sealed class GetObservationsHandler(WorkspaceOptions settings, OwnerSes
   {
     using var budget = new CancellationTokenSource(TimeSpan.FromSeconds(20));
     var observedAt = clock.GetUtcNow();
-    var guard = new SourceRequestGuard(record.Sync, () => Live(record, connection, generation), connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, () => Live(record, connection, generation), connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     ObservedRepository TemporaryFailure() => previous is null ? Unavailable(repository) : previous with
     { Availability = "stale", Reason = "Temporary GitHub collection failure; last known evidence is shown with its original timestamps. Current activity is unknown." };
     try

@@ -99,7 +99,7 @@ internal sealed class GetRepositoryConfigurationHandler(WorkspaceOptions setting
       }
       return previous.Projection with { Freshness = "stale", Reasons = previous.Projection.Reasons.Append(reason).Distinct().ToArray() };
     }
-    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, connection.Stopped.Token);
     budget.CancelAfter(TimeSpan.FromSeconds(30));
     try
