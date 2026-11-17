@@ -27,6 +27,25 @@ public sealed class ArtifactSafetyTests
     Assert.Equal("unavailable", GitHubTransport.ParseArtifact(archive, "envelope.json").Availability);
   }
 
+  [Theory]
+  [InlineData("reserved", 64, "available")]
+  [InlineData("reserved", 65, "unavailable")]
+  [InlineData("nested/reserved", 64, "unavailable")]
+  [InlineData("other", 64, "unavailable")]
+  public void NativeReservationMarkerHasAnExactNameAndBound(string name, int size, string expected)
+  {
+    using var archive = new MemoryStream();
+    using (var zip = new ZipArchive(archive, ZipArchiveMode.Create, leaveOpen: true))
+    {
+      using (var request = zip.CreateEntry("request.json").Open()) request.Write("{\"issue\":7}"u8);
+      using (var marker = zip.CreateEntry(name).Open()) marker.Write(Encoding.ASCII.GetBytes(new string('a', size)));
+    }
+    archive.Position = 0;
+    var result = GitHubTransport.ParseArtifact(archive, "request.json");
+    Assert.Equal(expected, result.Availability);
+    if (expected == "available") Assert.Equal(7, result.Content!.Value.GetProperty("issue").GetInt32());
+  }
+
   [Fact]
   public void DuplicateOversizedExpandedAndMalformedMembersRemainUnavailable()
   {

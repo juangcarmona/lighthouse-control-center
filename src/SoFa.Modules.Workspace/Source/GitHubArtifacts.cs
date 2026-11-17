@@ -76,7 +76,8 @@ internal sealed partial class GitHubTransport
             || ((entry.ExternalAttributes >> 16) & 0xF000) == 0xA000)
           return new("unavailable", "Artifact member paths, uniqueness or 4 MiB expanded bound are invalid.");
         if (!entry.FullName.EndsWith('/') && !(path.EndsWith(".json", StringComparison.Ordinal)
-            || path.EndsWith(".md", StringComparison.Ordinal) || path.EndsWith(".txt", StringComparison.Ordinal)))
+            || path.EndsWith(".md", StringComparison.Ordinal) || path.EndsWith(".txt", StringComparison.Ordinal)
+            || path == "reserved" && entry.Length == 64))
           return new("unavailable", "Artifact contains an unsupported member type.");
       }
       var selected = archive.GetEntry(member);
