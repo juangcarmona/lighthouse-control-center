@@ -1,0 +1,43 @@
+{
+  "observedAt": "2026-11-17T09:50:58Z",
+  "beforeBundles": 32,
+  "afterBundles": 30,
+  "capacityCheck": "passed",
+  "scope": "Only this qualification's two completed Refine attempts; no foreign resources or retention-policy changes",
+  "records": [
+    {
+      "workflowRunId": 44049064265,
+      "attempt": 1,
+      "owner": "551167dc4e0c7aab657b3c71746966870bcdfd47323f2a533a6e4463b8b71ff2",
+      "retentionDigest": "4ee88e3fad9b737f64856e2320bd9f60d7d3e05c712a6434e866470e8591425c",
+      "journalSha256": "a6f3d09936be502eabad40b676c61531ded300d0eb4a6407b4257ad94f5094e6",
+      "originalProcessStopped": true,
+      "runtimeAndWorkspaceAbsent": true,
+      "publishedWorkflow": "success",
+      "delivery": [
+        {
+          "name": "lighthouse-44049064265-1",
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+    },
+    {
+      "workflowRunId": 44055572222,
+      "attempt": 1,
+      "owner": "dac788f689eaedcb961bcc4d34b1754e5618563415ed7a6062d2da45e914d221",
+      "retentionDigest": "35c61276d5bb030415ba3ec7eaa0b4113624a74e0a39b968203ebec1d7fab3c4",
+      "journalSha256": "4381e2a4d383ad0365207ec255fe3aa326c2c579c6dfcb575aa6e447a1b424dc",
+      "originalProcessStopped": true,
+      "runtimeAndWorkspaceAbsent": true,
+      "publishedWorkflow": "success",
+      "delivery": [
+        {
+          "name": "lighthouse-44055572222-1",
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+    }
+  ]
+}

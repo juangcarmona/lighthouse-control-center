@@ -1,0 +1,26 @@
+{
+  "observedAt": "2026-11-17T10:15:36Z",
+  "beforeBundles": 31,
+  "afterBundles": 30,
+  "capacityCheck": "passed",
+  "scope": "Only this qualification's fresh completed Refine attempt; no foreign resources or retention-policy changes",
+  "records": [
+    {
+      "workflowRunId": 44061708654,
+      "attempt": 1,
+      "owner": "0aae7299a3f5fd5ea43c4158e26c19ac60ea64280ec4e5ad3e4d0333b4d27803",
+      "retentionDigest": "5fbb734151a16d20d640e2ed0bee54913578a3c7456b7c9cee5367b41636d5f1",
+      "journalSha256": "11fe3bdefeea9e3c5f241029a680606f075e6bbb584881f4e43e16133be07beb",
+      "originalProcessStopped": true,
+      "runtimeAndWorkspaceAbsent": true,
+      "publishedWorkflow": "success",
+      "delivery": [
+        {
+          "name": "lighthouse-44061708654-1",
+          "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ],
+      "release": "original bundle and journal moved to private archive after verified copies; no deletion"
+    }
+  ]
+}

@@ -244,6 +244,33 @@ public sealed class SourceControlTests
     Assert.Empty(fixture.Handler.Paths);
   }
 
+  [Fact]
+  public async Task NativeDispatchArtifactUsesTheExistingSourceLease()
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    var opened = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    using var request = JsonDocument.Parse("{\"type\":\"request\",\"id\":1,\"kind\":\"artifact\",\"artifactId\":9,\"member\":\"dispatch.json\"}");
+    var result = await opened.Lease!.Callback(request.RootElement, CancellationToken.None);
+    Assert.False(result.Ok); // The fixture source refuses the archive; the callback must reach it.
+    Assert.Equal(503, result.Status);
+    Assert.Contains("/repos/example/repository/actions/artifacts/9/zip", fixture.Handler.Paths);
+  }
+
+  [Theory]
+  [InlineData("../dispatch.json")]
+  [InlineData("nested/dispatch.json")]
+  [InlineData("other.json")]
+  public async Task NonContractArtifactMembersStopBeforeTheSourceRead(string member)
+  {
+    using var fixture = new Fixture();
+    var session = await fixture.Session();
+    var opened = await fixture.Source.Open(new(session, "example/repository", 7), CancellationToken.None);
+    using var request = JsonDocument.Parse(JsonSerializer.Serialize(new { type = "request", id = 1, kind = "artifact", artifactId = 9, member }));
+    await Assert.ThrowsAsync<InvalidDataException>(() => opened.Lease!.Callback(request.RootElement, CancellationToken.None));
+    Assert.DoesNotContain(fixture.Handler.Paths, path => path.Contains("/artifacts/", StringComparison.Ordinal));
+  }
+
   private sealed class Fixture : IDisposable
   {
     private readonly TestClock clock = new();
@@ -314,6 +341,8 @@ public sealed class SourceControlTests
       if (DenyPublicReads && (path.Contains("/commits/", StringComparison.Ordinal) || path.Contains("/contents/", StringComparison.Ordinal)
           || path.EndsWith("/pulls", StringComparison.Ordinal)))
         return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = new StringContent("{}", Encoding.UTF8, "application/json") });
+      if (path == "/repos/example/repository/actions/artifacts/9/zip")
+        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
       var grants = new Dictionary<string, object?>
       { ["metadata"] = "read", ["issues"] = IssuesGrant, ["actions"] = ActionsGrant };
       if (VariablesGrant is not null) grants[VariablesPermission] = VariablesGrant;

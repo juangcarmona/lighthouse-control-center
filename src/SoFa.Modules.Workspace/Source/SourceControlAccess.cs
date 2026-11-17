@@ -64,7 +64,7 @@ internal sealed class SourceControlAccess(WorkspaceOptions settings, OwnerSessio
       if (kind == "artifact")
       {
         if (!Fields(value, "artifactId", "member") || SourceJson.Number(value, "artifactId") is not > 0 or > 9_007_199_254_740_991
-            || SourceJson.Text(value, "member") is not ("request.json" or "envelope.json" or "result.json"))
+            || SourceJson.Text(value, "member") is not ("request.json" or "envelope.json" or "result.json" or "dispatch.json"))
           throw new InvalidDataException("Invalid source artifact callback.");
         if (controls.ActionsRead != true) return new(false, Status: controls.ActionsRead == false ? 403 : 503);
         var content = await transport.ReadArtifactAsync(query.Repository, SourceJson.Number(value, "artifactId")!.Value,

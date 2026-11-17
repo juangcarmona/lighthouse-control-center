@@ -27,6 +27,25 @@ public sealed class ArtifactSafetyTests
     Assert.Equal("unavailable", GitHubTransport.ParseArtifact(archive, "envelope.json").Availability);
   }
 
+  [Theory]
+  [InlineData("reserved", 64, "available")]
+  [InlineData("reserved", 65, "unavailable")]
+  [InlineData("nested/reserved", 64, "unavailable")]
+  [InlineData("other", 64, "unavailable")]
+  public void NativeReservationMarkerHasAnExactNameAndBound(string name, int size, string expected)
+  {
+    using var archive = new MemoryStream();
+    using (var zip = new ZipArchive(archive, ZipArchiveMode.Create, leaveOpen: true))
+    {
+      using (var request = zip.CreateEntry("request.json").Open()) request.Write("{\"issue\":7}"u8);
+      using (var marker = zip.CreateEntry(name).Open()) marker.Write(Encoding.ASCII.GetBytes(new string('a', size)));
+    }
+    archive.Position = 0;
+    var result = GitHubTransport.ParseArtifact(archive, "request.json");
+    Assert.Equal(expected, result.Availability);
+    if (expected == "available") Assert.Equal(7, result.Content!.Value.GetProperty("issue").GetInt32());
+  }
+
   [Fact]
   public void DuplicateOversizedExpandedAndMalformedMembersRemainUnavailable()
   {
@@ -42,11 +61,13 @@ public sealed class ArtifactSafetyTests
     Assert.Equal("unavailable", GitHubTransport.ParseArtifact(many, "envelope.json").Availability);
   }
 
-  [Fact]
-  public async Task SignedAssetDownloadNeverReceivesTheGitHubUserCredential()
+  [Theory]
+  [InlineData("envelope.json")]
+  [InlineData("dispatch.json")]
+  public async Task SignedAssetDownloadNeverReceivesTheGitHubUserCredential(string member)
   {
     using var transport = new GitHubTransport(new AssetHandler());
-    var result = await transport.ReadArtifactAsync("example/repository", 9, "isolated-user-access", "envelope.json", new(new object(), () => true), CancellationToken.None);
+    var result = await transport.ReadArtifactAsync("example/repository", 9, "isolated-user-access", member, new(new object(), () => true), CancellationToken.None);
     Assert.Equal("available", result.Availability);
   }
 
@@ -92,7 +113,7 @@ public sealed class ArtifactSafetyTests
       }
       Assert.Equal("fixture.blob.core.windows.net", request.RequestUri.Host);
       Assert.Null(request.Headers.Authorization);
-      using var archive = Archive(("envelope.json", "{\"schemaVersion\":1}"));
+      using var archive = Archive(("envelope.json", "{\"schemaVersion\":1}"), ("dispatch.json", "{\"schemaVersion\":1}"));
       return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(archive.ToArray()) });
     }
   }

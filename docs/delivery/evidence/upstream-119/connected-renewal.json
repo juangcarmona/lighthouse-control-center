@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-11-17T08:41:02.992Z",
+  "revision": "81a3104da7abfc26e19626d3051ed64072b4159e",
+  "actorId": 2834629,
+  "repositoryId": 1425429121,
+  "refreshRequests": 1,
+  "sourceWrites": 0,
+  "sameAccountScope": true,
+  "absoluteDeadlineUnchanged": true,
+  "missingReadScopes": [],
+  "postRenewalRefineEligible": true,
+  "repositoryPolicyAvailable": true,
+  "scope": "Development preview; real connected App-user, no repository action submitted by renewal.",
+  "operatorHelperCleanup": "After proof and browser state were saved, a duplicate context-close cleanup failed. Renewal was not repeated."
+}

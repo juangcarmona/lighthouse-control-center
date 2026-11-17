@@ -12,7 +12,7 @@ internal sealed partial class GitHubTransport
   internal async Task<ArtifactJson> ReadArtifactAsync(string repository, long artifactId, string token, string member,
       SourceRequestGuard guard, CancellationToken cancellationToken)
   {
-    if (artifactId <= 0 || member is not ("request.json" or "envelope.json" or "result.json"))
+    if (artifactId <= 0 || member is not ("request.json" or "envelope.json" or "result.json" or "dispatch.json"))
       return new("unavailable", "Unsupported artifact identity or member.");
     using var request = new HttpRequestMessage(HttpMethod.Get,
         "https://api.github.com/repos/" + repository + "/actions/artifacts/" + artifactId.ToString(System.Globalization.CultureInfo.InvariantCulture) + "/zip");
@@ -76,7 +76,8 @@ internal sealed partial class GitHubTransport
             || ((entry.ExternalAttributes >> 16) & 0xF000) == 0xA000)
           return new("unavailable", "Artifact member paths, uniqueness or 4 MiB expanded bound are invalid.");
         if (!entry.FullName.EndsWith('/') && !(path.EndsWith(".json", StringComparison.Ordinal)
-            || path.EndsWith(".md", StringComparison.Ordinal) || path.EndsWith(".txt", StringComparison.Ordinal)))
+            || path.EndsWith(".md", StringComparison.Ordinal) || path.EndsWith(".txt", StringComparison.Ordinal)
+            || path == "reserved" && entry.Length == 64))
           return new("unavailable", "Artifact contains an unsupported member type.");
       }
       var selected = archive.GetEntry(member);

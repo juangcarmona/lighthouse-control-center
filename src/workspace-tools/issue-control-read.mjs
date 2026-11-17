@@ -78,6 +78,7 @@ try {
   if (typeof createIssueControl !== 'function') {
     emit({ type: 'result', result: { availability: 'unsupported', reason: 'installed-issue-control-contract-unavailable' } });
   } else {
+    const artifactReads = new Map();
     const sdk = createIssueControl({ repository: input.repository,
       transport: async request => {
         if (!['GET', 'POST'].includes(request.method) || request.method === 'GET' && request.body !== undefined || !['account', 'repository'].includes(request.scope)
@@ -101,7 +102,7 @@ try {
       readArtifact: async (api, repository, runId, name, member, optional = false) => {
         if (repository !== input.repository || !/^[1-9][0-9]{0,15}$/.test(String(runId))
             || typeof name !== 'string' || !/^lighthouse-[a-z0-9-]{1,190}$/.test(name)
-            || !['request.json', 'envelope.json', 'result.json'].includes(member)) throw Error('Unsupported artifact');
+            || !['request.json', 'envelope.json', 'result.json', 'dispatch.json'].includes(member)) throw Error('Unsupported artifact');
         const inventory = await api('actions/runs/' + runId + '/artifacts?per_page=100');
         if (!Array.isArray(inventory?.artifacts) || inventory.total_count !== inventory.artifacts.length
             || inventory.total_count > 100) throw Error('Incomplete artifact coverage');
@@ -110,7 +111,9 @@ try {
         if (matches.length !== 1 || matches[0].expired !== false || !positive(matches[0].id)
             || !Number.isSafeInteger(matches[0].size_in_bytes) || matches[0].size_in_bytes < 0
             || matches[0].size_in_bytes > 2 * 1024 * 1024) throw Error('Artifact unavailable');
-        return callback('artifact', { artifactId: matches[0].id, member });
+        const key = JSON.stringify([matches[0].id, member]);
+        if (!artifactReads.has(key)) artifactReads.set(key, callback('artifact', { artifactId: matches[0].id, member }));
+        return structuredClone(await artifactReads.get(key));
       },
     });
     let result = input.operation === 'observe' ? await sdk.observe({ number: input.number })

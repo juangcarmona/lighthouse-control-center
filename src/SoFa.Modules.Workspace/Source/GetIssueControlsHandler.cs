@@ -22,7 +22,7 @@ internal sealed class GetIssueControlsHandler(SourceControlAccess source, Source
           query.Session.GitHub.Current?.DataScope, query.Session.GitHub.Current?.UserId, Reason: reason);
     }
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-    budget.CancelAfter(TimeSpan.FromSeconds(20));
+    budget.CancelAfter(TimeSpan.FromSeconds(30));
     var opened = await source.Open(query, budget.Token).ConfigureAwait(false);
     if (opened.Lease is not { } lease) return Failure(opened.Availability, opened.Reason);
     var connection = lease.Connection;

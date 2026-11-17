@@ -1,0 +1,34 @@
+{
+  "format": "pdac-verification-evidence/v1alpha1",
+  "provider": "lighthouse-control-center-connected-qualification",
+  "run-id": "upstream-119-20261117-verification-ordinary-comment",
+  "revision": "e79451b29b2ba670917a03667c941a6007a32c35",
+  "results": [
+    {
+      "test-id": "ordinary-comment-confirmed-once-and-current-question-retained",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "FR-ISSUE-CONVERSATION",
+          "digest": "sha256:936e13fb5556657bf62b15f7b5fb8c943b1aaa00736100b5ba4bc6c51689e463"
+        },
+        {
+          "id": "FR-EVIDENCE-CORRELATION",
+          "digest": "sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85"
+        }
+      ]
+    },
+    {
+      "test-id": "lost-preparation-and-submission-response-recovery-preserves-comment-identity",
+      "level": "end-to-end",
+      "outcome": "passed",
+      "citations": [
+        {
+          "id": "QR-EXECUTION-RECOVERY",
+          "digest": "sha256:735fb5afb4c75ba744b7864c7ead1822b6e5ef1f1397460de6df582feaee38a6"
+        }
+      ]
+    }
+  ]
+}
