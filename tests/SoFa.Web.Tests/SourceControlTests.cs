@@ -94,6 +94,25 @@ public sealed class SourceControlTests
   }
 
   [Theory]
+  [InlineData("actions_variables", "read", true)]
+  [InlineData("actions_variables", "write", true)]
+  [InlineData("variables", "read", false)]
+  [InlineData("actions_variables", null, false)]
+  [InlineData("actions_variables", "invalid", null)]
+  public async Task VariablesAuthorityUsesTheGitHubActionsPermissionKey(string permission, string? grant, bool? expected)
+  {
+    using var fixture = new Fixture();
+    fixture.Handler.VariablesPermission = permission;
+    fixture.Handler.VariablesGrant = grant;
+    var session = await fixture.Session();
+
+    var result = await fixture.Access.CheckControlsAsync(session, "example/repository", CancellationToken.None);
+
+    Assert.Equal(SourceAvailability.Available, result.Availability);
+    Assert.Equal(expected, result.Controls!.VariablesRead);
+  }
+
+  [Theory]
   [InlineData("commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
   [InlineData("contents/.lighthouse/issue-control.json?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "contents/.lighthouse/issue-control.json")]
   [InlineData("pulls?state=open&per_page=100", "pulls")]
@@ -278,6 +297,8 @@ public sealed class SourceControlTests
     internal string? ListedVisibility { get; set; }
     internal bool ListedPrivate { get; set; } = true;
     internal bool DenyPublicReads { get; set; }
+    internal string VariablesPermission { get; set; } = "actions_variables";
+    internal string? VariablesGrant { get; set; } = "read";
     internal List<string> Paths { get; } = [];
     internal void SetPublicRepository()
     {
@@ -294,7 +315,8 @@ public sealed class SourceControlTests
           || path.EndsWith("/pulls", StringComparison.Ordinal)))
         return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = new StringContent("{}", Encoding.UTF8, "application/json") });
       var grants = new Dictionary<string, object?>
-      { ["metadata"] = "read", ["issues"] = IssuesGrant, ["actions"] = ActionsGrant, ["variables"] = "read" };
+      { ["metadata"] = "read", ["issues"] = IssuesGrant, ["actions"] = ActionsGrant };
+      if (VariablesGrant is not null) grants[VariablesPermission] = VariablesGrant;
       if (ContentsGrant is not null) grants["contents"] = ContentsGrant;
       if (PullRequestsGrant is not null) grants["pull_requests"] = PullRequestsGrant;
       object data = path switch

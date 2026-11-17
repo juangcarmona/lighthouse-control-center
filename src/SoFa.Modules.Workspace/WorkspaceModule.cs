@@ -126,6 +126,8 @@ public static class WorkspaceModule
       var feedback = context.Request.Query["connection"].ToString() switch
       {
         "connected" => "GitHub account connected. Current repository authority is shown below.",
+        "refreshed" => "GitHub credentials refreshed. Repository permissions are checked again below.",
+        "refreshunavailable" => "GitHub credentials could not be refreshed. Retry or reconnect your account.",
         "confirmationrequired" => "Review the verified replacement account and confirm it explicitly below.",
         "rejected" => "The connection request was not accepted. Start a new connection if needed.",
         "unavailable" => "GitHub authorization could not be verified. Try connecting again.",
@@ -156,6 +158,7 @@ public static class WorkspaceModule
               + (string.IsNullOrEmpty(settings.GitHubClientId) ? "<h2>GitHub setup required</h2><p>Register the development GitHub App, then connect your GitHub account to load repository operations.</p>"
                   : Form("/connections/github/start", token, "Connect GitHub account"))
               + "<div id=\"github-disconnect\"" + (canDisconnect ? "" : " hidden") + ">"
+              + Form("/connections/github/refresh", token, "Refresh GitHub permissions")
               + Form("/connections/github/disconnect", token, "Disconnect GitHub") + "</div>"
               + "<p><a href=\"/workspace/operations\">Open fleet operations</a></p>"
               + "<p>Disconnect removes the locally stored GitHub grant for this owner across active sessions. To revoke the provider-side grant too, use <a href=\"https://github.com/settings/apps/authorizations\" rel=\"noreferrer\">GitHub authorized Apps</a>.</p>"
@@ -191,6 +194,14 @@ public static class WorkspaceModule
       await sessions.RotateCookieAsync(context, record).ConfigureAwait(false);
       sessions.TouchUserActivity(record.Id);
       context.Response.Redirect("/workspace");
+    });
+    app.MapPost("/connections/github/refresh", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions, GitHubAuthorization github) =>
+    {
+      if (!await Csrf(context, antiforgery).ConfigureAwait(false)) return;
+      var record = sessions.Get(context.User)!;
+      var connection = await github.RefreshAsync(record, context.RequestAborted).ConfigureAwait(false);
+      sessions.TouchUserActivity(record.Id);
+      context.Response.Redirect("/workspace?connection=" + (connection is null ? "refreshunavailable" : "refreshed"));
     });
     app.MapPost("/connections/github/disconnect", async (HttpContext context, IAntiforgery antiforgery, OwnerSessions sessions) =>
     {

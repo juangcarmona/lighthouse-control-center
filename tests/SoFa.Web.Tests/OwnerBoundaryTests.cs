@@ -49,6 +49,7 @@ public sealed class OwnerBoundaryTests
       Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync(path)).StatusCode);
     Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/auth/login", new StringContent(""))).StatusCode);
     Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/auth/logout", new StringContent(""))).StatusCode);
+    Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/connections/github/refresh", new StringContent(""))).StatusCode);
     using var insecure = app.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("http://workspace.invalid"), AllowAutoRedirect = false });
     Assert.Equal(HttpStatusCode.BadRequest, (await insecure.GetAsync("/")).StatusCode);
     using var wrongHost = app.CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://other.invalid"), AllowAutoRedirect = false });
@@ -307,6 +308,38 @@ public sealed class OwnerBoundaryTests
   }
 
   private static FormUrlEncodedContent Form(string token) => new(new Dictionary<string, string> { ["__RequestVerificationToken"] = token });
+
+  [Fact]
+  public async Task ExplicitGitHubRefreshRequiresCsrfAndRetainsTheConnectedAccount()
+  {
+    await using var app = new OwnerApplication();
+    using var client = app.Client();
+    await client.GetAsync(await app.Begin(client));
+    var begin = await client.PostAsync("/connections/github/start", Form(Token(await client.GetStringAsync("/workspace"))));
+    var query = QueryHelpers.ParseQuery(begin.Headers.Location!.Query);
+    app.Source.ExpectedChallenge = query["code_challenge"].ToString();
+    await client.GetAsync(QueryHelpers.AddQueryString("/connections/github/callback", new Dictionary<string, string?>
+    { ["state"] = query["state"], ["code"] = "isolated-code" }));
+    var page = await client.GetStringAsync("/workspace");
+    Assert.Contains("Refresh GitHub permissions", page, StringComparison.Ordinal);
+    var exchanges = app.Source.Calls.Count(call => call == "POST /login/oauth/access_token");
+    Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsync("/connections/github/refresh", new StringContent(""))).StatusCode);
+    Assert.Equal(exchanges, app.Source.Calls.Count(call => call == "POST /login/oauth/access_token"));
+    using var crossSite = new HttpRequestMessage(HttpMethod.Post, "/connections/github/refresh") { Content = Form(Token(page)) };
+    crossSite.Headers.Add("Sec-Fetch-Site", "cross-site");
+    Assert.Equal(HttpStatusCode.Forbidden, (await client.SendAsync(crossSite)).StatusCode);
+    Assert.Equal(exchanges, app.Source.Calls.Count(call => call == "POST /login/oauth/access_token"));
+
+    var refreshed = await client.PostAsync("/connections/github/refresh", Form(Token(page)));
+
+    Assert.Equal("/workspace?connection=refreshed", refreshed.Headers.Location?.OriginalString);
+    Assert.Equal(exchanges + 1, app.Source.Calls.Count(call => call == "POST /login/oauth/access_token"));
+    page = await client.GetStringAsync("/workspace");
+    Assert.Contains("verified-user", page, StringComparison.Ordinal);
+    Assert.DoesNotContain("isolated-user-access", page, StringComparison.Ordinal);
+    Assert.DoesNotContain("isolated-user-refresh", page, StringComparison.Ordinal);
+    Assert.All(app.Source.Calls, call => Assert.True(call == "POST /login/oauth/access_token" || call == "GET /user"));
+  }
 
   [Fact]
   public async Task LogoutStillDestroysAuthorityIfItsAuthenticatedReferenceRotatesBeforeTheRouteRuns()

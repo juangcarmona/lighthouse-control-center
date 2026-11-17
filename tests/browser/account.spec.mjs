@@ -5,7 +5,30 @@ const origin = `http://127.0.0.1:${process.env.SOFA_ISSUE_FIXTURE_PORT || '5171'
 const html = `<!doctype html><html lang="en" data-lh-theme="dark"><head><meta charset="utf-8"><title>Account</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/tokens.css"><link rel="stylesheet" href="/app.css"><link rel="stylesheet" href="/account.css"><script type="module" src="/account.js"></script></head><body>
 <a class="skip" href="#account">Skip to account</a><header class="topbar"><a class="brand" href="/workspace">Lighthouse Control Center</a><nav aria-label="Workspace navigation"><a href="/workspace/attention">Attention</a><a href="/workspace">Account</a><a href="/workspace/operations">Operations</a><a href="/workspace/factory">Factory</a><a href="/workspace/issues">Issues</a><a href="/workspace/runtime">Runtime</a></nav></header>
-<main id="account" class="account-panel"><h1>Workspace</h1><p id="account-status" role="status"></p><div id="github-account"></div><ul id="repository-authority"></ul><button id="github-disconnect" hidden>Disconnect GitHub</button><button type="button">Connect GitHub account</button><a href="/workspace/operations">Open factory operations</a></main></body></html>`;
+<main id="account" class="account-panel"><h1>Workspace</h1><p id="account-status" role="status"></p><div id="github-account"></div><ul id="repository-authority"></ul><div id="github-disconnect" hidden><form method="post" action="/connections/github/refresh"><input type="hidden" name="__RequestVerificationToken" value="fixture-token"><button type="submit">Refresh GitHub permissions</button></form><button type="button">Disconnect GitHub</button></div><button type="button">Connect GitHub account</button><a href="/workspace/operations">Open factory operations</a></main></body></html>`;
+
+test('connected account explicitly refreshes credentials by keyboard through its existing protected form', async ({ page }) => {
+  await page.route('**/workspace', route => route.fulfill({ contentType: 'text/html', body: html }));
+  await page.route('**/api/connections/github', route => route.fulfill({ json: {
+    state: 'linked', login: 'example-user', userId: 71, verifiedAt: '2026-11-17T06:00:00Z', repositories: [],
+  } }));
+  let submissions = 0;
+  await page.route('**/connections/github/refresh', async route => {
+    expect(route.request().method()).toBe('POST');
+    expect(new URLSearchParams(route.request().postData()).get('__RequestVerificationToken')).toBe('fixture-token');
+    submissions++;
+    await route.fulfill({ contentType: 'text/html', body: '<html lang="en"><title>Refreshed</title><body>Refresh requested</body></html>' });
+  });
+  await page.goto(origin + '/workspace');
+  await expect(page.locator('#github-account')).toHaveText('GitHub connected as example-user.');
+  expect(submissions).toBe(0);
+  const summary = page.getByText('Session, disconnection and sign-out', { exact: true });
+  await summary.focus(); await page.keyboard.press('Enter');
+  const button = page.getByRole('button', { name: 'Refresh GitHub permissions', exact: true });
+  await button.focus(); await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(origin + '/connections/github/refresh');
+  expect(submissions).toBe(1);
+});
 
 for (const theme of ['light', 'dark']) for (const width of [1280, 390]) test(`account visual contract ${theme} ${width}: generated shell aligns without clipping`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });

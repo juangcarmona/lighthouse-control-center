@@ -201,7 +201,7 @@ public sealed class IssueControlCommandsTests
       {
         "/user" => Owner,
         "/repos/example/repository" => new { id = 22, full_name = "example/repository", owner = Owner, default_branch = "main", permissions = new { pull = true, push = CanWrite, maintain = false, admin = false } },
-        "/user/installations" => new { total_count = 1, installations = new[] { new { id = 9, app_id = 9001, account = new { login = "example" }, permissions = new { metadata = "read", issues = "write", contents = "read", actions = "write", pull_requests = "read", variables = "read" } } } },
+        "/user/installations" => new { total_count = 1, installations = new[] { new { id = 9, app_id = 9001, account = new { login = "example" }, permissions = new { metadata = "read", issues = "write", contents = "read", actions = "write", pull_requests = "read", actions_variables = "read" } } } },
         "/user/installations/9/repositories" => new { total_count = 1, repositories = new[] { new { id = 22, full_name = "example/repository" } } },
         "/repos/example/repository/issues/7" => new { id = 70, number = 7, title = "Ordinary fixture", body = "Requested work", state = "open", labels = Array.Empty<string>(), user = Owner, updated_at = "2026-11-08T07:00:00Z" },
         "/repos/example/repository/commits/main" => new { sha = new string('a', 40) },
