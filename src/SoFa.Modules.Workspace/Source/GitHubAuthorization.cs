@@ -105,13 +105,18 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
     record.Sessions?.DisconnectGitHubGrant();
   }
 
-  internal async Task<GitHubConnection?> CurrentAsync(OwnerSession record, CancellationToken cancellationToken)
+  internal Task<GitHubConnection?> RefreshAsync(OwnerSession record, CancellationToken cancellationToken) =>
+      CurrentAsync(record, cancellationToken, refreshTokens: true);
+
+  internal async Task<GitHubConnection?> CurrentAsync(OwnerSession record, CancellationToken cancellationToken, bool refreshTokens = false)
   {
     GitHubConnection connection;
+    GitHubTokens requestedTokens;
     lock (record.Sync)
     {
       if (!Live(record) || record.GitHub.Current is not { } current) return null;
       connection = current;
+      requestedTokens = connection.Tokens;
     }
     await connection.RefreshLock.WaitAsync(cancellationToken).ConfigureAwait(false);
     try
@@ -125,7 +130,8 @@ internal sealed class GitHubAuthorization(WorkspaceOptions settings, OwnerSessio
       }
       var guard = new SourceRequestGuard(record.Sync, () => Current(record, connection, generation), connection.Stopped.Token);
       var refreshed = false;
-      if (clock.GetUtcNow() >= connection.Tokens.AccessDeadline.AddMinutes(-1))
+      if (refreshTokens && ReferenceEquals(connection.Tokens, requestedTokens)
+          || clock.GetUtcNow() >= connection.Tokens.AccessDeadline.AddMinutes(-1))
       {
         if (clock.GetUtcNow() >= connection.Tokens.RefreshDeadline) { Invalidate(record, connection); return null; }
         lock (record.Sync) if (!Current(record, connection, generation)) return null;

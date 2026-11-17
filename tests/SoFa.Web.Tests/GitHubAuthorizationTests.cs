@@ -155,6 +155,60 @@ public sealed class GitHubAuthorizationTests
   }
 
   [Fact]
+  public async Task ExplicitRefreshRenewsUnexpiredTokensWithoutChangingAccountScopeOrSessionDeadlines()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var connection = record.GitHub.Current!;
+    var tokens = connection.Tokens;
+    var absolute = record.AbsoluteDeadline;
+    var idle = record.IdleDeadline;
+    Assert.Same(connection, await fixture.Authorization.CurrentAsync(record, CancellationToken.None));
+    Assert.Single(fixture.Handler.Calls, call => call == "POST /login/oauth/access_token");
+
+    Assert.Same(connection, await fixture.Authorization.RefreshAsync(record, CancellationToken.None));
+
+    Assert.NotSame(tokens, connection.Tokens);
+    Assert.Equal(2, fixture.Handler.Calls.Count(call => call == "POST /login/oauth/access_token"));
+    Assert.Equal(absolute, record.AbsoluteDeadline);
+    Assert.Equal(idle, record.IdleDeadline);
+    Assert.Same(connection, record.GitHub.Current);
+  }
+
+  [Fact]
+  public async Task ConcurrentExplicitRefreshesShareTheRenewedTokens()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var released = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    fixture.Handler.ExchangeWait = released.Task;
+    var requests = Enumerable.Range(0, 10).Select(_ => fixture.Authorization.RefreshAsync(record, CancellationToken.None)).ToArray();
+    released.SetResult();
+
+    var connections = await Task.WhenAll(requests);
+
+    Assert.All(connections, connection => Assert.Same(record.GitHub.Current, connection));
+    Assert.Equal(2, fixture.Handler.Calls.Count(call => call == "POST /login/oauth/access_token"));
+  }
+
+  [Fact]
+  public async Task FailedExplicitRefreshDoesNotReportSuccessOrReplaceTheExistingAccount()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var connection = record.GitHub.Current!;
+    var tokens = connection.Tokens;
+    fixture.Handler.FailExchange = true;
+
+    Assert.Null(await fixture.Authorization.RefreshAsync(record, CancellationToken.None));
+    Assert.Same(connection, record.GitHub.Current);
+    Assert.Same(tokens, connection.Tokens);
+  }
+
+  [Fact]
   public async Task ConcurrentTokenRefreshCannotExtendTheOwnerSessionAndRevocationClearsTheConnection()
   {
     using var fixture = new SourceFixture();
