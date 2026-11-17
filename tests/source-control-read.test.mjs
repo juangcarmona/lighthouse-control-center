@@ -20,6 +20,7 @@ async function exercise(scenario, reply = request => request.kind === 'authority
     const module = join(root, 'sdk.mjs');
     await writeFile(module, `export function createIssueControl(options) { return { async observe({number}) {
       const scenario=${JSON.stringify(scenario)};
+      if(scenario==='artifact-repeat') { const read=()=>options.readArtifact(path=>options.transport({scope:'repository',repository:options.repository,path,method:'GET'}),options.repository,'17','lighthouse-input-7-1','dispatch.json');const first=await read();first.source='mutated';const second=await read();return {availability:'available',first,second}; }
       if(scenario.startsWith('artifact:')) { const artifact=await options.readArtifact(path=>options.transport({scope:'repository',repository:options.repository,path,method:'GET'}),options.repository,'17','lighthouse-input-7-1',scenario.slice(9));return {availability:'available',artifact}; }
       if(scenario==='optional') { const missing=await options.transport({scope:'repository',repository:options.repository,path:'contents/.lighthouse/issue-control.json',method:'GET',optional:true});return {availability:'available',missing}; }
       if(scenario==='write') { await options.transport({scope:'repository',repository:options.repository,path:'issues/7/comments',method:'POST',body:{body:'Do not send'}}); }
@@ -81,6 +82,22 @@ test('native dispatch JSON reaches the bounded host artifact reader', async () =
   assert.deepEqual(result.artifact, { source: 'bounded-json' });
   assert.equal(requests.at(-1).kind, 'artifact');
   assert.equal(requests.at(-1).member, 'dispatch.json');
+});
+test('immutable artifact content is downloaded once per invocation without sharing mutable values', async () => {
+  const { result, requests } = await exercise('artifact-repeat');
+  assert.equal(result.availability, 'available');
+  assert.deepEqual(result.first, { source: 'mutated' });
+  assert.deepEqual(result.second, { source: 'bounded-json' });
+  assert.equal(requests.filter(request => request.kind === 'artifact').length, 1);
+  assert.equal(requests.filter(request => request.kind === 'transport').length, 2);
+});
+test('reused artifact content still requires a fresh valid inventory', async () => {
+  let inventories = 0;
+  const { result, requests } = await exercise('artifact-repeat', request => request.kind === 'artifact' ? { source: 'bounded-json' }
+    : { total_count: 1, artifacts: [{ id: 9, name: 'lighthouse-input-7-1', expired: ++inventories > 1, size_in_bytes: 100 }] });
+  assert.equal(result.availability, 'unavailable');
+  assert.equal(requests.filter(request => request.kind === 'artifact').length, 1);
+  assert.equal(inventories, 2);
 });
 for (const member of ['../dispatch.json', 'nested/dispatch.json', 'other.json']) test('non-contract artifact member is refused: ' + member, async () => {
   const { result, requests } = await exercise('artifact:' + member);
