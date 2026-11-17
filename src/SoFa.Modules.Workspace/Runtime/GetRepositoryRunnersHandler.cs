@@ -46,7 +46,7 @@ internal sealed class GetRepositoryRunnersHandler(OwnerSessions sessions, GitHub
               && record.GitHub.Generation == authority.Generation && connection.DataScope == authority.DataScope;
         }
         if (!Live()) return Failure("disconnected", "The account or session changed after authority was observed.");
-        var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+        var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
         using var source = await transport.GetAsync("/repos/" + query.Repository + "/actions/runners?per_page=100&page=1",
             connection.Tokens.Access, guard, budget.Token).ConfigureAwait(false);
         if (!Live()) return Failure("disconnected", "The source account or session changed.");

@@ -62,7 +62,7 @@ internal sealed partial class GetIssueEvidenceHandler(OwnerSessions sessions, Ge
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
-    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     budget.CancelAfter(TimeSpan.FromSeconds(20));
     var reports = new List<StageEvidence>();

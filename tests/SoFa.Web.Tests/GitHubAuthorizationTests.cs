@@ -217,6 +217,52 @@ public sealed class GitHubAuthorizationTests
   }
 
   [Fact]
+  public async Task AnInflightReadUsingThePreviousCredentialCannotRevokeAnOngoingRefresh()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var connection = record.GitHub.Current!;
+    var readGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    var refreshGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    fixture.Handler.AuthorityWait = readGate.Task;
+    var read = fixture.Access.CheckAsync(record, "example/repository", CancellationToken.None);
+    fixture.Handler.ExchangeWait = refreshGate.Task;
+    var refresh = fixture.Authorization.RefreshAsync(record, CancellationToken.None);
+    fixture.Handler.AuthorityUnauthorized = true;
+    readGate.SetResult();
+    var authority = await read;
+    refreshGate.SetResult();
+
+    Assert.Same(connection, await refresh);
+    Assert.Same(connection, record.GitHub.Current);
+    Assert.Equal(SourceAvailability.Unavailable, authority.Availability);
+  }
+
+  [Fact]
+  public async Task LateFailureFromThePreviousTokenCannotRevokeItsCompletedRefresh()
+  {
+    using var fixture = new SourceFixture();
+    var record = await fixture.Session();
+    await fixture.Connect(record);
+    var connection = record.GitHub.Current!;
+    var readGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    fixture.Handler.AuthorityWait = readGate.Task;
+    var read = fixture.Access.CheckAsync(record, "example/repository", CancellationToken.None);
+    fixture.Handler.IssuedAccessToken = "isolated-renewed-user-access";
+    Assert.Same(connection, await fixture.Authorization.RefreshAsync(record, CancellationToken.None));
+    fixture.Handler.AuthorityUnauthorized = true;
+    readGate.SetResult();
+
+    Assert.Equal(SourceAvailability.Unavailable, (await read).Availability);
+    Assert.Same(connection, record.GitHub.Current);
+
+    // A rejection of the current credential must still revoke its grant.
+    await fixture.Access.CheckAsync(record, "example/repository", CancellationToken.None);
+    Assert.Null(record.GitHub.Current);
+  }
+
+  [Fact]
   public async Task FailedExplicitRefreshDoesNotReportSuccessOrReplaceTheExistingAccount()
   {
     using var fixture = new SourceFixture();
@@ -570,12 +616,15 @@ public sealed class GitHubAuthorizationTests
     internal long UserId { get; set; } = 71;
     internal bool FailExchange { get; set; }
     internal bool Revoked { get; set; }
+    internal string IssuedAccessToken { get; set; } = "isolated-user-access";
     internal bool CanRead { get; set; } = true;
     internal bool CanWrite { get; set; } = true;
     internal string IssueGrant { get; set; } = "write";
     internal bool Paginated { get; set; }
     internal Task? ExchangeWait { get; set; }
     internal Task? DataWait { get; set; }
+    internal Task? AuthorityWait { get; set; }
+    internal bool AuthorityUnauthorized { get; set; }
     internal bool DataUnavailable { get; set; }
     internal HttpStatusCode? DataStatus { get; set; }
     internal string? RunMetadata { get; set; }
@@ -598,13 +647,17 @@ public sealed class GitHubAuthorizationTests
         }
         if (ExchangeWait is not null) await ExchangeWait;
         if (FailExchange) return Response(HttpStatusCode.BadRequest, new { error = "bad_verification_code" });
-        return Response(HttpStatusCode.OK, new { access_token = "isolated-user-access", refresh_token = "isolated-user-refresh", expires_in = 300, refresh_token_expires_in = 3600, token_type = "bearer" });
+        return Response(HttpStatusCode.OK, new { access_token = IssuedAccessToken, refresh_token = "isolated-user-refresh", expires_in = 300, refresh_token_expires_in = 3600, token_type = "bearer" });
       }
       Assert.Equal("api.github.com", request.RequestUri.Host);
       Assert.Equal(HttpMethod.Get, request.Method);
-      Assert.Equal("isolated-user-access", request.Headers.Authorization?.Parameter);
+      Assert.Equal(IssuedAccessToken, request.Headers.Authorization?.Parameter);
       if (request.RequestUri.AbsolutePath == "/repos/example/repository")
+      {
+        if (AuthorityWait is not null) await AuthorityWait;
+        if (AuthorityUnauthorized) return Response(HttpStatusCode.Unauthorized, new { message = "Previous credential expired" });
         return Response(HttpStatusCode.OK, new { permissions = new { pull = CanRead, push = CanWrite } });
+      }
       QueryHelpers.ParseQuery(request.RequestUri.Query).TryGetValue("page", out var pageValue);
       var page = pageValue.ToString();
       if (request.RequestUri.AbsolutePath == "/repos/example/repository/actions/runs")
@@ -641,7 +694,7 @@ public sealed class GitHubAuthorizationTests
         });
       Assert.Equal("/user", request.RequestUri.AbsolutePath);
       Assert.Equal("Bearer", request.Headers.Authorization?.Scheme);
-      Assert.Equal("isolated-user-access", request.Headers.Authorization?.Parameter);
+      Assert.Equal(IssuedAccessToken, request.Headers.Authorization?.Parameter);
       return Revoked ? Response(HttpStatusCode.Unauthorized, new { message = "Bad credentials" })
           : Response(HttpStatusCode.OK, new { id = UserId, login = "verified-user", type = "User" });
     }

@@ -31,7 +31,7 @@ internal sealed class SourceControlAccess(WorkspaceOptions settings, OwnerSessio
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
-    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     bool SameScope(RepositoryAuthority value) => value.Controls is { } controls
         && controls.Generation == generation && controls.DataScope == connection.DataScope;
     var authority = await access.CheckControlsAsync(record, query.Repository, cancellationToken).ConfigureAwait(false);

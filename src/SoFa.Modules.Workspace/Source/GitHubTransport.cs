@@ -4,7 +4,10 @@ using System.Text.Json;
 
 namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
-internal sealed record SourceRequestGuard(object Sync, Func<bool> IsLive, CancellationToken Stopped = default);
+internal sealed record SourceRequestGuard(object Sync, Func<bool> IsLive, CancellationToken Stopped = default)
+{
+  internal Func<string, bool>? RejectCredential { get; init; }
+}
 
 internal sealed partial class GitHubTransport : IDisposable
 {
@@ -51,6 +54,9 @@ internal sealed partial class GitHubTransport : IDisposable
         var pending = BeginRequest(guard, () => client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token));
         if (pending is null) return new GitHubResponse(0, null);
         using var response = await pending.ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.Unauthorized && request.Headers.Authorization?.Parameter is { } credential
+            && guard.RejectCredential?.Invoke(credential) == false)
+          return new GitHubResponse(HttpStatusCode.ServiceUnavailable, null);
         await response.Content.LoadIntoBufferAsync(2 * 1024 * 1024, token).ConfigureAwait(false);
         var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false));
         return new GitHubResponse(response.StatusCode, payload);

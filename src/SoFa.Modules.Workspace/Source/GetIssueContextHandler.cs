@@ -53,7 +53,7 @@ internal sealed class GetIssueContextHandler(OwnerSessions sessions, GitHubAutho
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
-    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     var path = "/repos/" + query.Repository + "/issues/" + query.Number.ToString(CultureInfo.InvariantCulture);
     if (!Live()) return Failure("disconnected", "The source identity or session changed.");
     using var issue = await transport.GetAsync(path, connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);

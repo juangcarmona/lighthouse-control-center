@@ -26,7 +26,9 @@ internal sealed partial class GitHubTransport
       var pendingSource = BeginRequest(guard, () => client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, readToken));
       if (pendingSource is null) return new("disconnected", "The acting account changed.");
       using var source = await pendingSource.ConfigureAwait(false);
-      if (source.StatusCode == HttpStatusCode.Unauthorized) return new("disconnected", "GitHub rejected the connected-user credential.");
+      if (source.StatusCode == HttpStatusCode.Unauthorized) return guard.RejectCredential?.Invoke(token) == false
+          ? new("unavailable", "Source authorization changed during the read; refresh the observation.")
+          : new("disconnected", "GitHub rejected the connected-user credential.");
       if (source.StatusCode != HttpStatusCode.Found || source.Headers.Location is not { IsAbsoluteUri: true } location
           || location.Scheme != "https" || location.UserInfo.Length != 0
           || !(location.Host.EndsWith(".blob.core.windows.net", StringComparison.OrdinalIgnoreCase)

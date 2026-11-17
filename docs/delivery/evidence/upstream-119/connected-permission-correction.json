@@ -1,0 +1,73 @@
+{
+  "observedAt": "2026-11-17T06:32:31.9664419+00:00",
+  "revision": "77e9ddcd004cf568724d883aaecf971455454797",
+  "sdkVersion": "0.25.1",
+  "appId": 5658460,
+  "actorId": 2834629,
+  "repositoryId": 1425429121,
+  "issue": 48,
+  "sourceWrites": 0,
+  "explicitTokenRenewalPerformed": false,
+  "missingReadScopes": [],
+  "policyAvailability": "available",
+  "automationEnabled": true,
+  "epicEnabled": false,
+  "actions": {
+    "comment": {
+      "eligible": true,
+      "availability": "available"
+    },
+    "refine": {
+      "eligible": true,
+      "availability": "available",
+      "prerequisites": {
+        "installedContract": {
+          "availability": "available"
+        },
+        "writeAuthority": {
+          "availability": "available"
+        },
+        "repositoryPolicy": {
+          "availability": "available"
+        },
+        "sourceReservations": {
+          "availability": "available"
+        },
+        "stageEvidence": {
+          "availability": "available",
+          "reason": "owner-direct-entry"
+        }
+      }
+    },
+    "propose": {
+      "eligible": false,
+      "availability": "denied",
+      "reason": "ready-required",
+      "message": "Proposal requires a ready issue",
+      "prerequisites": {
+        "installedContract": {
+          "availability": "available"
+        },
+        "writeAuthority": {
+          "availability": "available"
+        },
+        "repositoryPolicy": {
+          "availability": "available"
+        },
+        "sourceReservations": {
+          "availability": "available"
+        },
+        "stageEvidence": {
+          "availability": "denied",
+          "reason": "ready-required"
+        }
+      }
+    },
+    "continue": {
+      "eligible": false,
+      "availability": "unsupported",
+      "reason": "stage-contract-unsupported"
+    }
+  },
+  "nativeStageOutcome": "not-run"
+}

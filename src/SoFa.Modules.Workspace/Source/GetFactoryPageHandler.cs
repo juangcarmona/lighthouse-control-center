@@ -45,7 +45,7 @@ internal sealed class GetFactoryPageHandler(WorkspaceOptions settings, OwnerSess
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
-    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
     budget.CancelAfter(TimeSpan.FromSeconds(30));
     try

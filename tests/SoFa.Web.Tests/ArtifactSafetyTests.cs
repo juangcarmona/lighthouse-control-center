@@ -50,6 +50,20 @@ public sealed class ArtifactSafetyTests
     Assert.Equal("available", result.Availability);
   }
 
+  [Theory]
+  [InlineData(true, "disconnected")]
+  [InlineData(false, "unavailable")]
+  public async Task OnlyRejectionOfTheCurrentCredentialCanDisconnectArtifactReads(bool current, string expected)
+  {
+    using var transport = new GitHubTransport(new AssetHandler { Unauthorized = true });
+    var rejections = 0;
+    var guard = new SourceRequestGuard(new object(), () => true)
+    { RejectCredential = credential => { Assert.Equal("fixture-access", credential); rejections++; return current; } };
+    var result = await transport.ReadArtifactAsync("example/repository", 9, "fixture-access", "envelope.json", guard, CancellationToken.None);
+    Assert.Equal(expected, result.Availability);
+    Assert.Equal(1, rejections);
+  }
+
   private static MemoryStream Archive(params (string Name, string Value)[] files)
   {
     var bytes = new MemoryStream();
@@ -65,10 +79,12 @@ public sealed class ArtifactSafetyTests
 
   private sealed class AssetHandler : HttpMessageHandler
   {
+    internal bool Unauthorized { get; init; }
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
       if (request.RequestUri!.Host == "api.github.com")
       {
+        if (Unauthorized) return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Unauthorized));
         Assert.Equal("isolated-user-access", request.Headers.Authorization?.Parameter);
         var response = new HttpResponseMessage(HttpStatusCode.Found);
         response.Headers.Location = new Uri("https://fixture.blob.core.windows.net/signed-asset?capability=isolated-fixture");

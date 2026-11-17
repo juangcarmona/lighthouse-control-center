@@ -50,7 +50,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
       lock (record.Sync) return ReferenceEquals(sessions.Get(record.Id), record)
           && ReferenceEquals(record.GitHub.Current, connection) && record.GitHub.Generation == generation;
     }
-    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token);
+    var guard = new SourceRequestGuard(record.Sync, Live, connection.Stopped.Token) { RejectCredential = credential => sessions.RevokeGitHubGrant(connection, credential) };
     if (!Live()) return Unknown(SourceAvailability.Unavailable);
     using var repo = await transport.GetAsync("/repos/" + repository, connection.Tokens.Access, guard, cancellationToken).ConfigureAwait(false);
     if (!repo.Successful)
