@@ -48,18 +48,22 @@ public sealed class IssueControlCommandsTests
     Assert.Single(fixture.Handler.Writes);
   }
 
-  [Fact]
-  public async Task ReadOnlyReconciliationCanFinishBeyondTwentySecondsWithoutAnotherEffect()
+  [Theory]
+  [InlineData("prepare")]
+  [InlineData("reconcile")]
+  public async Task SourceControlReadsCanFinishBeyondTwentySecondsWithoutAnotherEffect(string operation)
   {
     using var fixture = new Fixture();
     var session = await fixture.Session();
     var query = new GetIssueControls(session, "example/repository", 7);
     var prepared = await fixture.Commands.Handle(query, new("prepare", "comment", "One effect"), CancellationToken.None);
     await fixture.Commands.Handle(query, new("submit", Id: prepared.Id), CancellationToken.None);
-    fixture.Handler.SlowReconciliation = true;
-    var result = await fixture.Commands.Handle(query, new("reconcile", Id: prepared.Id), CancellationToken.None);
+    fixture.Handler.SlowSourceRead = true;
+    var command = operation == "prepare" ? new ControlCommand("prepare", "comment", "Next comment") : new ControlCommand("reconcile", Id: prepared.Id);
+    var result = await fixture.Commands.Handle(query, command, CancellationToken.None);
     Assert.Equal("available", result.Availability);
-    Assert.Equal("comment-published", SourceJson.Text(result.Receipt!.Value, "state"));
+    if (operation == "prepare") Assert.Equal("prepared", result.JournalState);
+    else Assert.Equal("comment-published", SourceJson.Text(result.Receipt!.Value, "state"));
     Assert.Single(fixture.Handler.Writes);
   }
 
@@ -175,7 +179,7 @@ public sealed class IssueControlCommandsTests
   {
     internal bool CanWrite { get; set; } = true;
     internal bool LoseResponse { get; set; }
-    internal bool SlowReconciliation { get; set; }
+    internal bool SlowSourceRead { get; set; }
     private bool slowReadStarted;
     private readonly HashSet<string> delayedReads = [];
     internal List<string> Writes { get; } = [];
@@ -208,7 +212,7 @@ public sealed class IssueControlCommandsTests
         return Reply(comment, HttpStatusCode.Created);
       }
       Assert.Equal(HttpMethod.Get, request.Method);
-      if (SlowReconciliation && (path == "/user" || slowReadStarted))
+      if (SlowSourceRead && (path == "/user" || slowReadStarted))
       {
         slowReadStarted = true;
         if ((path is "/user" or "/repos/example/repository" or "/repos/example/repository/issues/7" or "/repos/example/repository/issues/7/comments") && delayedReads.Add(path))
