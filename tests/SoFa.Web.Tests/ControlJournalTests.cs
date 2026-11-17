@@ -63,6 +63,31 @@ public sealed class ControlJournalTests
     Assert.Equal("prepared", restored.Prepare(Identity, new string('c', 64), new string('d', 64), "comment", "0.22.0", Payload("intentionally new comment")).State);
   }
 
+  [Theory]
+  [InlineData("available", "failed", null, true)]
+  [InlineData("available", "cancelled", null, true)]
+  [InlineData("unavailable", "failed", null, false)]
+  [InlineData("unknown", "failed", null, false)]
+  [InlineData("available", "running", null, false)]
+  [InlineData("available", "completed", null, false)]
+  [InlineData("available", "completed", "passed", true)]
+  [InlineData("available", "completed", "blocked", true)]
+  [InlineData("available", "completed", "failed", true)]
+  public void VerifiedTerminationAllowsFreshPreparationWithoutReclaimingTheOriginalEffect(string availability, string status, string? result, bool terminal)
+  {
+    using var fixture = new Fixture();
+    using var journal = fixture.Open();
+    var prepared = journal.Prepare(Identity, Key, Digest, "propose", "0.25.1", Payload("original request"));
+    Assert.Equal("claimed", journal.Claim(Identity, prepared.Id!, Key, Digest).State);
+    var receipt = JsonSerializer.SerializeToElement(new { state = "source-admitted", execution = new { availability, status, result } });
+    Assert.Equal(terminal, IssueControlCommands.Terminal(receipt));
+    Assert.Equal("recorded", journal.Record(Identity, prepared.Id!, receipt, IssueControlCommands.Terminal(receipt)).State);
+    Assert.Equal("existing", journal.Claim(Identity, prepared.Id!, Key, Digest).State);
+    var next = journal.Prepare(Identity, new string('c', 64), new string('d', 64), "comment", "0.25.1", Payload("new owner input"));
+    Assert.Equal(terminal ? "prepared" : "existing", next.State);
+    if (!terminal) Assert.Equal(prepared.Id, next.Id);
+  }
+
   [Fact]
   public void ProtectedPayloadsAreAbsentFromDatabaseAndMissingKeysCannotReinitializeHistory()
   {

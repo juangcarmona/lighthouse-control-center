@@ -105,9 +105,10 @@ internal sealed class IssueControlCommands(WorkspaceOptions settings, SourceCont
         entry.Receipt?.GetProperty("source"), entry.Receipt is { } saved ? SourceJson.Text(saved, "observedAt") : null);
   }
 
-  private static bool Terminal(JsonElement receipt) => SourceJson.Text(receipt, "state") is "rejected" or "conflict" or "comment-published"
+  internal static bool Terminal(JsonElement receipt) => SourceJson.Text(receipt, "state") is "rejected" or "conflict" or "comment-published"
       || receipt.TryGetProperty("execution", out var execution) && SourceJson.Text(execution, "availability") == "available"
-        && SourceJson.Text(execution, "result") is "passed" or "blocked" or "failed";
+        && (SourceJson.Text(execution, "result") is "passed" or "blocked" or "failed"
+          || SourceJson.Text(execution, "status") is "failed" or "cancelled");
 
   private static bool Bound(JsonElement value, JournalIdentity identity, GetIssueControls query) => value.TryGetProperty("intent", out var intent)
       && SourceJson.Number(intent, "actorId") == identity.ActorId && intent.TryGetProperty("repository", out var repo)
