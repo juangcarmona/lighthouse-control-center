@@ -112,7 +112,7 @@ internal sealed class RepositoryAccess(WorkspaceOptions settings, OwnerSessions 
                   && SourceJson.Number(repo.Value, "id") == SourceJson.Number(item, "id")
                   && string.Equals(SourceJson.Text(repo.Value, "full_name"), repository, StringComparison.OrdinalIgnoreCase))
                 controlAuthority = new(SourceJson.Number(repo.Value, "id")!.Value, settings.GitHubAppId!.Value, connection.DataScope, generation,
-                    ReadGrant(grants, "contents"), ReadGrant(grants, "pull_requests"), ReadGrant(grants, "variables"), ReadGrant(grants, "actions"),
+                    ReadGrant(grants, "contents"), ReadGrant(grants, "pull_requests"), ReadGrant(grants, "actions_variables"), ReadGrant(grants, "actions"),
                     Both(WriteGrant(grants, "issues"), UserWrite(userPermissions)), Both(WriteGrant(grants, "actions"), UserWrite(userPermissions)),
                     PublicRepository(repo.Value) && PublicRepository(item));
               return new RepositoryAuthority(repository, metadata ? SourceAvailability.Available : SourceAvailability.Denied,
