@@ -42,11 +42,13 @@ public sealed class ArtifactSafetyTests
     Assert.Equal("unavailable", GitHubTransport.ParseArtifact(many, "envelope.json").Availability);
   }
 
-  [Fact]
-  public async Task SignedAssetDownloadNeverReceivesTheGitHubUserCredential()
+  [Theory]
+  [InlineData("envelope.json")]
+  [InlineData("dispatch.json")]
+  public async Task SignedAssetDownloadNeverReceivesTheGitHubUserCredential(string member)
   {
     using var transport = new GitHubTransport(new AssetHandler());
-    var result = await transport.ReadArtifactAsync("example/repository", 9, "isolated-user-access", "envelope.json", new(new object(), () => true), CancellationToken.None);
+    var result = await transport.ReadArtifactAsync("example/repository", 9, "isolated-user-access", member, new(new object(), () => true), CancellationToken.None);
     Assert.Equal("available", result.Availability);
   }
 
@@ -92,7 +94,7 @@ public sealed class ArtifactSafetyTests
       }
       Assert.Equal("fixture.blob.core.windows.net", request.RequestUri.Host);
       Assert.Null(request.Headers.Authorization);
-      using var archive = Archive(("envelope.json", "{\"schemaVersion\":1}"));
+      using var archive = Archive(("envelope.json", "{\"schemaVersion\":1}"), ("dispatch.json", "{\"schemaVersion\":1}"));
       return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(archive.ToArray()) });
     }
   }

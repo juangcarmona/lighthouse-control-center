@@ -101,7 +101,7 @@ try {
       readArtifact: async (api, repository, runId, name, member, optional = false) => {
         if (repository !== input.repository || !/^[1-9][0-9]{0,15}$/.test(String(runId))
             || typeof name !== 'string' || !/^lighthouse-[a-z0-9-]{1,190}$/.test(name)
-            || !['request.json', 'envelope.json', 'result.json'].includes(member)) throw Error('Unsupported artifact');
+            || !['request.json', 'envelope.json', 'result.json', 'dispatch.json'].includes(member)) throw Error('Unsupported artifact');
         const inventory = await api('actions/runs/' + runId + '/artifacts?per_page=100');
         if (!Array.isArray(inventory?.artifacts) || inventory.total_count !== inventory.artifacts.length
             || inventory.total_count > 100) throw Error('Incomplete artifact coverage');

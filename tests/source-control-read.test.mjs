@@ -20,6 +20,7 @@ async function exercise(scenario, reply = request => request.kind === 'authority
     const module = join(root, 'sdk.mjs');
     await writeFile(module, `export function createIssueControl(options) { return { async observe({number}) {
       const scenario=${JSON.stringify(scenario)};
+      if(scenario.startsWith('artifact:')) { const artifact=await options.readArtifact(path=>options.transport({scope:'repository',repository:options.repository,path,method:'GET'}),options.repository,'17','lighthouse-input-7-1',scenario.slice(9));return {availability:'available',artifact}; }
       if(scenario==='optional') { const missing=await options.transport({scope:'repository',repository:options.repository,path:'contents/.lighthouse/issue-control.json',method:'GET',optional:true});return {availability:'available',missing}; }
       if(scenario==='write') { await options.transport({scope:'repository',repository:options.repository,path:'issues/7/comments',method:'POST',body:{body:'Do not send'}}); }
       if(scenario==='foreign') { await options.transport({scope:'repository',repository:'other/repository',path:'',method:'GET'}); }
@@ -73,6 +74,18 @@ test('read helper serializes explicit SDK callbacks and delegates bounded artifa
   assert.deepEqual(requests.map(row => row.id), [1, 2, 3, 4, 5, 6]);
   assert.equal(requests.at(-1).kind, 'artifact'); assert.equal(requests.at(-1).artifactId, 9);
   assert.ok(requests.every(row => !Object.hasOwn(row, 'token') && !Object.hasOwn(row, 'authorization')));
+});
+test('native dispatch JSON reaches the bounded host artifact reader', async () => {
+  const { result, requests } = await exercise('artifact:dispatch.json');
+  assert.equal(result.availability, 'available');
+  assert.deepEqual(result.artifact, { source: 'bounded-json' });
+  assert.equal(requests.at(-1).kind, 'artifact');
+  assert.equal(requests.at(-1).member, 'dispatch.json');
+});
+for (const member of ['../dispatch.json', 'nested/dispatch.json', 'other.json']) test('non-contract artifact member is refused: ' + member, async () => {
+  const { result, requests } = await exercise('artifact:' + member);
+  assert.equal(result.availability, 'unavailable');
+  assert.equal(requests.length, 0);
 });
 for (const scenario of ['write', 'foreign', 'ambient']) test('read helper blocks ' + scenario + ' effects before a host request', async () => {
   const { result, requests } = await exercise(scenario);
