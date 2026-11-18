@@ -5,7 +5,7 @@
 - Baseline: `0.1.0`
 - Product: `sofa`
 - Profiles: `dotnet-backend`, `visual-theme`
-- SDLC package: `@juangcarmona/lighthouse-sdlc@0.25.1`
+- SDLC package: `@juangcarmona/lighthouse-sdlc@0.29.0`
 - UI package: `@juangcarmona/lighthouse-ui@0.2.1`
 - ProductShape: 0.26.1
 - Required PDaC serialization: `v1alpha2`
