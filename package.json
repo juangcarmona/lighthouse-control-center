@@ -26,7 +26,8 @@
     "verify:identity:host": "node scripts/verify-identity-host.mjs",
     "prepare:aspire": "node scripts/prepare-aspire.mjs",
     "test:visual": "playwright test --grep \"visual contract\"",
-    "test:e2e:live": "playwright test --config playwright.e2e.config.mjs"
+    "test:e2e:live": "playwright test --config playwright.e2e.config.mjs",
+    "test:e2e:telemetry": "node scripts/verify-agent-telemetry.mjs"
   },
   "repository": {
     "type": "git",

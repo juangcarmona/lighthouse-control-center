@@ -7,12 +7,13 @@ const repository = 'example/a-very-long-repository-name-for-engineering-health-e
 const observedAt = '2026-11-11T00:00:00Z';
 const screenshotDir = process.env.LIGHTHOUSE_EVIDENCE_DIR || 'test-results/evidence/screenshots';
 async function fixture(page) {
-  const state = { denied: false, unavailable: false, accountUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', methods: [], paths: [] };
+  const state = { denied: false, unavailable: false, accountUnavailable: false, scope: 'health-demo', sourceScope: 'health-demo', runName: 'Verify workspace', dashboardUrl: null, methods: [], paths: [] };
   await page.route('**/health.js', route => readFile(new URL('../../src/web/public/health.js', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/javascript' })));
   await page.route('**/health.css', route => readFile(new URL('../../src/web/public/health.css', import.meta.url), 'utf8').then(body => route.fulfill({ body, contentType: 'text/css' })));
   await page.route('**/workspace/health**', async route => {
     const html = await readFile(new URL('../../src/web/public/health.html', import.meta.url), 'utf8');
-    await route.fulfill({ body: html.replace('<div id="health-results">', '<p>Demonstration data · browser fixture</p><div id="health-results">'), contentType: 'text/html' });
+    const context = state.dashboardUrl ? `<meta name="lcc-display-context" content='${JSON.stringify({ dataScope: state.scope, actingUserId: 1, expiresAt: new Date(Date.now() + 60000).toISOString(), repositories: [], telemetryDashboardUrl: state.dashboardUrl })}'>` : '';
+    await route.fulfill({ body: html.replace('</head>', context + '</head>').replace('<div id="health-results">', '<p>Demonstration data · browser fixture</p><div id="health-results">'), contentType: 'text/html' });
   });
   await page.route('**/api/**', async route => {
     state.methods.push(route.request().method()); const path = new URL(route.request().url()).pathname; state.paths.push(path);
@@ -49,6 +50,14 @@ test('health fleet to project to exact contributing source is read-only and hone
   await expect(page.locator('.health-detail')).toContainText('numeric unit not applicable');
   await expect(page.locator('.health-detail img')).toHaveCount(0);
   await expect(page.locator('#health-results')).toContainText('Trends unavailable');
+  expect(state.methods.every(method => method === 'GET')).toBe(true);
+});
+test('health exposes only a configured secure Grafana dashboard link', async ({ page }) => {
+  const state = await fixture(page); state.dashboardUrl = 'https://grafana.example/grafana/';
+  await page.goto(origin + '/workspace/health/' + repository);
+  const dashboard = page.getByRole('link', { name: 'Open agent usage and runner telemetry in Grafana' });
+  await expect(dashboard).toHaveAttribute('href', 'https://grafana.example/grafana/d/lighthouse-agent-usage/lighthouse-agent-usage');
+  await expect(dashboard).toHaveAttribute('rel', 'noreferrer noopener');
   expect(state.methods.every(method => method === 'GET')).toBe(true);
 });
 test('temporary account and source failure retain stale visible evidence but denied authority removes records', async ({ page }) => {

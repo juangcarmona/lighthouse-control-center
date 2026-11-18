@@ -188,8 +188,19 @@ function projectView(repository, row) {
   fragment.append(delivery);
   const engineering = family('Engineering quality', 'Engineering level, gates, coverage, mutation and security are unavailable until their source assessments and definitions are supplied.');
   engineering.id = 'engineering'; engineering.append(node('p', 'No engineering score, level or passing gate is inferred from workflow conclusions.', 'health-empty-signal'));
-  const adoption = family('Lighthouse adoption/autonomy', 'Agentic and code measurements are unavailable. Committed version inventory is separate from installed adoption.');
+  const adoption = family('Lighthouse adoption/autonomy', 'Agentic and code measurements are unavailable until telemetry is collected and correlated with source runs. Committed version inventory is separate from installed adoption.');
   adoption.id = 'adoption'; adoption.append(node('p', 'No agent success, autonomy, AI usage or code quality value is inferred from this Actions collection.', 'health-empty-signal'));
+  const dashboardUrl = displayContext()?.telemetryDashboardUrl;
+  if (typeof dashboardUrl === 'string') {
+    try {
+      const dashboard = new URL(dashboardUrl);
+      if (dashboard.protocol === 'https:' || dashboard.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(dashboard.hostname)) {
+        dashboard.pathname = dashboard.pathname.replace(/\/$/, '') + '/d/lighthouse-agent-usage/lighthouse-agent-usage';
+        const report = link('Open agent usage and runner telemetry in Grafana', dashboard.href);
+        report.target = '_blank'; report.rel = 'noreferrer noopener'; adoption.append(report);
+      }
+    } catch { /* invalid configured URLs are omitted */ }
+  }
   const resources = family('Resources', 'Provider cost, tokens, CPU, memory and storage measurements are unavailable. Runner registration does not establish free capacity.');
   resources.id = 'resources'; resources.append(node('p', 'Environment deployment is unknown: no verified PRE, PRO or production target result is in this collection.', 'health-empty-signal'));
   fragment.append(engineering, adoption, resources, link('Inspect runtime and version inventory', '/workspace/runtime'));

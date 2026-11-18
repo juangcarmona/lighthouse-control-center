@@ -40,6 +40,7 @@ The #48 development candidate uses the released public SDK selected in `package.
 - [`docs/architecture/`](docs/architecture/README.md): ArcShape-managed arc42 architecture documentation.
 - [`src/`](src/README.md): authenticated workspace, source observations, repository tooling and retained legacy execution code.
 - [`tests/`](tests/README.md): runtime, PostgreSQL, container, bridge and repository tests.
+- [`docs/runbooks/agent-telemetry.md`](docs/runbooks/agent-telemetry.md): optional Grafana/Loki telemetry stack, runner configuration and E2E verification.
 
 ## Tooling
 

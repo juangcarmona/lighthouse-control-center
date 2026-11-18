@@ -36,7 +36,7 @@ The exact available producer is `HostInventory.observation.adoptions[]`, contain
 Impacted accepted artifacts are FR-CONFIGURATION-DRIFT, FR-PROJECT-HEALTH, FR-DELIVERY-EVIDENCE and BR-EXPLAINABLE-SIGNALS; source security and mobile quality remain binding. Prepared inspect/impact reports identify neighboring source authority, human decisions, delivery/run terms, project workspace, retention and runtime operations. Their source ownership is preserved. Provider administration, scheduling, costs, production deployment and historical metric ingestion are excluded.
 
 <!-- pdac:cite id="FR-CONFIGURATION-DRIFT" digest="sha256:abb59ea4de5de304e41806960f9d7cc593cd9086082a2c04ce7fe1b4dc67eff7" -->
-<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:00496ba5f763ca6f4062a45e000bda8fb429cfd674b0e638cd59fb3858449130" -->
+<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:69da1f100227df86cc26fdad78c38a336e38d039bdedc1c097a1b6a5f4e8dceb" -->
 <!-- pdac:cite id="FR-DELIVERY-EVIDENCE" digest="sha256:5a56ea8e0030730dfdf0d8fd51027c45c2e6ddd65393b6d7726c85c27e543074" -->
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 <!-- pdac:cite id="QR-EXECUTION-SECURITY" digest="sha256:314e97415b3211a4f4e6187bb16495661d31129062e6bda38ceb8a2a4d4e9790" -->

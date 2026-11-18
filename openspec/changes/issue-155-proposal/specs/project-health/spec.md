@@ -21,7 +21,7 @@ The workspace SHALL expose Health with every configured repository, project dril
 ### Requirement: Source signals remain explainable
 
 Health SHALL group source-linked, explained signals by family and expose missing evidence without fabrication.
-<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:00496ba5f763ca6f4062a45e000bda8fb429cfd674b0e638cd59fb3858449130" -->
+<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:69da1f100227df86cc26fdad78c38a336e38d039bdedc1c097a1b6a5f4e8dceb" -->
 <!-- pdac:cite id="BR-EXPLAINABLE-SIGNALS" digest="sha256:8b54c80507f22f6883aaad91a53f479da5892bcc8def4f0e836076d1cf2063d5" -->
 
 #### Scenario: Inspect a workflow observation

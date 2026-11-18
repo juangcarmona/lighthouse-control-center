@@ -4,9 +4,9 @@ namespace JuanGCarmona.SoFa.Modules.Workspace.Source;
 
 // Only protected document rendering consumes this receipt. Source queries and commands never do.
 internal sealed record WorkspaceDisplayContext(string DataScope, long ActingUserId, string Login,
-    DateTimeOffset ExpiresAt, IReadOnlyList<RepositoryGrant> Repositories)
+    DateTimeOffset ExpiresAt, IReadOnlyList<RepositoryGrant> Repositories, string? TelemetryDashboardUrl)
 {
-  internal static WorkspaceDisplayContext? Create(OwnerSession record, IReadOnlyList<string> configured, DateTimeOffset now)
+  internal static WorkspaceDisplayContext? Create(OwnerSession record, IReadOnlyList<string> configured, DateTimeOffset now, string? telemetryDashboardUrl = null)
   {
     lock (record.Sync)
     {
@@ -21,7 +21,7 @@ internal sealed record WorkspaceDisplayContext(string DataScope, long ActingUser
       if (rows.Length == 0) return null;
       expires = rows.Select(row => row.CheckedAt.AddMinutes(5)).Append(expires).Min();
       return new(connection.DataScope, connection.UserId, connection.Login, expires,
-          rows.Select(row => new RepositoryGrant(row.Repository, "available", row.IssuesRead, row.ActionsRead, false, row.CheckedAt)).ToArray());
+          rows.Select(row => new RepositoryGrant(row.Repository, "available", row.IssuesRead, row.ActionsRead, false, row.CheckedAt)).ToArray(), telemetryDashboardUrl);
     }
   }
 }

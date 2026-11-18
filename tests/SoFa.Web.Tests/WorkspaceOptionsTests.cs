@@ -68,6 +68,21 @@ public sealed class WorkspaceOptionsTests
   }
 
   [Fact]
+  public void TelemetryDashboardLinkRequiresHttpsOrLoopbackHttp()
+  {
+    var values = Values();
+    values["SoFa:Telemetry:DashboardUrl"] = "https://grafana.example";
+    Assert.Equal("https://grafana.example", WorkspaceOptions.Load(Configuration(values)).TelemetryDashboardUrl);
+    values["SoFa:Telemetry:DashboardUrl"] = "http://127.0.0.1:3000";
+    Assert.Equal("http://127.0.0.1:3000", WorkspaceOptions.Load(Configuration(values)).TelemetryDashboardUrl);
+    foreach (var address in new[] { "http://grafana.example", "https://user:password@grafana.example", "https://grafana.example/?token=secret", "https://grafana.example/#section" })
+    {
+      values["SoFa:Telemetry:DashboardUrl"] = address;
+      Assert.Throws<InvalidOperationException>(() => WorkspaceOptions.Load(Configuration(values)));
+    }
+  }
+
+  [Fact]
   public void ConfiguredOwnerAndJournalCustodyDirectoriesArePairwiseSeparate()
   {
     var values = Values();

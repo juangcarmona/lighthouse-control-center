@@ -1,0 +1,48 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "sum by (model, stage) (max by (event_id, model, stage) (max_over_time({service_name=\"lighthouse\"} | json | type=\"session.step.ended\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", stage=\"{{.correlation_stage}}\" | unwrap attributes_inputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{stage}} input", "refId": "A"},
+        {"expr": "sum by (model, stage) (max by (event_id, model, stage) (max_over_time({service_name=\"lighthouse\"} | json | type=\"session.step.ended\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", stage=\"{{.correlation_stage}}\" | unwrap attributes_outputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{stage}} output", "refId": "B"},
+        {"expr": "sum by (action) (max by (event_id, action) (max_over_time({service_name=\"lighthouse\"} | json | type=\"session.step.ended\" | label_format event_id=\"{{.id}}\", action=\"{{.attributes_action}}\" | unwrap attributes_inputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{action}} input", "refId": "C"}
+      ],
+      "title": "Completed native step tokens by executed model (replay-deduplicated)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
+      "id": 2,
+      "options": {"mode": "markdown", "content": "## Provider-billed cost: unavailable\n\nToken observations do not establish billing. Connect an attributable provider billing source before displaying monetary cost."},
+      "title": "Cost provenance",
+      "type": "text"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 9},
+      "id": 3,
+      "options": {"dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"expr": "{service_name=\"lighthouse\"} | json", "refId": "A"}],
+      "title": "Source events and correlation details",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": ["lighthouse", "agent", "runner", "telemetry"],
+  "time": {"from": "now-24h", "to": "now"},
+  "timezone": "browser",
+  "title": "Lighthouse agent usage",
+  "uid": "lighthouse-agent-usage",
+  "version": 1
+}

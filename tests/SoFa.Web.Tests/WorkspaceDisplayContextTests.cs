@@ -34,6 +34,16 @@ public sealed class WorkspaceDisplayContextTests
   }
 
   [Fact]
+  public void DisplayReceiptCarriesOnlyTheConfiguredTelemetryDashboardLink()
+  {
+    var record = Session();
+    Assert.Equal("https://grafana.example/d/lighthouse-agent-usage/lighthouse-agent-usage",
+        WorkspaceDisplayContext.Create(record, ["example/repository"], Now,
+            "https://grafana.example/d/lighthouse-agent-usage/lighthouse-agent-usage")!.TelemetryDashboardUrl);
+    Assert.Null(WorkspaceDisplayContext.Create(record, ["example/repository"], Now)!.TelemetryDashboardUrl);
+  }
+
+  [Fact]
   public void ChangedConnectionGenerationDenialAndEndedOwnerCannotRestoreDisplay()
   {
     var record = Session();
