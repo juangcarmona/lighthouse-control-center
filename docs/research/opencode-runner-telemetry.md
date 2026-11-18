@@ -28,6 +28,16 @@ The host database had no recorded `session.skill.activated` event in the queried
 
 OpenCode's [official CLI documentation](https://opencode.ai/docs/cli/) provides `opencode debug paths db` without starting a server or opening the database. The inspected source checkout was anomalyco/opencode commit `60c68d145a14127ce633e26aa5fdfb882a7baa6d`; its [session-message schema](https://github.com/anomalyco/opencode/blob/60c68d145a14127ce633e26aa5fdfb882a7baa6d/packages/schema/src/session-message.ts) describes models, tools, tokens, costs and skills. Source inspection is separate from deployed runner qualification.
 
+## Specific LCC runner inspection
+
+The default directory above was not the runner's configured state. A subsequent read-only container-configuration inspection located its explicit telemetry directory and startup wrapper. No OTLP endpoint is configured there. Reading that directory through the public SDK found 46,582 retained events from November 15–18, including a recent heartbeat, 451 native step starts, 449 finishes, 16,195 resource samples and 1,369 tool completions. The earlier default-directory observation therefore does not establish absence of telemetry on this runner.
+
+The public usage summary reports incomplete coverage: 2,018,704 input tokens, 203,183 output tokens, 69,744 reasoning tokens and 42,113,920 cache-read tokens; cache-write tokens are reported as zero. These are retained observations, not complete lifetime usage. Native and fallback records coexist, so only native steps contribute here. All 449 finished native records have provider `openai` but a missing model identifier. Model-based grouping must remain unavailable; configured model names cannot fill that gap. Billed cost remains unknown.
+
+One contributing source association was checked against GitHub: issue #179, [run 44121129592 / attempt 1](https://github.com/juangcarmona/lighthouse-control-center/actions/runs/44121129592), repository ID 1425429121, head `cc0c111318ebe8c427f6670a824d4d74330078c7`, completed/success. This confirms the linked run identity and outcome, not independent attestation of each host token counter or accepted delivery. Other per-issue samples remain host-reported associations until checked individually.
+
+The first reporting increment can use these retained events now. Its next producer gap is the missing executed-model identifier, followed by explicit skill attribution and a separate billing source. Export/backend deployment is not required to inspect the initial chart.
+
 ## Useful dimensions and measurements
 
 | Question | Primary source | Required qualification |
