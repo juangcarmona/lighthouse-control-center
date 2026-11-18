@@ -1,13 +1,13 @@
 ---
 id: ADR-0012
-title: Retain agent telemetry in Grafana Loki for Control Center reporting
+title: Report agent telemetry through Grafana Loki and Prometheus
 status: Accepted
 date: "2026-11-18"
 deciders: [Maintainer]
 ---
 
 <!-- markdownlint-disable-next-line MD025 -->
-# ADR-0012: Retain agent telemetry in Grafana Loki for Control Center reporting
+# ADR-0012: Report agent telemetry through Grafana Loki and Prometheus
 
 ## Context
 
@@ -17,11 +17,11 @@ The maintainer approved Grafana and the agent-observability scope. Operators nee
 
 ## Decision
 
-Grafana with Loki is the first retained telemetry backend. Lighthouse sends its existing OTLP log envelope to Loki's native OTLP/HTTP endpoint. The Control Center repository provides a local Grafana/Loki example, datasource and dashboards for operators to adapt to their runtime.
+Grafana with Loki and Prometheus is the first retained telemetry reporting stack. Lighthouse sends its existing OTLP log envelope through an OpenTelemetry Collector to Loki; native agent metrics such as Claude Code usage flow through the Collector to Prometheus. The Control Center repository provides a local stack, datasources and dashboards for operators to adapt to their runtime.
 
-Index only bounded service and environment attributes. Store repository, issue, workflow run, attempt, runner, session, event ID, model and action values in the body or structured metadata. Deduplicate dashboard usage by Lighthouse event ID before summing. Native completed model steps supply token totals; fallback, compaction and lifecycle events stay separate. Show cost as unavailable until an attributable billing source is connected.
+Index only bounded service and environment attributes. Store repository, issue, workflow run, attempt, runner, session, event ID, model and action values in Loki's body or structured metadata. Deduplicate dashboard usage by Lighthouse event ID before summing. Native completed model steps supply Lighthouse event token totals; Claude metrics provide native token and approximate cost observations by their source-reported attributes. Fallback, compaction and lifecycle events stay separate. Label Claude costs as estimates, not billed cost.
 
-Control Center Health links to telemetry reporting tied to source records. Operators configure runners, OTLP credentials, retention and any external deployment. The Control Center does not collect events or schedule execution, and this decision adds no Prometheus endpoint or model tracing SDK.
+Control Center Health links to telemetry reporting tied to source records. Operators configure runners, OTLP credentials, retention and any external deployment. The Control Center does not collect events or schedule execution. The local Collector endpoints bind to loopback; remote runner adoption requires authenticated TLS, operator-managed access and retention controls.
 
 ## Alternatives considered
 
@@ -32,7 +32,7 @@ Control Center Health links to telemetry reporting tied to source records. Opera
 
 ## Consequences
 
-Operators can explore retained events and token usage through the existing OTLP contract. Dashboards use stable event IDs to avoid counting replayed usage twice; raw event counts can still include replayed observations. Producer and provider evidence sets the limits for cost, completeness and source authenticity. Operators must qualify Loki retention, access, storage, availability and runner deployment for their environment.
+Operators can explore retained events and native metrics in Grafana. Dashboards use stable event IDs to avoid counting replayed Lighthouse usage twice; raw event counts can still include replayed observations. Producer and provider evidence sets the limits for cost, completeness and source authenticity. Operators must qualify retention, access, storage, availability and runner deployment for their environment.
 
 ## References
 
@@ -40,4 +40,6 @@ Operators can explore retained events and token usage through the existing OTLP 
 - [Lighthouse runner telemetry contract](https://github.com/juangcarmona/lighthouse/blob/main/src/packages/sdlc/telemetry.md)
 - [Grafana Loki OTLP ingestion](https://grafana.com/docs/loki/latest/send-data/otel/)
 - [Grafana Loki label cardinality](https://grafana.com/docs/loki/latest/get-started/labels/cardinality/)
+- [OpenTelemetry Collector Prometheus exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/prometheusexporter)
+- [Claude Code monitoring](https://code.claude.com/docs/en/monitoring-usage)
 - [ADR-0006: Observe repository-owned workflows](0006-observe-repository-owned-workflows.md)

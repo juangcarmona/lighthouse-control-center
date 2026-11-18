@@ -5,6 +5,8 @@ const root = new URL('../src/telemetry/', import.meta.url);
 const compose = ['compose', '-f', new URL('compose.yaml', root).pathname, '-p', 'lcc-agent-telemetry-e2e'];
 const loki = 'http://127.0.0.1:3100';
 const grafana = 'http://127.0.0.1:3000';
+const collector = 'http://127.0.0.1:4318';
+const prometheus = 'http://127.0.0.1:9090';
 process.env.GRAFANA_ADMIN_PASSWORD ??= randomBytes(24).toString('base64url');
 
 function run(args) {
@@ -67,6 +69,19 @@ const payload = {
     }],
   }],
 };
+const claudeMetrics = {
+  resourceMetrics: [{
+    resource: { attributes: [{ key: 'service.name', value: { stringValue: 'claude-code' } }, { key: 'user.email', value: { stringValue: 'private@example.test' } }] },
+    scopeMetrics: [{ scope: { name: 'com.anthropic.claude_code', version: '1' }, metrics: [
+      { name: 'claude_code.token.usage', unit: 'tokens', sum: { aggregationTemporality: 1, isMonotonic: true, dataPoints: [{ attributes: [
+        { key: 'model', value: { stringValue: 'claude-test-model' } }, { key: 'type', value: { stringValue: 'input' } }, { key: 'skill.name', value: { stringValue: 'test-skill' } }, { key: 'user.email', value: { stringValue: 'private@example.test' } },
+      ], timeUnixNano: String(BigInt(Date.now()) * 1_000_000n), asDouble: 250 }] } },
+      { name: 'claude_code.cost.usage', unit: 'USD', sum: { aggregationTemporality: 1, isMonotonic: true, dataPoints: [{ attributes: [
+        { key: 'model', value: { stringValue: 'claude-test-model' } }, { key: 'skill.name', value: { stringValue: 'test-skill' } },
+      ], timeUnixNano: String(BigInt(Date.now()) * 1_000_000n), asDouble: 0.0125 }] } },
+    ] }],
+  }],
+};
 
 let started = false;
 try {
@@ -74,16 +89,25 @@ try {
   started = true;
   await ready(loki, '/ready');
   await ready(grafana, '/api/health');
+  await ready('http://127.0.0.1:13133', '/');
+  await ready(prometheus, '/-/ready');
 
   const body = JSON.stringify(payload);
   for (let replay = 0; replay < 2; replay++) {
-    await json(`${loki}/otlp/v1/logs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body });
+    await json(`${collector}/v1/logs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body });
   }
+  await json(`${collector}/v1/metrics`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(claudeMetrics) });
 
   const query = async expression => json(`${loki}/loki/api/v1/query?query=${encodeURIComponent(expression)}`);
-  const raw = await query(`sum(count_over_time({service_name="lighthouse"} | json | id="${eventId}" [10m]))`);
-  const rawCount = Number(raw.data?.result?.[0]?.value?.[1]);
-  if (rawCount !== 1) throw Error(`Expected Loki to collapse the exact replayed line, got ${rawCount}`);
+  let raw;
+  let rawCount = 0;
+  for (let attempt = 0; attempt < 15; attempt++) {
+    raw = await query(`sum(count_over_time({service_name="lighthouse"} | json | id="${eventId}" [10m]))`);
+    rawCount = Number(raw.data?.result?.[0]?.value?.[1] ?? 0);
+    if (rawCount === 1) break;
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  if (rawCount !== 1) throw Error(`Expected Loki to collapse the exact replayed line, got ${JSON.stringify(raw)}`);
 
   const dashboard = await json(`${grafana}/api/dashboards/uid/lighthouse-agent-usage`, { headers: { authorization: `Basic ${Buffer.from(`admin:${process.env.GRAFANA_ADMIN_PASSWORD}`).toString('base64')}` } });
   const panels = dashboard.dashboard?.panels ?? [];
@@ -103,7 +127,30 @@ try {
   if (Number(outputSample?.value?.[1]) !== event.attributes.outputTokens) throw Error(`Dashboard output query must return ${event.attributes.outputTokens} replay-deduplicated tokens by model; got ${JSON.stringify(outputUsage)}`);
   if (Number(actionSample?.value?.[1]) !== event.attributes.inputTokens) throw Error(`Dashboard action query must return ${event.attributes.inputTokens} replay-deduplicated tokens by reported action; got ${JSON.stringify(actionUsage)}`);
 
-  console.log(JSON.stringify({ status: 'passed', replayedPayloads: 2, storedRawRecords: rawCount, deduplicatedInputTokens: tokenCount, dashboardPanels: panels.length }, null, 2));
+  const claudePanel = panels.find(panel => panel.title.includes('Claude Code cumulative tokens'));
+  const claudeCostPanel = panels.find(panel => panel.title.includes('Claude-reported estimated cost'));
+  if (!claudePanel || !claudeCostPanel || !panels.some(panel => panel.title === 'Claude-reported cost provenance')) throw Error('Provisioned Grafana dashboard is missing Claude token, cost and provenance panels');
+  const claudeQuery = claudePanel.targets.find(target => target.refId === 'A').expr.replace('$__rate_interval', '5m');
+  let claudeUsage;
+  for (let attempt = 0; attempt < 30; attempt++) {
+    claudeUsage = await json(`${prometheus}/api/v1/query?query=${encodeURIComponent(claudeQuery)}`);
+    if (Number(claudeUsage.data?.result?.[0]?.value?.[1]) > 0) break;
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  const claudeSample = claudeUsage.data?.result?.find(sample => sample.metric.model === 'claude-test-model' && sample.metric.type === 'input');
+  if (!claudeSample || Number(claudeSample.value?.[1]) !== 250) throw Error(`Claude token metric did not reach Prometheus with its model and type attributes: ${JSON.stringify(claudeUsage)}`);
+  const privateLabel = await json(`${prometheus}/api/v1/query?query=${encodeURIComponent('target_info{user_email="private@example.test"}')}`);
+  if (privateLabel.data?.result?.length) throw Error('Claude resource identity must be removed before Prometheus storage');
+  const costQuery = claudeCostPanel.targets[0].expr;
+  let claudeCost;
+  for (let attempt = 0; attempt < 30; attempt++) {
+    claudeCost = await json(`${prometheus}/api/v1/query?query=${encodeURIComponent(costQuery)}`);
+    if (Number(claudeCost.data?.result?.[0]?.value?.[1]) > 0) break;
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  if (!claudeCost.data?.result?.some(sample => sample.metric.model === 'claude-test-model' && Number(sample.value?.[1]) === 0.0125)) throw Error(`Claude estimated cost metric was not queryable from Prometheus: ${JSON.stringify(claudeCost)}`);
+
+  console.log(JSON.stringify({ status: 'passed', replayedPayloads: 2, storedRawRecords: rawCount, deduplicatedInputTokens: tokenCount, claudeMetric: claudeSample.metric.__name__, claudeMetricModel: claudeSample.metric.model, dashboardPanels: panels.length }, null, 2));
 } finally {
   if (started) run(['down', '-v', '--remove-orphans']);
 }

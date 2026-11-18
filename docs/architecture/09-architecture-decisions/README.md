@@ -19,7 +19,7 @@ This directory is the canonical ADR collection for Lighthouse Control Center. It
 | Use an external identity provider | Accepted | 2026-10-26 | [ADR-0007](0007-shared-identity-custody-and-recovery.md) |
 | Persist and correlate issue commands using a protected single-instance SQLite journal | Accepted | 2026-11-08 | [ADR-0008](0008-source-correlated-issue-commands.md) |
 | Use .NET and Aspire for SoFa | Accepted | 2026-10-31 | [ADR-0009](0009-dotnet-and-aspire.md) |
-| Retain agent telemetry in Grafana Loki for Control Center reporting | Accepted | 2026-11-18 | [ADR-0012](0012-retain-agent-telemetry-in-grafana-loki.md) |
+| Report agent telemetry through Grafana Loki and Prometheus | Accepted | 2026-11-18 | [ADR-0012](0012-retain-agent-telemetry-in-grafana-loki.md) |
 
 ADR-0006 governs the current product boundary; earlier records retain their historical rationale.
 

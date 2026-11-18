@@ -35,6 +35,37 @@
       "targets": [{"expr": "{service_name=\"lighthouse\"} | json", "refId": "A"}],
       "title": "Source events and correlation details",
       "type": "logs"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "claude-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 21},
+      "id": 4,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "sum by (model, type, vcs_owner_name, vcs_repository_name) (claude_code_token_usage_tokens_total)", "legendFormat": "{{vcs_owner_name}}/{{vcs_repository_name}} / {{model}} / {{type}}", "refId": "A"},
+        {"expr": "sum by (model, skill_name) (claude_code_token_usage_tokens_total{skill_name!~\"\"})", "legendFormat": "{{model}} / {{skill_name}}", "refId": "B"}
+      ],
+      "title": "Claude Code cumulative tokens by model, type and reported skill",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "claude-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 30},
+      "id": 6,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "sum by (model, skill_name) (claude_code_cost_usage_USD_total)", "legendFormat": "{{model}} / {{skill_name}} estimate", "refId": "A"}],
+      "title": "Claude-reported estimated cost (USD, not billed)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "gridPos": {"h": 5, "w": 8, "x": 16, "y": 21},
+      "id": 5,
+      "options": {"mode": "markdown", "content": "## Claude cost: estimated\n\nClaude Code reports approximate USD usage, not provider billing. Treat this as a source-reported estimate; it is not a billed-cost total."},
+      "title": "Claude-reported cost provenance",
+      "type": "text"
     }
   ],
   "refresh": "30s",
@@ -44,5 +75,5 @@
   "timezone": "browser",
   "title": "Lighthouse agent usage",
   "uid": "lighthouse-agent-usage",
-  "version": 1
+  "version": 2
 }

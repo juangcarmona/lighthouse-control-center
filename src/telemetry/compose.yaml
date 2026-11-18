@@ -7,10 +7,34 @@ services:
     volumes:
       - ./loki.yaml:/etc/loki/config.yaml:ro
       - loki-data:/loki
+  collector:
+    image: otel/opentelemetry-collector-contrib:0.165.0
+    command: [--config=/etc/otelcol-contrib/config.yaml]
+    depends_on:
+      loki:
+        condition: service_started
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:13133:13133"
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+  prometheus:
+    image: prom/prometheus:v3.7.3
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=14d]
+    depends_on:
+      - collector
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
   grafana:
     image: grafana/grafana:12.2.0
     depends_on:
       loki:
+        condition: service_started
+      prometheus:
         condition: service_started
     ports:
       - "127.0.0.1:3000:3000"
@@ -24,4 +48,5 @@ services:
 
 volumes:
   loki-data:
+  prometheus-data:
   grafana-data:
