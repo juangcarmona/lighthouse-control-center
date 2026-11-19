@@ -18,6 +18,7 @@ else {
 function status(text, error = false) { byId('issue-status').textContent = text; byId('issue-status').dataset.state = error ? 'error' : 'ready'; }
 function controlsStatus(text) {
   byId('controls-status').textContent = text;
+  byId('controls-status').classList.add('visually-hidden');
   const target = selection();
   const draft = current && target ? readDraft(current.dataScope, current.actingUserId, target.repository, target.number) : '';
   renderUnavailableActions(byId('control-actions'), text, draft);
@@ -405,6 +406,7 @@ async function readControls(target, operation, initialBody = '') {
       area.append(paragraph(label + ' · Source: ' + (action?.eligible === true ? 'eligible' : action?.availability ?? 'unavailable')
         + (action?.reason ? ' · ' + action.reason : '') + ' · Lighthouse Control Center submission: ' + (data.submissionAvailable ? 'available with confirmation' : 'unavailable')));
     }
+    byId('controls-status').classList.remove('visually-hidden');
     renderActions(byId('control-actions'), facts, target, data.dataScope,
       () => operation === revision && current?.key === target.key && current?.dataScope === data.dataScope,
       reason => {

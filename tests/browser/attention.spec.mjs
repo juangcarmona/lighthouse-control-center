@@ -15,20 +15,23 @@ async function fixture(page) {
   });
   return { methods, removeLabel() { labels = ['waiting-review']; }, fail(value) { status = value; }, changeAccount() { scope = 'new-account'; labels = []; } };
 }
-for (const [width, theme] of [[1280, 'dark'], [390, 'light']]) test(`inbox ${width} ${theme}: factual contexts, deduplication and keyboard`, async ({ page }, info) => {
+for (const [width, theme] of [[1280, 'dark'], [1280, 'light'], [390, 'dark'], [390, 'light']]) test(`inbox ${width} ${theme}: factual contexts, deduplication and keyboard`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 }); const source = await fixture(page);
   await page.goto(origin + '/workspace/attention');
   await page.locator('html').evaluate((element, value) => element.dataset.lhTheme = value, theme);
-  await expect(page.locator('[data-attention-key]')).toHaveCount(2);
+  await expect(page.locator('[data-attention-key]')).toHaveCount(1);
   await expect(page.locator('#factory-results')).toContainText('Needs information · open issue');
+  await expect(page.locator('#factory-results')).toContainText('Waiting for review · open issue');
+  await expect(page.getByRole('button', { name: 'Inspect current question' })).toHaveCount(1);
   await page.locator('[data-attention-key] details summary').first().click();
   await expect(page.locator('#factory-results')).toContainText('GitHub label: needs-info');
+  await expect(page.locator('#factory-results')).toContainText('GitHub label: waiting-review');
   await expect(page.locator('#factory-results')).toContainText('(not wait duration)');
   await expect(page.locator('#factory-results img, #factory-results script')).toHaveCount(0);
   const focus = page.locator('[data-attention-key]').first().getByRole('link').first();
   await focus.focus(); const key = await focus.getAttribute('data-focus-key');
   await page.locator('#factory-refresh').evaluate(button => button.click());
-  await expect(page.locator('[data-attention-key]')).toHaveCount(2);
+  await expect(page.locator('[data-attention-key]')).toHaveCount(1);
   await expect(page.locator(`[data-focus-key="${key}"]`)).toBeFocused();
   await expect(page.locator('#factory-count')).toContainText('2 collected wait contexts');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -38,7 +41,7 @@ for (const [width, theme] of [[1280, 'dark'], [390, 'light']]) test(`inbox ${wid
 });
 test('inbox label removal and failed refresh preserve uncertainty; denial and account switch clear private history', async ({ page }) => {
   const source = await fixture(page); await page.goto(origin + '/workspace/attention');
-  await expect(page.locator('[data-attention-key]')).toHaveCount(2);
+  await expect(page.locator('[data-attention-key]')).toHaveCount(1);
   source.removeLabel(); await page.getByRole('button', { name: 'Refresh collection' }).click();
   await expect(page.locator('#factory-results')).toContainText('Not observed in this collection; resolution is unknown.');
   source.fail(503); await page.getByRole('button', { name: 'Refresh collection' }).click();
@@ -67,7 +70,7 @@ for (const width of [1280, 390]) test(`verified intervention ${width}: inspect o
       ...(input.operation !== 'prepare' ? { receiptObservedAt: '2026-11-08T08:00:00Z', receipt: {
         state: input.operation === 'reconcile' ? 'source-admitted' : 'submitted', sourceAcknowledged: input.operation === 'reconcile', questionResolved: input.operation === 'reconcile' } } : {}) } });
   });
-  await page.goto(origin + '/workspace/attention'); await expect(page.locator('[data-attention-key]')).toHaveCount(2);
+  await page.goto(origin + '/workspace/attention'); await expect(page.locator('[data-attention-key]')).toHaveCount(1);
   expect(reads).toBe(0);
   const card = page.locator('[data-attention-key]').first();
   await card.getByRole('button', { name: 'Inspect current question' }).focus(); await page.keyboard.press('Enter');
@@ -84,11 +87,11 @@ for (const width of [1280, 390]) test(`verified intervention ${width}: inspect o
   await context.getByRole('button', { name: 'Reconcile source result' }).click();
   await expect(context).toContainText('Question resolved: yes');
   expect(operations).toEqual(['prepare', 'submit', 'reconcile']);
-  await expect(page.locator('[data-attention-key]')).toHaveCount(2);
+  await expect(page.locator('[data-attention-key]')).toHaveCount(1);
   expect(await page.evaluate(() => window.questionRan)).toBeUndefined();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.locator('[data-attention-key]').nth(1).getByRole('button', { name: 'Inspect current question' }).click();
-  await expect(page.getByRole('heading', { name: 'Verified source context' })).toHaveCount(2);
+  await expect(card.getByRole('button', { name: 'Inspect current question' })).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: 'Verified source context' })).toHaveCount(1);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await context.screenshot({ path: info.outputPath(`verified-question-${width}.png`) });
 });

@@ -418,21 +418,33 @@ function renderAttention(selected, focusKey) {
   byId('factory-count').textContent = collected ? `${visible.length} collected wait contexts · inspect a question to verify what needs you.` : 'Reading intervention contexts…';
   byId('factory-scope').textContent = 'Order: source-label observations, then stale or unobserved contexts; oldest issue update first, source identity breaks ties. Age does not establish urgency. Collection coverage is shown per project.';
   const list = node('div', undefined, 'factory-list');
+  const issues = new Map();
   for (const entry of visible) {
-    const card = node('article', undefined, 'factory-issue' + (entry.state === 'source-label' ? '' : ' factory-stale'));
-    card.dataset.attentionKey = entry.key;
+    const key = entry.repository.toLowerCase() + '#' + entry.issue.id;
+    if (!issues.has(key)) issues.set(key, []);
+    issues.get(key).push(entry);
+  }
+  for (const entries of issues.values()) {
+    const entry = entries.find(item => item.state === 'source-label') ?? entries[0];
+    const issueKey = entry.repository.toLowerCase() + '#' + entry.issue.id;
+    const card = node('article', undefined, 'factory-issue' + (entries.some(item => item.state !== 'source-label') ? ' factory-stale' : ''));
+    card.dataset.attentionKey = issueKey;
     const heading = node('h3'), link = node('a', `#${entry.issue.number} · ${entry.issue.title}`);
     link.setAttribute('aria-label', `${entry.repository}#${entry.issue.number} · ${entry.issue.title}`);
-    link.href = `/workspace/issues/${entry.repository}/${entry.issue.number}`; link.dataset.focusKey = entry.key; heading.append(link);
-    card.append(node('small', entry.repository, 'issue-project'), heading, node('p', `${entry.label === 'needs-info' ? 'Needs information' : 'Waiting for review'} · ${entry.issue.state ?? 'unknown'} issue`, 'issue-row-meta'));
-    const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source history'),
-      node('p', `GitHub label: ${entry.label} · Issue updated: ${time(entry.sourceTime)} (not wait duration)`),
-      node('p', `Observed: ${time(entry.observedAt)}`)); card.append(provenance);
-    if (entry.state === 'stale') card.append(node('p', 'Stale observation; current source context is unknown.', 'notice'));
-    if (entry.state === 'not-observed') card.append(node('p', 'Not observed in this collection; resolution is unknown. Missing pages or a removed label do not establish a resolved question.', 'notice'));
+    link.href = `/workspace/issues/${entry.repository}/${entry.issue.number}`; link.dataset.focusKey = issueKey; heading.append(link);
+    card.append(node('small', entry.repository, 'issue-project'), heading);
+    const provenance = node('details', undefined, 'factory-provenance'); provenance.append(node('summary', 'Source history'));
+    for (const reason of entries) {
+      const label = reason.label === 'needs-info' ? 'Needs information' : 'Waiting for review';
+      card.append(node('p', `${label} · ${reason.issue.state ?? 'unknown'} issue`, 'issue-row-meta'));
+      provenance.append(node('p', `GitHub label: ${reason.label} · Issue updated: ${time(reason.sourceTime)} (not wait duration) · Observed: ${time(reason.observedAt)}`));
+      if (reason.state === 'stale') card.append(node('p', `${label}: Stale observation; current source context is unknown.`, 'notice'));
+      if (reason.state === 'not-observed') card.append(node('p', `${label}: Not observed in this collection; resolution is unknown. Missing pages or a removed label do not establish a resolved question.`, 'notice'));
+    }
+    card.append(provenance);
     const actions = node('div', undefined, 'project-actions'); actions.append(sourceLink('GitHub issue', entry.repository, '/issues/' + entry.issue.number)); card.append(actions);
     const inspect = node('button', 'Inspect current question'); inspect.type = 'button';
-    const detail = node('section'); detail.setAttribute('aria-label', 'Current source context · ' + entry.repository + '#' + entry.issue.number + ' · ' + entry.label);
+    const detail = node('section'); detail.setAttribute('aria-label', 'Current source context · ' + entry.repository + '#' + entry.issue.number);
     const scope = dataScope, version = epoch;
     inspect.addEventListener('click', async () => {
       if (busy) return; inspect.disabled = true;
@@ -440,7 +452,7 @@ function renderAttention(selected, focusKey) {
       await inspectAttention(detail, entry, scope, live, () => clearSource('Source authority changed. Verify your account and refresh.'));
       if (live()) inspect.disabled = false;
     });
-    if (entry.state === 'source-label') { actions.append(inspect); card.append(detail); }
+    if (entries.some(item => item.state === 'source-label')) { actions.append(inspect); card.append(detail); }
     list.append(card);
   }
   if (!visible.length) list.append(node('p', !collected ? 'Reading intervention contexts…' : 'No labeled waits in the collected scope. Unread, unavailable or remaining pages may contain interventions.'));
