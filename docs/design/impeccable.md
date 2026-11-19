@@ -4,38 +4,45 @@ Impeccable is a design aid for Control Center's web interface. The installed
 project skill is version 4.10.0; update it with the upstream installer and review
 the resulting changes. Reload the coding tool after installation or update.
 
-## Authority and context
+## Context and authority
 
-Start with the accepted [ProductShape model](../product/README.md), the
+Impeccable's context loader discovers the two small adapters in `.agents/context/`.
+They direct the agent to the actual sources; they are not copies of product or
+design truth. Before design work, read the relevant ProductShape artifacts, the
 [Lighthouse design guide](DESIGN.md), and the [Control Center visual contract](control-center.md).
-The operator's authenticated workspace is an **Operate** surface: prioritize
-finding work, understanding source evidence and completing authorized actions.
-Select a mode separately for any other surface.
+The authenticated workspace is an **Operate** surface. Choose a mode separately
+for any other surface.
 
-ProductShape owns product intent. The Lighthouse UI package owns its generated
-guide and tokens; the visual contract owns this product's composition. Impeccable
-context files and surface briefs are aids, not replacement authorities. Reconcile
-any disagreement with those sources before changing the interface. Product
-behavior changes still follow the Product Change and Lighthouse delivery process.
+ProductShape owns product intent, and intent changes through a Product Change.
+ArcShape owns architecture. The Lighthouse UI package owns its generated guide
+and tokens; the visual contract owns this product's composition. Resolve any
+conflict in favor of those sources and the repository instructions.
 
-Impeccable looks for `PRODUCT.md` and `DESIGN.md` in supported context locations;
-it does not automatically discover `docs/design/DESIGN.md`. Run `$impeccable init`
-with the maintainer before a redesign or a new surface, and make its product
-context refer to the accepted model. Record the existing visual system without
-overwriting the Lighthouse-managed guide; any Impeccable design context must point
-back to the guide and the visual contract. Review generated context for drift.
+For this repository, bypass Impeccable's `init` and `document` write steps,
+including when a build or finish workflow calls them. Do not generate, overwrite,
+or replace product or design context as a prerequisite for design. Update the
+canonical source through its owner workflow when the user has authorized that
+change; keep the adapters as pointers. A surface brief, critique snapshot, or
+other Impeccable artifact is optional working evidence and cannot create product
+requirements or supersede the design contract. Never write through a link to a
+managed source. If a command requires its own generated metadata, treat it as
+non-authoritative and report what is unavailable rather than inventing values.
+
+The detector cannot extract Lighthouse token values from these pointers. Its
+checks for documented design-system values therefore do not establish token
+conformance. Run Lighthouse's checks and inspect rendered screens as well.
 
 ## Iteration
 
-1. Choose a specific route or workflow and inspect the current implementation and
-   rendered interface. Capture desktop and narrow layouts in light and dark themes.
+1. Choose a specific route or workflow and inspect the implementation, applicable
+   ProductShape artifacts and rendered interface. Capture desktop and narrow
+   layouts in light and dark themes.
 2. Use `$impeccable critique` for hierarchy and usability, and `$impeccable audit`
    for accessibility, responsive behavior and other technical findings. Rank
    findings against the operator's tasks and source-evidence boundaries.
-3. Use `$impeccable shape` for a proposed redesign, agree on the direction and
-   scope, then implement a bounded surface. Use the targeted refinement commands
-   where appropriate. Preserve real content, action authority and interaction states.
-4. Run the Impeccable detector on changed UI files as advisory feedback. Investigate
+3. Use `$impeccable shape` for a proposed redesign and work within the existing
+   visual contract. Preserve real content, action authority and interaction states.
+4. Run the Impeccable detector on changed UI files as advisory feedback. Evaluate
    findings against the visual contract; a generic detector preference does not
    override a deliberate Lighthouse design decision. Source scans do not replace
    checks on rendered pages.

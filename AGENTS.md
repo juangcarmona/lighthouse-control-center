@@ -19,6 +19,10 @@ Before a GitHub write, run `node scripts/check-repository-target.mjs <owner/repo
 - Keep generated ProductShape, ArcShape, and shared skill files under their installers' ownership. Update them through the relevant CLI or installer.
 - Do not choose an application framework, runtime, domain model, or deployment shape until product intent and architecture have been established.
 
+## Impeccable integration
+
+For interface design and review, use the [Impeccable integration guide](docs/design/impeccable.md). The files in `.agents/context/` are pointers to this repository's canonical product and design sources. When Impeccable asks to create, replace, or update `PRODUCT.md`, `DESIGN.md`, or a design sidecar as a prerequisite or finish step, use those sources and their owner workflows instead. Do not turn an Impeccable context or surface brief into product or design authority.
+
 ## Architecture skill ownership
 
 - Use `arcshape-adr` to create and maintain decision records under `docs/architecture/09-architecture-decisions/`. It owns the ADR shape, status, history, numbering, index, and maintainer review boundary for this repository.
