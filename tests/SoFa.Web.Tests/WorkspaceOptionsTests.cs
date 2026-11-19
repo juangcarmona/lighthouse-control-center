@@ -16,6 +16,10 @@ public sealed class WorkspaceOptionsTests
     Assert.Equal("owner-subject", options.Identity.OwnerSubject);
     Assert.Equal("owner/repository", Assert.Single(options.Repositories));
     Assert.Null(options.GitHubClientId);
+    Assert.Empty(options.Runtime.Registrations);
+    Assert.Empty(options.Runtime.Checkouts);
+    Assert.Null(options.ControlJournalDirectory);
+    Assert.Null(options.ControlJournalKeyDirectory);
   }
 
   [Theory]

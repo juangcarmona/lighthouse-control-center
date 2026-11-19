@@ -55,6 +55,34 @@ public sealed class OwnerSessionsTests
   }
 
   [Fact]
+  public async Task RestartPreservesThePersistedIdleAndAbsoluteSessionDeadlines()
+  {
+    using var storage = new SessionVaultFixture();
+    var clock = new TestClock();
+    string key;
+    DateTimeOffset idleDeadline;
+    DateTimeOffset absoluteDeadline;
+    using (var firstProcess = storage.Open(clock))
+    {
+      key = await firstProcess.StoreAsync(Ticket(clock));
+      var session = firstProcess.Get(key)!;
+      absoluteDeadline = session.AbsoluteDeadline;
+      clock.Advance(TimeSpan.FromMinutes(15));
+      Assert.True(firstProcess.TouchUserActivity(key));
+      idleDeadline = firstProcess.Get(key)!.IdleDeadline;
+    }
+
+    using (var restarted = storage.Open(clock))
+    {
+      var restored = restarted.Get(key)!;
+      Assert.Equal(absoluteDeadline, restored.AbsoluteDeadline);
+      Assert.Equal(idleDeadline, restored.IdleDeadline);
+      clock.Advance(idleDeadline - clock.GetUtcNow());
+      Assert.Null(restarted.Get(key));
+    }
+  }
+
+  [Fact]
   public async Task StaleConnectionInvalidationCannotDeleteTheReplacementGrantFromDurableStorage()
   {
     using var storage = new SessionVaultFixture();
