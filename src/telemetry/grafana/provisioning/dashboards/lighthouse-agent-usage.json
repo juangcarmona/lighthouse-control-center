@@ -1,0 +1,104 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "sum by (model, stage) (max by (event_id, model, stage) (max_over_time({service_name=\"lighthouse\"} | json | type=\"session.step.ended\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", stage=\"{{.correlation_stage}}\" | unwrap attributes_inputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{stage}} input", "refId": "A"},
+        {"expr": "sum by (model, stage) (max by (event_id, model, stage) (max_over_time({service_name=\"lighthouse\"} | json | type=\"session.step.ended\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", stage=\"{{.correlation_stage}}\" | unwrap attributes_outputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{stage}} output", "refId": "B"},
+        {"expr": "sum by (action) (max by (event_id, action) (max_over_time({service_name=\"lighthouse\"} | json | type=\"session.step.ended\" | label_format event_id=\"{{.id}}\", action=\"{{.attributes_action}}\" | unwrap attributes_inputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{action}} input", "refId": "C"}
+      ],
+      "title": "Completed native step tokens by executed model (replay-deduplicated)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 39},
+      "id": 7,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "sum by (model, skill) (max by (event_id, model, skill) (max_over_time({service_name=\"lighthouse\"} | json | type=\"claude.usage.observed\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", skill=\"{{.attributes_skill}}\" | unwrap attributes_inputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{skill}} input", "refId": "A"},
+        {"expr": "sum by (model, skill) (max by (event_id, model, skill) (max_over_time({service_name=\"lighthouse\"} | json | type=\"claude.usage.observed\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", skill=\"{{.attributes_skill}}\" | unwrap attributes_outputTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{skill}} output", "refId": "B"},
+        {"expr": "sum by (model, skill) (max by (event_id, model, skill) (max_over_time({service_name=\"lighthouse\"} | json | type=\"claude.usage.observed\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", skill=\"{{.attributes_skill}}\" | unwrap attributes_cacheReadTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{skill}} cache read", "refId": "C"},
+        {"expr": "sum by (model, skill) (max by (event_id, model, skill) (max_over_time({service_name=\"lighthouse\"} | json | type=\"claude.usage.observed\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", skill=\"{{.attributes_skill}}\" | unwrap attributes_cacheWriteTokens | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{skill}} cache creation", "refId": "D"}
+      ],
+      "title": "Claude usage through Lighthouse contract (replay-deduplicated)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 48},
+      "id": 8,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "sum by (model, skill) (max by (event_id, model, skill) (max_over_time({service_name=\"lighthouse\"} | json | type=\"claude.cost.observed\" | label_format event_id=\"{{.id}}\", model=\"{{.attributes_model}}\", skill=\"{{.attributes_skill}}\" | unwrap attributes_costUsd | __error__=\"\" [$__interval])))", "legendFormat": "{{model}} / {{skill}} estimate", "refId": "A"}],
+      "title": "Claude estimated cost through Lighthouse contract (USD, not billed)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
+      "id": 2,
+      "options": {"mode": "markdown", "content": "## Provider-billed cost: unavailable\n\nToken observations do not establish billing. Connect an attributable provider billing source before displaying monetary cost."},
+      "title": "Cost provenance",
+      "type": "text"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "gridPos": {"h": 12, "w": 24, "x": 0, "y": 9},
+      "id": 3,
+      "options": {"dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"expr": "{service_name=\"lighthouse\"} | json", "refId": "A"}],
+      "title": "Source events and correlation details",
+      "type": "logs"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "claude-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 21},
+      "id": 4,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "sum by (model, type, vcs_owner_name, vcs_repository_name) (claude_code_token_usage_tokens_total)", "legendFormat": "{{vcs_owner_name}}/{{vcs_repository_name}} / {{model}} / {{type}}", "refId": "A"},
+        {"expr": "sum by (model, skill_name) (claude_code_token_usage_tokens_total{skill_name!~\"\"})", "legendFormat": "{{model}} / {{skill_name}}", "refId": "B"}
+      ],
+      "title": "Claude Code cumulative tokens by model, type and reported skill",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "claude-prometheus"},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 12}}, "overrides": []},
+      "gridPos": {"h": 9, "w": 16, "x": 0, "y": 30},
+      "id": 6,
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "sum by (model, skill_name) (claude_code_cost_usage_USD_total)", "legendFormat": "{{model}} / {{skill_name}} estimate", "refId": "A"}],
+      "title": "Claude-reported estimated cost (USD, not billed)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "lighthouse-loki"},
+      "gridPos": {"h": 5, "w": 8, "x": 16, "y": 21},
+      "id": 5,
+      "options": {"mode": "markdown", "content": "## Claude cost: estimated\n\nClaude Code reports approximate USD usage, not provider billing. Treat this as a source-reported estimate; it is not a billed-cost total."},
+      "title": "Claude-reported cost provenance",
+      "type": "text"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": ["lighthouse", "agent", "runner", "telemetry"],
+  "time": {"from": "now-24h", "to": "now"},
+  "timezone": "browser",
+  "title": "Lighthouse agent usage",
+  "uid": "lighthouse-agent-usage",
+  "version": 2
+}

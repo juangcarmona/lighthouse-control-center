@@ -1,0 +1,10 @@
+apiVersion: 1
+providers:
+  - name: Lighthouse telemetry
+    orgId: 1
+    folder: Lighthouse
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /etc/grafana/provisioning/dashboards

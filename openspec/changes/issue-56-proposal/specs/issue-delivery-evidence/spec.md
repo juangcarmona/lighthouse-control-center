@@ -52,7 +52,7 @@ The issue view SHALL expose only actions supported by the adopted shared capabil
 ### Requirement: Scoped accessible inspection
 
 Evidence inspection SHALL remain bounded, inert, session-scoped and accessible in existing supported themes and layouts.
-<!-- pdac:cite id="FR-EVIDENCE-CORRELATION" digest="sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85" -->
+<!-- pdac:cite id="FR-EVIDENCE-CORRELATION" digest="sha256:99c64fb08f86f57409dbdf736e0922e68b036071f8df6faefc24a7ea8ba91829" -->
 
 #### Scenario: Source authority is lost
 

@@ -437,8 +437,9 @@ public static class WorkspaceModule
   private static async Task<IResult> WorkspacePage(HttpContext context, OwnerSession record, string file)
   {
     var html = await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "workspace-assets", file), context.RequestAborted).ConfigureAwait(false);
-    var display = WorkspaceDisplayContext.Create(record, context.RequestServices.GetRequiredService<WorkspaceOptions>().Repositories,
-        context.RequestServices.GetRequiredService<TimeProvider>().GetUtcNow());
+    var options = context.RequestServices.GetRequiredService<WorkspaceOptions>();
+    var display = WorkspaceDisplayContext.Create(record, options.Repositories,
+        context.RequestServices.GetRequiredService<TimeProvider>().GetUtcNow(), options.TelemetryDashboardUrl);
     var value = System.Text.Json.JsonSerializer.Serialize(display, System.Text.Json.JsonSerializerOptions.Web);
     return Results.Content(html.Replace("</head>", "<meta name=\"lcc-display-context\" content=\"" + Encode(value) + "\"></head>", StringComparison.Ordinal), "text/html");
   }

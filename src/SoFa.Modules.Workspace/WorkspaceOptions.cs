@@ -13,6 +13,7 @@ internal sealed class WorkspaceOptions
   public IReadOnlyDictionary<string, string> RepositoryBranches { get; init; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
   public string? GitHubClientId { get; init; }
   public long? GitHubAppId { get; init; }
+  public string? TelemetryDashboardUrl { get; init; }
   [System.Text.Json.Serialization.JsonIgnore]
   public RuntimeOptions Runtime { get; init; } = new();
   [System.Text.Json.Serialization.JsonIgnore]
@@ -97,6 +98,7 @@ internal sealed class WorkspaceOptions
       Repositories = repositories,
       RepositoryBranches = branches,
       GitHubClientId = githubClient,
+      TelemetryDashboardUrl = TelemetryUrl(section["Telemetry:DashboardUrl"]),
       GitHubClientSecret = githubSecret,
       GitHubAppId = section["GitHub:AppId"] is { } appId
           ? long.TryParse(appId, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var parsed) && parsed is > 0 and <= 9_007_199_254_740_991
@@ -112,6 +114,16 @@ internal sealed class WorkspaceOptions
         || !string.IsNullOrEmpty(uri.Fragment) || originOnly && uri.AbsolutePath != "/")
       throw new InvalidOperationException("Configure exact HTTPS application and issuer addresses without credentials, queries or fragments.");
     return uri;
+  }
+
+  private static string? TelemetryUrl(string? value)
+  {
+    if (string.IsNullOrWhiteSpace(value)) return null;
+    if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || !string.IsNullOrEmpty(uri.UserInfo)
+        || !string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment)
+        || uri.Scheme != "https" && !(uri.Scheme == "http" && uri.IsLoopback))
+      throw new InvalidOperationException("Configure the telemetry dashboard with HTTPS or a loopback HTTP address and no credentials, query or fragment.");
+    return uri.AbsoluteUri.TrimEnd('/');
   }
 
   private static bool PrivateDirectory(string? value) => !string.IsNullOrWhiteSpace(value)

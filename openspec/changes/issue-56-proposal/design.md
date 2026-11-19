@@ -35,7 +35,7 @@ The current PDaC serialization is v1alpha2; ProductShape is 0.26.1. `prodshape c
 
 Run the policy's installation, `CI=true npm run verify:container`, and strict implementation-plan check. Also run focused .NET/browser tests, `npm run test:visual`, strict spec validation and product citations. Retain completed managed receipts and screenshots under `/output/evidence/`. Real connected-source acceptance must later inspect an existing authorized issue → proposal/report → PR/head → explicit decision → integrated SHA → matching post-integration checks/artifacts through the connected-user path. Record IDs, attempts, revisions, source/observation times and unavailable facts; never manufacture a merge or use fixtures as that proof.
 <!-- pdac:cite id="UC-VERIFY-DELIVERY" digest="sha256:804087739b1dfabebcd5932c70a85b2204501bbfa1a9b99360be1d3e548a0be9" -->
-<!-- pdac:cite id="FR-EVIDENCE-CORRELATION" digest="sha256:cb4235a9d512635a47acaaf73e155e478b04f887a0b22c60c36b1acc5e949e85" -->
+<!-- pdac:cite id="FR-EVIDENCE-CORRELATION" digest="sha256:99c64fb08f86f57409dbdf736e0922e68b036071f8df6faefc24a7ea8ba91829" -->
 
 ## Risks / Trade-offs
 

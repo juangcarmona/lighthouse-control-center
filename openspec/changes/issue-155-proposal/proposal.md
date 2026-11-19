@@ -7,7 +7,7 @@ pdac-scope: cited
 ## Why
 
 Operators can inspect repository activity but cannot navigate from fleet health to an explained source observation. Health makes existing evidence useful without implying unsupported coverage.
-<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:00496ba5f763ca6f4062a45e000bda8fb429cfd674b0e638cd59fb3858449130" -->
+<!-- pdac:cite id="FR-PROJECT-HEALTH" digest="sha256:69da1f100227df86cc26fdad78c38a336e38d039bdedc1c097a1b6a5f4e8dceb" -->
 
 ## What Changes
 

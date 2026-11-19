@@ -1,0 +1,62 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch: {}
+  transform/scrub_identity:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        statements:
+          - delete_key(attributes, "session.id")
+          - delete_key(attributes, "ccr.session.id")
+          - delete_key(attributes, "user.id")
+          - delete_key(attributes, "user.email")
+          - delete_key(attributes, "user.name")
+          - delete_key(attributes, "user.groups")
+          - delete_key(attributes, "user.account_uuid")
+          - delete_key(attributes, "user.account_id")
+          - delete_key(attributes, "organization.id")
+          - delete_key(attributes, "host.id")
+          - delete_key(attributes, "host.name")
+      - context: resource
+        statements:
+          - delete_key(attributes, "user.id")
+          - delete_key(attributes, "user.email")
+          - delete_key(attributes, "user.name")
+          - delete_key(attributes, "user.groups")
+          - delete_key(attributes, "user.account_uuid")
+          - delete_key(attributes, "user.account_id")
+          - delete_key(attributes, "organization.id")
+          - delete_key(attributes, "host.id")
+          - delete_key(attributes, "host.name")
+          - delete_key(attributes, "service.instance.id")
+
+exporters:
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+  prometheus:
+    endpoint: 0.0.0.0:9464
+    resource_constant_labels:
+      included: [service.name, vcs.owner.name, vcs.repository.name]
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/loki]
+    metrics:
+      receivers: [otlp]
+      processors: [transform/scrub_identity, batch]
+      exporters: [prometheus]
