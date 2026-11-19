@@ -18,6 +18,15 @@ ArcShape owns architecture. The Lighthouse UI package owns its generated guide
 and tokens; the visual contract owns this product's composition. Resolve any
 conflict in favor of those sources and the repository instructions.
 
+Impeccable's usual context fields already have owners here:
+
+| Context | Canonical source |
+| --- | --- |
+| Users, roles and their jobs | [ProductShape actors](../product/model/actors/) and [journeys](../product/model/journeys/) |
+| Capabilities, limits and outcomes | [ProductShape requirements](../product/model/requirements/), [use cases](../product/model/use-cases/) and [business rules](../product/model/business-rules/) |
+| Implemented structure and constraints | [Architecture](../architecture/README.md) and the relevant [specifications](../../openspec/specs/) |
+| Brand, visual roles and composition | The Lighthouse guide and Control Center visual contract linked above |
+
 For this repository, bypass Impeccable's `init` and `document` write steps,
 including when a build or finish workflow calls them. Do not generate, overwrite,
 or replace product or design context as a prerequisite for design. Update the
