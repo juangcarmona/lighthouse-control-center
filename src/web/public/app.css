@@ -467,7 +467,7 @@ body { min-width:320px; background:var(--lh-canvas); color:var(--lh-text); font:
 .site-sidebar .brand-mark { width:34px; height:34px; flex:0 0 34px; display:block; }
 .brand-copy { min-width:0; display:grid; gap:.1rem; }
 .brand-copy strong { color:var(--lh-text); font-size:.8rem; font-weight:650; }
-.brand-copy small { color:var(--lh-text-muted); font:500 .625rem/1.3 var(--lh-font-mono); }
+.brand-copy small { color:var(--lh-text-muted); font:500 .6875rem/1.3 var(--lh-font-mono); }
 .workspace-nav { min-width:0; display:flex; flex:1; flex-direction:column; align-items:stretch; gap:.2rem; padding:1rem .5rem; }
 .workspace-nav[hidden] { display:none !important; }
 .workspace-nav a { min-height:42px; display:flex; align-items:center; padding:.55rem .7rem; border-left:2px solid transparent; color:var(--lh-text-muted); font-size:.8125rem; font-weight:600; text-decoration:none; }

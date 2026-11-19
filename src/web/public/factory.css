@@ -84,6 +84,7 @@ body[data-view="attention"] #factory-scope { font-size:.75rem; }
 
 body[data-view="attention"] .factory-list>.factory-issue { display:block; }
 body[data-view="attention"] .factory-issue .issue-row-meta { margin:.375rem 0; font-size:.8125rem; }
+body[data-view="attention"] .issue-project { font-size:.75rem; }
 /* Give the repository breadcrumb its own row before narrow-screen account controls. */
 @media(max-width:900px) {
   .header-context { flex-basis:100%; flex-wrap:wrap; gap:.25rem; }
