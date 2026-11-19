@@ -69,6 +69,34 @@ const payload = {
     }],
   }],
 };
+const claudeContractUsage = {
+  ...event,
+  id: createHash('sha256').update(`${stream}:claude-usage`).digest('hex'),
+  type: 'claude.usage.observed',
+  source: { kind: 'claude-code', id: 'claude-usage-source', sequence: null, artifact: null },
+  attributes: { model: 'claude-contract-model', provider: 'anthropic', modelSource: 'runtime-reported', skill: 'contract-skill', tokenType: 'input', inputTokens: 250 },
+};
+const claudeContractCost = {
+  ...event,
+  id: createHash('sha256').update(`${stream}:claude-cost`).digest('hex'),
+  type: 'claude.cost.observed',
+  source: { kind: 'claude-code', id: 'claude-cost-source', sequence: null, artifact: null },
+  attributes: { model: 'claude-contract-model', provider: 'anthropic', modelSource: 'runtime-reported', skill: 'contract-skill', costUsd: 0.0125, costSource: 'claude-estimated' },
+};
+const lighthousePayload = sourceEvent => ({
+  resourceLogs: [{
+    resource: { attributes: [{ key: 'service.name', value: { stringValue: 'lighthouse' } }, { key: 'service.version', value: { stringValue: '0.30.1' } }] },
+    scopeLogs: [{ scope: { name: 'lighthouse.telemetry', version: '1' }, logRecords: [{
+      timeUnixNano: String(BigInt(Date.parse(sourceEvent.time)) * 1_000_000n),
+      observedTimeUnixNano: String(BigInt(Date.parse(sourceEvent.observedAt)) * 1_000_000n),
+      severityNumber: 9,
+      body: { stringValue: JSON.stringify(sourceEvent) },
+      traceId: sourceEvent.traceId,
+      spanId: sourceEvent.spanId,
+      attributes: [{ key: 'event.name', value: { stringValue: sourceEvent.type } }, { key: 'lighthouse.event.id', value: { stringValue: sourceEvent.id } }],
+    }] }],
+  }],
+});
 const claudeMetrics = {
   resourceMetrics: [{
     resource: { attributes: [{ key: 'service.name', value: { stringValue: 'claude-code' } }, { key: 'user.email', value: { stringValue: 'private@example.test' } }] },
@@ -95,6 +123,10 @@ try {
   const body = JSON.stringify(payload);
   for (let replay = 0; replay < 2; replay++) {
     await json(`${collector}/v1/logs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body });
+  }
+  for (const sourceEvent of [claudeContractUsage, claudeContractCost]) {
+    const contractBody = JSON.stringify(lighthousePayload(sourceEvent));
+    for (let replay = 0; replay < 2; replay++) await json(`${collector}/v1/logs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: contractBody });
   }
   await json(`${collector}/v1/metrics`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(claudeMetrics) });
 
@@ -130,6 +162,17 @@ try {
   const claudePanel = panels.find(panel => panel.title.includes('Claude Code cumulative tokens'));
   const claudeCostPanel = panels.find(panel => panel.title.includes('Claude-reported estimated cost'));
   if (!claudePanel || !claudeCostPanel || !panels.some(panel => panel.title === 'Claude-reported cost provenance')) throw Error('Provisioned Grafana dashboard is missing Claude token, cost and provenance panels');
+  const contractPanel = panels.find(panel => panel.title.includes('Claude usage through Lighthouse contract'));
+  const contractCostPanel = panels.find(panel => panel.title.includes('Claude estimated cost through Lighthouse contract'));
+  if (!contractPanel || !contractCostPanel) throw Error('Provisioned Grafana dashboard is missing Claude Lighthouse-contract usage and cost panels');
+  const contractUsageQuery = contractPanel.targets.find(target => target.refId === 'A').expr.replace('$__interval', '10m');
+  const contractUsage = await query(contractUsageQuery);
+  const contractUsageSample = contractUsage.data?.result?.find(sample => sample.metric.model === 'claude-contract-model' && sample.metric.skill === 'contract-skill');
+  if (Number(contractUsageSample?.value?.[1]) !== 250) throw Error(`Claude Lighthouse contract usage must be replay-deduplicated and attributed by model and skill; got ${JSON.stringify(contractUsage)}`);
+  const contractCostQuery = contractCostPanel.targets[0].expr.replace('$__interval', '10m');
+  const contractCost = await query(contractCostQuery);
+  const contractCostSample = contractCost.data?.result?.find(sample => sample.metric.model === 'claude-contract-model' && sample.metric.skill === 'contract-skill');
+  if (Number(contractCostSample?.value?.[1]) !== 0.0125) throw Error(`Claude Lighthouse contract cost must retain its estimated value and model/skill attribution after replay; got ${JSON.stringify(contractCost)}`);
   const claudeQuery = claudePanel.targets.find(target => target.refId === 'A').expr.replace('$__rate_interval', '5m');
   let claudeUsage;
   for (let attempt = 0; attempt < 30; attempt++) {
@@ -150,7 +193,7 @@ try {
   }
   if (!claudeCost.data?.result?.some(sample => sample.metric.model === 'claude-test-model' && Number(sample.value?.[1]) === 0.0125)) throw Error(`Claude estimated cost metric was not queryable from Prometheus: ${JSON.stringify(claudeCost)}`);
 
-  console.log(JSON.stringify({ status: 'passed', replayedPayloads: 2, storedRawRecords: rawCount, deduplicatedInputTokens: tokenCount, claudeMetric: claudeSample.metric.__name__, claudeMetricModel: claudeSample.metric.model, dashboardPanels: panels.length }, null, 2));
+  console.log(JSON.stringify({ status: 'passed', replayedPayloads: 6, storedRawRecords: rawCount, deduplicatedInputTokens: tokenCount, claudeContractModel: contractUsageSample.metric.model, claudeContractSkill: contractUsageSample.metric.skill, claudeContractEstimatedCostUsd: Number(contractCostSample.value[1]), claudeMetric: claudeSample.metric.__name__, claudeMetricModel: claudeSample.metric.model, dashboardPanels: panels.length }, null, 2));
 } finally {
   if (started) run(['down', '-v', '--remove-orphans']);
 }
